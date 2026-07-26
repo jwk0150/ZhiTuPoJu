@@ -1,0 +1,37 @@
+# Chrome 调试 Profile（浏览器缓存/隐私数据，严禁上传）
+chrome_debug_profile/
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# 临时文件
+*.tmp
+*.log
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+*.egg-info/
+
+# 敏感配置 —— 千万别入库
+.env
+*.env.local
+
+# Playwright 持久化会话（含登录 cookie，禁止上传）
+crawler/.pw_profile/
+
+# 爬虫导出的包（产物，不入库；从其他途径分发）
+crawler/exports/
+
+# IDE / 编辑器
+.vscode/
+.idea/
+*.swp
+.DS_Store
+
+# 本地数据库导入脚本输出
+*.bak
+*_bak.sql

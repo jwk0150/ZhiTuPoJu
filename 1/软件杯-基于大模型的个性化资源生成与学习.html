@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>第十五届"中国软件杯"大学生软件设计大赛赛题</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <style>
+        :root[data-theme="vibrant"] {
+            --bg: linear-gradient(135deg, #667eea 0%, #764ba2 15%, #f093fb 30%, #f5576c 45%, #4facfe 60%, #00f2fe 75%, #43e97b 90%, #feca57 100%);
+            --text: #fff;
+            --card-bg: rgba(255,255,255,0.98);
+            --card-text: #1a1a2e;
+            --accent: #6c5ce7;
+            --accent2: #e84393;
+            --accent3: #00b894;
+            --accent4: #fdcb6e;
+            --code-bg: #2d3436;
+            --quote-bg: linear-gradient(135deg, rgba(108,92,231,0.08), rgba(232,67,147,0.08));
+            --quote-border: #6c5ce7;
+            --table-header: linear-gradient(135deg, #667eea, #764ba2, #f093fb);
+            --table-stripe: rgba(108,92,231,0.05);
+            --highlight: #ff6b6b;
+            --success: #00b894;
+            --warning: #fdcb6e;
+            --info: #4facfe;
+            --tag-bg: linear-gradient(135deg, rgba(108,92,231,0.15), rgba(232,67,147,0.15));
+            --tag-text: #6c5ce7;
+            --toc-bg: rgba(255,255,255,0.98);
+            --toc-hover: rgba(108,92,231,0.12);
+            --divider: linear-gradient(90deg, transparent, #667eea, #6c5ce7, #e84393, #f5576c, #feca57, transparent);
+        }
+        :root[data-theme="dark"] {
+            --bg: #0f0f1a;
+            --text: #e0e0e0;
+            --card-bg: #1a1a2e;
+            --card-text: #e0e0e0;
+            --accent: #7c3aed;
+            --accent2: #a78bfa;
+            --code-bg: #0d1117;
+            --quote-bg: rgba(124,58,237,0.1);
+            --quote-border: #7c3aed;
+            --table-header: #7c3aed;
+            --table-stripe: rgba(124,58,237,0.05);
+            --highlight: #ef4444;
+            --success: #34d399;
+            --warning: #fbbf24;
+            --tag-bg: rgba(124,58,237,0.15);
+            --tag-text: #a78bfa;
+            --toc-bg: rgba(26,26,46,0.98);
+            --toc-hover: rgba(124,58,237,0.15);
+            --divider: linear-gradient(90deg, transparent, #7c3aed, transparent);
+        }
+        :root[data-theme="light"] {
+            --bg: #f8f9fa;
+            --text: #333;
+            --card-bg: #fff;
+            --card-text: #333;
+            --accent: #2563eb;
+            --accent2: #3b82f6;
+            --code-bg: #282c34;
+            --quote-bg: rgba(37,99,235,0.05);
+            --quote-border: #2563eb;
+            --table-header: #2563eb;
+            --table-stripe: rgba(37,99,235,0.03);
+            --highlight: #dc2626;
+            --success: #059669;
+            --warning: #d97706;
+            --tag-bg: rgba(37,99,235,0.08);
+            --tag-text: #2563eb;
+            --toc-bg: rgba(255,255,255,0.98);
+            --toc-hover: rgba(37,99,235,0.08);
+            --divider: linear-gradient(90deg, transparent, #2563eb, transparent);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.8;
+            scroll-behavior: smooth;
+        }
+
+        /* Theme Switcher */
+        .theme-switcher {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            gap: 8px;
+            background: rgba(0,0,0,0.3);
+            padding: 6px 10px;
+            border-radius: 25px;
+            backdrop-filter: blur(10px);
+        }
+        .theme-btn {
+            width: 30px;
+            height: 30px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0;
+        }
+        .theme-btn:hover { transform: scale(1.2); border-color: #fff; }
+        .theme-btn.active { border-color: #fff; box-shadow: 0 0 10px rgba(255,255,255,0.5); }
+        .fullscreen-btn {
+            width: 30px;
+            height: 30px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: rgba(255,255,255,0.15);
+            color: #fff;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 4px;
+        }
+        .fullscreen-btn:hover { transform: scale(1.2); border-color: #fff; background: rgba(255,255,255,0.25); }
+
+        /* TOC */
+        .toc-toggle {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1001;
+            width: 44px;
+            height: 44px;
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+        }
+        .toc-toggle:hover { transform: scale(1.1); }
+
+        .toc-panel {
+            position: fixed;
+            top: 0;
+            left: -360px;
+            width: 340px;
+            height: 100vh;
+            background: var(--toc-bg);
+            color: var(--card-text);
+            z-index: 1000;
+            padding: 80px 24px 40px;
+            overflow-y: auto;
+            transition: left 0.3s ease;
+            box-shadow: 4px 0 20px rgba(0,0,0,0.15);
+        }
+        .toc-panel.open { left: 0; }
+        .toc-panel h3 {
+            font-size: 1.1em;
+            color: var(--accent);
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--accent);
+        }
+        .toc-panel a {
+            display: block;
+            padding: 8px 12px;
+            color: var(--card-text);
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 0.9em;
+            transition: all 0.2s;
+            margin-bottom: 2px;
+        }
+        .toc-panel a:hover { background: var(--toc-hover); color: var(--accent); }
+        .toc-panel a.toc-h2 { font-weight: 600; margin-top: 8px; }
+        .toc-panel a.toc-h3 { padding-left: 28px; font-size: 0.85em; opacity: 0.85; }
+
+        /* Container */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 24px 80px;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            padding: 120px 24px 80px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        header h1 {
+            font-size: 3em;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 24px;
+            letter-spacing: -0.02em;
+        }
+        [data-theme="vibrant"] header h1 {
+            background: linear-gradient(135deg, #2d3436, #6c5ce7, #e84393);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        header .subtitle {
+            font-size: 1.25em;
+            opacity: 0.85;
+            max-width: 700px;
+            margin: 0 auto 32px;
+            line-height: 1.6;
+        }
+        [data-theme="vibrant"] header .subtitle {
+            color: #2d3436;
+            opacity: 0.75;
+        }
+        header .meta {
+            font-size: 0.9em;
+            opacity: 0.6;
+        }
+        [data-theme="vibrant"] header .meta {
+            color: #2d3436;
+        }
+        .tags { margin-top: 24px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+        .tag {
+            display: inline-block;
+            padding: 6px 18px;
+            background: var(--tag-bg);
+            color: var(--tag-text);
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 500;
+            transition: transform 0.2s;
+        }
+        .tag:hover { transform: translateY(-2px); }
+        [data-theme="vibrant"] .tag {
+            background: rgba(255,255,255,0.85);
+            color: var(--t-color, #6c5ce7);
+            border: 2px solid var(--t-color, #6c5ce7);
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+        }
+
+        /* Sections */
+        section {
+            background: var(--card-bg);
+            color: var(--card-text);
+            padding: 48px 48px;
+            margin-bottom: 32px;
+            border-radius: 16px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            transition: transform 0.2s;
+        }
+
+        h2 {
+            font-size: 2em;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 24px;
+            padding-bottom: 12px;
+            border-bottom: 3px solid var(--accent);
+            line-height: 1.3;
+        }
+        [data-theme="vibrant"] h2 {
+            background: linear-gradient(135deg, #6c5ce7, #e84393);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            border-bottom: 3px solid;
+            border-image: linear-gradient(135deg, #6c5ce7, #e84393) 1;
+        }
+        h3 {
+            font-size: 1.5em;
+            font-weight: 600;
+            color: var(--accent);
+            margin: 36px 0 16px;
+            line-height: 1.4;
+        }
+        h4 {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: var(--card-text);
+            margin: 28px 0 12px;
+        }
+
+        p { margin-bottom: 16px; font-size: 1.05em; }
+
+        /* Lists */
+        ul, ol { margin: 12px 0 20px 28px; }
+        li { margin-bottom: 8px; font-size: 1.02em; }
+
+        /* Blockquotes */
+        blockquote {
+            background: var(--quote-bg);
+            border-left: 4px solid var(--quote-border);
+            padding: 20px 24px;
+            margin: 24px 0;
+            border-radius: 0 10px 10px 0;
+            font-size: 1.1em;
+            line-height: 1.8;
+        }
+        blockquote p { margin-bottom: 8px; }
+        blockquote p:last-child { margin-bottom: 0; }
+
+        /* Code */
+        pre {
+            background: var(--code-bg);
+            padding: 20px 24px;
+            border-radius: 10px;
+            overflow-x: auto;
+            margin: 20px 0;
+            font-size: 0.92em;
+            line-height: 1.6;
+        }
+        code {
+            font-family: "Fira Code", "JetBrains Mono", "SF Mono", Consolas, monospace;
+        }
+        p code, li code {
+            background: rgba(0,0,0,0.06);
+            padding: 2px 7px;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 0.95em;
+        }
+        th {
+            background: var(--table-header);
+            color: #fff;
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 600;
+        }
+        td {
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(0,0,0,0.06);
+        }
+        tr:nth-child(even) { background: var(--table-stripe); }
+
+        /* Images */
+        .article-image {
+            width: 100%;
+            max-width: 100%;
+            border-radius: 12px;
+            margin: 24px 0;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+        }
+        .image-wrapper {
+            text-align: center;
+            margin: 32px 0;
+        }
+        .image-caption {
+            font-size: 0.88em;
+            color: var(--accent);
+            margin-top: 10px;
+            font-style: italic;
+        }
+
+        /* Highlight boxes */
+        .highlight-box {
+            background: linear-gradient(135deg, rgba(102,126,234,0.08), rgba(118,75,162,0.08));
+            border: 1px solid rgba(102,126,234,0.2);
+            border-radius: 12px;
+            padding: 24px 28px;
+            margin: 24px 0;
+        }
+        .highlight-box.warning {
+            background: linear-gradient(135deg, rgba(245,158,11,0.08), rgba(239,68,68,0.08));
+            border-color: rgba(245,158,11,0.3);
+        }
+        .highlight-box.success {
+            background: linear-gradient(135deg, rgba(16,185,129,0.08), rgba(52,211,153,0.08));
+            border-color: rgba(16,185,129,0.3);
+        }
+
+        /* Formula */
+        .formula {
+            text-align: center;
+            font-size: 1.6em;
+            font-weight: 700;
+            color: var(--accent);
+            padding: 32px;
+            margin: 32px 0;
+            background: var(--quote-bg);
+            border-radius: 12px;
+        }
+        [data-theme="vibrant"] .formula {
+            background: linear-gradient(135deg, rgba(108,92,231,0.08), rgba(232,67,147,0.08));
+            color: #6c5ce7;
+            border: 2px solid transparent;
+            background-clip: padding-box;
+            position: relative;
+        }
+        [data-theme="vibrant"] .formula::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #6c5ce7, #e84393, #f5576c);
+            z-index: -1;
+        }
+        [data-theme="vibrant"] th {
+            background: linear-gradient(135deg, #6c5ce7, #e84393);
+        }
+
+        /* Divider */
+        .section-divider {
+            height: 3px;
+            background: var(--divider);
+            margin: 48px 0;
+            border: none;
+        }
+
+        /* Comparison */
+        .vs-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 24px 0;
+        }
+        .vs-card {
+            padding: 20px 24px;
+            border-radius: 10px;
+            border: 2px solid;
+        }
+        .vs-card.bad { border-color: var(--highlight); background: rgba(231,76,60,0.05); }
+        .vs-card.good { border-color: var(--success); background: rgba(16,185,129,0.05); }
+        .vs-card h4 { margin-top: 0; color: inherit; }
+
+        /* Steps */
+        .step {
+            display: flex;
+            gap: 20px;
+            margin: 24px 0;
+            align-items: flex-start;
+        }
+        .step-number {
+            flex-shrink: 0;
+            width: 48px;
+            height: 48px;
+            background: var(--accent);
+            color: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+            font-weight: 700;
+        }
+        .step-content { flex: 1; }
+        .step-content h4 { margin-top: 4px; }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 60px 24px;
+            opacity: 0.7;
+            font-size: 0.9em;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            header { padding: 80px 20px 60px; }
+            header h1 { font-size: 2em; }
+            section { padding: 28px 24px; }
+            h2 { font-size: 1.6em; }
+            h3 { font-size: 1.25em; }
+            .vs-grid { grid-template-columns: 1fr; }
+            .toc-panel { width: 280px; }
+        }
+
+        /* Scroll progress */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: var(--accent);
+            z-index: 9999;
+            transition: width 0.1s;
+        }
+        [data-theme="vibrant"] .progress-bar {
+            height: 4px;
+            background: linear-gradient(90deg, #6c5ce7, #e84393, #f5576c, #fdcb6e, #00b894);
+        }
+        [data-theme="vibrant"] blockquote {
+            background: linear-gradient(135deg, rgba(108,92,231,0.06), rgba(232,67,147,0.06));
+            border-left: 4px solid;
+            border-image: linear-gradient(180deg, #6c5ce7, #e84393) 1;
+        }
+        [data-theme="vibrant"] .step-number {
+            background: linear-gradient(135deg, #6c5ce7, #e84393);
+        }
+        [data-theme="vibrant"] .highlight-box {
+            background: linear-gradient(135deg, rgba(108,92,231,0.06), rgba(232,67,147,0.06));
+            border: 1px solid rgba(108,92,231,0.2);
+        }
+        [data-theme="vibrant"] .highlight-box.success {
+            background: linear-gradient(135deg, rgba(0,184,148,0.06), rgba(0,206,201,0.06));
+            border-color: rgba(0,184,148,0.3);
+        }
+        [data-theme="vibrant"] .highlight-box.warning {
+            background: linear-gradient(135deg, rgba(253,203,110,0.1), rgba(255,107,107,0.06));
+            border-color: rgba(253,203,110,0.3);
+        }
+        [data-theme="vibrant"] .vs-card.good {
+            border-color: #00b894;
+            background: linear-gradient(135deg, rgba(0,184,148,0.04), rgba(0,206,201,0.04));
+        }
+        [data-theme="vibrant"] .vs-card.bad {
+            border-color: #e84393;
+            background: linear-gradient(135deg, rgba(232,67,147,0.04), rgba(255,107,107,0.04));
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progressBar"></div>
+
+    <div class="theme-switcher">
+        <button class="theme-btn" onclick="setTheme('vibrant')" style="background: linear-gradient(135deg, #6c5ce7, #e84393, #f5576c);" title="活泼"></button>
+        <button class="theme-btn" onclick="setTheme('dark')" style="background: #1a1a2e;" title="暗黑"></button>
+        <button class="theme-btn" onclick="setTheme('light')" style="background: #f5f5f5;" title="明亮"></button>
+        <button class="fullscreen-btn" id="fsBtn" onclick="toggleFullscreen()" title="全屏">⛶</button>
+    </div>
+
+    <button class="toc-toggle" id="tocToggle" onclick="toggleToc()">☰</button>
+    <nav class="toc-panel" id="tocPanel">
+        <h3>目录导航</h3>
+        <a href="#section1" class="toc-h2" onclick="closeToc()">赛题名称</a>
+        <a href="#section2" class="toc-h2" onclick="closeToc()">赛题简介</a>
+        <a href="#section3" class="toc-h2" onclick="closeToc()">赛题业务场景</a>
+        <a href="#section4" class="toc-h2" onclick="closeToc()">报名须知</a>
+        <a href="#section5" class="toc-h2" onclick="closeToc()">基本功能需求</a>
+        <a href="#s5-1" class="toc-h3" onclick="closeToc()">对话式学习画像自主构建</a>
+        <a href="#s5-2" class="toc-h3" onclick="closeToc()">多智能体协同的资源生成</a>
+        <a href="#s5-3" class="toc-h3" onclick="closeToc()">个性化学习路径规划</a>
+        <a href="#s5-4" class="toc-h3" onclick="closeToc()">智能辅导（可选加分项）</a>
+        <a href="#s5-5" class="toc-h3" onclick="closeToc()">学习效果评估（可选加分项）</a>
+        <a href="#section6" class="toc-h2" onclick="closeToc()">非功能性需求</a>
+        <a href="#section7" class="toc-h2" onclick="closeToc()">实现条件</a>
+        <a href="#section8" class="toc-h2" onclick="closeToc()">测试数据或平台</a>
+        <a href="#section9" class="toc-h2" onclick="closeToc()">文档及其他要求</a>
+        <a href="#section10" class="toc-h2" onclick="closeToc()">各评分项及大致占比</a>
+        <a href="#s10-1" class="toc-h3" onclick="closeToc()">创新价值与实用性（35%）</a>
+        <a href="#s10-2" class="toc-h3" onclick="closeToc()">功能实现及技术要求（45%）</a>
+        <a href="#s10-3" class="toc-h3" onclick="closeToc()">配套文档的丰富度（10%）</a>
+        <a href="#s10-4" class="toc-h3" onclick="closeToc()">演示视频、PPT效果（10%）</a>
+        <a href="#section11" class="toc-h2" onclick="closeToc()">初赛作品提交要求</a>
+        <a href="#tech-analysis" class="toc-h2" onclick="closeToc()" style="margin-top:12px;border-top:1px solid rgba(0,0,0,0.1);padding-top:12px;">赛题技术深度解读</a>
+        <a href="#ta-1" class="toc-h3" onclick="closeToc()">核心技术挑战分析</a>
+        <a href="#ta-2" class="toc-h3" onclick="closeToc()">推荐技术栈</a>
+        <a href="#ta-3" class="toc-h3" onclick="closeToc()">推荐模型方案</a>
+        <a href="#ta-4" class="toc-h3" onclick="closeToc()">系统架构建议</a>
+        <a href="#ta-5" class="toc-h3" onclick="closeToc()">得分策略与建议</a>
+    </nav>
+
+    <header>
+        <h1>第十五届"中国软件杯"大学生软件设计大赛</h1>
+        <p class="subtitle">基于大模型的个性化资源生成与学习多智能体系统开发<br>赛题初步解读</p>
+        <div class="tags">
+            <span class="tag" style="--t-color: #6c5ce7;">大模型</span>
+            <span class="tag" style="--t-color: #e84393;">多智能体</span>
+            <span class="tag" style="--t-color: #0984e3;">个性化学习</span>
+            <span class="tag" style="--t-color: #00b894;">资源生成</span>
+            <span class="tag" style="--t-color: #fdcb6e; --t-text: #d35400;">高等教育</span>
+            <span class="tag" style="--t-color: #ff6b6b;">AI技术</span>
+        </div>
+        <p class="meta" style="margin-top: 24px;">中国软件杯 | 第十五届大赛</p>
+    </header>
+
+    <div class="container">
+
+        <section id="section1">
+            <h2>赛题名称</h2>
+            <p><strong>基于大模型的个性化资源生成与学习多智能体系统开发</strong></p>
+        </section>
+
+        <section id="section2">
+            <h2>赛题简介</h2>
+            <p>在数字化与智能化深度融合的时代，高等教育的个性化变革成为核心发展方向，同时也面临传统教学模式适配性不足的挑战。不同学生在知识基础、学习能力、兴趣方向上的显著差异，使得标准化教学难以满足个性化学习需求，部分学生存在知识吸收效率低的问题。</p>
+
+            <div class="highlight-box success">
+                <strong>技术机遇</strong>
+                <p>当前大模型技术迎来高速发展新阶段，以通用大模型、多模态生成大模型（如<strong>SeeDance</strong>等）、AI辅助编程工具（如<strong>Claude Code</strong>等）为代表的技术体系，具备强大的自然语言理解、多模态内容生成、代码辅助开发及实时推理能力，为高等教育领域的创新升级带来全新契机。</p>
+            </div>
+
+            <p>本赛题旨在借助大模型技术体系，融合前沿AI技术，突破传统教育的技术与模式局限，要求参赛团队构建高等教育个性化学习资源体系，开发智能学习智能体系统，切实满足学生的个性化、多模态学习需求。</p>
+        </section>
+
+        <section id="section3">
+            <h2>赛题业务场景</h2>
+            <p>在高等教育学习过程中，学生普遍面临学习资源繁杂无序、难以精准匹配自身需求，且缺乏智能化、个性化学习指导的核心问题。</p>
+
+            <div class="highlight-box warning">
+                <strong>核心痛点</strong>
+                <ul>
+                    <li>不同专业、不同学历水平的学生面对海量课程资料、学术文献、学习辅助工具时，难以快速筛选出契合自身学习进度和能力的资源</li>
+                    <li>课堂集体讲授模式无法兼顾每位学生的学习节奏与特点，导致学生在知识掌握和能力提升上存在明显差距</li>
+                    <li>传统学习模式及基础的智能辅助系统，因缺乏多模态生成、多智能体协同等前沿AI技术的支撑，难以满足现代高等教育对培养创新型、个性化人才的要求</li>
+                </ul>
+            </div>
+
+            <p>本赛题要求参赛团队构建多智能体系统，为学生打造专属的个性化资源学习智能体，并借助多智能体协作实现智能化、精准化的学习引导。系统需依托各类高等教育资源，融合多模态生成、代码辅助开发等技术，以某一具体专业课程（如人工智能、计算机、电子信息相关等）为切入点，实现个性化资源的自动化生成与建设。</p>
+
+            <div class="formula">因材施教 → 数字化落地 → 真正实现"因材施教"的数字化落地</div>
+        </section>
+
+        <section id="section4">
+            <h2>报名须知</h2>
+            <p>本赛题需在"中国软件杯"大赛官网报名系统完成报名。</p>
+            <div class="highlight-box">
+                <p><strong>大赛官网报名地址：</strong><code>http://join.cnsoftbei.com/user</code></p>
+                <p>参赛队长完成组队后选择本赛题即可，最终报名信息以"中国软件杯"大赛官网登记信息为准！</p>
+            </div>
+        </section>
+
+        <section id="section5">
+            <h2>基本功能需求</h2>
+            <p>参赛团队需深入调研和研究新时代大学生的学习需求和痛点，融合前沿AI技术和工具，开发出能够高效生成个性化、多模态学习资源的智能体系统。</p>
+
+            <div class="highlight-box success">
+                <strong>核心目标</strong>
+                <p>实现提升学生学习效率、优化学习资源利用、增强学习效果。系统应包含以下核心功能：</p>
+            </div>
+
+            <h3 id="s5-1">对话式学习画像自主构建</h3>
+            <p>摒弃传统繁琐表单，支持通过自然语言对话（结合学生的专业、学习目标、学习历史等）自动抽取特征，构建包含不少于<strong>6个维度</strong>（如知识基础、认知风格、易错点偏好等）的动态学生画像，并支持画像的随学随新。</p>
+
+            <h3 id="s5-2">多智能体协同的资源生成</h3>
+            <p>系统需体现"多智能体"架构设计，通过与学生的智能交互，大模型结合AI前沿技术和工具，依据学生提供的专业、课程内容、知识短板、学习需求等信息，生成针对性的多模态学习资料。</p>
+            <div class="highlight-box">
+                <strong>需由不同角色的Agent协作完成至少5种类型的个性化资源生成：</strong>
+                <ul>
+                    <li>专业课程讲解文档</li>
+                    <li>知识点思维导图</li>
+                    <li>不同类型练习题目</li>
+                    <li>拓展阅读材料</li>
+                    <li>多模态教学视频/动画</li>
+                    <li>代码类实操案例等</li>
+                </ul>
+            </div>
+
+            <h3 id="s5-3">个性化学习路径规划和资源推送</h3>
+            <p>依托多智能体协同工作机制，整合系统生成的个性化资源，结合大模型对学生专业、学习进度、知识掌握情况及学习偏好的深度分析，为学生规划科学、动态的个性化学习路径，明确学习步骤和顺序；同时基于画像实现学习资源的精准推送，涵盖文档、视频、题库、实操案例等多类型内容。</p>
+
+            <h3 id="s5-4">智能辅导（可选加分项）</h3>
+            <p>当学生在学习过程中遇到问题时，系统提供即时、多模态的答疑解惑服务，通过智能体的数据分析、大模型的知识支持，结合多模态生成技术，为学生提供详细的文字解答、图解说明、短视频讲解等多样化解答形式，实现针对性学习引导。</p>
+
+            <h3 id="s5-5">学习效果评估（可选加分项）</h3>
+            <p>通过实时跟踪学生的学习行为、练习测试情况、资源使用反馈等数据，依托大模型的数据分析能力实现对学生学习效果的多维度、精准评估；并根据评估结果及时动态调整学习资源推送策略和学习计划，实现学习方案的持续优化。</p>
+        </section>
+
+        <section id="section6">
+            <h2>非功能性需求</h2>
+            <ul>
+                <li>系统界面美观大方、简洁明了，交互逻辑清晰，符合现代AI产品交互规范（如流式输出、Markdown渲染、多模态内容卡片化展示），无明显功能与交互缺陷，可接受AI辅助实现界面设计与交互优化</li>
+                <li>鼓励优先使用开源项目前端</li>
+                <li>AI代码/框架：须在提交的代码中明确位置标注名称、来源及其协作要求</li>
+                <li>系统需具备基本的、可用的、具有数据安全的人机交互机制，确保生成的学生画像真实、资源内容无违规信息</li>
+                <li>各功能模块的功能调用及响应时间在合理范围内，满足学生的日常使用场景；多模态资源生成的响应效果满足实际学习场景需求，并提供可追踪、渐进式呈现、流式等机制，避免长时间空白等待</li>
+            </ul>
+        </section>
+
+        <section id="section7">
+            <h2>实现条件</h2>
+            <div class="highlight-box">
+                <p>实现条件包括但不限于：实验平台、服务器、数据库、网络环境及涉及硬件等，请明确的操作使用规范及资源限制。</p>
+            </div>
+            <ul>
+                <li>服务器、数据库、编辑器、硬件平台等均不做限制</li>
+                <li>参赛团队可结合当前AI代码/工具，搭配多种开源框架进行开发，确保系统的运行稳定及协同能力</li>
+                <li>参赛团队应严格遵循资源协议及相关规范的使用要求，确保代码运行的稳定性和合规性</li>
+                <li>在开发过程中，建议采用模块化架构设计，保持代码结构清晰</li>
+                <li>建议优先使用科大讯飞相关工具</li>
+            </ul>
+        </section>
+
+        <section id="section8">
+            <h2>测试数据或平台</h2>
+            <p>赛题方/平台将提供相关工具的测试环境和测试数据。如需提供接口的测试环境和测试数据，请提供详细说明。</p>
+        </section>
+
+        <section id="section9">
+            <h2>文档及其他要求</h2>
+            <div class="highlight-box warning">
+                <strong>技术方案（35%）</strong>
+                <p>参赛团队需提交完整的技术方案文档，包括但不限于系统架构设计、技术选型说明、多智能体协作机制设计、大模型应用方案、数据处理流程等核心内容。</p>
+            </div>
+            <div class="highlight-box">
+                <strong>现场答辩（45%）</strong>
+                <p>决赛阶段，参赛团队需进行现场答辩，展示系统功能、技术实现及创新点。</p>
+            </div>
+        </section>
+
+        <section id="section10">
+            <h2>各评分项及大致占比</h2>
+
+            <h3 id="s10-1">（1）创新价值与实用性（35%）</h3>
+            <table>
+                <tr><th>评分维度</th><th>说明</th></tr>
+                <tr><td><strong>创新性（20%）</strong></td><td>评估系统在多智能体协作机制、个性化资源生成策略、学习路径规划算法等方面的创新程度；重点考察是否有效融合大模型、多模态生成等前沿AI技术，实现超越传统教育辅助系统的功能突破</td></tr>
+                <tr><td><strong>实用性（15%）</strong></td><td>评估系统在真实高等教育场景中的应用价值，包括资源生成的实用性、学习路径规划的合理性、系统对不同专业和学习需求的适配能力等</td></tr>
+            </table>
+
+            <h3 id="s10-2">（2）功能实现及技术要求（45%）</h3>
+            <table>
+                <tr><th>评分维度</th><th>占比</th><th>说明</th></tr>
+                <tr><td><strong>核心功能完成度</strong></td><td>25%</td><td>评估基本功能需求中各项核心功能的实现程度和效果质量，包括学习画像构建的准确性、多智能体协同的有效性、资源生成的多样性与质量、学习路径规划的科学性等</td></tr>
+                <tr><td><strong>技术实现质量</strong></td><td>15%</td><td>评估系统架构设计的合理性、代码质量、大模型调用的效率与效果、多智能体框架的稳定性、系统性能与响应速度等技术指标</td></tr>
+                <tr><td><strong>功能创新</strong></td><td>5%</td><td>若额外增加与系统主智能体相关联的拓展智能体，或基于前沿AI技术实现赛题要求外的个性化创新功能，将在本评分项中酌情加分</td></tr>
+            </table>
+
+            <h3 id="s10-3">（3）配套文档的丰富度（10%）</h3>
+            <p>按要求提供开发系统的标准文档，包括但不限于开发说明书、测试说明书、部署说明书等，文档中需清晰体现前沿AI技术的应用细节；参赛团队可提交如功能设计图等补充材料，评审将根据文档的完整性、专业性、丰富度综合评分。</p>
+
+            <h3 id="s10-4">（4）演示视频、PPT效果（10%）</h3>
+            <p>演示视频及PPT需完整包含系统应用价值、前沿AI技术融合思路与实现方法、创新价值、核心功能实操展示等核心内容；评审将根据内容的逻辑性、要点完整性、技术讲解清晰度及视觉呈现效果进行综合评分。</p>
+
+            <div class="formula">创新价值与实用性 35% + 功能实现及技术要求 45% + 配套文档 10% + 演示视频/PPT 10% = 100%</div>
+        </section>
+
+        <section id="section11">
+            <h2>初赛作品提交要求</h2>
+            <p>初赛时，参赛团队不到评审现场，只在网上提交作品；决赛时参赛团队到评审现场演示作品。</p>
+
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h4>演示PPT</h4>
+                    <p>需清晰展示智能体应用价值、前沿AI技术融合思路与实现方法、创新价值、核心功能等内容，逻辑清晰、重点突出</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h4>可完整运行的多智能体相关文件</h4>
+                    <p>包含但不限于项目源码、数据集、模型部署配置文件等，文件整理规范，可在常规环境下正常运行</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h4>智能体演示视频</h4>
+                    <p>时长控制在<strong>7分钟之内</strong>，需清晰展示系统的操作流程、核心功能、多模态资源生成效果及前沿AI技术的应用成果</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">4</div>
+                <div class="step-content">
+                    <h4>智能体开发类型</h4>
+                    <p>不限，包括但不限于Web应用、移动端开发、小程序端开发等</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">5</div>
+                <div class="step-content">
+                    <h4>配套文档</h4>
+                    <p>需满足"文档及其他要求"中的所有规范，文档格式统一、内容完整</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">6</div>
+                <div class="step-content">
+                    <h4>AI Coding工具说明</h4>
+                    <p>如若使用AI Coding工具，给出相关说明</p>
+                </div>
+            </div>
+        </section>
+
+        <hr class=”section-divider”>
+
+        <section id=”tech-analysis”>
+            <h2>赛题技术深度解读</h2>
+            <p>本赛题要求构建一个<strong>基于大模型的多智能体协同系统</strong>，核心是通过Agent架构实现个性化学习资源的自动化生成与智能推送。这不是简单的”AI聊天机器人”，而是需要多个专业Agent协作完成复杂任务的智能体系统。</p>
+
+            <div class=”highlight-box success”>
+                <strong>赛题本质</strong>
+                <p>这是一个<strong>AI Native教育应用</strong>的完整实现——从学生画像构建、多模态资源生成、学习路径规划到智能辅导的全流程，每个环节都需要大模型和多智能体技术的深度参与。</p>
+            </div>
+
+            <h3 id=”ta-1”>核心技术挑战分析</h3>
+
+            <h4>挑战一：多智能体架构设计</h4>
+            <p>赛题明确要求”多智能体”架构，这意味着不能只有一个通用Agent，而是需要设计多个专业化Agent协同工作。每个Agent有明确的职责分工，通过消息传递或共享状态协作完成任务。</p>
+            <div class=”vs-grid”>
+                <div class=”vs-card bad”>
+                    <h4>常见误区</h4>
+                    <ul>
+                        <li>只有一个大模型接口，没有Agent分工</li>
+                        <li>Agent之间没有协作机制</li>
+                        <li>所有功能都塞进一个Prompt</li>
+                        <li>缺乏Agent状态管理和记忆</li>
+                    </ul>
+                </div>
+                <div class=”vs-card good”>
+                    <h4>推荐做法</h4>
+                    <ul>
+                        <li>至少设计5个专业Agent（画像、文档、题库、视频、路径规划等）</li>
+                        <li>使用成熟的多智能体框架（LangGraph/AutoGen）</li>
+                        <li>设计Agent间的消息协议和工作流</li>
+                        <li>为每个Agent配置专属工具和记忆</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h4>挑战二：多模态资源生成</h4>
+            <p>赛题要求生成至少5种类型的学习资源，包括文档、思维导图、题目、视频/动画等。这需要整合多种生成模型和工具，并确保生成内容的质量和一致性。</p>
+            <div class=”highlight-box warning”>
+                <strong>硬性要求</strong>
+                <p>必须生成：专业课程讲解文档、知识点思维导图、不同类型练习题目、拓展阅读材料、多模态教学视频/动画、代码类实操案例（至少5种）</p>
+            </div>
+
+            <h4>挑战三：学习画像的动态构建</h4>
+            <p>要求通过对话自动抽取特征构建≥6个维度的学生画像，并支持”随学随新”。这需要设计画像Schema、特征抽取策略和增量更新机制。</p>
+
+            <h4>挑战四：个性化与精准推送</h4>
+            <p>系统需要根据学生画像动态调整资源生成策略和学习路径，实现真正的”因材施教”。这要求画像数据能有效指导Agent的决策过程。</p>
+
+            <h3 id=”ta-2”>推荐技术栈</h3>
+
+            <table>
+                <tr><th>技术层</th><th>推荐方案</th><th>说明</th></tr>
+                <tr><td><strong>多智能体框架</strong></td><td>LangGraph / AutoGen</td><td>LangGraph基于LangChain，支持复杂工作流编排；AutoGen微软开源，支持多Agent对话</td></tr>
+                <tr><td><strong>大模型接入</strong></td><td>讯飞星火 X2 / 4.0 Turbo</td><td>赛题建议优先使用科大讯飞工具，星火中文能力强，支持长文本和多轮对话</td></tr>
+                <tr><td><strong>向量数据库</strong></td><td>Milvus / ChromaDB</td><td>Milvus性能强适合大规模，ChromaDB轻量易用适合快速开发</td></tr>
+                <tr><td><strong>文档生成</strong></td><td>讯飞星火 + Markdown</td><td>大模型生成Markdown格式内容，前端渲染为富文本</td></tr>
+                <tr><td><strong>思维导图生成</strong></td><td>Markmap / XMind API</td><td>Markmap将Markdown转为思维导图，XMind提供专业导图生成</td></tr>
+                <tr><td><strong>题目生成</strong></td><td>讯飞星火 + 题库模板</td><td>设计题目Schema（选择/填空/编程等），大模型按模板生成</td></tr>
+                <tr><td><strong>视频/动画生成</strong></td><td>SeeDance / D-ID</td><td>赛题明确提到SeeDance，科大讯飞多模态生成工具；D-ID可生成数字人讲解视频</td></tr>
+                <tr><td><strong>代码生成</strong></td><td>Claude Code / GitHub Copilot</td><td>赛题提到Claude Code，可用于生成代码实操案例</td></tr>
+                <tr><td><strong>后端框架</strong></td><td>FastAPI + Celery</td><td>FastAPI处理API请求，Celery处理异步任务（视频生成等耗时操作）</td></tr>
+                <tr><td><strong>前端框架</strong></td><td>React / Vue 3 + Ant Design</td><td>React生态丰富，Vue上手快；Ant Design组件完善，适合教育类应用</td></tr>
+                <tr><td><strong>实时通信</strong></td><td>WebSocket / SSE</td><td>支持流式输出和实时推送，提升用户体验</td></tr>
+                <tr><td><strong>数据存储</strong></td><td>PostgreSQL + Redis</td><td>PostgreSQL存储结构化数据（用户、画像、资源），Redis做缓存和会话管理</td></tr>
+            </table>
+
+            <div class=”highlight-box”>
+                <strong>科大讯飞工具优先</strong>
+                <p>赛题明确”建议优先使用科大讯飞相关工具”。核心AI能力（大模型、多模态生成、语音等）优先使用讯飞开放平台，可能获得API额度支持和技术指导。</p>
+            </div>
+
+            <h3 id=”ta-3”>推荐模型方案</h3>
+
+            <h4>大语言模型选型</h4>
+            <table>
+                <tr><th>模型</th><th>用途</th><th>优势</th></tr>
+                <tr><td><strong>讯飞星火 X2 / 4.0 Turbo</strong></td><td>核心推理引擎：对话理解、画像抽取、资源生成、路径规划</td><td>赛题方推荐，中文能力强，支持长上下文，API稳定</td></tr>
+                <tr><td><strong>讯飞星火 X1.5（推理模型）</strong></td><td>复杂推理任务：学习路径规划、能力差距分析、个性化推荐</td><td>深度推理能力强，适合需要多步推理的复杂决策</td></tr>
+                <tr><td><strong>BGE-M3 / bge-large-zh</strong></td><td>文本向量化：学习资源检索、相似内容推荐</td><td>开源免费，中文效果好，支持本地部署</td></tr>
+                <tr><td><strong>Qwen-VL / CogVLM</strong></td><td>多模态理解：图片/视频内容分析（可选）</td><td>开源视觉语言模型，可本地部署</td></tr>
+            </table>
+
+            <h4>多模态生成模型</h4>
+            <div class=”highlight-box success”>
+                <strong>SeeDance多模态生成</strong>
+                <p>赛题明确提到<strong>SeeDance</strong>作为多模态生成大模型的代表。SeeDance是科大讯飞推出的视频生成模型，支持文本到视频、图片到视频等多种生成模式，非常适合生成教学动画和演示视频。</p>
+            </div>
+
+            <table>
+                <tr><th>模型/工具</th><th>用途</th><th>说明</th></tr>
+                <tr><td><strong>SeeDance</strong></td><td>教学视频/动画生成</td><td>科大讯飞多模态生成工具，赛题明确提及</td></tr>
+                <tr><td><strong>D-ID / HeyGen</strong></td><td>数字人讲解视频</td><td>可生成虚拟教师讲解视频，提升沉浸感</td></tr>
+                <tr><td><strong>Stable Diffusion</strong></td><td>配图生成</td><td>为文档和PPT生成配图</td></tr>
+                <tr><td><strong>Manim / Remotion</strong></td><td>代码驱动的动画生成</td><td>Manim适合数学/算法动画，Remotion适合Web动画</td></tr>
+            </table>
+
+            <h3 id=”ta-4”>系统架构建议</h3>
+
+            <h4>多智能体架构设计</h4>
+            <div class=”step”>
+                <div class=”step-number”>1</div>
+                <div class=”step-content”>
+                    <h4>画像构建Agent</h4>
+                    <p>职责：通过对话抽取学生特征（专业、年级、知识基础、学习风格、目标、薄弱点等≥6维度），构建和更新学生画像</p>
+                    <p>工具：讯飞星火API + 结构化输出解析 + 数据库存储</p>
+                </div>
+            </div>
+            <div class=”step”>
+                <div class=”step-number”>2</div>
+                <div class=”step-content”>
+                    <h4>文档生成Agent</h4>
+                    <p>职责：根据知识点和学生画像生成个性化讲解文档（Markdown格式，包含概念、原理、案例、总结）</p>
+                    <p>工具：讯飞星火 + Prompt模板 + Markdown渲染</p>
+                </div>
+            </div>
+            <div class=”step”>
+                <div class=”step-number”>3</div>
+                <div class=”step-content”>
+                    <h4>题库生成Agent</h4>
+                    <p>职责：生成不同难度和类型的练习题（选择题、填空题、编程题、案例分析题等）</p>
+                    <p>工具：讯飞星火 + 题目Schema + 自动评分逻辑</p>
+                </div>
+            </div>
+            <div class=”step”>
+                <div class=”step-number”>4</div>
+                <div class=”step-content”>
+                    <h4>多模态资源Agent</h4>
+                    <p>职责：生成思维导图、教学视频/动画、配图等多模态内容</p>
+                    <p>工具：Markmap（思维导图）+ SeeDance（视频）+ Stable Diffusion（配图）</p>
+                </div>
+            </div>
+            <div class=”step”>
+                <div class=”step-number”>5</div>
+                <div class=”step-content”>
+                    <h4>代码实操Agent</h4>
+                    <p>职责：生成可运行的代码示例和实操案例（带注释和运行说明）</p>
+                    <p>工具：Claude Code / GitHub Copilot + 代码执行沙箱</p>
+                </div>
+            </div>
+            <div class=”step”>
+                <div class=”step-number”>6</div>
+                <div class=”step-content”>
+                    <h4>路径规划Agent</h4>
+                    <p>职责：根据学生画像和学习目标，规划个性化学习路径（知识点顺序、资源推荐、时间安排）</p>
+                    <p>工具：讯飞星火X1.5（推理模型）+ 知识图谱 + 推荐算法</p>
+                </div>
+            </div>
+            <div class=”step”>
+                <div class=”step-number”>7</div>
+                <div class=”step-content”>
+                    <h4>智能辅导Agent（可选加分）</h4>
+                    <p>职责：实时答疑解惑，提供多模态解答（文字+图解+视频）</p>
+                    <p>工具：讯飞星火 + RAG检索 + 多模态生成</p>
+                </div>
+            </div>
+
+            <div class=”formula”>对话交互 → 画像构建 → 多Agent协同生成资源 → 路径规划 → 精准推送 → 智能辅导</div>
+
+            <h4>技术架构分层</h4>
+            <blockquote>
+                <p><strong>接入层</strong>：Web前端 + 移动端（可选）+ 对话界面（支持流式输出）</p>
+                <p><strong>编排层</strong>：LangGraph/AutoGen多智能体编排引擎 + 工作流管理</p>
+                <p><strong>能力层</strong>：讯飞星火API + SeeDance + 向量检索 + 代码生成工具</p>
+                <p><strong>数据层</strong>：PostgreSQL（结构化数据）+ Milvus（向量数据）+ Redis（缓存）+ OSS（多媒体文件）</p>
+            </blockquote>
+
+            <h3 id=”ta-5”>得分策略与建议</h3>
+
+            <blockquote>
+                <p>评分权重：创新价值与实用性（35%）+ 功能实现及技术要求（45%）+ 配套文档（10%）+ 演示视频/PPT（10%）= 100%</p>
+            </blockquote>
+
+            <h4>创新价值与实用性（35分）—— 差异化竞争</h4>
+            <div class=”highlight-box success”>
+                <strong>建议创新点</strong>
+                <ul>
+                    <li><strong>Agent协作可视化</strong>：实时展示多个Agent的协作过程（如”文档Agent正在生成...题库Agent等待中...”），让评委看到多智能体架构的实际运作</li>
+                    <li><strong>学习画像可解释性</strong>：不只是存储画像数据，还要可视化展示”为什么推荐这个资源”（基于画像的哪些维度）</li>
+                    <li><strong>资源质量评估</strong>：设计自动化的资源质量评分机制（准确性、难度适配度、完整性等）</li>
+                    <li><strong>跨模态一致性</strong>：确保同一知识点的文档、视频、题目在内容上保持一致，形成完整的学习闭环</li>
+                </ul>
+            </div>
+
+            <h4>功能实现及技术要求（45分）—— 硬指标必达</h4>
+            <ul>
+                <li><strong>画像维度≥6</strong>：专业、年级、知识基础、学习风格、目标、薄弱点、学习时间偏好、认知风格等</li>
+                <li><strong>资源类型≥5</strong>：文档、思维导图、题目、视频/动画、代码案例（必须全部实现）</li>
+                <li><strong>多智能体架构</strong>：至少5个专业Agent，有明确的协作机制和工作流</li>
+                <li><strong>流式输出</strong>：大模型生成内容要支持流式展示，避免长时间等待</li>
+                <li><strong>多模态展示</strong>：前端要支持Markdown渲染、思维导图交互、视频播放、代码高亮等</li>
+            </ul>
+
+            <h4>配套文档（10分）—— 体现专业性</h4>
+            <ul>
+                <li>系统架构图（清晰展示多智能体架构和数据流）</li>
+                <li>技术选型说明（为什么选择这些工具和模型）</li>
+                <li>多智能体协作机制设计文档</li>
+                <li>部署说明书（Docker一键部署）</li>
+                <li>API文档（如果提供API接口）</li>
+            </ul>
+
+            <h4>演示视频/PPT（10分）—— 讲好故事</h4>
+            <div class=”highlight-box warning”>
+                <strong>演示重点</strong>
+                <ul>
+                    <li><strong>开场</strong>：用一个真实学习场景引入（如”小明是计算机专业大二学生，想学习机器学习但不知从何开始...”）</li>
+                    <li><strong>核心功能演示</strong>：完整展示从对话构建画像 → 多Agent生成资源 → 路径规划 → 资源推送的全流程</li>
+                    <li><strong>技术亮点</strong>：重点展示多智能体协作过程、多模态资源生成效果、个性化推荐逻辑</li>
+                    <li><strong>效果对比</strong>：展示”传统学习方式 vs 本系统”的对比，突出价值</li>
+                </ul>
+            </div>
+
+            <h4>实用建议</h4>
+            <ul>
+                <li>选择一个具体专业课程深入做（如”机器学习”或”数据结构”），比泛泛覆盖多课程效果更好</li>
+                <li>准备真实测试数据（至少20个学生画像样本，100+学习资源）</li>
+                <li>提前申请讯飞开放平台API额度，避免临近比赛时额度不足</li>
+                <li>前端界面参考成熟的在线教育产品（如Coursera、Khan Academy），注重用户体验</li>
+                <li>代码规范、注释完整，便于评委审阅</li>
+            </ul>
+        </section>
+
+    </div>
+
+    <footer>
+        <p>第十五届”中国软件杯”大学生软件设计大赛 | 基于大模型的个性化资源生成与学习多智能体系统开发</p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>
+        hljs.highlightAll();
+
+        // Theme switcher
+        function setTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('article-theme', theme);
+            document.querySelectorAll('.theme-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+        const savedTheme = localStorage.getItem('article-theme') || 'vibrant';
+        setTheme(savedTheme);
+
+        // TOC toggle
+        function toggleToc() {
+            document.getElementById('tocPanel').classList.toggle('open');
+        }
+        function closeToc() {
+            document.getElementById('tocPanel').classList.remove('open');
+        }
+        document.addEventListener('click', function(e) {
+            const panel = document.getElementById('tocPanel');
+            const toggle = document.getElementById('tocToggle');
+            if (!panel.contains(e.target) && !toggle.contains(e.target)) {
+                panel.classList.remove('open');
+            }
+        });
+
+        // Scroll progress bar
+        window.addEventListener('scroll', function() {
+            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (winScroll / height) * 100;
+            document.getElementById('progressBar').style.width = scrolled + '%';
+        });
+
+        // Fullscreen
+        function toggleFullscreen() {
+            const btn = document.getElementById('fsBtn');
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().then(() => {
+                    btn.textContent = '⛶';
+                    btn.title = '退出全屏';
+                }).catch(() => {});
+            } else {
+                document.exitFullscreen().then(() => {
+                    btn.textContent = '⛶';
+                    btn.title = '全屏';
+                }).catch(() => {});
+            }
+        }
+        document.addEventListener('fullscreenchange', function() {
+            const btn = document.getElementById('fsBtn');
+            if (document.fullscreenElement) {
+                btn.innerHTML = '✕';
+                btn.title = '退出全屏';
+            } else {
+                btn.innerHTML = '⛶';
+                btn.title = '全屏';
+            }
+        });
+        // F11 快捷键
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'F11') {
+                e.preventDefault();
+                toggleFullscreen();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,5 @@
+# 智联招聘采集模块依赖
+psycopg[binary]==3.2.*
+httpx==0.27.*
+# 动态页/验证码兜底（可选，未安装时 live 仅走 JSON 接口）
+# playwright==1.48.*
