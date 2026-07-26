@@ -9,6 +9,8 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+SC:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@antv/g6@4.8.24/dist/g6.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tsparticles-slim@2.12.0/tsparticles.slim.bundle.min.js"></script>
 <style>
 
 :root{
@@ -292,6 +294,72 @@ a{color:inherit;text-decoration:none}
 .change-badge.modify{background:var(--gradient-primary)}
 .change-name{font-size:13px;font-weight:600;color:var(--text-dark);flex:1}
 .change-meta{font-size:11px;color:var(--text-muted);font-family:var(--font-mono),monospace}
+/* ===== Discovery Mission Control ===== */
+.disc-topbar{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin-bottom:18px;flex-wrap:wrap}
+.disc-brand{font-family:var(--font-display);font-size:24px;font-weight:700;color:var(--text-dark);letter-spacing:.02em}
+.disc-sub{font-size:13px;color:var(--text-dark-secondary);margin-top:4px}
+.disc-topbar-meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.disc-chip{display:inline-flex;align-items:center;padding:5px 12px;border-radius:20px;font-size:11px;font-weight:600;font-family:var(--font-mono),monospace;background:#fff;border:1px solid var(--border-dark);color:var(--text-dark-secondary)}
+.disc-panel-label{font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:rgba(45,212,191,.85);font-family:var(--font-mono),monospace}
+.disc-mission{display:grid;grid-template-columns:42% 58%;gap:16px;min-height:calc(100vh - 180px);align-items:stretch}
+.disc-left{position:relative;background:linear-gradient(165deg,#0B1220 0%,#0f1a24 55%,#0a1f1c 100%);border-radius:16px;overflow:hidden;color:#E2E8F0;border:1px solid rgba(45,212,191,.2)}
+.disc-particles,.disc-cluster-canvas{position:absolute;inset:0;pointer-events:none}
+.disc-cluster-canvas{z-index:1;opacity:.55}
+.disc-left-inner{position:relative;z-index:2;padding:18px 16px 20px;display:flex;flex-direction:column;gap:12px;height:100%}
+.disc-steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;overflow:auto;max-height:42%}
+.disc-step{padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.03);font-size:12px;opacity:.45;transition:opacity .3s,border-color .3s}
+.disc-step.active,.disc-step.done{opacity:1}
+.disc-step.active{border-color:rgba(45,212,191,.55);box-shadow:0 0 0 1px rgba(45,212,191,.2)}
+.disc-step.done{border-color:rgba(16,185,129,.35)}
+.disc-step-detail{font-size:12px;line-height:1.65;color:rgba(226,232,240,.78)}
+.disc-radar{flex:1;min-height:120px;border-radius:10px;border:1px solid rgba(255,255,255,.06);background:rgba(0,0,0,.12)}
+.disc-right{display:flex;flex-direction:column;gap:12px;min-width:0}
+.disc-kpi-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.disc-kpi{background:#fff;border:1px solid var(--border-dark);border-radius:12px;padding:12px;text-align:left;cursor:pointer;transition:all .2s;font-family:inherit}
+.disc-kpi:hover{border-color:var(--primary-light);box-shadow:var(--shadow-sm)}
+.disc-kpi span{font-family:var(--font-mono);font-size:22px;font-weight:600;color:var(--ink);display:block}
+.disc-kpi label{display:block;font-size:11px;color:var(--text-muted);margin-top:4px;font-weight:500;cursor:pointer}
+.job-card.is-forecast{border:1px solid rgba(245,165,36,.45);box-shadow:inset 3px 0 0 var(--signal)}
+.job-card.is-forecast .conf-bar>div{background:linear-gradient(90deg,var(--signal-deep),var(--amber))}
+.job-card .conf-bar>div{background:var(--signal-deep)}
+.job-card.conf-high .conf-bar>div{background:var(--signal-deep)}
+.job-card.conf-mid .conf-bar>div{background:var(--amber)}
+.job-card.conf-low .conf-bar>div{background:var(--accent-coral)}
+.job-card.conf-high .job-conf{color:var(--signal-deep)}
+.job-card.conf-mid .job-conf{color:var(--amber)}
+.job-card.conf-low .job-conf{color:var(--accent-coral)}
+.tag-forecast{background:rgba(245,165,36,.12);color:#b45309;font-size:10px}
+.disc-drawer-section{margin-bottom:16px}
+.disc-drawer-section h4{font-size:12px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px}
+.disc-drawer-section p{font-size:13px;line-height:1.6;color:var(--text-dark);margin:0}
+.disc-drawer-identity{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;font-size:12px}
+.disc-drawer-identity .kv label{display:block;font-size:11px;color:var(--text-muted);margin-bottom:2px}
+.disc-drawer-identity .kv span{font-weight:600;color:var(--ink)}
+.disc-quality-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.disc-quality-grid .q-cell{background:var(--bg-page);border-radius:8px;padding:8px 10px}
+.disc-quality-grid .q-cell label{display:block;font-size:10px;color:var(--text-muted)}
+.disc-quality-grid .q-cell span{font-weight:600;font-size:13px;color:var(--ink)}
+.disc-drawer-actions .btn-adopt{background:var(--signal-deep);color:#fff}
+.disc-drawer-actions .btn-reject{color:var(--accent-coral)}
+.disc-drawer{position:fixed;top:0;right:0;width:min(420px,100vw);height:100vh;background:#fff;z-index:120;transform:translateX(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;box-shadow:-16px 0 48px rgba(11,18,32,.18)}
+.disc-drawer.open{transform:translateX(0)}
+.disc-drawer-head{padding:18px 20px;border-bottom:1px solid var(--border-dark);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.disc-drawer-head h2{font-size:16px;font-weight:700;color:var(--text-dark)}
+.disc-drawer-head button{width:32px;height:32px;border:none;background:var(--bg-page);border-radius:8px;cursor:pointer;font-size:20px;line-height:1;color:var(--text-dark-secondary)}
+.disc-drawer-body{flex:1;overflow-y:auto;padding:20px}
+.disc-drawer-actions{padding:16px 20px;border-top:1px solid var(--border-dark);display:flex;gap:10px;justify-content:flex-end;flex-shrink:0}
+.disc-drawer-mask{position:fixed;inset:0;background:rgba(11,18,32,.45);z-index:110;opacity:0;pointer-events:none;transition:opacity .25s}
+.disc-drawer-mask.open{opacity:1;pointer-events:auto}
+.disc-hallucination{min-height:72px;border:1px dashed rgba(245,165,36,.4);border-radius:10px;padding:10px;font-size:11px;font-family:var(--font-mono);color:rgba(245,165,36,.85);background:rgba(245,165,36,.04)}
+.disc-claim{opacity:.35;filter:blur(1px);transition:all .4s}
+.disc-claim.verified{opacity:1;filter:none;color:var(--signal)}
+.disc-claim.warn{opacity:1;filter:none;color:var(--amber)}
+@media (max-width:1100px){.disc-mission{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){
+  .disc-drawer{transition:none}
+  .disc-particles{display:none!important}
+  .disc-step{transition:none}
+}
 .source-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
 .source-card{background:#fff;border:1px solid var(--border-dark);border-radius:var(--radius-lg);padding:18px;transition:all .25s;position:relative}
 .source-card:hover{box-shadow:var(--shadow-md);transform:translateY(-2px)}
@@ -713,31 +781,45 @@ a{color:inherit;text-decoration:none}
 </div>
 </div>
 </section>
-<!-- ============== 3. 新岗位发现 ============== -->
+<!-- ============== 3. 新岗位发现（智能体驱动 · 任务控制台） ============== -->
 <section class="view" id="view-discovery">
-<div class="page-header">
-<div class="page-title-block">
-<h1>新岗位发现与定义</h1>
-<div class="subtitle">基于多源数据挖掘 · 大模型自动识别 · 人工优化闭环</div>
+<div class="disc-topbar">
+<div>
+<h1 class="disc-brand">新岗位发现智能体</h1>
+<div class="disc-sub">多源真实库推演 · 启发式发现 · DeepSeek 定义增强</div>
 </div>
-<div class="page-actions">
-<button class="btn" onclick="triggerDiscovery()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>触发发现</button>
-<button class="btn btn-primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>批量审核</button>
+<div class="disc-topbar-meta">
+<span class="disc-chip" id="disc-pg-count">PG · —</span>
+<span class="disc-chip" id="disc-engine-badge">引擎待命</span>
+<span class="disc-chip" id="disc-llm-badge">LLM · —</span>
+<button class="btn btn-primary" id="btn-agent-scan" onclick="agentScan()">启动扫描</button>
+<button class="btn" onclick="agentBatchAdopt()">批量采纳</button>
 </div>
 </div>
-<div class="kpi-grid">
-<div class="kpi-card k1"><div class="kpi-head"><div class="kpi-label">本月新发现</div><div class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></div></div><div class="kpi-value" data-val="0">0<span class="kpi-unit">个</span></div><div class="kpi-foot">较上月 <span class="kpi-trend up">+23.3%</span></div></div>
-<div class="kpi-card k2"><div class="kpi-head"><div class="kpi-label">待审核</div><div class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div></div><div class="kpi-value" data-val="0">0<span class="kpi-unit">个</span></div><div class="kpi-foot">平均置信度 <span style="color:var(--primary);font-weight:600">89.4%</span></div></div>
-<div class="kpi-card k3"><div class="kpi-head"><div class="kpi-label">已采纳</div><div class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div></div><div class="kpi-value" data-val="0">0<span class="kpi-unit">个</span></div><div class="kpi-foot">本月新增至图谱</div></div>
-<div class="kpi-card k4"><div class="kpi-head"><div class="kpi-label">采纳率</div><div class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div></div><div class="kpi-value">80.3<span class="kpi-unit">%</span></div><div class="kpi-foot">高置信度岗位自动入库</div></div>
+<div class="disc-mission" id="disc-mission" data-phase="idle">
+<aside class="disc-left" id="disc-left">
+<div id="disc-particles" class="disc-particles"></div>
+<canvas id="disc-cluster-canvas" class="disc-cluster-canvas" width="640" height="220"></canvas>
+<div class="disc-left-inner">
+<div class="disc-panel-label">推理指挥舱</div>
+<ol class="disc-steps" id="disc-steps"></ol>
+<div class="disc-step-detail" id="disc-step-detail">点击「启动扫描」，智能体将接入本地招聘库并展开六幕推演。</div>
+<div class="disc-radar" id="disc-radar" style="height:140px"></div>
+<div class="disc-hallucination" id="disc-hallucination" hidden></div>
 </div>
-<div class="card">
-<div class="card-header"><div class="card-title">候选新岗位</div><div class="card-tools"><span class="tag">智能排序 · 按置信度</span></div></div>
-<div class="card-body">
+</aside>
+<main class="disc-right" id="disc-right">
+<div class="disc-kpi-strip">
+<button class="disc-kpi" data-status="all"><span id="kpi-discovered">0</span><label>本轮发现</label></button>
+<button class="disc-kpi" data-status="pending"><span id="kpi-pending">0</span><label>待审核</label></button>
+<button class="disc-kpi" data-status="adopted"><span id="kpi-adopted">0</span><label>已采纳</label></button>
+<button class="disc-kpi" data-status="forecast"><span id="kpi-forecast">0</span><label>未来预测</label></button>
+</div>
 <div class="tab-bar" id="discovery-tabs">
 <div class="tab-item active" data-status="all">全部 <span class="tag" style="margin-left:6px" id="discovery-count-all">0</span></div>
 <div class="tab-item" data-status="pending">待审核 <span class="tag tag-amber" style="margin-left:6px" id="discovery-count-pending">0</span></div>
 <div class="tab-item" data-status="adopted">已采纳 <span class="tag tag-mint" style="margin-left:6px" id="discovery-count-adopted">0</span></div>
+<div class="tab-item" data-status="forecast">🔮 未来预测 <span class="tag tag-forecast" style="margin-left:6px" id="discovery-count-forecast">0</span></div>
 <div class="tab-item" data-status="rejected">已拒绝 <span class="tag tag-pink" style="margin-left:6px" id="discovery-count-rejected">0</span></div>
 </div>
 <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;align-items:center">
@@ -762,8 +844,17 @@ a{color:inherit;text-decoration:none}
 </select>
 </div>
 <div class="job-grid" id="discovery-grid"></div>
+</main>
 </div>
+<aside class="disc-drawer" id="disc-drawer" aria-hidden="true">
+<div class="disc-drawer-head">
+<h2 id="disc-drawer-title">岗位详情</h2>
+<button type="button" onclick="closeDiscoveryDrawer()">×</button>
 </div>
+<div class="disc-drawer-body" id="disc-drawer-body"></div>
+<div class="disc-drawer-actions" id="disc-drawer-actions"></div>
+</aside>
+<div class="disc-drawer-mask" id="disc-drawer-mask" onclick="closeDiscoveryDrawer()"></div>
 </section>
 <!-- ============== 4. 岗位能力演化 ============== -->
 <section class="view" id="view-evolution">
@@ -1398,6 +1489,7 @@ window.switchView = function(viewId, opts) {
     const prev = window.currentViewId;
     window.currentViewId = viewId;
     if (prev === 'graph' && viewId !== 'graph' && window.pauseGraphLiving) window.pauseGraphLiving();
+    if (prev === 'discovery' && viewId !== 'discovery' && window.destroyDiscFX) window.destroyDiscFX();
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
     const view = document.getElementById('view-' + viewId);
@@ -2185,135 +2277,591 @@ window.showNodeDetail = function(node) {
     }, 80);
 };
 
-// ============== Discovery View ==============
-let discoveryState = {search:'', sort:'confidence', category:'all', status:'all'};
+// ============== Discovery View (智能体驱动 - Mission Control) ==============
+window.API_BASE = window.API_BASE || 'http://127.0.0.1:8000';
+window.discoveryState = {
+  phase: 'idle', activeStep: 0, scanning: false,
+  dataSource: 'api', llmEnabled: false,
+  discoveries: [], forecasts: [], reasoningChain: [],
+  scanSummary: '', modelInfo: {}, drawerJobId: null,
+  search: '', sort: 'confidence', category: 'all', status: 'all'
+};
+
 window.initDiscovery = function() {
-    if (!window.Store.state.newJobs.length) window.generateAllData();
-    window.updateDiscoveryCounts();
+    window.ensureDiscoveryState();
+    window.bindDiscoveryEvents();
+    window.resetDiscShell();
     window.renderDiscoveryList();
-    // 绑定事件
+    window.updateDiscoveryCounts();
+    window.updateDiscBadges();
+    if (window.initDiscParticles) window.initDiscParticles();
+};
+
+window.ensureDiscoveryState = function() {
+    if (!window.discoveryState) window.discoveryState = {phase:'idle',activeStep:0,scanning:false,dataSource:'api',llmEnabled:false,discoveries:[],forecasts:[],reasoningChain:[],scanSummary:'',modelInfo:{},drawerJobId:null,search:'',sort:'confidence',category:'all',status:'all'};
+};
+
+// Render the 6 step placeholders into #disc-steps (called on init and at scan start)
+window.resetDiscShell = function() {
+    const steps = document.getElementById('disc-steps');
+    if (!steps) return;
+    const titles = ['多源数据接入','语义消歧与聚类','新兴度评分','岗位定义生成','时序趋势外推','幻觉检测与审计'];
+    steps.innerHTML = titles.map((t,i) =>
+        '<li class="disc-step" data-step="'+(i+1)+'">'+
+        '<div style="font-weight:600;font-size:12px;color:rgba(226,232,240,.9)">步骤 '+(i+1)+' · '+t+'</div>'+
+        '<div class="disc-step-detail" style="margin-top:3px;color:rgba(226,232,240,.55)">待命</div>'+
+        '</li>'
+    ).join('');
+    const detail = document.getElementById('disc-step-detail');
+    if (detail) detail.textContent = '点击「启动扫描」，智能体将接入本地招聘库并展开六幕推演。';
+    const hallu = document.getElementById('disc-hallucination');
+    if (hallu) hallu.hidden = true;
+};
+
+window.updateDiscBadges = function() {
+    const ds = window.discoveryState || {};
+    const pg = document.getElementById('disc-pg-count');
+    if (pg) {
+        const scanned = ds.scanStats && ds.scanStats.total_scanned;
+        pg.textContent = 'PG · ' + (scanned != null ? scanned : (ds.phase === 'settled' ? ((ds.discoveries && ds.discoveries.length) || 0) : '—'));
+    }
+    const eng = document.getElementById('disc-engine-badge');
+    if (eng) eng.textContent = ds.scanning ? '引擎运行中' : (ds.phase === 'settled' ? '引擎就绪' : '引擎待命');
+    const llm = document.getElementById('disc-llm-badge');
+    if (llm) {
+        let label = '—';
+        if (ds.llmEnabled) label = 'DeepSeek';
+        else if (ds.dataSource === 'mock') label = 'Mock';
+        else if (ds.phase === 'settled') label = '启发式';
+        llm.textContent = 'LLM · ' + label;
+    }
+};
+
+window.bindDiscoveryEvents = function() {
     const view = document.getElementById('view-discovery');
-    if (!view.dataset.bound) {
-        view.dataset.bound = '1';
-        view.querySelectorAll('.tab-item').forEach(t => {
-            t.addEventListener('click', () => {
-                view.querySelectorAll('.tab-item').forEach(x => x.classList.remove('active'));
-                t.classList.add('active');
-                discoveryState.status = t.dataset.status;
-                window.renderDiscoveryList();
-            });
+    if (!view || view.dataset.bound) return;
+    view.dataset.bound = '1';
+    view.querySelectorAll('.tab-item').forEach(t => {
+        t.addEventListener('click', () => {
+            view.querySelectorAll('.tab-item').forEach(x => x.classList.remove('active'));
+            t.classList.add('active');
+            window.discoveryState.status = t.dataset.status;
+            window.renderDiscoveryList();
         });
-        const searchInput = document.getElementById('discovery-search');
-        if (searchInput) searchInput.addEventListener('input', e => { discoveryState.search = e.target.value; window.renderDiscoveryList(); });
-        const sortSel = document.getElementById('discovery-sort');
-        if (sortSel) sortSel.addEventListener('change', e => { discoveryState.sort = e.target.value; window.renderDiscoveryList(); });
-        const catSel = document.getElementById('discovery-cat');
-        if (catSel) catSel.addEventListener('change', e => { discoveryState.category = e.target.value; window.renderDiscoveryList(); });
-    }
-};
-window.updateDiscoveryCounts = function() {
-    const jobs = window.Store.state.newJobs;
-    const counts = {
-        all: jobs.length,
-        pending: jobs.filter(j => j.status === 'pending').length,
-        adopted: jobs.filter(j => j.status === 'adopted').length,
-        rejected: jobs.filter(j => j.status === 'rejected').length
-    };
-    Object.entries(counts).forEach(([k, v]) => {
-        const el = document.getElementById('discovery-count-' + k);
-        if (el) el.textContent = v;
     });
-    const adoptRate = 80.3;
-    const kpiTargets = [
-        { sel: '#view-discovery .kpi-card.k1 .kpi-value', val: counts.all, dec: 0 },
-        { sel: '#view-discovery .kpi-card.k2 .kpi-value', val: counts.pending, dec: 0 },
-        { sel: '#view-discovery .kpi-card.k3 .kpi-value', val: counts.adopted, dec: 0 },
-        { sel: '#view-discovery .kpi-card.k4 .kpi-value', val: adoptRate, dec: 1 }
+    // KPI strip → set status filter + activate matching tab
+    view.querySelectorAll('.disc-kpi').forEach(k => {
+        k.addEventListener('click', () => {
+            const status = k.dataset.status;
+            window.discoveryState.status = status;
+            view.querySelectorAll('.tab-item').forEach(x => x.classList.toggle('active', x.dataset.status === status));
+            window.renderDiscoveryList();
+        });
+    });
+    const si = document.getElementById('discovery-search');
+    if (si) si.addEventListener('input', e => { window.discoveryState.search = e.target.value; window.renderDiscoveryList(); });
+    const ss = document.getElementById('discovery-sort');
+    if (ss) ss.addEventListener('change', e => { window.discoveryState.sort = e.target.value; window.renderDiscoveryList(); });
+    const sc = document.getElementById('discovery-cat');
+    if (sc) sc.addEventListener('change', e => { window.discoveryState.category = e.target.value; window.renderDiscoveryList(); });
+};
+
+// ★ 智能体扫描 — 驱动 disc-* mission control 外壳
+window.buildMockScanPayload = function() {
+    const now = new Date().toISOString();
+    const mkDisc = (i, title, cat, conf, skills, city) => ({
+        id: 'disc_mock_' + i, title, category: cat, level: '中高级', confidence: conf,
+        growth_rate: 20 + i * 3, status: 'pending', discovered_at: now,
+        core_skills: skills, preferred_skills: [], definition: '基于本地招聘库聚类启发式生成，未经 LLM 增强。',
+        typical_scenarios: ['企业内场景','技术中台','数字化转型'], evidence_sources: [],
+        responsibilities: ['参与需求分析与方案设计','完成核心功能开发','配合测试与上线运维'],
+        trend: [], quality: {evidence_count: 3+i, source_count: 2+i, city_count: 1+i, freshness_score: 70+i},
+        source: 'Mock数据源', city, salary: '20-40K', requiredSkills: skills,
+        description: '基于本地招聘库聚类启发式生成。', discoveredAt: now,
+        reasoning: 'Mock 路径：标题新颖度+技能组合熵+跨行业溢出 = 综合置信度 ' + conf + '%'
+    });
+    const discoveries = [
+        mkDisc(1,'AI Agent 架构师','人工智能',88,['LangChain','Function Calling','RAG','Python'],'北京'),
+        mkDisc(2,'大模型微调工程师','人工智能',84,['LoRA','QLoRA','PyTorch','SFT'],'上海'),
+        mkDisc(3,'RAG 知识工程师','人工智能',80,['向量数据库','Embedding','检索增强'],'深圳'),
+        mkDisc(4,'多模态算法工程师','人工智能',78,['CLIP','Diffusion','多模态'],'杭州'),
+        mkDisc(5,'Prompt 工程师','人工智能',72,['Prompt设计','LLM','评测'],'成都'),
+        mkDisc(6,'AI Infra 工程师','人工智能',70,['Triton','CUDA','AI编译器'],'北京'),
+        mkDisc(7,'AIGC 内容工程师','人工智能',68,['Stable Diffusion','生成式','PyTorch'],'广州'),
+        mkDisc(8,'LLM 应用开发工程师','人工智能',66,['LangChain','API','Agent'],'远程')
     ];
-    kpiTargets.forEach(({ sel, val, dec }) => {
-        const el = document.querySelector(sel);
-        if (!el) return;
-        el.dataset.val = '0';
-        window.Utils.animateNum(el, val, 900, dec);
+    const mkFc = (i, title, cat, conf, eta, skills) => ({
+        id: 'forecast_mock_' + i, title, category: cat, confidence: conf, eta_months: eta,
+        drivers: ['趋势外推','技能信号累积'], skills, definition: 'Mock 预测岗位，基于新兴技能时序外推。',
+        status: 'forecast', source: '趋势预测模型(Mock)', city: '全国', salary: '面议(新兴岗位)', level: '专家',
+        requiredSkills: skills, description: 'Mock 预测岗位。', discoveredAt: now, is_forecast: true
     });
+    const forecasts = [
+        mkFc(1,'具身智能工程师','人工智能',74,12,['ROS2','强化学习','SLAM']),
+        mkFc(2,'AI安全对齐工程师','安全',78,9,['RLHF','红队测试','对齐']),
+        mkFc(3,'端侧AI部署工程师','人工智能',80,6,['ONNX','TensorRT','量化']),
+        mkFc(4,'合成数据工程师','数据科学',75,8,['GAN','LLM','数据增强']),
+        mkFc(5,'AI芯片软件栈工程师','人工智能',70,15,['Triton','MLIR','TVM']),
+        mkFc(6,'AI研发效能工程师','运维测试',73,10,['AI Coding','CI/CD','DORA'])
+    ];
+    const chain = [
+        {step:1,title:'🌐 多源数据接入',detail:'Mock：连接本地 PostgreSQL 招聘库，抽取最近 5000 条 IT 岗位记录。',status:'done',metrics:'数据规模: 5000 条 | 覆盖 320 家企业',elapsed_ms:420},
+        {step:2,title:'🧠 语义消歧与实体归一化',detail:'Mock：标题字符级归一化，构建 N-gram 特征向量，识别语义聚类。',status:'done',metrics:'聚类压缩比: 6.2x | 技能词典: 480 词',elapsed_ms:510},
+        {step:3,title:'📈 多维度新兴度评分',detail:'Mock：三维度加权(标题0.5+技能0.3+溢出0.2)，扫描语义簇。',status:'done',metrics:'新兴候选 8 | 传统 IT 12 | 总簇 24',elapsed_ms:600},
+        {step:4,title:'📝 岗位定义生成与职责推理',detail:'Mock：基于真实 JD 摘要生成岗位定义、核心职责与典型场景。',status:'done',metrics:'输出 8 个岗位定义',elapsed_ms:520},
+        {step:5,title:'🔮 时序趋势外推',detail:'Mock：指数平滑+线性回归外推 6-18 个月技能需求变化。',status:'done',metrics:'预测跨度: 6-18 个月 | 置信区间: 65%-80%',elapsed_ms:610},
+        {step:6,title:'🛡️ 幻觉检测与质量审计',detail:'Mock：交叉校验证据来源，检测定义-技能一致性，标记低证据项目。',status:'done',metrics:'审计通过 8 | 弱证据 2',elapsed_ms:330}
+    ];
+    return {
+        reasoning_chain: chain, discoveries, forecasts,
+        summary: 'Mock 扫描完毕：5000 条 → 24 簇 → 8 个发现 + 6 个预测。推理引擎: DiscoveryAgent (Mock)。',
+        stats: {total_scanned:5000,title_clusters:24,discoveries:8,forecasts:6,total_elapsed_ms:2990,avg_confidence:75.5},
+        model: {engine:'DiscoveryAgent v2.0 (Mock)',backed_by:'启发式(Mock)',llm:'none',llm_enriched:0,llm_error:null,knowledge_base:'PostgreSQL mock'}
+    };
 };
-window.renderDiscoveryList = function() {
+
+window.agentScan = async function() {
+    window.ensureDiscoveryState();
+    const ds = window.discoveryState;
+    if (ds.scanning) { window.Utils.showToast('智能体正在扫描中,请稍候...', 'amber'); return; }
+    ds.scanning = true; ds.phase = 'scanning'; ds.activeStep = 0;
+    const btn = document.getElementById('btn-agent-scan');
+    if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> 智能体扫描中...'; }
+    window.resetDiscShell();
+    window.updateDiscBadges();
     const grid = document.getElementById('discovery-grid');
-    if (!grid) return;
-    let list = [...window.Store.state.newJobs];
-    if (discoveryState.status !== 'all') list = list.filter(j => j.status === discoveryState.status);
-    if (discoveryState.search) {
-        const s = discoveryState.search.toLowerCase();
-        list = list.filter(j => j.title.toLowerCase().includes(s) || j.requiredSkills.some(sk => sk.toLowerCase().includes(s)));
+    if (grid) grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><span class="spinner"></span><div style="margin-top:8px;color:var(--text-muted);font-size:13px">智能体推理中...</div></div>';
+
+    const reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let payload, usedMock = false;
+    try {
+        const ctrl = new AbortController();
+        const timer = setTimeout(() => ctrl.abort(), 90000);
+        const r = await fetch(window.API_BASE + '/api/discovery/agent/scan', {method:'POST', signal: ctrl.signal});
+        clearTimeout(timer);
+        const j = await r.json();
+        if (j.code !== 0) throw new Error(j.message || 'scan failed');
+        payload = j.data;
+        ds.dataSource = 'api';
+    } catch(e) {
+        payload = window.buildMockScanPayload();
+        ds.dataSource = 'mock';
+        usedMock = true;
+        window.Utils.showToast('后端不可用,已切换 Mock 数据: ' + (e.message||e), 'amber');
     }
-    if (discoveryState.category !== 'all') list = list.filter(j => j.category === discoveryState.category);
-    if (discoveryState.sort === 'confidence') list.sort((a, b) => b.confidence - a.confidence);
-    else if (discoveryState.sort === 'date') list.sort((a, b) => b.discoveredAt - a.discoveredAt);
-    else if (discoveryState.sort === 'name') list.sort((a, b) => a.title.localeCompare(b.title));
-    if (!list.length) {
-        grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><div style="font-size:14px;margin-top:8px">未找到匹配的岗位</div></div>`;
+
+    ds.discoveries = payload.discoveries || [];
+    ds.forecasts = payload.forecasts || [];
+    ds.reasoningChain = payload.reasoning_chain || [];
+    ds.scanSummary = payload.summary || '';
+    ds.modelInfo = payload.model || {};
+    ds.scanStats = payload.stats || {};
+    ds.llmEnabled = !!(ds.modelInfo.llm && ds.modelInfo.llm !== 'none');
+
+    await window.playReasoningSequence(ds.reasoningChain, reduced);
+
+    ds.scanning = false; ds.phase = 'settled';
+    window.renderDiscoveryList();
+    window.updateDiscoveryCounts();
+    window.updateDiscBadges();
+    if (btn) { btn.disabled = false; btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>🤖 重新扫描'; }
+    window.Utils.showToast((usedMock?'🧪 [Mock] ':'🤖 ') + '扫描完成: 发现 ' + ds.discoveries.length + ' 个岗位, 预测 ' + ds.forecasts.length + ' 个未来岗位', usedMock ? 'amber' : 'mint');
+};
+
+// 逐步播放推理链：每步点亮 disc-step，typewriter 进 disc-step-detail，更新 metrics；
+// 步 2 触发 cluster canvas，步 3 触发 radar，步 6 触发 hallucination audit；
+// 步 4 后渲染 discoveries，步 5 后并入 forecasts。
+window.playReasoningSequence = async function(chain, reduced) {
+    const ds = window.discoveryState;
+    chain = chain || [];
+    const stepEls = document.querySelectorAll('#disc-steps .disc-step');
+    const detailEl = document.getElementById('disc-step-detail');
+    const delay = reduced ? 0 : 700;
+    const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+
+    for (let i = 0; i < chain.length; i++) {
+        const s = chain[i];
+        ds.activeStep = i + 1;
+        const li = stepEls[i];
+        if (li) {
+            li.classList.add('active');
+            const sd = li.querySelector('.disc-step-detail');
+            if (sd) sd.textContent = s.detail || '';
+        }
+        // typewriter into global detail panel
+        if (detailEl) {
+            if (reduced) {
+                detailEl.textContent = s.detail || '';
+            } else {
+                const text = s.detail || '';
+                detailEl.textContent = '';
+                for (const ch of text) {
+                    detailEl.textContent += ch;
+                    await sleep(12);
+                }
+            }
+        }
+        // metrics line
+        if (li && s.metrics) {
+            let m = li.querySelector('.disc-step-metrics');
+            if (!m) { m = document.createElement('div'); m.className = 'disc-step-metrics'; m.style.cssText = 'margin-top:3px;font-size:10px;color:rgba(45,212,191,.85);font-family:var(--font-mono),monospace'; li.appendChild(m); }
+            m.textContent = '📊 ' + s.metrics;
+        }
+        // step-specific hooks (Task 6 fills these in)
+        if (s.step === 2 && window.playClusterAnimation) window.playClusterAnimation(s);
+        if (s.step === 3 && window.updateDiscRadar) window.updateDiscRadar(s, ds);
+        if (s.step === 6 && window.playHallucinationAudit) window.playHallucinationAudit(s, ds);
+
+        if (delay) await sleep(delay);
+        if (li) { li.classList.remove('active'); li.classList.add('done'); }
+
+        // After step 4: render discoveries
+        if (s.step === 4) {
+            window.renderDiscoveryList({onlyDiscoveries: true});
+            if (!reduced && window.gsap) {
+                window.gsap.from('#discovery-grid .job-card', {duration:0.4, y:18, opacity:0, stagger:0.05});
+            }
+        }
+        // After step 5: include forecasts
+        if (s.step === 5) {
+            window.renderDiscoveryList();
+        }
+    }
+    if (detailEl && ds.scanSummary) detailEl.textContent = ds.scanSummary;
+};
+
+
+window.updateDiscoveryCounts = function() {
+    window.ensureDiscoveryState();
+    const ds = window.discoveryState;
+    const all = [...(ds.discoveries||[]), ...(ds.forecasts||[])];
+    const counts = {all: all.length, pending: all.filter(j=>j.status==='pending').length,
+        adopted: all.filter(j=>j.status==='adopted').length,
+        rejected: all.filter(j=>j.status==='rejected').length,
+        forecast: (ds.forecasts||[]).length};
+    Object.entries(counts).forEach(([k,v]) => { const el=document.getElementById('discovery-count-'+k); if(el) el.textContent=v; });
+    const confs = ds.discoveries.map(j=>j.confidence||0);
+    const avgConf = confs.length ? (confs.reduce((a,b)=>a+b,0)/confs.length).toFixed(1) : '--';
+    const elC = document.getElementById('kpi-avg-conf'); if(elC) elC.textContent = avgConf+'%';
+    const kpiTargets = [
+        {sel:'#kpi-discovered', val:ds.discoveries.length, dec:0},
+        {sel:'#kpi-pending', val:counts.pending, dec:0},
+        {sel:'#kpi-adopted', val:counts.adopted, dec:0},
+        {sel:'#kpi-forecast', val:counts.forecast, dec:0}
+    ];
+    kpiTargets.forEach(({sel,val,dec}) => { const el=document.querySelector(sel); if(!el) return; el.dataset.val='0'; window.Utils.animateNum(el, val, 900, dec); });
+};
+
+window.renderDiscoveryList = function(opts) {
+    window.ensureDiscoveryState();
+    const ds = window.discoveryState;
+    const grid = document.getElementById('discovery-grid'); if(!grid) return;
+    let all = (opts && opts.onlyDiscoveries) ? [...(ds.discoveries||[])] : [...(ds.discoveries||[]), ...(ds.forecasts||[])];
+    if (ds.status === 'forecast') all = [...(ds.forecasts||[])];
+    else if (ds.status !== 'all') all = all.filter(j => j.status === ds.status);
+    if (ds.search) {
+        const s = ds.search.toLowerCase();
+        all = all.filter(j => (j.title||'').toLowerCase().includes(s) || (j.requiredSkills||j.core_skills||[]).some(sk=>sk.toLowerCase().includes(s)));
+    }
+    if (ds.category !== 'all') all = all.filter(j => j.category === ds.category);
+    if (ds.sort === 'confidence') all.sort((a,b)=>(b.confidence||0)-(a.confidence||0));
+    else if (ds.sort === 'date') all.sort((a,b)=>new Date(b.discoveredAt||0)-new Date(a.discoveredAt||0));
+    else if (ds.sort === 'name') all.sort((a,b)=>(a.title||'').localeCompare(b.title||''));
+    if (!all.length) {
+        grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><div style="font-size:14px;margin-top:8px">未找到匹配的岗位,请点击"启动智能体扫描"</div></div>';
         return;
     }
-    grid.innerHTML = list.map((j, i) => `
-        <div class="job-card anim-fade-up" style="animation-delay:${Math.min(i*0.04, 0.3)}s" onclick="window.showJobDetail('${j.id}')">
-            <div class="job-card-head">
-                <div><div class="job-title">${j.title}</div><div class="job-meta">${j.category} · ${j.level}</div></div>
-                <div class="job-conf">置信度 ${j.confidence}%<div class="conf-bar"><div style="width:${j.confidence}%"></div></div></div>
-            </div>
-            <div class="job-desc">${j.description}</div>
-            <div class="job-skills">${j.requiredSkills.slice(0, 6).map(s => `<span class="skill-chip">${s}</span>`).join('')}</div>
-            <div class="job-foot">
-                <span>📍 ${j.city} · ${j.source}</span>
-                <span>
-                    ${j.status === 'pending' ? `
-                        <button class="btn" style="padding:3px 10px;font-size:11px" onclick="event.stopPropagation();window.rejectJob('${j.id}')">拒绝</button>
-                        <button class="btn btn-primary" style="padding:3px 10px;font-size:11px" onclick="event.stopPropagation();window.adoptJob('${j.id}')">采纳</button>
-                    ` : j.status === 'adopted' ? '<span class="tag tag-mint">已采纳</span>' : '<span class="tag tag-pink">已拒绝</span>'}
-                </span>
-            </div>
-        </div>
-    `).join('');
+    grid.innerHTML = all.map((j,i) => {
+        const isForecast = j.is_forecast || j.status === 'forecast';
+        const conf = j.confidence||0;
+        const confCls = conf>=80 ? 'conf-high' : conf>=60 ? 'conf-mid' : 'conf-low';
+        const cardCls = 'job-card anim-fade-up '+confCls+(isForecast?' is-forecast':'');
+        const badge = isForecast ? '<span class="tag tag-forecast">🔮 '+(j.eta_months||'?')+'个月后</span>' : '';
+        const skills = (j.requiredSkills||j.core_skills||[]).slice(0,5);
+        const etaInfo = isForecast && j.drivers ? '<div style="margin-top:6px;font-size:10px;color:var(--accent-amber)">📈 驱动力: '+(j.drivers||[]).slice(0,2).join(' · ')+'</div>' : '';
+        const reasoning = j.reasoning ? '<div style="margin-top:4px;font-size:11px;color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">🧠 '+j.reasoning+'</div>' : '';
+        return '<div class="'+cardCls+'" style="animation-delay:'+Math.min(i*0.04,0.3)+'s" onclick="window.showDiscoveryDetail(\''+j.id+'\')">'+
+            '<div class="job-card-head"><div><div class="job-title">'+(isForecast?'🔮 ':'')+j.title+' '+badge+'</div><div class="job-meta">'+j.category+' · '+(j.level||'--')+' · '+(j.city||'--')+'</div></div>'+
+            '<div class="job-conf">置信度 '+conf+'%<div class="conf-bar"><div style="width:'+conf+'%"></div></div></div></div>'+
+            '<div class="job-desc">'+(j.description||j.definition||'').substring(0,120)+'</div>'+
+            '<div class="job-skills">'+skills.map(s=>'<span class="skill-chip">'+s+'</span>').join('')+'</div>'+
+            etaInfo+reasoning+
+            '<div class="job-foot"><span>📍 '+(j.city||'--')+' · '+(j.source||'--')+'</span><span>'+
+                (j.status==='pending'?'<button class="btn" style="padding:3px 10px;font-size:11px" onclick="event.stopPropagation();window.adoptDiscoveryJob(\''+j.id+'\')">采纳</button><button class="btn" style="padding:3px 10px;font-size:11px;color:var(--accent-coral)" onclick="event.stopPropagation();window.rejectDiscoveryJob(\''+j.id+'\')">拒绝</button>':'')+
+                (j.status==='adopted'?'<span class="tag tag-mint">已采纳</span>':'')+
+                (j.status==='rejected'?'<span class="tag tag-pink">已拒绝</span>':'')+
+                (j.status==='forecast'?'<span class="tag tag-forecast">预测中</span>':'')+
+            '</span></div>'+
+        '</div>';
+    }).join('');
 };
-window.adoptJob = function(id) {
-    const job = window.Store.state.newJobs.find(j => j.id === id);
-    if (job) { job.status = 'adopted'; window.updateDiscoveryCounts(); window.renderDiscoveryList(); window.Utils.showToast('✓ 已采纳: ' + job.title, 'mint'); }
+
+window.adoptDiscoveryJob = async function(id) {
+    try { await fetch(window.API_BASE + '/api/discovery/jobs/'+id+'/status', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:'adopted'})}); } catch(e) {}
+    [...(window.discoveryState.discoveries||[]), ...(window.discoveryState.forecasts||[])].forEach(j => { if(j.id===id) j.status='adopted'; });
+    window.renderDiscoveryList(); window.updateDiscoveryCounts(); window.Utils.showToast('已采纳', 'mint');
 };
-window.rejectJob = function(id) {
-    const job = window.Store.state.newJobs.find(j => j.id === id);
-    if (job) { job.status = 'rejected'; window.updateDiscoveryCounts(); window.renderDiscoveryList(); window.Utils.showToast('已拒绝: ' + job.title, 'pink'); }
+window.rejectDiscoveryJob = async function(id) {
+    try { await fetch(window.API_BASE + '/api/discovery/jobs/'+id+'/status', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:'rejected'})}); } catch(e) {}
+    [...(window.discoveryState.discoveries||[]), ...(window.discoveryState.forecasts||[])].forEach(j => { if(j.id===id) j.status='rejected'; });
+    window.renderDiscoveryList(); window.updateDiscoveryCounts(); window.Utils.showToast('已拒绝', 'pink');
 };
-window.showJobDetail = function(id) {
-    const job = window.Store.state.newJobs.find(j => j.id === id);
+window.agentBatchAdopt = function() {
+    window.ensureDiscoveryState(); let count=0;
+    window.discoveryState.discoveries.forEach(j => { if(j.status==='pending' && j.confidence>=70) { j.status='adopted'; count++; } });
+    window.renderDiscoveryList(); window.updateDiscoveryCounts();
+    window.Utils.showToast('✓ 批量采纳 '+count+' 个高置信度岗位', 'mint');
+};
+
+window.showDiscoveryDetail = function(id) {
+    window.ensureDiscoveryState();
+    const all = [...(window.discoveryState.discoveries||[]), ...(window.discoveryState.forecasts||[])];
+    const job = all.find(j => j.id === id);
     if (!job) return;
-    document.getElementById('modal-title').textContent = job.title;
-    document.getElementById('modal-body').innerHTML = `
-        <div class="jd-grid" style="margin-bottom:18px">
-            <div class="jd-item"><div class="jd-item-label">岗位编号</div><div class="jd-item-val">${job.id}</div></div>
-            <div class="jd-item"><div class="jd-item-label">分类</div><div class="jd-item-val">${job.category}</div></div>
-            <div class="jd-item"><div class="jd-item-label">级别</div><div class="jd-item-val">${job.level}</div></div>
-            <div class="jd-item"><div class="jd-item-label">置信度</div><div class="jd-item-val" style="color:var(--accent-mint)">${job.confidence}%</div></div>
-            <div class="jd-item"><div class="jd-item-label">城市</div><div class="jd-item-val">${job.city}</div></div>
-            <div class="jd-item"><div class="jd-item-label">薪资</div><div class="jd-item-val">${job.salary}</div></div>
-            <div class="jd-item"><div class="jd-item-label">来源</div><div class="jd-item-val">${job.source}</div></div>
-            <div class="jd-item"><div class="jd-item-label">状态</div><div class="jd-item-val">${job.status === 'pending' ? '⏳ 待审核' : job.status === 'adopted' ? '✓ 已采纳' : '✗ 已拒绝'}</div></div>
-            <div class="jd-item"><div class="jd-item-label">发现时间</div><div class="jd-item-val">${window.Utils.timeAgo(job.discoveredAt)}</div></div>
-        </div>
-        <div class="job-detail-section"><div class="job-detail-section-title">岗位描述</div><div style="color:var(--text-dark-secondary);line-height:1.8">${job.description}</div></div>
-        <div class="job-detail-section"><div class="job-detail-section-title">核心技能要求</div><div class="match-skill-list">${job.requiredSkills.map(s => `<span class="skill-chip" style="background:rgba(13,148,136,.12);color:var(--primary);padding:5px 12px;font-size:12px">${s}</span>`).join('')}</div></div>
-        <div class="job-detail-section"><div class="job-detail-section-title">AI 推理过程</div><div style="font-size:12px;line-height:1.8;padding:12px;background:#0d1330;color:#b8c5d6;border-radius:8px;font-family:var(--font-mono),monospace">
-            <div style="color:#2DD4BF">→ 采集 ${window.Utils.rand(50,200)} 条相关JD</div>
-            <div style="color:#2DD4BF">→ NER抽取 <strong style="color:#10b981">${job.requiredSkills.length}</strong> 个核心实体</div>
-            <div style="color:#2DD4BF">→ 关系抽取: REQUIRES × ${window.Utils.rand(8,20)}</div>
-            <div style="color:#2DD4BF">→ LLM推理相似度: <strong style="color:#10b981">${(Math.random()*0.15+0.82).toFixed(3)}</strong></div>
-            <div style="color:#2DD4BF">→ 幻觉检测: 通过 (${(Math.random()*3+1).toFixed(1)}%)</div>
-            <div style="color:#f72585">✓ 最终置信度: <strong>${job.confidence}%</strong></div>
-        </div></div>
-    `;
-    document.getElementById('modal-footer').innerHTML = job.status === 'pending' ? `
-        <button class="btn" onclick="window.closeModal();window.rejectJob('${job.id}')">拒绝</button>
-        <button class="btn btn-primary" onclick="window.closeModal();window.adoptJob('${job.id}')">采纳并入库</button>
-    ` : `<button class="btn" onclick="window.closeModal()">关闭</button>`;
-    document.getElementById('modal-overlay').classList.add('show');
+    window.openDiscoveryDrawer(job);
+};
+
+// Drawer (Task 7): full sections per spec — identity → definition → responsibilities → scenarios → skills → evidence → quality → (forecast) drivers+ETA.
+window.openDiscoveryDrawer = function(job) {
+    window.ensureDiscoveryState();
+    if (!job) return;
+    window.discoveryState.drawerJobId = job.id;
+    const drawer = document.getElementById('disc-drawer');
+    const mask = document.getElementById('disc-drawer-mask');
+    const title = document.getElementById('disc-drawer-title');
+    const body = document.getElementById('disc-drawer-body');
+    const actions = document.getElementById('disc-drawer-actions');
+    if (!drawer || !job) return;
+    const isForecast = job.is_forecast || job.status === 'forecast';
+    const skills = (job.requiredSkills||job.core_skills||[]);
+    const conf = job.confidence||0;
+    const confColor = conf>=80 ? 'var(--signal-deep)' : conf>=60 ? 'var(--amber)' : 'var(--accent-coral)';
+    const statusLabel = job.status==='pending'?'待审核':job.status==='adopted'?'已采纳':job.status==='forecast'?'预测中':'已拒绝';
+    const esc = s => String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    if (title) title.textContent = (isForecast?'🔮 ':'') + (job.title||'岗位详情');
+    if (body) {
+        const list = arr => (arr&&arr.length) ? '<ul style="margin:0;padding-left:18px;font-size:13px;line-height:1.6">'+arr.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>' : '<p style="font-size:13px;color:var(--text-muted)">--</p>';
+        const chips = arr => (arr&&arr.length) ? '<div style="display:flex;flex-wrap:wrap;gap:6px">'+arr.map(s=>'<span class="skill-chip">'+esc(s)+'</span>').join('')+'</div>' : '<p style="font-size:13px;color:var(--text-muted)">--</p>';
+        body.innerHTML =
+            // 身份条
+            '<div class="disc-drawer-identity">'+
+                '<div class="kv"><label>分类</label><span>'+esc(job.category||'--')+'</span></div>'+
+                '<div class="kv"><label>级别</label><span>'+esc(job.level||'--')+'</span></div>'+
+                '<div class="kv"><label>置信度</label><span style="color:'+confColor+'">'+conf+'%</span></div>'+
+                '<div class="kv"><label>城市</label><span>'+esc(job.city||'--')+'</span></div>'+
+                '<div class="kv"><label>薪资</label><span>'+esc(job.salary||'--')+'</span></div>'+
+                '<div class="kv"><label>来源</label><span>'+esc(job.source||'--')+'</span></div>'+
+                (isForecast?'<div class="kv"><label>预计出现</label><span style="color:var(--amber)">'+esc(job.eta_months||'?')+' 个月后</span></div>':'')+
+                '<div class="kv"><label>状态</label><span>'+statusLabel+'</span></div>'+
+            '</div>'+
+            // 定义
+            '<div class="disc-drawer-section"><h4>岗位定义</h4><p>'+(esc(job.definition||job.description)||'--')+'</p></div>'+
+            // 职责
+            '<div class="disc-drawer-section"><h4>核心职责</h4>'+list(job.responsibilities||job.duties)+'</div>'+
+            // 场景
+            '<div class="disc-drawer-section"><h4>典型场景</h4>'+list(job.scenarios||job.use_cases)+'</div>'+
+            // 技能
+            '<div class="disc-drawer-section"><h4>必备技能</h4>'+chips(skills)+'</div>'+
+            // 证据链
+            '<div class="disc-drawer-section"><h4>证据链（公司 · 城市 · 来源）</h4>'+
+                '<p style="font-size:13px;line-height:1.6">'+
+                    (job.evidence_company? '🏢 '+esc(job.evidence_company)+' · ' : '')+
+                    (job.city? '📍 '+esc(job.city)+' · ' : '')+
+                    (job.source? '🔗 '+esc(job.source) : '')+
+                    (!job.evidence_company && !job.city && !job.source ? '--' : '')+
+                '</p>'+
+            '</div>'+
+            // 质量四格
+            '<div class="disc-drawer-section"><h4>质量评估</h4>'+
+                '<div class="disc-quality-grid">'+
+                    '<div class="q-cell"><label>置信度</label><span style="color:'+confColor+'">'+conf+'%</span></div>'+
+                    '<div class="q-cell"><label>样本量</label><span>'+esc(job.sample_size||job.evidence_count||'--')+'</span></div>'+
+                    '<div class="q-cell"><label>新鲜度</label><span>'+esc(job.freshness||(job.discoveredAt? new Date(job.discoveredAt).toLocaleDateString():'--'))+'</span></div>'+
+                    '<div class="q-cell"><label>覆盖度</label><span>'+esc(job.coverage||'--')+'</span></div>'+
+                '</div>'+
+            '</div>'+
+            // 预测：驱动力 + ETA
+            (isForecast ?
+                '<div class="disc-drawer-section"><h4>预测驱动力 & ETA</h4>'+
+                    list(job.drivers)+
+                    '<p style="margin-top:8px;font-size:13px">⏳ 预计 <b style="color:var(--amber)">'+esc(job.eta_months||'?')+' 个月</b>后进入主流招聘</p>'+
+                '</div>' : '')+
+            // 推理摘要
+            (job.reasoning ? '<div class="disc-drawer-section" style="border-top:1px solid var(--border-dark);padding-top:10px"><h4>推理摘要</h4><p style="font-size:12px;color:var(--text-muted)">🧠 '+esc(job.reasoning)+'</p></div>' : '');
+    }
+    if (actions) {
+        actions.innerHTML = job.status === 'pending'
+            ? '<button class="btn btn-adopt" onclick="window.adoptDiscoveryJob(\''+job.id+'\')">采纳</button>'+
+              '<button class="btn btn-reject" onclick="window.rejectDiscoveryJob(\''+job.id+'\')">拒绝</button>'+
+              '<button class="btn" onclick="window.closeDiscoveryDrawer()">关闭</button>'
+            : '<button class="btn" onclick="window.closeDiscoveryDrawer()">关闭</button>';
+    }
+    drawer.classList.add('open');
+    drawer.setAttribute('aria-hidden','false');
+    if (mask) mask.classList.add('open');
+};
+
+window.closeDiscoveryDrawer = function() {
+    window.ensureDiscoveryState();
+    window.discoveryState.drawerJobId = null;
+    const drawer = document.getElementById('disc-drawer');
+    const mask = document.getElementById('disc-drawer-mask');
+    if (drawer) { drawer.classList.remove('open'); drawer.setAttribute('aria-hidden','true'); }
+    if (mask) mask.classList.remove('open');
+};
+
+// Esc closes drawer; global keydown.
+document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+        const drawer = document.getElementById('disc-drawer');
+        if (drawer && drawer.classList.contains('open')) { e.preventDefault(); window.closeDiscoveryDrawer(); }
+    }
+});
+
+// ============== Task 6: Ambient FX (particles, cluster canvas, hallucination, radar) ==============
+window._discParticles = null;     // tsParticles container ref
+window._discClusterRAF = 0;       // cluster canvas rAF handle
+
+window._discReduced = function() {
+    return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+};
+
+// Step 1: tsParticles slim on #disc-particles — teal links, low density ~40. No-op if reduced-motion.
+window.initDiscParticles = function() {
+    const el = document.getElementById('disc-particles');
+    if (!el) return;
+    // destroy any prior instance (re-init on view enter / scan start)
+    if (window._discParticles) { try { window._discParticles.destroy(); } catch (e) {} window._discParticles = null; }
+    el.innerHTML = '';
+    if (window._discReduced() || typeof tsParticles === 'undefined') return;
+    tsParticles.load(el.id, {
+        fullScreen: { enable: false },
+        background: { color: 'transparent' },
+        particles: {
+            number: { value: 40, density: { enable: true, area: 800 } },
+            color: { value: ['#2DD4BF', '#0D9488'] },
+            links: { enable: true, color: '#2DD4BF', distance: 140, opacity: 0.22, width: 1 },
+            move: { enable: true, speed: 0.6, direction: 'none', outModes: { default: 'out' } },
+            opacity: { value: { min: 0.2, max: 0.6 } },
+            size: { value: { min: 1, max: 2.6 } }
+        },
+        detectRetina: true
+    }).then(function (c) { window._discParticles = c; }).catch(function () {});
+};
+
+// Step 2: 2s points → 4-6 clusters on #disc-cluster-canvas via requestAnimationFrame. No-op if reduced-motion.
+window.playClusterAnimation = function (/* step */) {
+    const canvas = document.getElementById('disc-cluster-canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (window._discClusterRAF) { cancelAnimationFrame(window._discClusterRAF); window._discClusterRAF = 0; }
+    if (window._discReduced()) { ctx.clearRect(0, 0, canvas.width, canvas.height); return; }
+    const rect = canvas.getBoundingClientRect();
+    const W = (rect.width > 0) ? (canvas.width = Math.round(rect.width)) : canvas.width;
+    const H = (rect.height > 0) ? (canvas.height = Math.round(rect.height)) : canvas.height;
+    const N = 80;
+    const K = 4 + Math.floor(Math.random() * 3); // 4-6 cluster centers
+    const centers = Array.from({ length: K }, () => ({ x: W * 0.1 + Math.random() * W * 0.8, y: H * 0.1 + Math.random() * H * 0.8 }));
+    const pts = Array.from({ length: N }, (_, i) => {
+        const c = centers[i % K];
+        return { x: Math.random() * W, y: Math.random() * H, tx: c.x + (Math.random() - 0.5) * 30, ty: c.y + (Math.random() - 0.5) * 30 };
+    });
+    const dur = 2000, t0 = performance.now();
+    const tick = function (now) {
+        const t = Math.min(1, (now - t0) / dur);
+        const e = t * t * (3 - 2 * t); // smoothstep
+        ctx.clearRect(0, 0, W, H);
+        ctx.strokeStyle = 'rgba(45,212,191,0.18)'; ctx.lineWidth = 1;
+        for (let i = 0; i < pts.length; i++) {
+            const a = pts[i], ax = a.x + (a.tx - a.x) * e, ay = a.y + (a.ty - a.y) * e;
+            for (let j = i + 1; j < pts.length; j++) {
+                const b = pts[j], bx = b.x + (b.tx - b.x) * e, by = b.y + (b.ty - b.y) * e;
+                const dx = ax - bx, dy = ay - by;
+                if (dx * dx + dy * dy < 3600) { ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(bx, by); ctx.stroke(); }
+            }
+        }
+        for (const p of pts) {
+            const x = p.x + (p.tx - p.x) * e, y = p.y + (p.ty - p.y) * e;
+            ctx.fillStyle = 'rgba(45,212,191,' + (0.4 + 0.4 * e) + ')';
+            ctx.beginPath(); ctx.arc(x, y, 1.6 + e * 0.8, 0, Math.PI * 2); ctx.fill();
+        }
+        if (t < 1) window._discClusterRAF = requestAnimationFrame(tick);
+    };
+    window._discClusterRAF = requestAnimationFrame(tick);
+};
+
+// Step 3: hallucination audit — unhide #disc-hallucination, render 4-6 claim chips; .verified if evidence_sources.length >= 2 else .warn (staggered).
+window.playHallucinationAudit = function (/* step */, ds) {
+    const el = document.getElementById('disc-hallucination');
+    if (!el) return;
+    const reduced = window._discReduced();
+    const discoveries = (ds && ds.discoveries) || [];
+    el.hidden = false;
+    const claims = discoveries.slice(0, 6);
+    if (!claims.length) { el.innerHTML = '<div>⚠ 暂无可审计声明</div>'; return; }
+    const meta = claims.map(c => {
+        const srcs = (c.evidence_sources || []).length;
+        return { title: c.title || '—', ok: srcs >= 2, srcs: srcs };
+    });
+    el.innerHTML = '<div style="font-weight:600;margin-bottom:6px">🛡️ 幻觉审计 · 交叉证据校验</div>' +
+        '<div style="display:flex;flex-wrap:wrap;gap:6px">' +
+        meta.map((m, i) => '<span class="disc-claim" data-i="' + i + '">' + (m.ok ? '✓ ' : '⚠ ') + m.title + '<span style="opacity:.7;font-size:10px"> · ' + m.srcs + ' src</span></span>').join('') +
+        '</div>';
+    const chips = el.querySelectorAll('.disc-claim');
+    chips.forEach((chip, i) => {
+        const cls = meta[i].ok ? 'verified' : 'warn';
+        if (reduced) { chip.classList.add(cls); return; }
+        setTimeout(() => chip.classList.add(cls), 200 + i * 120);
+    });
+};
+
+// Step 4: mini ECharts radar on #disc-radar — title/skill/cross scores from first discovery.reasoning or synthetic [42,20,15].
+window.updateDiscRadar = function (/* step */, ds) {
+    const el = document.getElementById('disc-radar');
+    if (!el || typeof echarts === 'undefined') return;
+    if (echarts.getInstanceByDom(el)) echarts.getInstanceByDom(el).dispose();
+    const first = (ds && ds.discoveries && ds.discoveries[0]) || null;
+    let vals = [42, 20, 15];
+    if (first) {
+        if (first.reasoning) {
+            const nums = (first.reasoning.match(/\d+(\.\d+)?/g) || []).map(Number).filter(n => n >= 5 && n <= 100);
+            if (nums.length >= 3) vals = nums.slice(0, 3);
+            else if (first.confidence) vals = [first.confidence, 20, 15];
+        } else if (first.confidence) {
+            vals = [first.confidence, 20, 15];
+        }
+    }
+    const c = echarts.init(el);
+    c.setOption({
+        radar: {
+            indicator: [
+                { name: '标题新颖度', max: 100 },
+                { name: '技能组合熵', max: 100 },
+                { name: '跨行业溢出', max: 100 }
+            ],
+            radius: '62%',
+            axisName: { color: 'rgba(226,232,240,0.7)', fontSize: 10 },
+            splitLine: { lineStyle: { color: 'rgba(45,212,191,0.18)' } },
+            splitArea: { areaStyle: { color: ['rgba(45,212,191,0.03)', 'rgba(45,212,191,0.06)'] } },
+            axisLine: { lineStyle: { color: 'rgba(45,212,191,0.22)' } }
+        },
+        series: [{
+            type: 'radar',
+            data: [{ value: vals, name: '新兴度评分' }],
+            symbol: 'circle', symbolSize: 4,
+            lineStyle: { color: '#2DD4BF', width: 2 },
+            itemStyle: { color: '#2DD4BF' },
+            areaStyle: { color: 'rgba(45,212,191,0.22)' }
+        }]
+    });
+};
+
+// Dispose particles + radar when leaving discovery view.
+window.destroyDiscFX = function () {
+    if (window._discParticles) { try { window._discParticles.destroy(); } catch (e) {} window._discParticles = null; }
+    const el = document.getElementById('disc-radar');
+    if (el && typeof echarts !== 'undefined' && echarts.getInstanceByDom(el)) echarts.getInstanceByDom(el).dispose();
+    if (window._discClusterRAF) { cancelAnimationFrame(window._discClusterRAF); window._discClusterRAF = 0; }
 };
 
 // ============== Evolution View ==============
