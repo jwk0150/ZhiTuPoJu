@@ -1,0 +1,10 @@
+# Chrome 调试 Profile（浏览器缓存/隐私数据，严禁上传）
+chrome_debug_profile/
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# 临时文件
+*.tmp
+*.log
