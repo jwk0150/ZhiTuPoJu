@@ -32,13 +32,87 @@ def _extract_json(text: str) -> dict:
         return json.loads(m.group(0))
 
 
+def chat_completions(
+    messages: list[dict[str, str]],
+    *,
+    temperature: float = 0.4,
+    timeout: float = 60.0,
+) -> tuple[str, dict]:
+    """Call DeepSeek chat/completions. Returns (content, meta). Never raises."""
+    meta: dict[str, Any] = {"llm": "none", "error": None}
+    if not is_configured() or not messages:
+        meta["error"] = "DEEPSEEK_API_KEY not configured" if not is_configured() else "empty messages"
+        return "", meta
+    key = os.getenv("DEEPSEEK_API_KEY", "").strip()
+    base = os.getenv("DEEPSEEK_BASE_URL", DEFAULT_BASE).rstrip("/")
+    model = os.getenv("DEEPSEEK_MODEL", DEFAULT_MODEL)
+    try:
+        with httpx.Client(timeout=timeout) as client:
+            resp = client.post(
+                f"{base}/v1/chat/completions",
+                headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
+                json={
+                    "model": model,
+                    "messages": messages,
+                    "temperature": temperature,
+                },
+            )
+            resp.raise_for_status()
+            content = resp.json()["choices"][0]["message"]["content"]
+        meta["llm"] = model
+        return str(content or "").strip(), meta
+    except Exception as e:
+        meta["error"] = str(e)
+        return "", meta
+
+
+def _compact_jobs(jobs: list[dict], limit: int = 12) -> list[dict]:
+    out = []
+    for d in (jobs or [])[:limit]:
+        out.append({
+            "id": d.get("id"),
+            "title": d.get("title"),
+            "status": d.get("status") or "pending",
+            "confidence": d.get("confidence"),
+            "category": d.get("category"),
+            "city": d.get("city"),
+            "salary": d.get("salary"),
+            "level": d.get("level"),
+            "skills": (d.get("core_skills") or d.get("requiredSkills") or [])[:8],
+            "definition": (d.get("definition") or d.get("description") or "")[:220],
+            "reasoning": (d.get("reasoning") or "")[:160],
+            "is_forecast": bool(d.get("is_forecast") or d.get("status") == "forecast"),
+            "eta_months": d.get("eta_months"),
+        })
+    return out
+
+
+def suggest_procurement_chat(
+    message: str,
+    *,
+    history: list[dict] | None = None,
+    discoveries: list[dict] | None = None,
+    forecasts: list[dict] | None = None,
+    summary: str = "",
+) -> dict:
+    """兼容入口：委托统一执图顾问 ZhituAgent（channel=suggest）。"""
+    from backend.llm import zhitu_agent
+
+    return zhitu_agent.chat(
+        message=message or "请给出本轮采购建议",
+        channel="suggest",
+        history=history,
+        discoveries=discoveries,
+        forecasts=forecasts,
+        summary=summary or "",
+    )
+
+
 def enrich_discoveries(discoveries: list[dict], top_n: int = 8) -> tuple[list[dict], dict]:
     meta: dict[str, Any] = {"llm": "none", "enriched": 0, "error": None}
     if not discoveries or not is_configured():
         return discoveries, meta
 
-    key = os.getenv("DEEPSEEK_API_KEY", "").strip()
-    base = os.getenv("DEEPSEEK_BASE_URL", DEFAULT_BASE).rstrip("/")
     model = os.getenv("DEEPSEEK_MODEL", DEFAULT_MODEL)
     targets = discoveries[:top_n]
     compact = [
@@ -58,22 +132,15 @@ def enrich_discoveries(discoveries: list[dict], top_n: int = 8) -> tuple[list[di
     )
     user = "候选岗位:\n" + json.dumps(compact, ensure_ascii=False)
 
+    content, call_meta = chat_completions(
+        [{"role": "system", "content": system}, {"role": "user", "content": user}],
+        temperature=0.3,
+        timeout=45.0,
+    )
+    if call_meta.get("error"):
+        meta["error"] = call_meta["error"]
+        return discoveries, meta
     try:
-        with httpx.Client(timeout=45.0) as client:
-            resp = client.post(
-                f"{base}/v1/chat/completions",
-                headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
-                json={
-                    "model": model,
-                    "messages": [
-                        {"role": "system", "content": system},
-                        {"role": "user", "content": user},
-                    ],
-                    "temperature": 0.3,
-                },
-            )
-            resp.raise_for_status()
-            content = resp.json()["choices"][0]["message"]["content"]
         data = _extract_json(content)
         by_id = {it["id"]: it for it in data.get("items", []) if it.get("id")}
         enriched = 0
@@ -87,7 +154,7 @@ def enrich_discoveries(discoveries: list[dict], top_n: int = 8) -> tuple[list[di
             if it.get("reasoning"):
                 d["reasoning"] = str(it["reasoning"]).strip()[:120]
             enriched += 1
-        meta.update({"llm": model, "enriched": enriched})
+        meta.update({"llm": call_meta.get("llm") or model, "enriched": enriched})
     except Exception as e:
         meta["error"] = str(e)
     return discoveries, meta

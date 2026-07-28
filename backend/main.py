@@ -1,7 +1,7 @@
 ﻿from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from backend.routers import collection, discovery, evolution, graph
+from backend.routers import agent, collection, discovery, evolution, graph
 
 
 app = FastAPI(title="Job Ability Graph API", version="0.1.0")
@@ -23,6 +23,6 @@ def health_check():
 app.include_router(collection.router, prefix="/api/collection", tags=["collection"])
 app.include_router(graph.router, prefix="/api/graph", tags=["graph"])
 app.include_router(discovery.router, prefix="/api/discovery", tags=["discovery"])
-
+app.include_router(agent.router, prefix="/api/agent", tags=["agent"])
 app.include_router(evolution.router, prefix="/api/evolution", tags=["evolution"])
 

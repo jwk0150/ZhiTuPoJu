@@ -15,6 +15,7 @@
   GET    /api/discovery/jobs/{job_id}        详情
   POST   /api/discovery/jobs/{job_id}/status 更新状态(采纳/拒绝)
   POST   /api/discovery/agent/scan           ★ 智能体全链路扫描(返回推理链+发现+预测)
+  POST   /api/discovery/suggest/chat         ★ AI 采购顾问多轮对话(DeepSeek + 扫描上下文)
   GET    /api/discovery/stats                全局指标
 """
 
@@ -44,12 +45,14 @@ def _build_pg_dsn() -> str:
     """从环境变量构建 PostgreSQL DSN。不在源码中固化任何密码。
 
     本地演示默认值见 .env.example;生产请通过环境变量覆盖。
+    注意：.env 里写 `PG_PASSWORD=`（空值）时 os.getenv 会返回 ''，
+    不会回退到默认值，因此空字符串按未设置处理。
     """
-    host = os.getenv("PG_HOST", "127.0.0.1")
-    port = os.getenv("PG_PORT", "3309")
-    user = os.getenv("PG_USER", "postgres")
-    password = os.getenv("PG_PASSWORD", "123456")  # 本地演示默认值;生产请通过 env 覆盖
-    db = os.getenv("PG_DB", "zhilian_crawl_db")
+    host = os.getenv("PG_HOST", "127.0.0.1") or "127.0.0.1"
+    port = os.getenv("PG_PORT", "3309") or "3309"
+    user = os.getenv("PG_USER", "postgres") or "postgres"
+    password = os.getenv("PG_PASSWORD") or "123456"  # 本地演示默认值;生产请通过 env 覆盖
+    db = os.getenv("PG_DB", "zhilian_crawl_db") or "zhilian_crawl_db"
     return f"host={host} port={port} user={user} password={password} dbname={db}"
 
 
@@ -561,6 +564,55 @@ def agent_reasoning():
     """获取最近一次扫描的推理链(用于前端展示智能体思考过程)。"""
     chain = _CACHED.get("reasoning_chain", [])
     return data.ok({"reasoning_chain": chain, "summary": _CACHED.get("summary", "")})
+
+
+class SuggestChatTurn(BaseModel):
+    role: str
+    content: str
+
+
+class SuggestChatRequest(BaseModel):
+    message: str = ""
+    history: list[SuggestChatTurn] = []
+    # 前端可附带本轮发现/预测，便于后端缓存为空时仍能对话
+    discoveries: list[dict[str, Any]] = []
+    forecasts: list[dict[str, Any]] = []
+    summary: str = ""
+
+
+@router.post("/suggest/chat")
+def suggest_chat(payload: SuggestChatRequest):
+    """兼容入口：转发统一执图顾问（channel=suggest）。扫描智能体职责不变。"""
+    from backend.llm import zhitu_agent
+
+    discoveries = _CACHED.get("discoveries") or payload.discoveries or list(data.NEW_JOBS)
+    forecasts = _CACHED.get("forecasts") or payload.forecasts or []
+    summary = _CACHED.get("summary") or payload.summary or ""
+    history = [{"role": t.role, "content": t.content} for t in (payload.history or [])]
+    result = zhitu_agent.chat(
+        message=payload.message or "请给出本轮采购建议",
+        channel="suggest",
+        history=history,
+        discoveries=discoveries,
+        forecasts=forecasts,
+        summary=summary,
+    )
+    return data.ok({
+        "reply": result.get("reply"),
+        "recommendations": result.get("recommendations") or [],
+        "model": {
+            "llm": result.get("llm") or "none",
+            "mode": result.get("mode") or "heuristic",
+            "channel": "suggest",
+            "error": result.get("error"),
+            "backed_by": "DeepSeek" if (result.get("llm") and result.get("llm") != "none") else "执图顾问兜底",
+            "cache_hits": {
+                "discoveries": len(discoveries),
+                "forecasts": len(forecasts),
+                "from_scan_cache": bool(_CACHED.get("discoveries")),
+            },
+        },
+    })
 
 
 class RawJobAnalyze(BaseModel):
