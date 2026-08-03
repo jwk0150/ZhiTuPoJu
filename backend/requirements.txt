@@ -4,3 +4,10 @@ pydantic
 psycopg[binary]
 httpx
 python-dotenv
+python-multipart
+pypdf
+sqlalchemy
+asyncpg
+pandas
+openpyxl
+openai

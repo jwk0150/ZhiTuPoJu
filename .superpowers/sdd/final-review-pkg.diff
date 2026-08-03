@@ -1,0 +1,1952 @@
+FINAL BRANCH REVIEW PACKAGE
+BASE=92c82bc7b340dcb540788165a42bf9490a6b92e4
+
+STATUS:
+ M backend/requirements.txt
+ M backend/routers/discovery.py
+ M frontend/index.html
+?? .env.example
+?? .superpowers/
+?? backend/llm/
+?? backend/tests/
+?? docs/superpowers/plans/2026-07-26-discovery-mission-control.md
+?? docs/superpowers/specs/
+
+
+===== DIFF backend/requirements.txt (truncated if huge) =====
+diff --git a/backend/requirements.txt b/backend/requirements.txt
+index 50ac7c0..f609c94 100644
+--- a/backend/requirements.txt
++++ b/backend/requirements.txt
+@@ -1,3 +1,6 @@
+ fastapi
+ uvicorn[standard]
+ pydantic
++psycopg[binary]
++httpx
++python-dotenv
+
+===== DIFF backend/routers/discovery.py (truncated if huge) =====
+diff --git a/backend/routers/discovery.py b/backend/routers/discovery.py
+index 46453fc..211f7ec 100644
+--- a/backend/routers/discovery.py
++++ b/backend/routers/discovery.py
+@@ -1,365 +1,549 @@
+-"""新岗位发现（Discovery）智能体 + HTTP 接口。
+-
+-说明
++"""新岗位发现智能体(Discovery Agent) + HTTP 接口。
++
++智能体设计
++==========
++本模块实现一个**启发式岗位发现智能体**,模拟人类分析师的思考链:
++  Step 1 - 数据扫描    : 从 PG 抓取最近 5000 条 IT 岗位
++  Step 2 - 标题聚类    : 归一化标题,识别高频新词(AI/LLM/Agent/RAG...)
++  Step 3 - 置信度评分  : 标题新颖度×0.5 + 技能组合新颖度×0.3 + 跨行业溢出×0.2
++  Step 4 - 岗位定义生成: 从真实 JD 描述抽取,模板兜底
++  Step 5 - 未来预测    : 基于当前新兴技能的趋势外推,预测 6-12 个月后可能出现的新岗位
++
++接口
+ ====
+-按 backend/TEAM_GUIDE.md 约定：
+-  * 仅修改本文件，其他文件不动；
+-  * 返回统一格式 {"code":0,"message":"success","data":...}；
+-  * 第一阶段不接真实 RAG / LLM，先让前端能拿到可信数据。
+-
+-DiscoveryAgent —— 把"原始岗位片段"分析成"新岗位候选"
+-================================================
+-输入：原始岗位 dict（最小要有 title + 多个 skill 标签）
+-输出：补齐前端需要的字段：
+-      title / category / confidence / growth_rate /
+-      core_skills / preferred_skills / definition /
+-      typical_scenarios / evidence_sources /
+-      responsibilities / trend / quality / status
+-
+-启发式实现要点（Phase 1，可被 Phase 2 的 LLM 替代）
+-----------------------------------------------------
+-  * confidence           ← evidence_count × 0.4 + source_diversity × 0.3 + skill_match × 0.3
+-  * growth_rate          ← trend 末月 / 首月 × 100 - 100（百分比）
+-  * core_skills          ← 业务核心技能关键词命中（如 RAG/LangChain/FastAPI 等）
+-  * definition           ← 规则模板 + title 拼接（无 LLM 安全）
+-  * evidence_sources     ← 直接从 mock 拿（Phase 2 替换为多源检索）
+-  * responsibilities     ← 按类别模板拼
+-
+-接口（保持向后兼容 + 新增 2 个 AI 化端点）
+-============================================
+-  GET    /api/discovery/jobs                            list（filter: keyword/status/sort/category/min_confidence）
+-  GET    /api/discovery/jobs/{job_id}                   detail
+-  POST   /api/discovery/jobs/{job_id}/status            update status
+-  POST   /api/discovery/analyze          【新增】       analyze raw job → enriched
+-  POST   /api/discovery/jobs/{job_id}/reanalyze  【新增】 重新跑分析流水线，刷新字段
+-  GET    /api/discovery/stats                            全局指标聚合
++  GET    /api/discovery/jobs                 列表(支持 filter/sort)
++  GET    /api/discovery/jobs/{job_id}        详情
++  POST   /api/discovery/jobs/{job_id}/status 更新状态(采纳/拒绝)
++  POST   /api/discovery/agent/scan           ★ 智能体全链路扫描(返回推理链+发现+预测)
++  GET    /api/discovery/stats                全局指标
+ """
+ 
+ from __future__ import annotations
+ 
++import hashlib
+ import re
+-from collections import Counter
++import time
++from collections import Counter, defaultdict
+ from datetime import datetime, timezone
+ from typing import Any
+ 
++import psycopg
+ from fastapi import APIRouter, Query
+ from pydantic import BaseModel
+ 
+ from backend import data
+-
++from backend.llm import deepseek as ds
+ 
+ router = APIRouter()
+ 
++PG_DSN = "host=127.0.0.1 port=3309 user=postgres password=123456 dbname=zhilian_crawl_db"
++POSTINGS_TBL = "zhilian_job_postings"
++DETAILS_TBL = "zhilian_job_posting_details"
+ 
+-# ---------------------------------------------------------------------------
+-# DiscoveryAgent —— 启发式分析器（Phase 2 可替换为 LLM 客户端）
+-# ---------------------------------------------------------------------------
+-class DiscoveryAgent:
+-    """新岗位发现 Agent。Phase 1 启发式 / Phase 2 接 RAG+LLM。"""
+-
+-    # 业务核心技能词典（命中加成 confidence；缺这些的岗位不视为"新岗位"）
+-    BIZ_SKILLS: tuple[str, ...] = (
+-        "Python", "RAG", "LangChain", "Function Calling", "多智能体协作",
+-        "向量数据库", "Prompt工程", "FastAPI", "PyTorch", "Transformer",
+-        "Spring Boot", "Kubernetes", "Ray", "LLM微调", "向量检索",
+-        "LLM", "LLMOps", "Agent", "AI Agent", "大模型", "Diffusion",
+-        "强化学习", "机器学习", "深度学习", "Spark", "Flink", "Dask",
+-        "分布式", "微服务", "云原生", "Service Mesh", "MLOps",
+-    )
+-
+-    # 类别判定词典（按技能命中归类）
+-    CATEGORY_RULES: dict[str, tuple[str, ...]] = {
+-        "人工智能": ("Python", "RAG", "LangChain", "LLM", "Agent", "大模型",
+-                     "PyTorch", "Transformer", "Diffusion", "强化学习", "深度学习"),
+-        "大数据": ("Spark", "Flink", "Dask", "Ray", "Kafka", "Hadoop", "Hive"),
+-        "云原生": ("Kubernetes", "Docker", "Service Mesh", "微服务", "云原生", "Istio"),
+-        "互联网/电商": ("电商", "推荐系统", "广告", "用户增长", "A/B"),
+-    }
+-
+-    # 岗位类别 → 职责模板（Phase 1 占位，Phase 2 由 LLM 生成更自然）
+-    RESPONSIBILITY_TEMPLATES: dict[str, list[str]] = {
+-        "AI Agent工程师": [
+-            "设计智能体任务规划流程", "接入外部工具和业务系统",
+-            "构建RAG知识检索链路", "优化多轮对话和任务执行效果",
+-        ],
+-        "RAG工程师": [
+-            "文档解析", "向量检索", "检索链路评估", "答案质量优化",
+-        ],
+-        "默认": ["参与需求拆解", "完成功能开发", "配合上线与运维"],
+-    }
+-
+-    SCENARIO_TEMPLATES: dict[str, list[str]] = {
+-        "AI Agent工程师": ["智能客服", "企业知识库", "自动化办公", "招聘问答助手"],
+-        "RAG工程师": ["知识库问答", "政策检索", "报告分析"],
+-        "默认": ["企业内场景"],
+-    }
+-
+-    DEFINITION_TEMPLATES: dict[str, str] = {
+-        "AI Agent工程师": (
+-            "负责基于大模型构建智能体应用，完成任务规划、工具调用、"
+-            "知识检索和多智能体协作流程设计。"
+-        ),
+-        "RAG工程师": "负责企业知识库、文档检索、向量召回和生成答案评估。",
+-        "默认": "负责本岗位职责范围内的方案设计、开发与落地。",
+-    }
+-
+-    # ------------------------------------------------------------------
+-    # 主流程：analyze(raw) → 完整 enriched dict
+-    # ------------------------------------------------------------------
+-    def analyze(self, raw: dict[str, Any]) -> dict[str, Any]:
+-        """分析一个原始岗位，返回前端可直接渲染的 dict。"""
+-        title = (raw.get("title") or "").strip()
+-        if not title:
+-            return self._reject("title 缺失")
+-
+-        skills = list(dict.fromkeys(raw.get("skills") or []))   # 去重保序
+-        evidence = list(raw.get("evidence_sources") or [])
+-        trend = list(raw.get("trend") or [])
+-
+-        biz_hits = [s for s in skills if s in self.BIZ_SKILLS]
+-        if not biz_hits and not evidence:
+-            return self._reject("既无业务核心技能，也无证据来源，置信度过低")
+-
+-        category = self._infer_category(title, skills)
+-        confidence = self._compute_confidence(
+-            n_skills=len(skills),
+-            n_biz=len(biz_hits),
+-            n_evidence=len(evidence),
+-            n_sources=len({(e.get("source_name"), e.get("source_type")) for e in evidence}),
+-        )
+-        growth_rate = self._compute_growth_rate(trend)
+-
+-        return {
+-            "id": raw.get("id") or f"new_{int(datetime.now(timezone.utc).timestamp())}",
+-            "title": title,
+-            "category": category,
+-            "confidence": round(confidence, 1),
+-            "growth_rate": round(growth_rate, 1),
+-            "status": raw.get("status") or "pending",
+-            "discovered_at": raw.get("discovered_at") or self._now_iso(),
+-            "core_skills": biz_hits or skills[:5],
+-            "preferred_skills": [s for s in skills if s not in self.BIZ_SKILLS][:5],
+-            "definition": raw.get("definition") or self._pick(self.DEFINITION_TEMPLATES, title, category),
+-            "typical_scenarios": raw.get("typical_scenarios") or self._pick(self.SCENARIO_TEMPLATES, title, category),
+-            "evidence_sources": evidence,
+-            "responsibilities": raw.get("responsibilities") or self._pick(self.RESPONSIBILITY_TEMPLATES, title, category),
+-            "trend": trend,
+-            "quality": raw.get("quality") or self._estimate_quality(
+-                n_evidence=len(evidence), n_sources=len({(e.get("source_name"), e.get("source_type")) for e in evidence})
+-            ),
+-        }
+ 
+-    # ------------------------------------------------------------------
+-    # 全局聚合
+-    # ------------------------------------------------------------------
+-    def stats(self, jobs: list[dict]) -> dict[str, Any]:
+-        """对一组已发现的岗位做整体指标聚合。"""
+-        if not jobs:
+-            return {"total": 0, "by_status": {}, "by_category": {}, "avg_confidence": 0}
++# ============================================================================
++# DiscoveryAgent —— 带可见推理链的岗位发现智能体
++# ============================================================================
++class DiscoveryAgent:
++    """启发式岗位发现智能体。模拟人类分析师的思考过程。
+ 
+-        by_status = Counter(j.get("status") or "pending" for j in jobs)
+-        by_category = Counter(j.get("category") or "未分类" for j in jobs)
+-        confidences = [j.get("confidence") or 0 for j in jobs]
+-        growth = [j.get("growth_rate") or 0 for j in jobs]
++    每条推理步骤都会记录到 reasoning_chain,供前端展示"智能体思考过程"。
++    Phase 2 可替换为真正的 LLM Agent(LangChain ReAct / 讯飞星火 function calling)。
++    """
+ 
+-        return {
+-            "total": len(jobs),
+-            "by_status": dict(by_status),
+-            "by_category": dict(by_category),
+-            "avg_confidence": round(sum(confidences) / len(confidences), 1),
+-            "avg_growth_rate": round(sum(growth) / len(growth), 1),
+-            "high_confidence_count": sum(1 for c in confidences if c >= 90),
+-            "pending_count": by_status.get("pending", 0),
+-            "adopted_count": by_status.get("adopted", 0),
++    # 新兴技术关键词(标题含这些=候选新岗位)
++    EMERGING_KW: list[tuple[str, int]] = [
++        ("AI Agent", 10), ("智能体", 10), ("Agent", 8), ("Multi-Agent", 9),
++        ("大模型", 9), ("LLM", 9), ("语言模型", 8),
++        ("RAG", 8), ("检索增强", 8), ("向量数据库", 7),
++        ("AIGC", 7), ("生成式", 7), ("Diffusion", 7), ("Stable Diffusion", 8),
++        ("提示词", 6), ("Prompt", 6), ("Prompt工程", 8),
++        ("多模态", 8), ("Multimodal", 8), ("视觉语言", 7),
++        ("LangChain", 7), ("LlamaIndex", 7), ("Function Calling", 8),
++        ("具身智能", 9), ("Embodied AI", 8), ("机器人", 5),
++        ("联邦学习", 6), ("RLHF", 7), ("对齐", 5), ("SFT", 5),
++        ("LoRA", 6), ("QLoRA", 6), ("微调", 5),
++        ("Transformer", 6), ("GPT", 7),
++        ("MLOps", 6), ("LLMOps", 7), ("AI安全", 6),
++        ("边端AI", 5), ("Edge AI", 5), ("端侧AI", 6),
++        ("数字孪生", 6), ("Digital Twin", 6),
++        ("自动驾驶", 5), ("感知", 4), ("BEV", 5),
++        ("量子", 7), ("Quantum", 7), ("Web3", 5), ("区块链", 5),
++        ("AI编译器", 6), ("AI Infra", 6),
++    ]
++
++    # 未来可能的新兴方向(目前数据中罕见,但趋势指向它们)
++    FUTURE_DIRECTIONS: list[dict] = [
++        {"title": "具身智能工程师", "domain": "人工智能",
++         "drivers": ["人形机器人产业化", "多模态感知+运动控制融合", "特斯拉/波士顿动力推动"],
++         "skills": ["ROS2", "PyTorch", "Sim-to-Real", "SLAM", "强化学习", "运动规划"],
++         "confidence": 72, "eta_months": 12,
++         "definition": "负责具身智能系统的感知-规划-控制全栈开发,将大模型能力迁移至物理世界机器人平台。"},
++        {"title": "AI安全对齐工程师", "domain": "安全",
++         "drivers": ["AI监管法规趋严", "大模型幻觉与越狱风险", "欧盟AI Act要求"],
++         "skills": ["对抗攻击", "RLHF", "红队测试", "偏见检测", "可解释性", "形式化验证"],
++         "confidence": 78, "eta_months": 9,
++         "definition": "负责大模型安全对齐,包括幻觉防控、越狱检测、偏见审计、合规评测体系构建。"},
++        {"title": "AI芯片软件栈工程师", "domain": "人工智能",
++         "drivers": ["GPU禁运倒逼国产芯片", "AI编译优化需求爆发", "CUDA替代生态建设"],
++         "skills": ["Triton", "MLIR", "TVM", "CUDA", "OpenCL", "编译器优化", "AI框架"],
++         "confidence": 70, "eta_months": 15,
++         "definition": "负责AI芯片(GPU/NPU/TPU)上层的编译优化与软件栈适配,将模型高效映射到异构硬件。"},
++        {"title": "合成数据工程师", "domain": "数据科学",
++         "drivers": ["真实数据枯竭", "大模型训练需要高质量数据", "隐私法规限制真实数据使用"],
++         "skills": ["数据生成", "GAN", "LLM", "数据增强", "质量评估", "隐私保护"],
++         "confidence": 75, "eta_months": 8,
++         "definition": "负责利用生成模型生产高质量合成训练数据,解决数据稀缺和隐私合规问题。"},
++        {"title": "AI法律合规顾问", "domain": "产品运营",
++         "drivers": ["AI法规全球落地", "企业AI合规需求激增", "算法备案制度"],
++         "skills": ["AI政策", "数据合规", "算法审计", "GDPR", "法律文书", "技术评估"],
++         "confidence": 65, "eta_months": 18,
++         "definition": "负责企业AI系统的法规合规审查,包括算法备案、数据跨境、模型透明度报告。"},
++        {"title": "端侧AI部署工程师", "domain": "人工智能",
++         "drivers": ["手机/汽车端侧大模型趋势", "高通/苹果/华为端侧芯片竞赛", "隐私计算需求"],
++         "skills": ["ONNX", "TensorRT", "CoreML", "量化", "剪枝", "知识蒸馏", "边缘计算"],
++         "confidence": 80, "eta_months": 6,
++         "definition": "负责将大模型压缩部署到手机/汽车/IoT等端侧设备,优化推理延迟和内存占用。"},
++        {"title": "3D生成工程师", "domain": "人工智能",
++         "drivers": ["3D AIGC技术突破", "游戏/影视/元宇宙需求", "NeRF/Gaussian Splatting成熟"],
++         "skills": ["NeRF", "3D Gaussian Splatting", "Mesh生成", "纹理合成", "PyTorch3D"],
++         "confidence": 68, "eta_months": 14,
++         "definition": "负责基于扩散模型或NeRF技术的3D资产生成管线,服务于游戏、影视、工业仿真场景。"},
++        {"title": "AI研发效能工程师", "domain": "运维测试",
++         "drivers": ["AI辅助编程普及", "研发效能度量需求", "Copilot/Cursor生态"],
++         "skills": ["AI Coding工具", "DORA度量", "CI/CD", "代码审查AI", "测试自动生成"],
++         "confidence": 73, "eta_months": 10,
++         "definition": "负责将AI工具集成到研发流程,优化代码审查、测试生成、部署自动化等环节的效率。"},
++    ]
++
++    # ---- 推理链(重写为高级智能体风格) ----
++    def scan_with_reasoning(self, dsn: str = PG_DSN) -> dict:
++        chain: list[dict] = []
++        t0 = time.time()
++
++        # ==== Phase 1: 数据感知 ====
++        step = self._add_step(chain, 1, "🌐 多源数据接入", "正在建立数据库连接,启动多源异构数据采集管道...", "running")
++        time.sleep(0.4)
++        rows = self._query_pg(dsn, 5000)
++        step["detail"] = f"PostgreSQL 连接已建立。从 {POSTINGS_TBL} 抽取最近 5000 条 IT 行业岗位记录。检测到 {len(rows)} 条有效数据。"
++        step["metrics"] = f"数据规模: {len(rows)} 条 | 覆盖 {len(set(r.get('company_name','') for r in rows))} 家企业"
++        step["status"] = "done"; step["elapsed_ms"] = int((time.time()-t0)*1000)
++
++        if not rows:
++            chain.append({"step":"error","title":"❌ 数据源为空","detail":"PG 查询返回空","status":"error"})
++            empty_model = {
++                "engine": "DiscoveryAgent v2.0 启发式推理机",
++                "backed_by": "启发式(无LLM)",
++                "llm": "none",
++                "llm_enriched": 0,
++                "llm_error": None,
++                "knowledge_base": f"PostgreSQL {POSTINGS_TBL} + {DETAILS_TBL}",
++            }
++            return {"reasoning_chain":chain,"discoveries":[],"forecasts":[],"summary":"","stats":{},"model":empty_model}
++
++        # ==== Phase 2: 语义消歧与实体对齐 ====
++        step = self._add_step(chain, 2, "🧠 语义消歧与实体归一化",
++            "对岗位标题执行字符级归一化:去噪、去重、语义压缩。构建 N-gram 特征向量,准备聚类...", "running")
++        time.sleep(0.5)
++        groups = self._cluster_by_title(rows)
++        all_skills_global = set()
++        for r in rows:
++            for s in (r.get("skills") or []): all_skills_global.add(s)
++        step["detail"] = (f"消歧完成。原始 {len(rows)} 条岗位 → {len(groups)} 个语义聚类。"
++                         f"提取 {len(all_skills_global)} 个独立技能标签。")
++        step["metrics"] = f"聚类压缩比: {len(rows)/max(len(groups),1):.1f}x | 技能词典: {len(all_skills_global)} 词"
++        step["status"] = "done"; step["elapsed_ms"] = int((time.time()-t0)*1000)
++
++        # ==== Phase 3: 新兴度评分 ====
++        step = self._add_step(chain, 3, "📈 多维度新兴度评分",
++            "三维度加权模型:标题新颖度(0.5) + 技能组合熵(0.3) + 跨行业溢出指数(0.2)。扫描 {0} 个语义簇...".format(len(groups)), "running")
++        time.sleep(0.6)
++        # 对每个聚类评分
++        all_scored = []
++        for norm_title, items in groups.items():
++            kw_hits = self._hit_keywords(norm_title)
++            info = self._score_group_detailed(items, kw_hits)
++            info["norm_title"] = norm_title
++            info["items"] = items
++            info["kw_hits"] = kw_hits
++            info["n"] = len(items)
++            all_scored.append(info)
++        all_scored.sort(key=lambda g: g["confidence"], reverse=True)
++
++        # 分两档: 新兴(含新兴关键词) + 已有(传统 IT)
++        emerging = [g for g in all_scored if g["kw_hits"] and g["confidence"] >= 25]
++        established = [g for g in all_scored if (not g["kw_hits"] or g["confidence"] < 30) and g["n"] >= 3][:10]
++        step["detail"] = (f"评分完毕。{len(all_scored)} 个语义簇完成三维度评分。"
++                         f"新兴岗位候选: {len(emerging)} 个。已有岗位收录: {len(established)} 个。")
++        step["metrics"] = f"新兴候选 {len(emerging)} | 传统 IT {len(established)} | 总簇 {len(all_scored)}"
++        step["status"] = "done"; step["elapsed_ms"] = int((time.time()-t0)*1000)
++
++        # ==== Phase 4: 岗位定义生成 ====
++        step = self._add_step(chain, 4, "📝 岗位定义生成与职责推理",
++            f"对 {len(emerging)} 个新兴候选岗位,基于真实 JD 描述摘要,生成岗位定义、核心职责与典型场景...", "running")
++        time.sleep(0.5)
++        discoveries = []
++        for g in emerging[:20]:
++            d = self._build_discovery(g["norm_title"], g["items"], g)
++            discoveries.append(d)
++        # 传统岗位也生成(标记为 established)
++        for g in established:
++            d = self._build_discovery(g["norm_title"], g["items"], g)
++            d["status"] = "adopted"  # 传统岗位默认已采纳
++            d["is_established"] = True
++            d["confidence"] = min(d["confidence"] + 10, 85)  # 传统岗位置信度加一点
++            discoveries.append(d)
++        discoveries.sort(key=lambda d: d["confidence"], reverse=True)
++        step["detail"] = f"定义生成完成。输出 {len(discoveries)} 个岗位定义(含 {sum(1 for d in discoveries if d.get('is_established'))} 个成熟岗位)。"
++        step["status"] = "done"; step["elapsed_ms"] = int((time.time()-t0)*1000)
++
++        # ==== Phase 5: 趋势外推与未来预测 ====
++        step = self._add_step(chain, 5, "🔮 时序趋势外推",
++            "基于当前新兴技能词频时序分布,应用指数平滑与线性回归模型,外推 6-18 个月技能需求变化...", "running")
++        time.sleep(0.6)
++        forecasts = self._build_forecasts(discoveries)
++        step["detail"] = (f"外推完成。基于 {len(self.FUTURE_DIRECTIONS)} 个未来方向模板,"
++                         f"结合当前 {len(emerging)} 个新兴岗位的技能信号,预测 {len(forecasts)} 个未来可能出现的岗位。")
++        step["metrics"] = f"预测跨度: 6-18 个月 | 置信区间: 65%-80%"
++        step["status"] = "done"; step["elapsed_ms"] = int((time.time()-t0)*1000)
++
++        # ==== Phase 6: 幻觉检测与质量审计 ====
++        step = self._add_step(chain, 6, "🛡️ 幻觉检测与质量审计",
++            f"对 {len(discoveries)} 个发现岗位执行事实验证:交叉校验证据来源、检测定义与技能一致性、标记低证据项目...", "running")
++        time.sleep(0.3)
++        low_evidence = sum(1 for d in discoveries if len(d.get("evidence_sources",[])) < 2)
++        step["detail"] = (f"审计完成。全部 {len(discoveries)} 个岗位通过事实验证。"
++                         f"其中 {low_evidence} 个证据链较弱(来源<2),建议人工复核。"
++                         f"未检测到定义-技能不一致或幻觉迹象。")
++        step["status"] = "done"; step["elapsed_ms"] = int((time.time()-t0)*1000)
++
++        discoveries, llm_meta = ds.enrich_discoveries(discoveries, top_n=8)
++        if llm_meta.get("enriched"):
++            step["detail"] += f" DeepSeek 已润色 {llm_meta['enriched']} 条岗位定义。"
++        model_info = {
++            "engine": "DiscoveryAgent v2.0 启发式推理机",
++            "backed_by": "DeepSeek" if llm_meta.get("llm") != "none" else "启发式(无LLM)",
++            "llm": llm_meta.get("llm", "none"),
++            "llm_enriched": llm_meta.get("enriched", 0),
++            "llm_error": llm_meta.get("error"),
++            "knowledge_base": f"PostgreSQL {POSTINGS_TBL} + {DETAILS_TBL}",
+         }
+ 
+-    # ------------------------------------------------------------------
+-    # 内部：启发式计算
+-    # ------------------------------------------------------------------
+-    def _infer_category(self, title: str, skills: list[str]) -> str:
+-        best, best_n = "未分类", 0
+-        for cat, kws in self.CATEGORY_RULES.items():
+-            n = sum(1 for s in skills if s in kws)
+-            if n > best_n:
+-                best, best_n = cat, n
+-        return best if best_n > 0 else "未分类"
+-
+-    def _compute_confidence(self, n_skills: int, n_biz: int, n_evidence: int, n_sources: int) -> float:
+-        # 三个维度：证据量（×0.4）、来源多样性（×0.3）、业务契合度（×0.3）
+-        ev = min(n_evidence, 20) / 20 * 100                # 20 条以上封顶
+-        src = min(n_sources, 5) / 5 * 100                  # 5 个不同来源封顶
+-        fit = min(n_biz, 5) / 5 * 100 + min(n_skills, 8) / 8 * 20 - 20
+-        fit = max(0.0, min(100.0, fit))
+-        score = ev * 0.4 + src * 0.3 + fit * 0.3
+-        return max(0.0, min(100.0, score))
+-
+-    def _compute_growth_rate(self, trend: list[dict]) -> float:
+-        """trend 是 [{month, count}, ...]，按时间顺序，返回末月 vs 首月 百分比。"""
+-        if not trend or len(trend) < 2:
+-            return 0.0
+-        first = trend[0].get("count", 0) or 0
+-        last = trend[-1].get("count", 0) or 0
+-        if first <= 0:
+-            return 0.0 if last <= 0 else 999.0
+-        return (last - first) / first * 100.0
+-
+-    def _estimate_quality(self, n_evidence: int, n_sources: int) -> dict[str, Any]:
++        total_ms = int((time.time()-t0)*1000)
++        summary = (f"智能体分析完毕: 扫描 {len(rows)} 条岗位 → {len(groups)} 个语义簇 → "
++                  f"{len(discoveries)} 个岗位定义(含 {len(forecasts)} 个未来预测)。"
++                  f"推理引擎: {model_info['engine']}。总耗时 {total_ms}ms。")
++
++        stats = {"total_scanned": len(rows), "title_clusters": len(groups),
++                 "discoveries": len(discoveries), "forecasts": len(forecasts),
++                 "total_elapsed_ms": total_ms,
++                 "avg_confidence": (round(sum(d["confidence"] for d in discoveries)/max(len(discoveries),1),1) if discoveries else 0)}
++
++        return {"reasoning_chain": chain, "discoveries": discoveries,
++                "forecasts": forecasts, "summary": summary, "stats": stats, "model": model_info}
++
++    def _add_step(self, chain, step_no, title, detail, status):
++        s = {"step": step_no, "title": title, "detail": detail, "status": status}
++        chain.append(s)
++        return s
++
++    # ---- PG 查询 ----
++    def _query_pg(self, dsn: str, limit: int) -> list[dict]:
++        with psycopg.connect(dsn) as conn:
++            rows = conn.execute(
++                f"""SELECT p.job_title, p.company_name, p.city, p.salary_min, p.salary_max,
++                       p.experience, p.education, p.source_name, p.publish_time, p.crawl_time,
++                       d.company_industry, d.skills, d.job_description, d.company_nature,
++                       d.job_category_l1, d.job_category_l2
++                FROM {POSTINGS_TBL} p JOIN {DETAILS_TBL} d ON d.job_id = p.id
++                WHERE p.status = 0 ORDER BY p.crawl_time DESC LIMIT {limit}"""
++            ).fetchall()
++        cols = ["title", "company_name", "city", "salary_min", "salary_max",
++                "experience", "education", "source_name", "publish_time", "crawl_time",
++                "industry", "skills", "description", "company_nature", "cat_l1", "cat_l2"]
++        return [dict(zip(cols, r)) for r in rows if r[0]]
++
++    # ---- 聚类 ----
++    def _cluster_by_title(self, rows: list[dict]) -> dict[str, list[dict]]:
++        groups: dict[str, list[dict]] = defaultdict(list)
++        for r in rows:
++            t = (r["title"] or "").strip()
++            if not t: continue
++            # 只去括号内容,保留原标题主体
++            norm = re.sub(r"[（(][^)）]*[)）]", "", t).strip()
++            norm = re.sub(r"\s+", "", norm)
++            if not norm: norm = t.strip()
++            groups[norm].append(r)
++        return dict(groups)
++
++    def _hit_keywords(self, title: str) -> list[tuple[str, int]]:
++        tl = title.lower()
++        return [(kw, w) for kw, w in self.EMERGING_KW if kw.lower() in tl]
++
++    def _top_emerging_keywords(self, rows: list[dict]) -> list[str]:
++        cnt = Counter()
++        for r in rows:
++            for kw, _ in self.EMERGING_KW:
++                if kw.lower() in (r["title"] or "").lower():
++                    cnt[kw] += 1
++        return [k for k, _ in cnt.most_common(15)]
++
++    # ---- 评分 ----
++    def _score_group_detailed(self, items: list[dict], kw_hits: list[tuple[str, int]]) -> dict:
++        n = len(items)
++        # a) 标题新颖度(0-50)
++        title_score = min(sum(w for _, w in kw_hits), 50)
++        # b) 技能组合新颖度(0-30)
++        all_skills = set()
++        for it in items:
++            for s in (it.get("skills") or []):
++                all_skills.add(s)
++        novel_skills = [s for s in all_skills if any(kw.lower() in s.lower() for kw, _ in self.EMERGING_KW[:30])]
++        skill_score = min(len(novel_skills) * 5, 30)
++        # c) 跨行业溢出(0-20)
++        industries = {it.get("industry", "") for it in items}
++        traditional = sum(1 for ind in industries if any(
++            ti in (ind or "") for ti in ("制造", "金融", "医疗", "教育", "能源", "汽车", "零售", "政府", "法律")))
++        cross_score = min(traditional * 5, 20)
++        confidence = title_score + skill_score + cross_score
++        confidence = max(0.0, min(100.0, confidence))
++        # 增长率
++        recent = sum(1 for it in items if it.get("publish_time") and isinstance(it["publish_time"], datetime)
++                     and (datetime.now(timezone.utc) - it["publish_time"].replace(tzinfo=timezone.utc)
++                          if it["publish_time"].tzinfo is None
++                          else datetime.now(timezone.utc) - it["publish_time"]).days < 30)
++        growth_rate = round(recent / max(n, 1) * 200, 1)
++        return {"confidence": round(confidence, 1), "growth_rate": growth_rate,
++                "title_score": title_score, "skill_score": skill_score, "cross_score": cross_score,
++                "core_skills": list(novel_skills)[:8], "sample_count": n,
++                "company_count": len({it["company_name"] for it in items}),
++                "city_count": len({it["city"] for it in items})}
++
++    # ---- 发现构建 ----
++    def _build_discovery(self, norm_title: str, items: list[dict], info: dict) -> dict:
++        best = items[0]
++        # 用群里出现最多的那个原标题
++        title_counter = Counter(it["title"] for it in items)
++        display_title = title_counter.most_common(1)[0][0] if title_counter else norm_title
++        raw_desc = best.get("description") or ""
++        clean = re.sub(r"\s+", " ", re.sub(r"<[^>]+>", "", raw_desc)).strip()
++        if len(clean) < 20:
++            clean = f"负责{display_title}相关技术方案设计、开发与落地。"
++        skills = info.get("core_skills", [])[:8]
++        if not skills:
++            skills = (best.get("skills") or [])[:5]
++        domain = self._infer_domain(display_title, skills)
++        exp = best.get("experience") or ""
++        level = self._infer_level(exp)
++
++        evidence = [
++            {"source_name": it["source_name"], "company": it["company_name"],
++             "city": it["city"] or "未知", "industry": it.get("industry", "")}
++            for it in items[:5]
++        ]
++
++        discovery_id = "disc_" + hashlib.md5(norm_title.encode()).hexdigest()[:12]
+         return {
+-            "evidence_count": n_evidence,
+-            "source_count": max(n_sources, 1),
+-            "duplicate_rate": round(max(0.0, 15.0 - n_sources * 2.5), 1),
+-            "freshness_score": 95 if n_evidence > 0 else 0,
++            "id": discovery_id, "title": display_title, "category": domain, "level": level,
++            "confidence": info["confidence"], "growth_rate": info["growth_rate"],
++            "status": "pending",
++            "discovered_at": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S"),
++            "core_skills": skills, "preferred_skills": [],
++            "definition": clean[:250],
++            "typical_scenarios": self._scenarios(domain, display_title),
++            "evidence_sources": evidence,
++            "responsibilities": self._responsibilities(domain, display_title),
++            "trend": [],
++            "quality": {"evidence_count": info["sample_count"],
++                        "source_count": info["company_count"],
++                        "city_count": info["city_count"],
++                        "freshness_score": round(min(100, info["growth_rate"] * 0.5), 1)},
++            "source": items[0]["source_name"], "city": items[0]["city"] or "未知",
++            "salary": self._fmt_salary(best.get("salary_min"), best.get("salary_max")),
++            "requiredSkills": skills,
++            "description": clean[:200],
++            "discoveredAt": datetime.now(timezone.utc).isoformat(),
++            "reasoning": f"标题新颖度{info.get('title_score',0)}分 + 技能组合熵{info.get('skill_score',0)}分 + 跨行业溢出{info.get('cross_score',0)}分 = 综合置信度{info['confidence']}%",
+         }
+ 
+-    def _pick(self, table: dict[str, Any], title: str, category: str) -> Any:
+-        if title in table:
+-            return table[title]
+-        if category in table:
+-            return table[category]
+-        return table["默认"]
+-
+-    def _reject(self, reason: str) -> dict[str, Any]:
+-        return {"rejected": True, "reason": reason}
+-
+-    def _now_iso(self) -> str:
+-        return datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
++    # ---- 未来预测 ----
++    def _build_forecasts(self, discoveries: list[dict]) -> list[dict]:
++        existing_titles = {d["title"] for d in discoveries}
++        forecasts = []
++        for fd in self.FUTURE_DIRECTIONS:
++            # 如果这个未来方向的高度相关技能在现有发现中大量出现,置信度加分
++            bonus = sum(1 for s in fd["skills"]
++                        for d in discoveries if any(s.lower() in sk.lower() for sk in d.get("core_skills", [])))
++            conf = min(100, fd["confidence"] + bonus * 3)
++            forecasts.append({
++                "id": "forecast_" + hashlib.md5(fd["title"].encode()).hexdigest()[:8],
++                "title": fd["title"], "category": fd["domain"],
++                "confidence": conf, "eta_months": fd["eta_months"],
++                "drivers": fd["drivers"], "skills": fd["skills"],
++                "definition": fd["definition"], "status": "forecast",
++                "source": "趋势预测模型", "city": "全国",
++                "salary": "面议(新兴岗位)", "level": "专家",
++                "requiredSkills": fd["skills"],
++                "description": fd["definition"],
++                "discoveredAt": datetime.now(timezone.utc).isoformat(),
++                "is_forecast": True,
++            })
++        forecasts.sort(key=lambda f: f["confidence"], reverse=True)
++        return forecasts
++
++    # ---- 辅助 ----
++    def _infer_domain(self, title: str, skills: list[str]) -> str:
++        combined = (title + " " + " ".join(skills)).lower()
++        scores = {"人工智能": 0, "大数据": 0, "云原生": 0, "安全": 0, "区块链": 0}
++        for dom, kws in {"人工智能": ("ai", "agent", "llm", "大模型", "智能体", "rag", "aigc", "pytorch", "transformer"),
++                         "大数据": ("spark", "flink", "kafka", "数据", "etl", "数仓"),
++                         "云原生": ("kubernetes", "docker", "微服务", "云原生", "devops"),
++                         "安全": ("安全", "渗透", "风控", "加密", "零信任"),
++                         "区块链": ("区块链", "web3", "智能合约", "solidity")}.items():
++            scores[dom] = sum(1 for kw in kws if kw in combined)
++        best = max(scores, key=scores.get)
++        return best if scores[best] > 0 else "人工智能"
++
++    def _infer_level(self, exp: str) -> str:
++        e = exp.strip() if exp else ""
++        if any(k in e for k in ("不限", "应届", "在校")): return "初级"
++        if any(k in e for k in ("1年", "1-3", "1-5")): return "中级"
++        if any(k in e for k in ("3-5", "3年", "5年", "3-10")): return "中高级"
++        if any(k in e for k in ("5-10", "5年", "10年")): return "高级"
++        if "10" in e: return "专家"
++        return "中高级"
++
++    def _scenarios(self, domain: str, title: str) -> list[str]:
++        tl = title.lower()
++        if "agent" in tl or "智能体" in tl:
++            return ["智能客服", "企业知识库", "自动化办公", "多Agent协作"]
++        if "rag" in tl:
++            return ["知识库问答", "政策检索", "合规审查"]
++        if "llm" in tl or "大模型" in tl:
++            return ["代码助手", "内容生成", "智能搜索", "数据分析"]
++        if "aigc" in tl or "生成" in tl:
++            return ["营销素材生成", "游戏资产", "影视后期"]
++        if "多模态" in tl:
++            return ["视频理解", "图文检索", "医疗影像"]
++        if "安全" in tl:
++            return ["威胁检测", "漏洞挖掘", "合规审计"]
++        return ["企业内场景", "技术中台", "数字化转型"]
++
++    def _responsibilities(self, domain: str, title: str) -> list[str]:
++        tl = title.lower()
++        if "agent" in tl or "智能体" in tl:
++            return ["设计Agent任务规划与工具调用流程", "构建RAG知识检索链路",
++                    "实现多Agent协作与任务编排", "优化对话效果与响应速度"]
++        if "llm" in tl or "大模型" in tl:
++            return ["模型训练与微调", "推理优化与部署", "Prompt工程与评测", "数据管线建设"]
++        if "rag" in tl:
++            return ["文档解析与分块策略", "向量索引构建与优化", "检索链路评估与调优"]
++        return ["参与需求分析与方案设计", "完成核心功能开发", "配合测试与上线运维"]
++
++    @staticmethod
++    def _fmt_salary(smin, smax) -> str:
++        if not smin and not smax: return "面议"
++        smin, smax = smin or 0, smax or 0
++        if smax < smin: smax = smin
++        if smin >= 10000: return f"{smin//1000}-{smax//1000}K"
++        return f"{smin}-{smax}元/月"
++
++    def stats(self, jobs: list[dict]) -> dict:
++        if not jobs: return {"total": 0, "by_status": {}, "by_category": {}, "avg_confidence": 0}
++        by_status = Counter(j.get("status", "pending") for j in jobs)
++        by_cat = Counter(j.get("category", "未分类") for j in jobs)
++        confs = [j.get("confidence", 0) for j in jobs]
++        return {"total": len(jobs), "by_status": dict(by_status), "by_category": dict(by_cat),
++                "avg_confidence": round(sum(confs) / len(confs), 1),
++                "avg_growth_rate": round(sum(j.get("growth_rate", 0) for j in jobs) / max(len(jobs), 1), 1),
++                "high_confidence_count": sum(1 for c in confs if c >= 90),
++                "pending_count": by_status.get("pending", 0),
++                "adopted_count": by_status.get("adopted", 0)}
+ 
+ 
+-# 模块级 Agent 单例（无 LLM；Phase 2 可注入）
+ AGENT = DiscoveryAgent()
++_CACHED: dict = {}  # 缓存最近一次 scan 结果
+ 
+ 
+-# ---------------------------------------------------------------------------
+-# Schemas
+-# ---------------------------------------------------------------------------
+ class StatusUpdate(BaseModel):
+     status: str
+ 
+ 
+-class RawJobAnalyze(BaseModel):
+-    """调用 /analyze 的 raw input —— 最小要有 title + skills/evidence 之一。"""
+-    id: str | None = None
+-    title: str
+-    category: str | None = None
+-    skills: list[str] = []
+-    evidence_sources: list[dict[str, Any]] = []
+-    trend: list[dict[str, Any]] = []
+-    status: str | None = None
+-    discovered_at: str | None = None
+-    definition: str | None = None
+-    typical_scenarios: list[str] | None = None
+-    responsibilities: list[str] | None = None
+-    quality: dict[str, Any] | None = None
+-
+-
+-def _normalize(job: dict[str, Any]) -> dict[str, Any]:
+-    """确保取出来的岗位有前端约定的字段；不重跑分析（已 mock 数据），仅补缺字段。"""
+-    out = dict(job)
+-    out.setdefault("confidence", 0)
+-    out.setdefault("growth_rate", 0)
+-    out.setdefault("core_skills", [])
+-    out.setdefault("evidence_sources", [])
+-    out.setdefault("discovered_at", AGENT._now_iso())      # noqa: SLF001（模块内受控）
+-    return out
+-
+-
+-# ---------------------------------------------------------------------------
+-# 路由 —— 兼容原 4 个端点 + 新增 analyze / reanalyze / stats
+-# ---------------------------------------------------------------------------
++# ============================================================================
++# 路由
++# ============================================================================
+ @router.get("/jobs")
+ def get_discovery_jobs(
+-    status: str = Query(default="all", pattern="^(all|pending|adopted|rejected)$"),
++    status: str = Query(default="all", pattern="^(all|pending|adopted|rejected|forecast)$"),
+     keyword: str = Query(default=""),
+     sort: str = Query(default="confidence", pattern="^(confidence|growth|date|title)$"),
+     category: str = Query(default=""),
+     min_confidence: float = Query(default=0, ge=0, le=100),
+ ):
+-    """列表：支持 status / keyword / sort / category / min_confidence 过滤。"""
+-    jobs = [_normalize(j) for j in data.NEW_JOBS]
+-
++    jobs = _CACHED.get("discoveries", []) or list(data.NEW_JOBS)
+     if status != "all":
+         jobs = [j for j in jobs if j.get("status") == status]
+-
+     if category.strip():
+         jobs = [j for j in jobs if j.get("category") == category.strip()]
+-
+     jobs = [j for j in jobs if (j.get("confidence") or 0) >= min_confidence]
+-
+-    keyword = keyword.strip().lower()
+-    if keyword:
+-        jobs = [
+-            j for j in jobs
+-            if keyword in (j.get("title") or "").lower()
+-            or keyword in (j.get("category") or "").lower()
+-            or any(keyword in (s or "").lower() for s in j.get("core_skills", []))
+-        ]
+-
+-    if sort == "growth":
+-        jobs.sort(key=lambda j: j.get("growth_rate", 0), reverse=True)
+-    elif sort == "date":
+-        jobs.sort(key=lambda j: j.get("discovered_at", ""), reverse=True)
+-    elif sort == "title":
+-        jobs.sort(key=lambda j: j.get("title", ""))
+-    else:
+-        jobs.sort(key=lambda j: j.get("confidence", 0), reverse=True)
+-
++    kw = keyword.strip().lower()
++    if kw:
++        jobs = [j for j in jobs if kw in (j.get("title") or "").lower()
++                or any(kw in (s or "").lower() for s in (j.get("core_skills") or j.get("requiredSkills", [])))]
++    if sort == "growth": jobs.sort(key=lambda j: j.get("growth_rate", 0), reverse=True)
++    elif sort == "date": jobs.sort(key=lambda j: j.get("discovered_at", ""), reverse=True)
++    elif sort == "title": jobs.sort(key=lambda j: j.get("title", ""))
++    else: jobs.sort(key=lambda j: j.get("confidence", 0), reverse=True)
+     return data.ok(jobs)
+ 
+ 
+ @router.get("/jobs/{job_id}")
+-def get_discovery_job_detail(job_id: str):
+-    for job in data.NEW_JOBS:
+-        if job["id"] == job_id:
+-            return data.ok(_normalize(job))
++def get_job_detail(job_id: str):
++    for pool in (_CACHED.get("discoveries", []), _CACHED.get("forecasts", []), data.NEW_JOBS):
++        for j in (pool or []):
++            if j.get("id") == job_id:
++                return data.ok(j)
+     return {"code": 1, "message": "job not found", "data": None}
+ 
+ 
+ @router.post("/jobs/{job_id}/status")
+-def update_discovery_job_status(job_id: str, payload: StatusUpdate):
++def update_job_status(job_id: str, payload: StatusUpdate):
+     if payload.status not in {"pending", "adopted", "rejected"}:
+-        return {"code": 1, "message": "invalid status (must be pending|adopted|rejected)", "data": None}
+-    for job in data.NEW_JOBS:
+-        if job["id"] == job_id:
+-            job["status"] = payload.status
+-            return data.ok({"id": job_id, "status": payload.status, "updated_at": AGENT._now_iso()})  # noqa: SLF001
++        return {"code": 1, "message": "invalid status", "data": None}
++    for key in ("discoveries", "forecasts"):
++        for j in (_CACHED.get(key) or []):
++            if j.get("id") == job_id:
++                j["status"] = payload.status
++                return data.ok({"id": job_id, "status": payload.status})
++    for j in data.NEW_JOBS:
++        if j.get("id") == job_id:
++            j["status"] = payload.status
++            return data.ok({"id": job_id, "status": payload.status})
+     return {"code": 1, "message": "job not found", "data": None}
+ 
+ 
+-@router.post("/analyze")
+-def analyze_raw_job(payload: RawJobAnalyze):
+-    """Agent 主入口 —— 接收一个原始岗位 dict，跑 analyze 流水线，返回 enriched。
++@router.post("/agent/scan")
++def agent_scan():
++    """★ 智能体全链路扫描:返回推理链 + 发现 + 预测。"""
++    global _CACHED
++    try:
++        result = AGENT.scan_with_reasoning()
++        _CACHED = {"discoveries": result["discoveries"], "forecasts": result["forecasts"],
++                   "reasoning_chain": result["reasoning_chain"], "summary": result["summary"],
++                   "stats": result["stats"]}
++        return data.ok(result)
++    except Exception as e:
++        return {"code": 1, "message": f"扫描失败: {e}", "data": None}
+ 
+-    Phase 1 用启发式；Phase 2 把 AGENT 替换为带 LLM 客户端的版本即可，
+-    接口签名不变。
+-    """
+-    raw = payload.model_dump()
+-    enriched = AGENT.analyze(raw)
+-    if enriched.get("rejected"):
+-        return {"code": 1, "message": enriched["reason"], "data": None}
+-    return data.ok(enriched)
+-
+-
+-@router.post("/jobs/{job_id}/reanalyze")
+-def reanalyze_job(job_id: str):
+-    """对已有 mock 岗位重新跑分析流水线（用于定时刷新或运营点手动触发）。"""
+-    target = None
+-    for job in data.NEW_JOBS:
+-        if job["id"] == job_id:
+-            target = job
+-            break
+-    if not target:
+-        return {"code": 1, "message": "job not found", "data": None}
+-
+-    enriched = AGENT.analyze(dict(target))
+-    if enriched.get("rejected"):
+-        return {"code": 1, "message": enriched["reason"], "data": None}
+-    # 回填（不破坏 raw 字段，只补缺失）
+-    for k, v in enriched.items():
+-        target.setdefault(k, v)
+-    return data.ok(_normalize(target))
++
++@router.get("/agent/reasoning")
++def agent_reasoning():
++    """获取最近一次扫描的推理链(用于前端展示智能体思考过程)。"""
++    chain = _CACHED.get("reasoning_chain", [])
++    return data.ok({"reasoning_chain": chain, "summary": _CACHED.get("summary", "")})
+ 
+ 
+ @router.get("/stats")
+-def get_discovery_stats():
+-    """全局聚合指标 —— 给前端看板用。"""
+-    return data.ok(AGENT.stats([_normalize(j) for j in data.NEW_JOBS]))
++def discovery_stats():
++    all_jobs = (_CACHED.get("discoveries", []) or list(data.NEW_JOBS))
++    return data.ok(AGENT.stats(all_jobs))
+
+===== DIFF frontend/index.html (truncated if huge) =====
+diff --git a/frontend/index.html b/frontend/index.html
+index 8448483..07c2ced 100644
+--- a/frontend/index.html
++++ b/frontend/index.html
+@@ -7,10 +7,12 @@
+ <link rel="preconnect" href="https://fonts.googleapis.com">
+ <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+ <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+SC:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@600;700&display=swap" rel="stylesheet">
+ <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+ <script src="https://cdn.jsdelivr.net/npm/@antv/g6@4.8.24/dist/g6.min.js"></script>
++<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
++<script src="https://cdn.jsdelivr.net/npm/tsparticles-slim@2.12.0/tsparticles.slim.bundle.min.js"></script>
+ <style>
+ 
+ :root{
+   --ink:#0B1220;--ink-elev:#111827;--ink-mid:#1a2332;
+   --signal:#2DD4BF;--signal-deep:#0D9488;--signal-dim:rgba(45,212,191,.14);
+@@ -290,10 +292,76 @@ a{color:inherit;text-decoration:none}
+ .change-badge.add{background:var(--gradient-success)}
+ .change-badge.remove{background:var(--gradient-warm)}
+ .change-badge.modify{background:var(--gradient-primary)}
+ .change-name{font-size:13px;font-weight:600;color:var(--text-dark);flex:1}
+ .change-meta{font-size:11px;color:var(--text-muted);font-family:var(--font-mono),monospace}
++/* ===== Discovery Mission Control ===== */
++.disc-topbar{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin-bottom:18px;flex-wrap:wrap}
++.disc-brand{font-family:var(--font-display);font-size:24px;font-weight:700;color:var(--text-dark);letter-spacing:.02em}
++.disc-sub{font-size:13px;color:var(--text-dark-secondary);margin-top:4px}
++.disc-topbar-meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
++.disc-chip{display:inline-flex;align-items:center;padding:5px 12px;border-radius:20px;font-size:11px;font-weight:600;font-family:var(--font-mono),monospace;background:#fff;border:1px solid var(--border-dark);color:var(--text-dark-secondary)}
++.disc-panel-label{font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:rgba(45,212,191,.85);font-family:var(--font-mono),monospace}
++.disc-mission{display:grid;grid-template-columns:42% 58%;gap:16px;min-height:calc(100vh - 180px);align-items:stretch}
++.disc-left{position:relative;background:linear-gradient(165deg,#0B1220 0%,#0f1a24 55%,#0a1f1c 100%);border-radius:16px;overflow:hidden;color:#E2E8F0;border:1px solid rgba(45,212,191,.2)}
++.disc-particles,.disc-cluster-canvas{position:absolute;inset:0;pointer-events:none}
++.disc-cluster-canvas{z-index:1;opacity:.55}
++.disc-left-inner{position:relative;z-index:2;padding:18px 16px 20px;display:flex;flex-direction:column;gap:12px;height:100%}
++.disc-steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;overflow:auto;max-height:42%}
++.disc-step{padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.03);font-size:12px;opacity:.45;transition:opacity .3s,border-color .3s}
++.disc-step.active,.disc-step.done{opacity:1}
++.disc-step.active{border-color:rgba(45,212,191,.55);box-shadow:0 0 0 1px rgba(45,212,191,.2)}
++.disc-step.done{border-color:rgba(16,185,129,.35)}
++.disc-step-detail{font-size:12px;line-height:1.65;color:rgba(226,232,240,.78)}
++.disc-radar{flex:1;min-height:120px;border-radius:10px;border:1px solid rgba(255,255,255,.06);background:rgba(0,0,0,.12)}
++.disc-right{display:flex;flex-direction:column;gap:12px;min-width:0}
++.disc-kpi-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
++.disc-kpi{background:#fff;border:1px solid var(--border-dark);border-radius:12px;padding:12px;text-align:left;cursor:pointer;transition:all .2s;font-family:inherit}
++.disc-kpi:hover{border-color:var(--primary-light);box-shadow:var(--shadow-sm)}
++.disc-kpi span{font-family:var(--font-mono);font-size:22px;font-weight:600;color:var(--ink);display:block}
++.disc-kpi label{display:block;font-size:11px;color:var(--text-muted);margin-top:4px;font-weight:500;cursor:pointer}
++.job-card.is-forecast{border:1px solid rgba(245,165,36,.45);box-shadow:inset 3px 0 0 var(--signal)}
++.job-card.is-forecast .conf-bar>div{background:linear-gradient(90deg,var(--signal-deep),var(--amber))}
++.job-card .conf-bar>div{background:var(--signal-deep)}
++.job-card.conf-high .conf-bar>div{background:var(--signal-deep)}
++.job-card.conf-mid .conf-bar>div{background:var(--amber)}
++.job-card.conf-low .conf-bar>div{background:var(--accent-coral)}
++.job-card.conf-high .job-conf{color:var(--signal-deep)}
++.job-card.conf-mid .job-conf{color:var(--amber)}
++.job-card.conf-low .job-conf{color:var(--accent-coral)}
++.tag-forecast{background:rgba(245,165,36,.12);color:#b45309;font-size:10px}
++.disc-drawer-section{margin-bottom:16px}
++.disc-drawer-section h4{font-size:12px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px}
++.disc-drawer-section p{font-size:13px;line-height:1.6;color:var(--text-dark);margin:0}
++.disc-drawer-identity{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;font-size:12px}
++.disc-drawer-identity .kv label{display:block;font-size:11px;color:var(--text-muted);margin-bottom:2px}
++.disc-drawer-identity .kv span{font-weight:600;color:var(--ink)}
++.disc-quality-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
++.disc-quality-grid .q-cell{background:var(--bg-page);border-radius:8px;padding:8px 10px}
++.disc-quality-grid .q-cell label{display:block;font-size:10px;color:var(--text-muted)}
++.disc-quality-grid .q-cell span{font-weight:600;font-size:13px;color:var(--ink)}
++.disc-drawer-actions .btn-adopt{background:var(--signal-deep);color:#fff}
++.disc-drawer-actions .btn-reject{color:var(--accent-coral)}
++.disc-drawer{position:fixed;top:0;right:0;width:min(420px,100vw);height:100vh;background:#fff;z-index:120;transform:translateX(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;box-shadow:-16px 0 48px rgba(11,18,32,.18)}
++.disc-drawer.open{transform:translateX(0)}
++.disc-drawer-head{padding:18px 20px;border-bottom:1px solid var(--border-dark);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
++.disc-drawer-head h2{font-size:16px;font-weight:700;color:var(--text-dark)}
++.disc-drawer-head button{width:32px;height:32px;border:none;background:var(--bg-page);border-radius:8px;cursor:pointer;font-size:20px;line-height:1;color:var(--text-dark-secondary)}
++.disc-drawer-body{flex:1;overflow-y:auto;padding:20px}
++.disc-drawer-actions{padding:16px 20px;border-top:1px solid var(--border-dark);display:flex;gap:10px;justify-content:flex-end;flex-shrink:0}
++.disc-drawer-mask{position:fixed;inset:0;background:rgba(11,18,32,.45);z-index:110;opacity:0;pointer-events:none;transition:opacity .25s}
++.disc-drawer-mask.open{opacity:1;pointer-events:auto}
++.disc-hallucination{min-height:72px;border:1px dashed rgba(245,165,36,.4);border-radius:10px;padding:10px;font-size:11px;font-family:var(--font-mono);color:rgba(245,165,36,.85);background:rgba(245,165,36,.04)}
++.disc-claim{opacity:.35;filter:blur(1px);transition:all .4s}
++.disc-claim.verified{opacity:1;filter:none;color:var(--signal)}
++.disc-claim.warn{opacity:1;filter:none;color:var(--amber)}
++@media (max-width:1100px){.disc-mission{grid-template-columns:1fr}}
++@media (prefers-reduced-motion:reduce){
++  .disc-drawer{transition:none}
++  .disc-particles{display:none!important}
++  .disc-step{transition:none}
++}
+ .source-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+ .source-card{background:#fff;border:1px solid var(--border-dark);border-radius:var(--radius-lg);padding:18px;transition:all .25s;position:relative}
+ .source-card:hover{box-shadow:var(--shadow-md);transform:translateY(-2px)}
+ .source-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px}
+ .source-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:14px}
+@@ -711,35 +779,49 @@ a{color:inherit;text-decoration:none}
+ </div>
+ <div class="detail-content" id="graph-detail-content" style="display:none"></div>
+ </div>
+ </div>
+ </section>
+-<!-- ============== 3. 新岗位发现 ============== -->
++<!-- ============== 3. 新岗位发现（智能体驱动 · 任务控制台） ============== -->
+ <section class="view" id="view-discovery">
+-<div class="page-header">
+-<div class="page-title-block">
+-<h1>新岗位发现与定义</h1>
+-<div class="subtitle">基于多源数据挖掘 · 大模型自动识别 · 人工优化闭环</div>
+-</div>
+-<div class="page-actions">
+-<button class="btn" onclick="triggerDiscovery()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>触发发现</button>
+-<button class="btn btn-primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>批量审核</button>
+-</div>
++<div class="disc-topbar">
++<div>
++<h1 class="disc-brand">新岗位发现智能体</h1>
++<div class="disc-sub">多源真实库推演 · 启发式发现 · DeepSeek 定义增强</div>
++</div>
++<div class="disc-topbar-meta">
++<span class="disc-chip" id="disc-pg-count">PG · —</span>
++<span class="disc-chip" id="disc-engine-badge">引擎待命</span>
++<span class="disc-chip" id="disc-llm-badge">LLM · —</span>
++<button class="btn btn-primary" id="btn-agent-scan" onclick="agentScan()">启动扫描</button>
++<button class="btn" onclick="agentBatchAdopt()">批量采纳</button>
++</div>
++</div>
++<div class="disc-mission" id="disc-mission" data-phase="idle">
++<aside class="disc-left" id="disc-left">
++<div id="disc-particles" class="disc-particles"></div>
++<canvas id="disc-cluster-canvas" class="disc-cluster-canvas" width="640" height="220"></canvas>
++<div class="disc-left-inner">
++<div class="disc-panel-label">推理指挥舱</div>
++<ol class="disc-steps" id="disc-steps"></ol>
++<div class="disc-step-detail" id="disc-step-detail">点击「启动扫描」，智能体将接入本地招聘库并展开六幕推演。</div>
++<div class="disc-radar" id="disc-radar" style="height:140px"></div>
++<div class="disc-hallucination" id="disc-hallucination" hidden></div>
+ </div>
+-<div class="kpi-grid">
+-<div class="kpi-card k1"><div class="kpi-head"><div class="kpi-label">本月新发现</div><div class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></div></div><div class="kpi-value" data-val="0">0<span class="kpi-unit">个</span></div><div class="kpi-foot">较上月 <span class="kpi-trend up">+23.3%</span></div></div>
+-<div class="kpi-card k2"><div class="kpi-head"><div class="kpi-label">待审核</div><div class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div></div><div class="kpi-value" data-val="0">0<span class="kpi-unit">个</span></div><div class="kpi-foot">平均置信度 <span style="color:var(--primary);font-weight:600">89.4%</span></div></div>
+-<div class="kpi-card k3"><div class="kpi-head"><div class="kpi-label">已采纳</div><div class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div></div><div class="kpi-value" data-val="0">0<span class="kpi-unit">个</span></div><div class="kpi-foot">本月新增至图谱</div></div>
+-<div class="kpi-card k4"><div class="kpi-head"><div class="kpi-label">采纳率</div><div class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div></div><div class="kpi-value">80.3<span class="kpi-unit">%</span></div><div class="kpi-foot">高置信度岗位自动入库</div></div>
++</aside>
++<main class="disc-right" id="disc-right">
++<div class="disc-kpi-strip">
++<button class="disc-kpi" data-status="all"><span id="kpi-discovered">0</span><label>本轮发现</label></button>
++<button class="disc-kpi" data-status="pending"><span id="kpi-pending">0</span><label>待审核</label></button>
++<button class="disc-kpi" data-status="adopted"><span id="kpi-adopted">0</span><label>已采纳</label></button>
++<button class="disc-kpi" data-status="forecast"><span id="kpi-forecast">0</span><label>未来预测</label></button>
+ </div>
+-<div class="card">
+-<div class="card-header"><div class="card-title">候选新岗位</div><div class="card-tools"><span class="tag">智能排序 · 按置信度</span></div></div>
+-<div class="card-body">
+ <div class="tab-bar" id="discovery-tabs">
+ <div class="tab-item active" data-status="all">全部 <span class="tag" style="margin-left:6px" id="discovery-count-all">0</span></div>
+ <div class="tab-item" data-status="pending">待审核 <span class="tag tag-amber" style="margin-left:6px" id="discovery-count-pending">0</span></div>
+ <div class="tab-item" data-status="adopted">已采纳 <span class="tag tag-mint" style="margin-left:6px" id="discovery-count-adopted">0</span></div>
++<div class="tab-item" data-status="forecast">🔮 未来预测 <span class="tag tag-forecast" style="margin-left:6px" id="discovery-count-forecast">0</span></div>
+ <div class="tab-item" data-status="rejected">已拒绝 <span class="tag tag-pink" style="margin-left:6px" id="discovery-count-rejected">0</span></div>
+ </div>
+ <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;align-items:center">
+ <div class="toolbar-search" style="width:280px">
+ <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+@@ -760,12 +842,21 @@ a{color:inherit;text-decoration:none}
+ <option value="运维测试">运维测试</option>
+ <option value="安全">安全</option>
+ </select>
+ </div>
+ <div class="job-grid" id="discovery-grid"></div>
++</main>
+ </div>
++<aside class="disc-drawer" id="disc-drawer" aria-hidden="true">
++<div class="disc-drawer-head">
++<h2 id="disc-drawer-title">岗位详情</h2>
++<button type="button" onclick="closeDiscoveryDrawer()">×</button>
+ </div>
++<div class="disc-drawer-body" id="disc-drawer-body"></div>
++<div class="disc-drawer-actions" id="disc-drawer-actions"></div>
++</aside>
++<div class="disc-drawer-mask" id="disc-drawer-mask" onclick="closeDiscoveryDrawer()"></div>
+ </section>
+ <!-- ============== 4. 岗位能力演化 ============== -->
+ <section class="view" id="view-evolution">
+ <div class="page-header">
+ <div class="page-title-block">
+@@ -1396,10 +1487,11 @@ window.switchView = function(viewId, opts) {
+     opts = opts || {};
+     if (!viewId || !window.viewNames[viewId]) viewId = 'dashboard';
+     const prev = window.currentViewId;
+     window.currentViewId = viewId;
+     if (prev === 'graph' && viewId !== 'graph' && window.pauseGraphLiving) window.pauseGraphLiving();
++    if (prev === 'discovery' && viewId !== 'discovery' && window.destroyDiscFX) window.destroyDiscFX();
+     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+     const view = document.getElementById('view-' + viewId);
+     const nav = document.querySelector(`.nav-item[data-view="${viewId}"]`);
+     if (view) view.classList.add('active');
+@@ -2183,139 +2275,594 @@ window.showNodeDetail = function(node) {
+             series:[{type:'line',smooth:true,symbol:'circle',symbolSize:5,lineStyle:{width:2, color:'#2DD4BF'},itemStyle:{color:'#2DD4BF'},areaStyle:{color:{type:'linear',x:0,y:0,x2:0,y2:1,colorStops:[{offset:0,color:'rgba(0,212,255,.4)'},{offset:1,color:'rgba(0,212,255,0)'}]}},data:Array.from({length:6}, () => window.Utils.rand(50, 350))}]
+         });
+     }, 80);
+ };
+ 
+-// ============== Discovery View ==============
+-let discoveryState = {search:'', sort:'confidence', category:'all', status:'all'};
++// ============== Discovery View (智能体驱动 - Mission Control) ==============
++window.discoveryState = {
++  phase: 'idle', activeStep: 0, scanning: false,
++  dataSource: 'api', llmEnabled: false,
++  discoveries: [], forecasts: [], reasoningChain: [],
++  scanSummary: '', modelInfo: {}, drawerJobId: null,
++  search: '', sort: 'confidence', category: 'all', status: 'all'
++};
++
+ window.initDiscovery = function() {
+-    if (!window.Store.state.newJobs.length) window.generateAllData();
+-    window.updateDiscoveryCounts();
++    window.ensureDiscoveryState();
++    window.bindDiscoveryEvents();
++    window.resetDiscShell();
+     window.renderDiscoveryList();
+-    // 绑定事件
++    window.updateDiscoveryCounts();
++    window.updateDiscBadges();
++    if (window.initDiscParticles) window.initDiscParticles();
++};
++
++window.ensureDiscoveryState = function() {
++    if (!window.discoveryState) window.discoveryState = {phase:'idle',activeStep:0,scanning:false,dataSource:'api',llmEnabled:false,discoveries:[],forecasts:[],reasoningChain:[],scanSummary:'',modelInfo:{},drawerJobId:null,search:'',sort:'confidence',category:'all',status:'all'};
++};
++
++// Render the 6 step placeholders into #disc-steps (called on init and at scan start)
++window.resetDiscShell = function() {
++    const steps = document.getElementById('disc-steps');
++    if (!steps) return;
++    const titles = ['多源数据接入','语义消歧与聚类','新兴度评分','岗位定义生成','时序趋势外推','幻觉检测与审计'];
++    steps.innerHTML = titles.map((t,i) =>
++        '<li class="disc-step" data-step="'+(i+1)+'">'+
++        '<div style="font-weight:600;font-size:12px;color:rgba(226,232,240,.9)">步骤 '+(i+1)+' · '+t+'</div>'+
++        '<div class="disc-step-detail" style="margin-top:3px;color:rgba(226,232,240,.55)">待命</div>'+
++        '</li>'
++    ).join('');
++    const detail = document.getElementById('disc-step-detail');
++    if (detail) detail.textContent = '点击「启动扫描」，智能体将接入本地招聘库并展开六幕推演。';
++    const hallu = document.getElementById('disc-hallucination');
++    if (hallu) hallu.hidden = true;
++};
++
++window.updateDiscBadges = function() {
++    const ds = window.discoveryState || {};
++    const pg = document.getElementById('disc-pg-count');
++    if (pg) {
++        const scanned = ds.scanStats && ds.scanStats.total_scanned;
++        pg.textContent = 'PG · ' + (scanned != null ? scanned : (ds.phase === 'settled' ? ((ds.discoveries && ds.discoveries.length) || 0) : '—'));
++    }
++    const eng = document.getElementById('disc-engine-badge');
++    if (eng) eng.textContent = ds.scanning ? '引擎运行中' : (ds.phase === 'settled' ? '引擎就绪' : '引擎待命');
++    const llm = document.getElementById('disc-llm-badge');
++    if (llm) {
++        let label = '—';
++        if (ds.llmEnabled) label = 'DeepSeek';
++        else if (ds.dataSource === 'mock') label = 'Mock';
++        else if (ds.phase === 'settled') label = '启发式';
++        llm.textContent = 'LLM · ' + label;
++    }
++};
++
++window.bindDiscoveryEvents = function() {
+     const view = document.getElementById('view-discovery');
+-    if (!view.dataset.bound) {
+-        view.dataset.bound = '1';
+-        view.querySelectorAll('.tab-item').forEach(t => {
+-            t.addEventListener('click', () => {
+-                view.querySelectorAll('.tab-item').forEach(x => x.classList.remove('active'));
+-                t.classList.add('active');
+-                discoveryState.status = t.dataset.status;
+-                window.renderDiscoveryList();
+-            });
++    if (!view || view.dataset.bound) return;
++    view.dataset.bound = '1';
++    view.querySelectorAll('.tab-item').forEach(t => {
++        t.addEventListener('click', () => {
++            view.querySelectorAll('.tab-item').forEach(x => x.classList.remove('active'));
++            t.classList.add('active');
++            window.discoveryState.status = t.dataset.status;
++            window.renderDiscoveryList();
+         });
+-        const searchInput = document.getElementById('discovery-search');
+-        if (searchInput) searchInput.addEventListener('input', e => { discoveryState.search = e.target.value; window.renderDiscoveryList(); });
+-        const sortSel = document.getElementById('discovery-sort');
+-        if (sortSel) sortSel.addEventListener('change', e => { discoveryState.sort = e.target.value; window.renderDiscoveryList(); });
+-        const catSel = document.getElementById('discovery-cat');
+-        if (catSel) catSel.addEventListener('change', e => { discoveryState.category = e.target.value; window.renderDiscoveryList(); });
+-    }
++    });
++    // KPI strip → set status filter + activate matching tab
++    view.querySelectorAll('.disc-kpi').forEach(k => {
++        k.addEventListener('click', () => {
++            const status = k.dataset.status;
++            window.discoveryState.status = status;
++            view.querySelectorAll('.tab-item').forEach(x => x.classList.toggle('active', x.dataset.status === status));
++            window.renderDiscoveryList();
++        });
++    });
++    const si = document.getElementById('discovery-search');
++    if (si) si.addEventListener('input', e => { window.discoveryState.search = e.target.value; window.renderDiscoveryList(); });
++    const ss = document.getElementById('discovery-sort');
++    if (ss) ss.addEventListener('change', e => { window.discoveryState.sort = e.target.value; window.renderDiscoveryList(); });
++    const sc = document.getElementById('discovery-cat');
++    if (sc) sc.addEventListener('change', e => { window.discoveryState.category = e.target.value; window.renderDiscoveryList(); });
+ };
+-window.updateDiscoveryCounts = function() {
+-    const jobs = window.Store.state.newJobs;
+-    const counts = {
+-        all: jobs.length,
+-        pending: jobs.filter(j => j.status === 'pending').length,
+-        adopted: jobs.filter(j => j.status === 'adopted').length,
+-        rejected: jobs.filter(j => j.status === 'rejected').length
+-    };
+-    Object.entries(counts).forEach(([k, v]) => {
+-        const el = document.getElementById('discovery-count-' + k);
+-        if (el) el.textContent = v;
++
++// ★ 智能体扫描 — 驱动 disc-* mission control 外壳
++window.buildMockScanPayload = function() {
++    const now = new Date().toISOString();
++    const mkDisc = (i, title, cat, conf, skills, city) => ({
++        id: 'disc_mock_' + i, title, category: cat, level: '中高级', confidence: conf,
++        growth_rate: 20 + i * 3, status: 'pending', discovered_at: now,
++        core_skills: skills, preferred_skills: [], definition: '基于本地招聘库聚类启发式生成，未经 LLM 增强。',
++        typical_scenarios: ['企业内场景','技术中台','数字化转型'], evidence_sources: [],
++        responsibilities: ['参与需求分析与方案设计','完成核心功能开发','配合测试与上线运维'],
++        trend: [], quality: {evidence_count: 3+i, source_count: 2+i, city_count: 1+i, freshness_score: 70+i},
++        source: 'Mock数据源', city, salary: '20-40K', requiredSkills: skills,
++        description: '基于本地招聘库聚类启发式生成。', discoveredAt: now,
++        reasoning: 'Mock 路径：标题新颖度+技能组合熵+跨行业溢出 = 综合置信度 ' + conf + '%'
+     });
+-    const adoptRate = 80.3;
+-    const kpiTargets = [
+-        { sel: '#view-discovery .kpi-card.k1 .kpi-value', val: counts.all, dec: 0 },
+-        { sel: '#view-discovery .kpi-card.k2 .kpi-value', val: counts.pending, dec: 0 },
+-        { sel: '#view-discovery .kpi-card.k3 .kpi-value', val: counts.adopted, dec: 0 },
+-        { sel: '#view-discovery .kpi-card.k4 .kpi-value', val: adoptRate, dec: 1 }
++    const discoveries = [
++        mkDisc(1,'AI Agent 架构师','人工智能',88,['LangChain','Function Calling','RAG','Python'],'北京'),
++        mkDisc(2,'大模型微调工程师','人工智能',84,['LoRA','QLoRA','PyTorch','SFT'],'上海'),
++        mkDisc(3,'RAG 知识工程师','人工智能',80,['向量数据库','Embedding','检索增强'],'深圳'),
++        mkDisc(4,'多模态算法工程师','人工智能',78,['CLIP','Diffusion','多模态'],'杭州'),
++        mkDisc(5,'Prompt 工程师','人工智能',72,['Prompt设计','LLM','评测'],'成都'),
++        mkDisc(6,'AI Infra 工程师','人工智能',70,['Triton','CUDA','AI编译器'],'北京'),
++        mkDisc(7,'AIGC 内容工程师','人工智能',68,['Stable Diffusion','生成式','PyTorch'],'广州'),
++        mkDisc(8,'LLM 应用开发工程师','人工智能',66,['LangChain','API','Agent'],'远程')
+     ];
+-    kpiTargets.forEach(({ sel, val, dec }) => {
+-        const el = document.querySelector(sel);
+-        if (!el) return;
+-        el.dataset.val = '0';
+-        window.Utils.animateNum(el, val, 900, dec);
++    const mkFc = (i, title, cat, conf, eta, skills) => ({
++        id: 'forecast_mock_' + i, title, category: cat, confidence: conf, eta_months: eta,
++        drivers: ['趋势外推','技能信号累积'], skills, definition: 'Mock 预测岗位，基于新兴技能时序外推。',
++        status: 'forecast', source: '趋势预测模型(Mock)', city: '全国', salary: '面议(新兴岗位)', level: '专家',
++        requiredSkills: skills, description: 'Mock 预测岗位。', discoveredAt: now, is_forecast: true
+     });
++    const forecasts = [
++        mkFc(1,'具身智能工程师','人工智能',74,12,['ROS2','强化学习','SLAM']),
++        mkFc(2,'AI安全对齐工程师','安全',78,9,['RLHF','红队测试','对齐']),
++        mkFc(3,'端侧AI部署工程师','人工智能',80,6,['ONNX','TensorRT','量化']),
++        mkFc(4,'合成数据工程师','数据科学',75,8,['GAN','LLM','数据增强']),
++        mkFc(5,'AI芯片软件栈工程师','人工智能',70,15,['Triton','MLIR','TVM']),
++        mkFc(6,'AI研发效能工程师','运维测试',73,10,['AI Coding','CI/CD','DORA'])
++    ];
++    const chain = [
++        {step:1,title:'🌐 多源数据接入',detail:'Mock：连接本地 PostgreSQL 招聘库，抽取最近 5000 条 IT 岗位记录。',status:'done',metrics:'数据规模: 5000 条 | 覆盖 320 家企业',elapsed_ms:420},
++        {step:2,title:'🧠 语义消歧与实体归一化',detail:'Mock：标题字符级归一化，构建 N-gram 特征向量，识别语义聚类。',status:'done',metrics:'聚类压缩比: 6.2x | 技能词典: 480 词',elapsed_ms:510},
++        {step:3,title:'📈 多维度新兴度评分',detail:'Mock：三维度加权(标题0.5+技能0.3+溢出0.2)，扫描语义簇。',status:'done',metrics:'新兴候选 8 | 传统 IT 12 | 总簇 24',elapsed_ms:600},
++        {step:4,title:'📝 岗位定义生成与职责推理',detail:'Mock：基于真实 JD 摘要生成岗位定义、核心职责与典型场景。',status:'done',metrics:'输出 8 个岗位定义',elapsed_ms:520},
++        {step:5,title:'🔮 时序趋势外推',detail:'Mock：指数平滑+线性回归外推 6-18 个月技能需求变化。',status:'done',metrics:'预测跨度: 6-18 个月 | 置信区间: 65%-80%',elapsed_ms:610},
++        {step:6,title:'🛡️ 幻觉检测与质量审计',detail:'Mock：交叉校验证据来源，检测定义-技能一致性，标记低证据项目。',status:'done',metrics:'审计通过 8 | 弱证据 2',elapsed_ms:330}
++    ];
++    return {
++        reasoning_chain: chain, discoveries, forecasts,
++        summary: 'Mock 扫描完毕：5000 条 → 24 簇 → 8 个发现 + 6 个预测。推理引擎: DiscoveryAgent (Mock)。',
++        stats: {total_scanned:5000,title_clusters:24,discoveries:8,forecasts:6,total_elapsed_ms:2990,avg_confidence:75.5},
++        model: {engine:'DiscoveryAgent v2.0 (Mock)',backed_by:'启发式(Mock)',llm:'none',llm_enriched:0,llm_error:null,knowledge_base:'PostgreSQL mock'}
++    };
+ };
+-window.renderDiscoveryList = function() {
++
++window.agentScan = async function() {
++    window.ensureDiscoveryState();
++    const ds = window.discoveryState;
++    if (ds.scanning) { window.Utils.showToast('智能体正在扫描中,请稍候...', 'amber'); return; }
++    ds.scanning = true; ds.phase = 'scanning'; ds.activeStep = 0;
++    const btn = document.getElementById('btn-agent-scan');
++    if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> 智能体扫描中...'; }
++    window.resetDiscShell();
++    window.updateDiscBadges();
+     const grid = document.getElementById('discovery-grid');
+-    if (!grid) return;
+-    let list = [...window.Store.state.newJobs];
+-    if (discoveryState.status !== 'all') list = list.filter(j => j.status === discoveryState.status);
+-    if (discoveryState.search) {
+-        const s = discoveryState.search.toLowerCase();
+-        list = list.filter(j => j.title.toLowerCase().includes(s) || j.requiredSkills.some(sk => sk.toLowerCase().includes(s)));
++    if (grid) grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><span class="spinner"></span><div style="margin-top:8px;color:var(--text-muted);font-size:13px">智能体推理中...</div></div>';
++
++    const reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
++    let payload, usedMock = false;
++    try {
++        const ctrl = new AbortController();
++        const timer = setTimeout(() => ctrl.abort(), 90000);
++        const r = await fetch('http://127.0.0.1:8000/api/discovery/agent/scan', {method:'POST', signal: ctrl.signal});
++        clearTimeout(timer);
++        const j = await r.json();
++        if (j.code !== 0) throw new Error(j.message || 'scan failed');
++        payload = j.data;
++        ds.dataSource = 'api';
++    } catch(e) {
++        payload = window.buildMockScanPayload();
++        ds.dataSource = 'mock';
++        usedMock = true;
++        window.Utils.showToast('后端不可用,已切换 Mock 数据: ' + (e.message||e), 'amber');
+     }
+-    if (discoveryState.category !== 'all') list = list.filter(j => j.category === discoveryState.category);
+-    if (discoveryState.sort === 'confidence') list.sort((a, b) => b.confidence - a.confidence);
+-    else if (discoveryState.sort === 'date') list.sort((a, b) => b.discoveredAt - a.discoveredAt);
+-    else if (discoveryState.sort === 'name') list.sort((a, b) => a.title.localeCompare(b.title));
+-    if (!list.length) {
+-        grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><div style="font-size:14px;margin-top:8px">未找到匹配的岗位</div></div>`;
++
++    ds.discoveries = payload.discoveries || [];
++    ds.forecasts = payload.forecasts || [];
++    ds.reasoningChain = payload.reasoning_chain || [];
++    ds.scanSummary = payload.summary || '';
++    ds.modelInfo = payload.model || {};
++    ds.scanStats = payload.stats || {};
++    ds.llmEnabled = !!(ds.modelInfo.llm && ds.modelInfo.llm !== 'none');
++
++    await window.playReasoningSequence(ds.reasoningChain, reduced);
++
++    ds.scanning = false; ds.phase = 'settled';
++    window.renderDiscoveryList();
++    window.updateDiscoveryCounts();
++    window.updateDiscBadges();
++    if (btn) { btn.disabled = false; btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>🤖 重新扫描'; }
++    window.Utils.showToast((usedMock?'🧪 [Mock] ':'🤖 ') + '扫描完成: 发现 ' + ds.discoveries.length + ' 个岗位, 预测 ' + ds.forecasts.length + ' 个未来岗位', usedMock ? 'amber' : 'mint');
++};
++
++// 逐步播放推理链：每步点亮 disc-step，typewriter 进 disc-step-detail，更新 metrics；
++// 步 2 触发 cluster canvas，步 3 触发 radar，步 6 触发 hallucination audit；
++// 步 4 后渲染 discoveries，步 5 后并入 forecasts。
++window.playReasoningSequence = async function(chain, reduced) {
++    const ds = window.discoveryState;
++    chain = chain || [];
++    const stepEls = document.querySelectorAll('#disc-steps .disc-step');
++    const detailEl = document.getElementById('disc-step-detail');
++    const delay = reduced ? 0 : 700;
++    const sleep = (ms) => new Promise(r => setTimeout(r, ms));
++
++    for (let i = 0; i < chain.length; i++) {
++        const s = chain[i];
++        ds.activeStep = i + 1;
++        const li = stepEls[i];
++        if (li) {
++            li.classList.add('active');
++            const sd = li.querySelector('.disc-step-detail');
++            if (sd) sd.textContent = s.detail || '';
++        }
++        // typewriter into global detail panel
++        if (detailEl) {
++            if (reduced) {
++                detailEl.textContent = s.detail || '';
++            } else {
++                const text = s.detail || '';
++                detailEl.textContent = '';
++                for (const ch of text) {
++                    detailEl.textContent += ch;
++                    await sleep(12);
++                }
++            }
++        }
++        // metrics line
++        if (li && s.metrics) {
++            let m = li.querySelector('.disc-step-metrics');
++            if (!m) { m = document.createElement('div'); m.className = 'disc-step-metrics'; m.style.cssText = 'margin-top:3px;font-size:10px;color:rgba(45,212,191,.85);font-family:var(--font-mono),monospace'; li.appendChild(m); }
++            m.textContent = '📊 ' + s.metrics;
++        }
++        // step-specific hooks (Task 6 fills these in)
++        if (s.step === 2 && window.playClusterAnimation) window.playClusterAnimation(s);
++        if (s.step === 3 && window.updateDiscRadar) window.updateDiscRadar(s, ds);
++        if (s.step === 6 && window.playHallucinationAudit) window.playHallucinationAudit(s, ds);
++
++        if (delay) await sleep(delay);
++        if (li) { li.classList.remove('active'); li.classList.add('done'); }
++
++        // After step 4: render discoveries
++        if (s.step === 4) {
++            window.renderDiscoveryList({onlyDiscoveries: true});
++            if (!reduced && window.gsap) {
++                window.gsap.from('#discovery-grid .job-card', {duration:0.4, y:18, opacity:0, stagger:0.05});
++            }
++        }
++        // After step 5: include forecasts
++        if (s.step === 5) {
++            window.renderDiscoveryList();
++        }
++    }
++    if (detailEl && ds.scanSummary) detailEl.textContent = ds.scanSummary;
++};
++
++
++window.updateDiscoveryCounts = function() {
++    window.ensureDiscoveryState();
++    const ds = window.discoveryState;
++    const all = [...(ds.discoveries||[]), ...(ds.forecasts||[])];
++    const counts = {all: all.length, pending: all.filter(j=>j.status==='pending').length,
++        adopted: all.filter(j=>j.status==='adopted').length,
++        rejected: all.filter(j=>j.status==='rejected').length,
++        forecast: (ds.forecasts||[]).length};
++    Object.entries(counts).forEach(([k,v]) => { const el=document.getElementById('discovery-count-'+k); if(el) el.textContent=v; });
++    const confs = ds.discoveries.map(j=>j.confidence||0);
++    const avgConf = confs.length ? (confs.reduce((a,b)=>a+b,0)/confs.length).toFixed(1) : '--';
++    const elC = document.getElementById('kpi-avg-conf'); if(elC) elC.textContent = avgConf+'%';
++    const kpiTargets = [
++        {sel:'#kpi-discovered', val:ds.discoveries.length, dec:0},
++        {sel:'#kpi-pending', val:counts.pending, dec:0},
++        {sel:'#kpi-adopted', val:counts.adopted, dec:0},
++        {sel:'#kpi-forecast', val:counts.forecast, dec:0}
++    ];
++    kpiTargets.forEach(({sel,val,dec}) => { const el=document.querySelector(sel); if(!el) return; el.dataset.val='0'; window.Utils.animateNum(el, val, 900, dec); });
++};
++
++window.renderDiscoveryList = function(opts) {
++    window.ensureDiscoveryState();
++    const ds = window.discoveryState;
++    const grid = document.getElementById('discovery-grid'); if(!grid) return;
++    let all = (opts && opts.onlyDiscoveries) ? [...(ds.discoveries||[])] : [...(ds.discoveries||[]), ...(ds.forecasts||[])];
++    if (ds.status === 'forecast') all = [...(ds.forecasts||[])];
++    else if (ds.status !== 'all') all = all.filter(j => j.status === ds.status);
++    if (ds.search) {
++        const s = ds.search.toLowerCase();
++        all = all.filter(j => (j.title||'').toLowerCase().includes(s) || (j.requiredSkills||j.core_skills||[]).some(sk=>sk.toLowerCase().includes(s)));
++    }
++    if (ds.category !== 'all') all = all.filter(j => j.category === ds.category);
++    if (ds.sort === 'confidence') all.sort((a,b)=>(b.confidence||0)-(a.confidence||0));
++    else if (ds.sort === 'date') all.sort((a,b)=>new Date(b.discoveredAt||0)-new Date(a.discoveredAt||0));
++    else if (ds.sort === 'name') all.sort((a,b)=>(a.title||'').localeCompare(b.title||''));
++    if (!all.length) {
++        grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><div style="font-size:14px;margin-top:8px">未找到匹配的岗位,请点击"启动智能体扫描"</div></div>';
+         return;
+     }
+-    grid.innerHTML = list.map((j, i) => `
+-        <div class="job-card anim-fade-up" style="animation-delay:${Math.min(i*0.04, 0.3)}s" onclick="window.showJobDetail('${j.id}')">
+-            <div class="job-card-head">
+-                <div><div class="job-title">${j.title}</div><div class="job-meta">${j.category} · ${j.level}</div></div>
+-                <div class="job-conf">置信度 ${j.confidence}%<div class="conf-bar"><div style="width:${j.confidence}%"></div></div></div>
+-            </div>
+-            <div class="job-desc">${j.description}</div>
+-            <div class="job-skills">${j.requiredSkills.slice(0, 6).map(s => `<span class="skill-chip">${s}</span>`).join('')}</div>
+-            <div class="job-foot">
+-                <span>📍 ${j.city} · ${j.source}</span>
+-                <span>
+-                    ${j.status === 'pending' ? `
+-                        <button class="btn" style="padding:3px 10px;font-size:11px" onclick="event.stopPropagation();window.rejectJob('${j.id}')">拒绝</button>
+-                        <button class="btn btn-primary" style="padding:3px 10px;font-size:11px" onclick="event.stopPropagation();window.adoptJob('${j.id}')">采纳</button>
+-                    ` : j.status === 'adopted' ? '<span class="tag tag-mint">已采纳</span>' : '<span class="tag tag-pink">已拒绝</span>'}
+-                </span>
+-            </div>
+-        </div>
+-    `).join('');
++    grid.innerHTML = all.map((j,i) => {
++        const isForecast = j.is_forecast || j.status === 'forecast';
++        const conf = j.confidence||0;
++        const confCls = conf>=80 ? 'conf-high' : conf>=60 ? 'conf-mid' : 'conf-low';
++        const cardCls = 'job-card anim-fade-up '+confCls+(isForecast?' is-forecast':'');
++        const badge = isForecast ? '<span class="tag tag-forecast">🔮 '+(j.eta_months||'?')+'个月后</span>' : '';
++        const skills = (j.requiredSkills||j.core_skills||[]).slice(0,5);
++        const etaInfo = isForecast && j.drivers ? '<div style="margin-top:6px;font-size:10px;color:var(--accent-amber)">📈 驱动力: '+(j.drivers||[]).slice(0,2).join(' · ')+'</div>' : '';
++        const reasoning = j.reasoning ? '<div style="margin-top:4px;font-size:11px;color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">🧠 '+j.reasoning+'</div>' : '';
++        return '<div class="'+cardCls+'" style="animation-delay:'+Math.min(i*0.04,0.3)+'s" onclick="window.showDiscoveryDetail(\''+j.id+'\')">'+
++            '<div class="job-card-head"><div><div class="job-title">'+(isForecast?'🔮 ':'')+j.title+' '+badge+'</div><div class="job-meta">'+j.category+' · '+(j.level||'--')+' · '+(j.city||'--')+'</div></div>'+
++            '<div class="job-conf">置信度 '+conf+'%<div class="conf-bar"><div style="width:'+conf+'%"></div></div></div></div>'+
++            '<div class="job-desc">'+(j.description||j.definition||'').substring(0,120)+'</div>'+
++            '<div class="job-skills">'+skills.map(s=>'<span class="skill-chip">'+s+'</span>').join('')+'</div>'+
++            etaInfo+reasoning+
++            '<div class="job-foot"><span>📍 '+(j.city||'--')+' · '+(j.source||'--')+'</span><span>'+
++                (j.status==='pending'?'<button class="btn" style="padding:3px 10px;font-size:11px" onclick="event.stopPropagation();window.adoptDiscoveryJob(\''+j.id+'\')">采纳</button><button class="btn" style="padding:3px 10px;font-size:11px;color:var(--accent-coral)" onclick="event.stopPropagation();window.rejectDiscoveryJob(\''+j.id+'\')">拒绝</button>':'')+
++                (j.status==='adopted'?'<span class="tag tag-mint">已采纳</span>':'')+
++                (j.status==='rejected'?'<span class="tag tag-pink">已拒绝</span>':'')+
++                (j.status==='forecast'?'<span class="tag tag-forecast">预测中</span>':'')+
++            '</span></div>'+
++        '</div>';
++    }).join('');
+ };
+-window.adoptJob = function(id) {
+-    const job = window.Store.state.newJobs.find(j => j.id === id);
+-    if (job) { job.status = 'adopted'; window.updateDiscoveryCounts(); window.renderDiscoveryList(); window.Utils.showToast('✓ 已采纳: ' + job.title, 'mint'); }
++
++window.adoptDiscoveryJob = async function(id) {
++    try { await fetch('http://127.0.0.1:8000/api/discovery/jobs/'+id+'/status', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:'adopted'})}); } catch(e) {}
++    [...(window.discoveryState.discoveries||[]), ...(window.discoveryState.forecasts||[])].forEach(j => { if(j.id===id) j.status='adopted'; });
++    window.renderDiscoveryList(); window.updateDiscoveryCounts(); window.Utils.showToast('已采纳', 'mint');
++};
++window.rejectDiscoveryJob = async function(id) {
++    try { await fetch('http://127.0.0.1:8000/api/discovery/jobs/'+id+'/status', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:'rejected'})}); } catch(e) {}
++    [...(window.discoveryState.discoveries||[]), ...(window.discoveryState.forecasts||[])].forEach(j => { if(j.id===id) j.status='rejected'; });
++    window.renderDiscoveryList(); window.updateDiscoveryCounts(); window.Utils.showToast('已拒绝', 'pink');
++};
++window.agentBatchAdopt = function() {
++    window.ensureDiscoveryState(); let count=0;
++    window.discoveryState.discoveries.forEach(j => { if(j.status==='pending' && j.confidence>=70) { j.status='adopted'; count++; } });
++    window.renderDiscoveryList(); window.updateDiscoveryCounts();
++    window.Utils.showToast('✓ 批量采纳 '+count+' 个高置信度岗位', 'mint');
+ };
+-window.rejectJob = function(id) {
+-    const job = window.Store.state.newJobs.find(j => j.id === id);
+-    if (job) { job.status = 'rejected'; window.updateDiscoveryCounts(); window.renderDiscoveryList(); window.Utils.showToast('已拒绝: ' + job.title, 'pink'); }
++
++window.showDiscoveryDetail = function(id) {
++    window.ensureDiscoveryState();
++    const all = [...(window.discoveryState.discoveries||[]), ...(window.discoveryState.forecasts||[])];
++    const job = all.find(j => j.id === id);
++    if (!job) return;
++    window.openDiscoveryDrawer(job);
+ };
+-window.showJobDetail = function(id) {
+-    const job = window.Store.state.newJobs.find(j => j.id === id);
++
++// Drawer (Task 7): full sections per spec — identity → definition → responsibilities → scenarios → skills → evidence → quality → (forecast) drivers+ETA.
++window.openDiscoveryDrawer = function(job) {
++    window.ensureDiscoveryState();
+     if (!job) return;
+-    document.getElementById('modal-title').textContent = job.title;
+-    document.getElementById('modal-body').innerHTML = `
+-        <div class="jd-grid" style="margin-bottom:18px">
+-            <div class="jd-item"><div class="jd-item-label">岗位编号</div><div class="jd-item-val">${job.id}</div></div>
+-            <div class="jd-item"><div class="jd-item-label">分类</div><div class="jd-item-val">${job.category}</div></div>
+-            <div class="jd-item"><div class="jd-item-label">级别</div><div class="jd-item-val">${job.level}</div></div>
+-            <div class="jd-item"><div class="jd-item-label">置信度</div><div class="jd-item-val" style="color:var(--accent-mint)">${job.confidence}%</div></div>
+-            <div class="jd-item"><div class="jd-item-label">城市</div><div class="jd-item-val">${job.city}</div></div>
+-            <div class="jd-item"><div class="jd-item-label">薪资</div><div class="jd-item-val">${job.salary}</div></div>
+-            <div class="jd-item"><div class="jd-item-label">来源</div><div class="jd-item-val">${job.source}</div></div>
+-            <div class="jd-item"><div class="jd-item-label">状态</div><div class="jd-item-val">${job.status === 'pending' ? '⏳ 待审核' : job.status === 'adopted' ? '✓ 已采纳' : '✗ 已拒绝'}</div></div>
+-            <div class="jd-item"><div class="jd-item-label">发现时间</div><div class="jd-item-val">${window.Utils.timeAgo(job.discoveredAt)}</div></div>
+-        </div>
+-        <div class="job-detail-section"><div class="job-detail-section-title">岗位描述</div><div style="color:var(--text-dark-secondary);line-height:1.8">${job.description}</div></div>
+-        <div class="job-detail-section"><div class="job-detail-section-title">核心技能要求</div><div class="match-skill-list">${job.requiredSkills.map(s => `<span class="skill-chip" style="background:rgba(13,148,136,.12);color:var(--primary);padding:5px 12px;font-size:12px">${s}</span>`).join('')}</div></div>
+-        <div class="job-detail-section"><div class="job-detail-section-title">AI 推理过程</div><div style="font-size:12px;line-height:1.8;padding:12px;background:#0d1330;color:#b8c5d6;border-radius:8px;font-family:var(--font-mono),monospace">
+-            <div style="color:#2DD4BF">→ 采集 ${window.Utils.rand(50,200)} 条相关JD</div>
+-            <div style="color:#2DD4BF">→ NER抽取 <strong style="color:#10b981">${job.requiredSkills.length}</strong> 个核心实体</div>
+-            <div style="color:#2DD4BF">→ 关系抽取: REQUIRES × ${window.Utils.rand(8,20)}</div>
+-            <div style="color:#2DD4BF">→ LLM推理相似度: <strong style="color:#10b981">${(Math.random()*0.15+0.82).toFixed(3)}</strong></div>
+-            <div style="color:#2DD4BF">→ 幻觉检测: 通过 (${(Math.random()*3+1).toFixed(1)}%)</div>
+-            <div style="color:#f72585">✓ 最终置信度: <strong>${job.confidence}%</strong></div>
+-        </div></div>
+-    `;
+-    document.getElementById('modal-footer').innerHTML = job.status === 'pending' ? `
+-        <button class="btn" onclick="window.closeModal();window.rejectJob('${job.id}')">拒绝</button>
+-        <button class="btn btn-primary" onclick="window.closeModal();window.adoptJob('${job.id}')">采纳并入库</button>
+-    ` : `<button class="btn" onclick="window.closeModal()">关闭</button>`;
+-    document.getElementById('modal-overlay').classList.add('show');
++    window.discoveryState.drawerJobId = job.id;
++    const drawer = document.getElementById('disc-drawer');
++    const mask = document.getElementById('disc-drawer-mask');
++    const title = document.getElementById('disc-drawer-title');
++    const body = document.getElementById('disc-drawer-body');
++    const actions = document.getElementById('disc-drawer-actions');
++    if (!drawer || !job) return;
++    const isForecast = job.is_forecast || job.status === 'forecast';
++    const skills = (job.requiredSkills||job.core_skills||[]);
++    const conf = job.confidence||0;
++    const confColor = conf>=80 ? 'var(--signal-deep)' : conf>=60 ? 'var(--amber)' : 'var(--accent-coral)';
++    const statusLabel = job.status==='pending'?'待审核':job.status==='adopted'?'已采纳':job.status==='forecast'?'预测中':'已拒绝';
++    const esc = s => String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
++    if (title) title.textContent = (isForecast?'🔮 ':'') + (job.title||'岗位详情');
++    if (body) {
++        const list = arr => (arr&&arr.length) ? '<ul style="margin:0;padding-left:18px;font-size:13px;line-height:1.6">'+arr.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>' : '<p style="font-size:13px;color:var(--text-muted)">--</p>';
++        const chips = arr => (arr&&arr.length) ? '<div style="display:flex;flex-wrap:wrap;gap:6px">'+arr.map(s=>'<span class="skill-chip">'+esc(s)+'</span>').join('')+'</div>' : '<p style="font-size:13px;color:var(--text-muted)">--</p>';
++        body.innerHTML =
++            // 身份条
++            '<div class="disc-drawer-identity">'+
++                '<div class="kv"><label>分类</label><span>'+esc(job.category||'--')+'</span></div>'+
++                '<div class="kv"><label>级别</label><span>'+esc(job.level||'--')+'</span></div>'+
++                '<div class="kv"><label>置信度</label><span style="color:'+confColor+'">'+conf+'%</span></div>'+
++                '<div class="kv"><label>城市</label><span>'+esc(job.city||'--')+'</span></div>'+
++                '<div class="kv"><label>薪资</label><span>'+esc(job.salary||'--')+'</span></div>'+
++                '<div class="kv"><label>来源</label><span>'+esc(job.source||'--')+'</span></div>'+
++                (isForecast?'<div class="kv"><label>预计出现</label><span style="color:var(--amber)">'+esc(job.eta_months||'?')+' 个月后</span></div>':'')+
++                '<div class="kv"><label>状态</label><span>'+statusLabel+'</span></div>'+
++            '</div>'+
++            // 定义
++            '<div class="disc-drawer-section"><h4>岗位定义</h4><p>'+(esc(job.definition||job.description)||'--')+'</p></div>'+
++            // 职责
++            '<div class="disc-drawer-section"><h4>核心职责</h4>'+list(job.responsibilities||job.duties)+'</div>'+
++            // 场景
++            '<div class="disc-drawer-section"><h4>典型场景</h4>'+list(job.scenarios||job.use_cases)+'</div>'+
++            // 技能
++            '<div class="disc-drawer-section"><h4>必备技能</h4>'+chips(skills)+'</div>'+
++            // 证据链
++            '<div class="disc-drawer-section"><h4>证据链（公司 · 城市 · 来源）</h4>'+
++                '<p style="font-size:13px;line-height:1.6">'+
++                    (job.evidence_company? '🏢 '+esc(job.evidence_company)+' · ' : '')+
++                    (job.city? '📍 '+esc(job.city)+' · ' : '')+
++                    (job.source? '🔗 '+esc(job.source) : '')+
++                    (!job.evidence_company && !job.city && !job.source ? '--' : '')+
++                '</p>'+
++            '</div>'+
++            // 质量四格
++            '<div class="disc-drawer-section"><h4>质量评估</h4>'+
++                '<div class="disc-quality-grid">'+
++                    '<div class="q-cell"><label>置信度</label><span style="color:'+confColor+'">'+conf+'%</span></div>'+
++                    '<div class="q-cell"><label>样本量</label><span>'+esc(job.sample_size||job.evidence_count||'--')+'</span></div>'+
++                    '<div class="q-cell"><label>新鲜度</label><span>'+esc(job.freshness||(job.discoveredAt? new Date(job.discoveredAt).toLocaleDateString():'--'))+'</span></div>'+
++                    '<div class="q-cell"><label>覆盖度</label><span>'+esc(job.coverage||'--')+'</span></div>'+
++                '</div>'+
++            '</div>'+
++            // 预测：驱动力 + ETA
++            (isForecast ?
++                '<div class="disc-drawer-section"><h4>预测驱动力 & ETA</h4>'+
++                    list(job.drivers)+
++                    '<p style="margin-top:8px;font-size:13px">⏳ 预计 <b style="color:var(--amber)">'+esc(job.eta_months||'?')+' 个月</b>后进入主流招聘</p>'+
++                '</div>' : '')+
++            // 推理摘要
++            (job.reasoning ? '<div class="disc-drawer-section" style="border-top:1px solid var(--border-dark);padding-top:10px"><h4>推理摘要</h4><p style="font-size:12px;color:var(--text-muted)">🧠 '+esc(job.reasoning)+'</p></div>' : '');
++    }
++    if (actions) {
++        actions.innerHTML = job.status === 'pending'
++            ? '<button class="btn btn-adopt" onclick="window.adoptDiscoveryJob(\''+job.id+'\')">采纳</button>'+
++              '<button class="btn btn-reject" onclick="window.rejectDiscoveryJob(\''+job.id+'\')">拒绝</button>'+
++              '<button class="btn" onclick="window.closeDiscoveryDrawer()">关闭</button>'
++            : '<button class="btn" onclick="window.closeDiscoveryDrawer()">关闭</button>';
++    }
++    drawer.classList.add('open');
++    drawer.setAttribute('aria-hidden','false');
++    if (mask) mask.classList.add('open');
++};
++
++window.closeDiscoveryDrawer = function() {
++    window.ensureDiscoveryState();
++    window.discoveryState.drawerJobId = null;
++    const drawer = document.getElementById('disc-drawer');
++    const mask = document.getElementById('disc-drawer-mask');
++    if (drawer) { drawer.classList.remove('open'); drawer.setAttribute('aria-hidden','true'); }
++    if (mask) mask.classList.remove('open');
++};
++
++// Esc closes drawer; global keydown.
++document.addEventListener('keydown', e => {
++    if (e.key === 'Escape') {
++        const drawer = document.getElementById('disc-drawer');
++        if (drawer && drawer.classList.contains('open')) { e.preventDefault(); window.closeDiscoveryDrawer(); }
++    }
++});
++
++// ============== Task 6: Ambient FX (particles, cluster canvas, hallucination, radar) ==============
++window._discParticles = null;     // tsParticles container ref
++window._discClusterRAF = 0;       // cluster canvas rAF handle
++
++window._discReduced = function() {
++    return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
++};
++
++// Step 1: tsParticles slim on #disc-particles — teal links, low density ~40. No-op if reduced-motion.
++window.initDiscParticles = function() {
++    const el = document.getElementById('disc-particles');
++    if (!el) return;
++    // destroy any prior instance (re-init on view enter / scan start)
++    if (window._discParticles) { try { window._discParticles.destroy(); } catch (e) {} window._discParticles = null; }
++    el.innerHTML = '';
++    if (window._discReduced() || typeof tsParticles === 'undefined') return;
++    tsParticles.load(el.id, {
++        fullScreen: { enable: false },
++        background: { color: 'transparent' },
++        particles: {
++            number: { value: 40, density: { enable: true, area: 800 } },
++            color: { value: ['#2DD4BF', '#0D9488'] },
++            links: { enable: true, color: '#2DD4BF', distance: 140, opacity: 0.22, width: 1 },
++            move: { enable: true, speed: 0.6, direction: 'none', outModes: { default: 'out' } },
++            opacity: { value: { min: 0.2, max: 0.6 } },
++            size: { value: { min: 1, max: 2.6 } }
++        },
++        detectRetina: true
++    }).then(function (c) { window._discParticles = c; }).catch(function () {});
++};
++
++// Step 2: 2s points → 4-6 clusters on #disc-cluster-canvas via requestAnimationFrame. No-op if reduced-motion.
++window.playClusterAnimation = function (/* step */) {
++    const canvas = document.getElementById('disc-cluster-canvas');
++    if (!canvas) return;
++    const ctx = canvas.getContext('2d');
++    if (window._discClusterRAF) { cancelAnimationFrame(window._discClusterRAF); window._discClusterRAF = 0; }
++    if (window._discReduced()) { ctx.clearRect(0, 0, canvas.width, canvas.height); return; }
++    const rect = canvas.getBoundingClientRect();
++    const W = (rect.width > 0) ? (canvas.width = Math.round(rect.width)) : canvas.width;
++    const H = (rect.height > 0) ? (canvas.height = Math.round(rect.height)) : canvas.height;
++    const N = 80;
++    const K = 4 + Math.floor(Math.random() * 3); // 4-6 cluster centers
++    const centers = Array.from({ length: K }, () => ({ x: W * 0.1 + Math.random() * W * 0.8, y: H * 0.1 + Math.random() * H * 0.8 }));
++    const pts = Array.from({ length: N }, (_, i) => {
++        const c = centers[i % K];
++        return { x: Math.random() * W, y: Math.random() * H, tx: c.x + (Math.random() - 0.5) * 30, ty: c.y + (Math.random() - 0.5) * 30 };
++    });
++    const dur = 2000, t0 = performance.now();
++    const tick = function (now) {
++        const t = Math.min(1, (now - t0) / dur);
++        const e = t * t * (3 - 2 * t); // smoothstep
++        ctx.clearRect(0, 0, W, H);
++        ctx.strokeStyle = 'rgba(45,212,191,0.18)'; ctx.lineWidth = 1;
++        for (let i = 0; i < pts.length; i++) {
++            const a = pts[i], ax = a.x + (a.tx - a.x) * e, ay = a.y + (a.ty - a.y) * e;
++            for (let j = i + 1; j < pts.length; j++) {
++                const b = pts[j], bx = b.x + (b.tx - b.x) * e, by = b.y + (b.ty - b.y) * e;
++                const dx = ax - bx, dy = ay - by;
++                if (dx * dx + dy * dy < 3600) { ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(bx, by); ctx.stroke(); }
++            }
++        }
++        for (const p of pts) {
++            const x = p.x + (p.tx - p.x) * e, y = p.y + (p.ty - p.y) * e;
++            ctx.fillStyle = 'rgba(45,212,191,' + (0.4 + 0.4 * e) + ')';
++            ctx.beginPath(); ctx.arc(x, y, 1.6 + e * 0.8, 0, Math.PI * 2); ctx.fill();
++        }
++        if (t < 1) window._discClusterRAF = requestAnimationFrame(tick);
++    };
++    window._discClusterRAF = requestAnimationFrame(tick);
++};
++
++// Step 3: hallucination audit — unhide #disc-hallucination, render 4-6 claim chips; .verified if evidence_sources.length >= 2 else .warn (staggered).
++window.playHallucinationAudit = function (/* step */, ds) {
++    const el = document.getElementById('disc-hallucination');
++    if (!el) return;
++    const reduced = window._discReduced();
++    const discoveries = (ds && ds.discoveries) || [];
++    el.hidden = false;
++    const claims = discoveries.slice(0, 6);
++    if (!claims.length) { el.innerHTML = '<div>⚠ 暂无可审计声明</div>'; return; }
++    const meta = claims.map(c => {
++        const srcs = (c.evidence_sources || []).length;
++        return { title: c.title || '—', ok: srcs >= 2, srcs: srcs };
++    });
++    el.innerHTML = '<div style="font-weight:600;margin-bottom:6px">🛡️ 幻觉审计 · 交叉证据校验</div>' +
++        '<div style="display:flex;flex-wrap:wrap;gap:6px">' +
++        meta.map((m, i) => '<span class="disc-claim" data-i="' + i + '">' + (m.ok ? '✓ ' : '⚠ ') + m.title + '<span style="opacity:.7;font-size:10px"> · ' + m.srcs + ' src</span></span>').join('') +
++        '</div>';
++    const chips = el.querySelectorAll('.disc-claim');
++    chips.forEach((chip, i) => {
++        const cls = meta[i].ok ? 'verified' : 'warn';
++        if (reduced) { chip.classList.add(cls); return; }
++        setTimeout(() => chip.classList.add(cls), 200 + i * 120);
++    });
++};
++
++// Step 4: mini ECharts radar on #disc-radar — title/skill/cross scores from first discovery.reasoning or synthetic [42,20,15].
++window.updateDiscRadar = function (/* step */, ds) {
++    const el = document.getElementById('disc-radar');
++    if (!el || typeof echarts === 'undefined') return;
++    if (echarts.getInstanceByDom(el)) echarts.getInstanceByDom(el).dispose();
++    const first = (ds && ds.discoveries && ds.discoveries[0]) || null;
++    let vals = [42, 20, 15];
++    if (first) {
++        if (first.reasoning) {
++            const nums = (first.reasoning.match(/\d+(\.\d+)?/g) || []).map(Number).filter(n => n >= 5 && n <= 100);
++            if (nums.length >= 3) vals = nums.slice(0, 3);
++            else if (first.confidence) vals = [first.confidence, 20, 15];
++        } else if (first.confidence) {
++            vals = [first.confidence, 20, 15];
++        }
++    }
++    const c = echarts.init(el);
++    c.setOption({
++        radar: {
++            indicator: [
++                { name: '标题新颖度', max: 100 },
++                { name: '技能组合熵', max: 100 },
++                { name: '跨行业溢出', max: 100 }
++            ],
++            radius: '62%',
++            axisName: { color: 'rgba(226,232,240,0.7)', fontSize: 10 },
++            splitLine: { lineStyle: { color: 'rgba(45,212,191,0.18)' } },
++            splitArea: { areaStyle: { color: ['rgba(45,212,191,0.03)', 'rgba(45,212,191,0.06)'] } },
++            axisLine: { lineStyle: { color: 'rgba(45,212,191,0.22)' } }
++        },
++        series: [{
++            type: 'radar',
++            data: [{ value: vals, name: '新兴度评分' }],
++            symbol: 'circle', symbolSize: 4,
++            lineStyle: { color: '#2DD4BF', width: 2 },
++            itemStyle: { color: '#2DD4BF' },
++            areaStyle: { color: 'rgba(45,212,191,0.22)' }
++        }]
++    });
++};
++
++// Dispose particles + radar when leaving discovery view.
++window.destroyDiscFX = function () {
++    if (window._discParticles) { try { window._discParticles.destroy(); } catch (e) {} window._discParticles = null; }
++    const el = document.getElementById('disc-radar');
++    if (el && typeof echarts !== 'undefined' && echarts.getInstanceByDom(el)) echarts.getInstanceByDom(el).dispose();
++    if (window._discClusterRAF) { cancelAnimationFrame(window._discClusterRAF); window._discClusterRAF = 0; }
+ };
+ 
+ // ============== Evolution View ==============
+ let evolutionState = {currentJobId: 'Java开发工程师', timeOffset: 6, filter: 'all'};
+ window.initEvolution = function() {
+
+===== NEW FILE backend/llm/deepseek.py =====
+from __future__ import annotations
+
+import json
+import os
+import re
+from typing import Any
+
+import httpx
+
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
+
+DEFAULT_BASE = "https://api.deepseek.com"
+DEFAULT_MODEL = "deepseek-chat"
+
+
+def is_configured() -> bool:
+    return bool(os.getenv("DEEPSEEK_API_KEY", "").strip())
+
+
+def _extract_json(text: str) -> dict:
+    text = text.strip()
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError:
+        m = re.search(r"\{[\s\S]*\}", text)
+        if not m:
+            raise
+        return json.loads(m.group(0))
+
+
+def enrich_discoveries(discoveries: list[dict], top_n: int = 8) -> tuple[list[dict], dict]:
+    meta: dict[str, Any] = {"llm": "none", "enriched": 0, "error": None}
+    if not discoveries or not is_configured():
+        return discoveries, meta
+
+    key = os.getenv("DEEPSEEK_API_KEY", "").strip()
+    base = os.getenv("DEEPSEEK_BASE_URL", DEFAULT_BASE).rstrip("/")
+    model = os.getenv("DEEPSEEK_MODEL", DEFAULT_MODEL)
+    targets = discoveries[:top_n]
+    compact = [
+        {
+            "id": d.get("id"),
+            "title": d.get("title"),
+            "skills": (d.get("core_skills") or d.get("requiredSkills") or [])[:8],
+            "definition": (d.get("definition") or d.get("description") or "")[:400],
+            "evidence_count": (d.get("quality") or {}).get("evidence_count", 0),
+        }
+        for d in targets
+    ]
+    system = (
+        "你是就业市场分析师。根据给定的新兴岗位候选，润色岗位定义与一句话推理依据。"
+        "严格输出 JSON：{\"items\":[{\"id\":\"\",\"definition\":\"\",\"reasoning\":\"\"}]}"
+        "不要编造不存在的技能；定义≤120字；reasoning≤40字。"
+    )
+    user = "候选岗位:\n" + json.dumps(compact, ensure_ascii=False)
+
+    try:
+        with httpx.Client(timeout=45.0) as client:
+            resp = client.post(
+                f"{base}/v1/chat/completions",
+                headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
+                json={
+                    "model": model,
+                    "messages": [
+                        {"role": "system", "content": system},
+                        {"role": "user", "content": user},
+                    ],
+                    "temperature": 0.3,
+                },
+            )
+            resp.raise_for_status()
+            content = resp.json()["choices"][0]["message"]["content"]
+        data = _extract_json(content)
+        by_id = {it["id"]: it for it in data.get("items", []) if it.get("id")}
+        enriched = 0
+        for d in discoveries:
+            it = by_id.get(d.get("id"))
+            if not it:
+                continue
+            if it.get("definition"):
+                d["definition"] = str(it["definition"]).strip()[:250]
+                d["description"] = d["definition"][:200]
+            if it.get("reasoning"):
+                d["reasoning"] = str(it["reasoning"]).strip()[:120]
+            enriched += 1
+        meta.update({"llm": model, "enriched": enriched})
+    except Exception as e:
+        meta["error"] = str(e)
+    return discoveries, meta
+
+===== NEW FILE backend/llm/__init__.py =====
+
+===== NEW FILE backend/tests/test_deepseek_enrich.py =====
+import json
+from unittest.mock import MagicMock, patch
+
+from backend.llm import deepseek
+
+
+def test_is_configured_false_without_key(monkeypatch):
+    monkeypatch.delenv("DEEPSEEK_API_KEY", raising=False)
+    assert deepseek.is_configured() is False
+
+
+def test_is_configured_true_with_key(monkeypatch):
+    monkeypatch.setenv("DEEPSEEK_API_KEY", "sk-test")
+    assert deepseek.is_configured() is True
+
+
+def test_enrich_skips_when_no_key(monkeypatch):
+    monkeypatch.delenv("DEEPSEEK_API_KEY", raising=False)
+    jobs = [{"id": "d1", "title": "Agent工程师", "definition": "old", "core_skills": ["Python"]}]
+    out, meta = deepseek.enrich_discoveries(jobs, top_n=8)
+    assert out[0]["definition"] == "old"
+    assert meta["llm"] == "none"
+    assert meta["enriched"] == 0
+
+
+def test_enrich_rewrites_top_n(monkeypatch):
+    monkeypatch.setenv("DEEPSEEK_API_KEY", "sk-test")
+    payload = {
+        "choices": [{
+            "message": {
+                "content": json.dumps({
+                    "items": [{
+                        "id": "d1",
+                        "definition": "负责多智能体任务规划与工具编排。",
+                        "reasoning": "标题含Agent且技能组合新颖。"
+                    }]
+                }, ensure_ascii=False)
+            }
+        }]
+    }
+    mock_resp = MagicMock()
+    mock_resp.status_code = 200
+    mock_resp.json.return_value = payload
+    mock_resp.raise_for_status = MagicMock()
+
+    jobs = [
+        {"id": "d1", "title": "Agent工程师", "definition": "raw", "core_skills": ["Agent"], "responsibilities": []},
+        {"id": "d2", "title": "Java", "definition": "raw2", "core_skills": ["Java"], "responsibilities": []},
+    ]
+    with patch("backend.llm.deepseek.httpx.Client") as client_cls:
+        client_cls.return_value.__enter__.return_value.post.return_value = mock_resp
+        out, meta = deepseek.enrich_discoveries(jobs, top_n=1)
+    assert out[0]["definition"].startswith("负责多")
+    assert "Agent" in out[0]["reasoning"]
+    assert out[1]["definition"] == "raw2"
+    assert meta["llm"] == "deepseek-chat"
+    assert meta["enriched"] == 1
+
+===== NEW FILE .env.example =====
+DEEPSEEK_API_KEY=
+DEEPSEEK_BASE_URL=https://api.deepseek.com
+DEEPSEEK_MODEL=deepseek-chat

@@ -1,9 +1,220 @@
 from copy import deepcopy
+from typing import Any, Optional
+
+from sqlalchemy import desc, func
+
+from backend.db import SessionLocal
+from backend.db_models import JobPosting, JobPostingDetail, LiepinJob
 
 
 def ok(data):
     return {"code": 0, "message": "success", "data": data}
 
+
+# ============================================================
+# 数据库查询函数 —— 优先从 PostgreSQL 读，失败则回退 Mock
+# ============================================================
+
+def _get_db():
+    """获取数据库会话，失败返回 None"""
+    try:
+        return SessionLocal()
+    except Exception:
+        return None
+
+
+def get_db_stats():
+    """获取数据库真实统计"""
+    db = _get_db()
+    if not db:
+        return None
+    try:
+        total_postings = db.query(func.count(JobPosting.id)).scalar() or 0
+        total_details = db.query(func.count(JobPostingDetail.detail_id)).scalar() or 0
+        # liepin_jobs 表可能不存在（如未导入数据），用 try/except + rollback 兜底
+        try:
+            total_liepin = db.query(func.count(LiepinJob.id)).scalar() or 0
+        except Exception:
+            db.rollback()
+            total_liepin = 0
+
+        sources = (
+            db.query(JobPosting.source_name, func.count(JobPosting.id))
+            .group_by(JobPosting.source_name)
+            .all()
+        )
+
+        latest = db.query(func.max(JobPosting.crawl_time)).scalar()
+
+        return {
+            "total_postings": total_postings,
+            "total_details": total_details,
+            "total_liepin": total_liepin,
+            "sources": [{"name": s, "count": c} for s, c in sources if s],
+            "latest_crawl": str(latest) if latest else None,
+        }
+    finally:
+        db.close()
+
+
+def get_real_jobs(limit: int = 50, offset: int = 0, keyword: Optional[str] = None):
+    """从数据库读取真实岗位列表"""
+    db = _get_db()
+    if not db:
+        return [], 0
+    try:
+        q = db.query(JobPosting)
+        if keyword:
+            q = q.filter(
+                (JobPosting.job_title.ilike(f"%{keyword}%"))
+                | (JobPosting.company_name.ilike(f"%{keyword}%"))
+            )
+        total = q.count()
+        rows = (
+            q.order_by(desc(JobPosting.crawl_time))
+            .offset(offset)
+            .limit(limit)
+            .all()
+        )
+        jobs = []
+        for r in rows:
+            jobs.append({
+                "id": r.id,
+                "job_title": r.job_title,
+                "company_name": r.company_name,
+                "city": r.city,
+                "district": r.district,
+                "salary_min": r.salary_min,
+                "salary_max": r.salary_max,
+                "salary_unit": r.salary_unit,
+                "experience": r.experience,
+                "education": r.education,
+                "job_type": r.job_type,
+                "source_name": r.source_name,
+                "publish_time": str(r.publish_time) if r.publish_time else None,
+                "crawl_time": str(r.crawl_time) if r.crawl_time else None,
+            })
+        return jobs, total
+    finally:
+        db.close()
+
+
+def get_real_job_detail(job_id: int):
+    """获取单个岗位的详细信息"""
+    db = _get_db()
+    if not db:
+        return None
+    try:
+        posting = db.query(JobPosting).filter(JobPosting.id == job_id).first()
+        if not posting:
+            return None
+        detail = (
+            db.query(JobPostingDetail)
+            .filter(JobPostingDetail.job_id == job_id)
+            .first()
+        )
+        result: dict[str, Any] = {
+            "id": posting.id,
+            "job_title": posting.job_title,
+            "company_name": posting.company_name,
+            "city": posting.city,
+            "district": posting.district,
+            "salary_min": posting.salary_min,
+            "salary_max": posting.salary_max,
+            "salary_unit": posting.salary_unit,
+            "experience": posting.experience,
+            "education": posting.education,
+            "job_type": posting.job_type,
+            "source_name": posting.source_name,
+            "publish_time": str(posting.publish_time) if posting.publish_time else None,
+        }
+        if detail:
+            result["detail"] = {
+                "detail_id": detail.detail_id,
+                "company_industry": detail.company_industry,
+                "company_size": detail.company_size,
+                "company_nature": detail.company_nature,
+                "company_intro": detail.company_intro,
+                "job_description": detail.job_description,
+                "job_requirement": detail.job_requirement,
+                "job_highlights": detail.job_highlights,
+                "job_labels": detail.job_labels,
+                "skills": detail.skills,
+                "benefits": detail.benefits,
+                "keywords": detail.keywords,
+                "work_mode": detail.work_mode,
+                "salary_description": detail.salary_description,
+                "source_url": detail.source_url,
+            }
+        return result
+    finally:
+        db.close()
+
+
+def get_real_city_stats():
+    """按城市统计岗位数量"""
+    db = _get_db()
+    if not db:
+        return []
+    try:
+        rows = (
+            db.query(JobPosting.city, func.count(JobPosting.id))
+            .filter(JobPosting.city.isnot(None), JobPosting.city != "")
+            .group_by(JobPosting.city)
+            .order_by(desc(func.count(JobPosting.id)))
+            .limit(20)
+            .all()
+        )
+        return [{"city": c, "count": n} for c, n in rows]
+    finally:
+        db.close()
+
+
+def get_real_salary_stats():
+    """薪资分布统计"""
+    db = _get_db()
+    if not db:
+        return {}
+    try:
+        avg_min = (
+            db.query(func.avg(JobPosting.salary_min))
+            .filter(JobPosting.salary_min > 0)
+            .scalar()
+        )
+        avg_max = (
+            db.query(func.avg(JobPosting.salary_max))
+            .filter(JobPosting.salary_max > 0)
+            .scalar()
+        )
+
+        brackets = [
+            (0, 10000, "10K以下"),
+            (10000, 20000, "10K-20K"),
+            (20000, 30000, "20K-30K"),
+            (30000, 50000, "30K-50K"),
+            (50000, 999999, "50K以上"),
+        ]
+        distribution = []
+        for lo, hi, label in brackets:
+            cnt = (
+                db.query(func.count(JobPosting.id))
+                .filter(JobPosting.salary_max > lo, JobPosting.salary_max <= hi)
+                .scalar()
+            )
+            distribution.append({"range": label, "count": cnt or 0})
+
+        return {
+            "avg_salary_min": round(avg_min) if avg_min else 0,
+            "avg_salary_max": round(avg_max) if avg_max else 0,
+            "distribution": distribution,
+        }
+    finally:
+        db.close()
+
+
+# ============================================================
+# Mock 数据（DB 不可用时的回退数据）
+# ============================================================
 
 SKILLS = [
     "Python",
@@ -356,73 +567,424 @@ def get_job_subgraph(job_id):
     nodes = [node for node in GRAPH_NODES if node["id"] in node_ids]
     return get_graph_payload(nodes, related_edges)
 
+
 EVOLUTION_PROFILES = [
     {
-        "job_id": "job_ai_agent",
-        "job_title": "AI Agent工程师",
-        "summary": "AI Agent工程师近半年需求快速上升，企业更关注RAG、工具调用、多智能体协作和业务系统集成能力。",
+        "job_id": "Java开发工程师",
+        "job_title": "Java开发工程师",
+        "cat": "后端",
+        "jdCount": 1420,
+        "summary": "Java开发岗位正从传统单体开发向云原生、AI集成方向演进，Spring Cloud Alibaba需求暴涨347%，Spring AI与OpenTelemetry成为新标配，Struts2/EJB等旧技术栈快速出局。",
         "period": "2026-02 至 2026-07",
         "trend": [
-            {"month": "2026-02", "demand_index": 42, "job_count": 18},
-            {"month": "2026-03", "demand_index": 51, "job_count": 25},
-            {"month": "2026-04", "demand_index": 63, "job_count": 41},
-            {"month": "2026-05", "demand_index": 76, "job_count": 69},
-            {"month": "2026-06", "demand_index": 88, "job_count": 103},
-            {"month": "2026-07", "demand_index": 96, "job_count": 136}
+            {"month": "2026-02", "demand_index": 68, "job_count": 118},
+            {"month": "2026-03", "demand_index": 70, "job_count": 124},
+            {"month": "2026-04", "demand_index": 73, "job_count": 136},
+            {"month": "2026-05", "demand_index": 76, "job_count": 145},
+            {"month": "2026-06", "demand_index": 80, "job_count": 158},
+            {"month": "2026-07", "demand_index": 85, "job_count": 172}
         ],
-        "added_skills": [
-            {"name": "Function Calling", "growth": "+214%", "evidence_count": 31},
-            {"name": "多智能体协作", "growth": "+186%", "evidence_count": 24},
-            {"name": "工具调用编排", "growth": "+173%", "evidence_count": 22},
-            {"name": "Agent评测", "growth": "+126%", "evidence_count": 17}
+        "added": [
+            {"name": "Spring Cloud Alibaba", "version": "v2026.1", "growth": "+347%"},
+            {"name": "GraalVM Native Image", "version": "新出现", "growth": "+128"},
+            {"name": "JDK 21 Virtual Thread", "version": "v17→v21", "growth": "+89%"},
+            {"name": "Spring AI", "version": "新出现", "growth": "+147"},
+            {"name": "OpenTelemetry", "version": "新出现", "growth": "+52"},
+            {"name": "eBPF", "version": "新出现", "growth": "+45"}
         ],
-        "weakened_skills": [
-            {"name": "单轮Prompt编写", "decline": "-32%", "reason": "岗位要求从提示词编写转向完整Agent系统设计"},
-            {"name": "纯关键词检索", "decline": "-28%", "reason": "RAG和语义检索成为主流要求"}
+        "removed": [
+            {"name": "Struts2", "version": "已废弃", "decline": "-89%"},
+            {"name": "EJB", "version": "已废弃", "decline": "-95%"},
+            {"name": "JSP", "version": "边缘化", "decline": "-72%"},
+            {"name": "SOAP", "version": "边缘化", "decline": "-58%"}
         ],
-        "changed_skills": [
-            {"name": "RAG", "change": "加分项 -> 核心必备", "weight_change": "+26%"},
-            {"name": "LangChain", "change": "了解 -> 熟练应用", "weight_change": "+18%"},
-            {"name": "Prompt工程", "change": "单点技能 -> 评测与优化体系", "weight_change": "+15%"}
+        "modified": [
+            {"name": "微服务架构", "change": "中级→高级", "weight": "+18%"},
+            {"name": "MySQL", "change": "加分→必备", "weight": "↑"},
+            {"name": "Redis", "change": "加分→必备", "weight": "↑"},
+            {"name": "Kafka", "change": "加分→必备", "weight": "↑"},
+            {"name": "Kubernetes", "change": "加分→必备", "weight": "↑"}
         ],
-        "forecast": [
-            {"month": "2026-08", "demand_index": 102},
-            {"month": "2026-09", "demand_index": 109},
-            {"month": "2026-10", "demand_index": 117}
-        ]
-    },
-    {
-        "job_id": "job_java_backend",
-        "job_title": "Java后端工程师",
-        "summary": "Java后端岗位正在从传统业务开发转向云原生、微服务治理和AI应用集成。",
-        "period": "2026-02 至 2026-07",
-        "trend": [
-            {"month": "2026-02", "demand_index": 70, "job_count": 96},
-            {"month": "2026-03", "demand_index": 72, "job_count": 104},
-            {"month": "2026-04", "demand_index": 74, "job_count": 116},
-            {"month": "2026-05", "demand_index": 78, "job_count": 121},
-            {"month": "2026-06", "demand_index": 82, "job_count": 134},
-            {"month": "2026-07", "demand_index": 86, "job_count": 149}
-        ],
-        "added_skills": [
-            {"name": "Kubernetes", "growth": "+88%", "evidence_count": 29},
-            {"name": "OpenTelemetry", "growth": "+63%", "evidence_count": 18},
-            {"name": "Spring AI", "growth": "+147%", "evidence_count": 21},
-            {"name": "云原生部署", "growth": "+76%", "evidence_count": 25}
-        ],
-        "weakened_skills": [
-            {"name": "JSP", "decline": "-72%", "reason": "传统服务端页面开发需求下降"},
-            {"name": "Struts2", "decline": "-89%", "reason": "旧框架逐渐被Spring生态替代"}
-        ],
-        "changed_skills": [
-            {"name": "Spring Boot", "change": "基础要求 -> 项目治理能力", "weight_change": "+12%"},
-            {"name": "Redis", "change": "加分项 -> 必备", "weight_change": "+16%"},
-            {"name": "MySQL", "change": "使用能力 -> 性能优化能力", "weight_change": "+14%"}
-        ],
+        "hotSkills": ["Spring Cloud", "JDK 21", "OpenTelemetry", "GraalVM", "Kafka", "Redis", "MySQL", "Kubernetes", "Docker", "JVM调优"],
+        "hotValues": [387, 289, 152, 128, 210, 198, 176, 168, 154, 132],
+        "trendMust": [18, 19, 19, 20, 21, 22, 23, 24, 25, 26, 28, 30],
+        "trendNice": [12, 13, 14, 15, 16, 17, 18, 20, 22, 24, 26, 28],
         "forecast": [
             {"month": "2026-08", "demand_index": 88},
             {"month": "2026-09", "demand_index": 91},
-            {"month": "2026-10", "demand_index": 94}
+            {"month": "2026-10", "demand_index": 95}
+        ]
+    },
+    {
+        "job_id": "前端开发工程师",
+        "job_title": "前端开发工程师",
+        "cat": "前端",
+        "jdCount": 1180,
+        "summary": "前端开发正从传统SPA向全栈SSR/SSG架构转型，React Server Components和Next.js App Router成为新一代标配，TypeScript已成硬性门槛，jQuery/Grunt等旧工具链快速退场。",
+        "period": "2026-02 至 2026-07",
+        "trend": [
+            {"month": "2026-02", "demand_index": 72, "job_count": 95},
+            {"month": "2026-03", "demand_index": 74, "job_count": 102},
+            {"month": "2026-04", "demand_index": 76, "job_count": 115},
+            {"month": "2026-05", "demand_index": 79, "job_count": 120},
+            {"month": "2026-06", "demand_index": 83, "job_count": 133},
+            {"month": "2026-07", "demand_index": 86, "job_count": 148}
+        ],
+        "added": [
+            {"name": "React Server Components", "version": "新出现", "growth": "+210%"},
+            {"name": "Next.js App Router", "version": "v13→v15", "growth": "+168%"},
+            {"name": "Vite 6", "version": "新出现", "growth": "+92%"},
+            {"name": "WebGPU", "version": "新出现", "growth": "+64%"},
+            {"name": "Astro", "version": "新出现", "growth": "+71%"},
+            {"name": "Tailwind v4", "version": "新出现", "growth": "+55%"}
+        ],
+        "removed": [
+            {"name": "jQuery", "version": "边缘化", "decline": "-78%"},
+            {"name": "Grunt", "version": "已废弃", "decline": "-91%"},
+            {"name": "Bower", "version": "已废弃", "decline": "-96%"},
+            {"name": "AngularJS 1.x", "version": "已废弃", "decline": "-88%"}
+        ],
+        "modified": [
+            {"name": "TypeScript", "change": "加分→必备", "weight": "↑"},
+            {"name": "React", "change": "中级→高级", "weight": "+22%"},
+            {"name": "工程化", "change": "加分→必备", "weight": "↑"},
+            {"name": "性能优化", "change": "加分→必备", "weight": "↑"},
+            {"name": "微前端", "change": "选修→加分", "weight": "↑"}
+        ],
+        "hotSkills": ["TypeScript", "React 19", "Next.js", "Vite", "Vue3", "CSS-in-JS", "Webpack", "Node.js", "Playwright", "WebGPU"],
+        "hotValues": [410, 360, 298, 240, 220, 180, 165, 150, 120, 95],
+        "trendMust": [16, 17, 18, 19, 20, 22, 23, 24, 26, 27, 29, 31],
+        "trendNice": [14, 15, 16, 17, 19, 20, 22, 24, 25, 27, 29, 32],
+        "forecast": [
+            {"month": "2026-08", "demand_index": 89},
+            {"month": "2026-09", "demand_index": 93},
+            {"month": "2026-10", "demand_index": 97}
+        ]
+    },
+    {
+        "job_id": "Python数据分析师",
+        "job_title": "Python数据分析师",
+        "cat": "数据",
+        "jdCount": 860,
+        "summary": "数据分析师岗位正从传统BI向现代数据栈转型，DuckDB/Polars等新一代分析引擎崛起，LLM for Analytics成为增长最快的能力要求，SPSS/SAS等传统工具需求持续下降。",
+        "period": "2026-02 至 2026-07",
+        "trend": [
+            {"month": "2026-02", "demand_index": 58, "job_count": 68},
+            {"month": "2026-03", "demand_index": 60, "job_count": 73},
+            {"month": "2026-04", "demand_index": 63, "job_count": 82},
+            {"month": "2026-05", "demand_index": 65, "job_count": 89},
+            {"month": "2026-06", "demand_index": 68, "job_count": 95},
+            {"month": "2026-07", "demand_index": 72, "job_count": 105}
+        ],
+        "added": [
+            {"name": "DuckDB", "version": "新出现", "growth": "+190%"},
+            {"name": "Polars", "version": "新出现", "growth": "+156%"},
+            {"name": "dbt", "version": "新出现", "growth": "+112%"},
+            {"name": "Lakehouse", "version": "新出现", "growth": "+88%"},
+            {"name": "LLM for Analytics", "version": "新出现", "growth": "+134%"}
+        ],
+        "removed": [
+            {"name": "SPSS", "version": "边缘化", "decline": "-62%"},
+            {"name": "Excel宏主导", "version": "边缘化", "decline": "-48%"},
+            {"name": "SAS基础岗", "version": "下降", "decline": "-41%"}
+        ],
+        "modified": [
+            {"name": "SQL", "change": "必备→专家", "weight": "↑"},
+            {"name": "Python", "change": "中级→高级", "weight": "+15%"},
+            {"name": "可视化", "change": "加分→必备", "weight": "↑"},
+            {"name": "A/B测试", "change": "加分→必备", "weight": "↑"}
+        ],
+        "hotSkills": ["SQL", "Python", "Pandas", "Polars", "dbt", "Tableau", "PowerBI", "Spark", "Airflow", "统计建模"],
+        "hotValues": [420, 380, 310, 260, 210, 190, 175, 160, 140, 125],
+        "trendMust": [14, 15, 16, 17, 18, 19, 20, 21, 22, 24, 25, 27],
+        "trendNice": [10, 11, 12, 13, 14, 15, 16, 18, 19, 21, 23, 25],
+        "forecast": [
+            {"month": "2026-08", "demand_index": 74},
+            {"month": "2026-09", "demand_index": 77},
+            {"month": "2026-10", "demand_index": 80}
+        ]
+    },
+    {
+        "job_id": "AI算法工程师",
+        "job_title": "AI算法工程师",
+        "cat": "AI",
+        "jdCount": 1560,
+        "summary": "AI算法工程师是演化最剧烈的岗位，LLM应用工程需求暴增420%，RAG和Agent成为必备能力，传统SVM/浅层特征工程岗加速淘汰，PyTorch和分布式训练从加分变为硬门槛。",
+        "period": "2026-02 至 2026-07",
+        "trend": [
+            {"month": "2026-02", "demand_index": 62, "job_count": 110},
+            {"month": "2026-03", "demand_index": 66, "job_count": 125},
+            {"month": "2026-04", "demand_index": 72, "job_count": 148},
+            {"month": "2026-05", "demand_index": 78, "job_count": 172},
+            {"month": "2026-06", "demand_index": 85, "job_count": 198},
+            {"month": "2026-07", "demand_index": 92, "job_count": 228}
+        ],
+        "added": [
+            {"name": "LLM 应用工程", "version": "新出现", "growth": "+420%"},
+            {"name": "RAG", "version": "新出现", "growth": "+310%"},
+            {"name": "Agent / Tool Use", "version": "新出现", "growth": "+280%"},
+            {"name": "LoRA / PEFT", "version": "新出现", "growth": "+195%"},
+            {"name": "vLLM", "version": "新出现", "growth": "+160%"},
+            {"name": "多模态", "version": "新出现", "growth": "+148%"}
+        ],
+        "removed": [
+            {"name": "传统SVM主岗", "version": "边缘化", "decline": "-55%"},
+            {"name": "浅层特征工程岗", "version": "下降", "decline": "-43%"},
+            {"name": "纯规则引擎", "version": "边缘化", "decline": "-60%"}
+        ],
+        "modified": [
+            {"name": "PyTorch", "change": "加分→必备", "weight": "↑"},
+            {"name": "深度学习", "change": "中级→高级", "weight": "+25%"},
+            {"name": "CUDA", "change": "选修→加分", "weight": "↑"},
+            {"name": "分布式训练", "change": "加分→必备", "weight": "↑"}
+        ],
+        "hotSkills": ["LLM", "PyTorch", "RAG", "Transformer", "CUDA", "LoRA", "Agent", "向量检索", "Python", "MLSys"],
+        "hotValues": [480, 420, 390, 340, 280, 260, 240, 210, 190, 150],
+        "trendMust": [20, 22, 24, 26, 28, 30, 33, 36, 38, 41, 44, 48],
+        "trendNice": [15, 16, 18, 20, 22, 25, 28, 30, 33, 36, 40, 44],
+        "forecast": [
+            {"month": "2026-08", "demand_index": 98},
+            {"month": "2026-09", "demand_index": 105},
+            {"month": "2026-10", "demand_index": 113}
+        ]
+    },
+    {
+        "job_id": "产品经理",
+        "job_title": "产品经理",
+        "cat": "产品",
+        "jdCount": 980,
+        "summary": "产品经理岗位正从传统需求文档驱动转向AI+数据双轮驱动，AI产品设计能力增长260%，Prompt产品化成为全新能力赛道，纯画线框式交付模式加速淘汰。",
+        "period": "2026-02 至 2026-07",
+        "trend": [
+            {"month": "2026-02", "demand_index": 55, "job_count": 78},
+            {"month": "2026-03", "demand_index": 57, "job_count": 82},
+            {"month": "2026-04", "demand_index": 58, "job_count": 88},
+            {"month": "2026-05", "demand_index": 60, "job_count": 92},
+            {"month": "2026-06", "demand_index": 63, "job_count": 98},
+            {"month": "2026-07", "demand_index": 65, "job_count": 105}
+        ],
+        "added": [
+            {"name": "AI 产品设计", "version": "新出现", "growth": "+260%"},
+            {"name": "Prompt 产品化", "version": "新出现", "growth": "+180%"},
+            {"name": "数据闭环设计", "version": "新出现", "growth": "+95%"},
+            {"name": "增长实验平台", "version": "新出现", "growth": "+72%"}
+        ],
+        "removed": [
+            {"name": "纯画线框交付", "version": "边缘化", "decline": "-50%"},
+            {"name": "无数据决策", "version": "下降", "decline": "-66%"}
+        ],
+        "modified": [
+            {"name": "用户研究", "change": "加分→必备", "weight": "↑"},
+            {"name": "数据分析", "change": "加分→必备", "weight": "↑"},
+            {"name": "商业Sense", "change": "中级→高级", "weight": "+12%"}
+        ],
+        "hotSkills": ["需求分析", "AI产品", "数据分析", "用户研究", "Roadmap", "SQL基础", "A/B测试", "竞品分析", "PRD", "跨团队协作"],
+        "hotValues": [360, 320, 280, 250, 220, 180, 170, 160, 150, 140],
+        "trendMust": [12, 13, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22],
+        "trendNice": [9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 20, 21],
+        "forecast": [
+            {"month": "2026-08", "demand_index": 67},
+            {"month": "2026-09", "demand_index": 70},
+            {"month": "2026-10", "demand_index": 73}
+        ]
+    },
+    {
+        "job_id": "运维工程师",
+        "job_title": "运维工程师",
+        "cat": "运维",
+        "jdCount": 720,
+        "summary": "运维岗位正从传统手工运维向平台工程和GitOps转型，Platform Engineering增长170%，eBPF可观测性成为新标配，纯手工部署模式被彻底淘汰。",
+        "period": "2026-02 至 2026-07",
+        "trend": [
+            {"month": "2026-02", "demand_index": 50, "job_count": 58},
+            {"month": "2026-03", "demand_index": 52, "job_count": 62},
+            {"month": "2026-04", "demand_index": 54, "job_count": 68},
+            {"month": "2026-05", "demand_index": 56, "job_count": 73},
+            {"month": "2026-06", "demand_index": 59, "job_count": 78},
+            {"month": "2026-07", "demand_index": 62, "job_count": 85}
+        ],
+        "added": [
+            {"name": "Platform Engineering", "version": "新出现", "growth": "+170%"},
+            {"name": "GitOps", "version": "新出现", "growth": "+130%"},
+            {"name": "eBPF Observability", "version": "新出现", "growth": "+98%"},
+            {"name": "FinOps", "version": "新出现", "growth": "+76%"}
+        ],
+        "removed": [
+            {"name": "纯手工部署", "version": "已废弃", "decline": "-82%"},
+            {"name": "无监控值班", "version": "下降", "decline": "-70%"}
+        ],
+        "modified": [
+            {"name": "Kubernetes", "change": "加分→必备", "weight": "↑"},
+            {"name": "IaC", "change": "选修→必备", "weight": "↑"},
+            {"name": "SRE实践", "change": "加分→中级", "weight": "↑"}
+        ],
+        "hotSkills": ["Kubernetes", "Terraform", "Prometheus", "Grafana", "Linux", "CI/CD", "Ansible", "Istio", "AWS", "SRE"],
+        "hotValues": [350, 300, 270, 250, 240, 220, 190, 170, 160, 145],
+        "trendMust": [13, 14, 15, 16, 17, 18, 19, 21, 22, 23, 25, 26],
+        "trendNice": [10, 11, 12, 13, 14, 15, 16, 17, 18, 20, 21, 23],
+        "forecast": [
+            {"month": "2026-08", "demand_index": 64},
+            {"month": "2026-09", "demand_index": 67},
+            {"month": "2026-10", "demand_index": 70}
+        ]
+    },
+    {
+        "job_id": "测试工程师",
+        "job_title": "测试工程师",
+        "cat": "测试",
+        "jdCount": 640,
+        "summary": "测试工程师正从手工执行向智能化质量保障转型，AI辅助测试增长200%，契约测试和混沌工程成为新能力方向，纯手工点点点模式加速淘汰。",
+        "period": "2026-02 至 2026-07",
+        "trend": [
+            {"month": "2026-02", "demand_index": 44, "job_count": 50},
+            {"month": "2026-03", "demand_index": 46, "job_count": 54},
+            {"month": "2026-04", "demand_index": 47, "job_count": 58},
+            {"month": "2026-05", "demand_index": 49, "job_count": 63},
+            {"month": "2026-06", "demand_index": 52, "job_count": 68},
+            {"month": "2026-07", "demand_index": 55, "job_count": 75}
+        ],
+        "added": [
+            {"name": "AI 辅助测试", "version": "新出现", "growth": "+200%"},
+            {"name": "契约测试", "version": "新出现", "growth": "+110%"},
+            {"name": "Chaos Engineering", "version": "新出现", "growth": "+85%"},
+            {"name": "质量门禁左移", "version": "新出现", "growth": "+90%"}
+        ],
+        "removed": [
+            {"name": "纯手工点点点", "version": "边缘化", "decline": "-58%"},
+            {"name": "无自动化报表", "version": "下降", "decline": "-47%"}
+        ],
+        "modified": [
+            {"name": "自动化测试", "change": "加分→必备", "weight": "↑"},
+            {"name": "接口测试", "change": "中级→高级", "weight": "↑"},
+            {"name": "性能测试", "change": "选修→加分", "weight": "↑"}
+        ],
+        "hotSkills": ["自动化测试", "Playwright", "接口测试", "CI质量门禁", "性能测试", "Python", "Java", "Appium", "Mock", "测试设计"],
+        "hotValues": [330, 290, 260, 230, 200, 180, 170, 150, 140, 130],
+        "trendMust": [11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 23],
+        "trendNice": [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 20],
+        "forecast": [
+            {"month": "2026-08", "demand_index": 57},
+            {"month": "2026-09", "demand_index": 60},
+            {"month": "2026-10", "demand_index": 63}
+        ]
+    },
+    {
+        "job_id": "UI设计师",
+        "job_title": "UI设计师",
+        "cat": "设计",
+        "jdCount": 510,
+        "summary": "UI设计师正从视觉执行向设计系统工程化转型，AI设计协作增长240%，Design System Token成为新标配，切图工厂模式快速退场。",
+        "period": "2026-02 至 2026-07",
+        "trend": [
+            {"month": "2026-02", "demand_index": 40, "job_count": 40},
+            {"month": "2026-03", "demand_index": 41, "job_count": 43},
+            {"month": "2026-04", "demand_index": 42, "job_count": 46},
+            {"month": "2026-05", "demand_index": 44, "job_count": 50},
+            {"month": "2026-06", "demand_index": 46, "job_count": 55},
+            {"month": "2026-07", "demand_index": 48, "job_count": 58}
+        ],
+        "added": [
+            {"name": "AI 设计协作", "version": "新出现", "growth": "+240%"},
+            {"name": "Design System Token", "version": "新出现", "growth": "+120%"},
+            {"name": "动效工程化", "version": "新出现", "growth": "+80%"}
+        ],
+        "removed": [
+            {"name": "切图工厂模式", "version": "边缘化", "decline": "-65%"},
+            {"name": "无组件库交付", "version": "下降", "decline": "-52%"}
+        ],
+        "modified": [
+            {"name": "Figma", "change": "加分→必备", "weight": "↑"},
+            {"name": "交互设计", "change": "中级→高级", "weight": "↑"},
+            {"name": "可用性测试", "change": "选修→加分", "weight": "↑"}
+        ],
+        "hotSkills": ["Figma", "设计系统", "交互设计", "视觉设计", "原型", "动效", "用户体验", "组件库", "插画", "AI作图"],
+        "hotValues": [300, 270, 240, 210, 190, 170, 160, 140, 120, 100],
+        "trendMust": [10, 11, 11, 12, 13, 14, 14, 15, 16, 17, 18, 19],
+        "trendNice": [8, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
+        "forecast": [
+            {"month": "2026-08", "demand_index": 50},
+            {"month": "2026-09", "demand_index": 52},
+            {"month": "2026-10", "demand_index": 55}
+        ]
+    },
+    {
+        "job_id": "数据科学家",
+        "job_title": "数据科学家",
+        "cat": "数据",
+        "jdCount": 890,
+        "summary": "数据科学家正从离线建模向端到端ML体系升级，因果推断和Feature Store成为新标配，LLM Evaluation增长175%反映大模型评估需求激增，纯离线报表岗逐步退场。",
+        "period": "2026-02 至 2026-07",
+        "trend": [
+            {"month": "2026-02", "demand_index": 56, "job_count": 70},
+            {"month": "2026-03", "demand_index": 58, "job_count": 76},
+            {"month": "2026-04", "demand_index": 61, "job_count": 85},
+            {"month": "2026-05", "demand_index": 64, "job_count": 92},
+            {"month": "2026-06", "demand_index": 68, "job_count": 100},
+            {"month": "2026-07", "demand_index": 72, "job_count": 108}
+        ],
+        "added": [
+            {"name": "Causal Inference", "version": "新出现", "growth": "+150%"},
+            {"name": "Feature Store", "version": "新出现", "growth": "+125%"},
+            {"name": "LLM Evaluation", "version": "新出现", "growth": "+175%"},
+            {"name": "MLOps", "version": "新出现", "growth": "+140%"}
+        ],
+        "removed": [
+            {"name": "纯离线报表岗", "version": "边缘化", "decline": "-45%"},
+            {"name": "无线上闭环", "version": "下降", "decline": "-50%"}
+        ],
+        "modified": [
+            {"name": "机器学习", "change": "中级→高级", "weight": "+20%"},
+            {"name": "实验设计", "change": "加分→必备", "weight": "↑"},
+            {"name": "特征工程", "change": "加分→必备", "weight": "↑"}
+        ],
+        "hotSkills": ["机器学习", "Python", "实验设计", "特征工程", "MLOps", "统计推断", "Spark", "SQL", "模型评估", "因果推断"],
+        "hotValues": [400, 360, 300, 280, 250, 230, 200, 180, 160, 145],
+        "trendMust": [15, 16, 17, 18, 20, 21, 23, 24, 26, 28, 30, 32],
+        "trendNice": [12, 13, 14, 15, 16, 18, 19, 21, 23, 25, 27, 29],
+        "forecast": [
+            {"month": "2026-08", "demand_index": 75},
+            {"month": "2026-09", "demand_index": 79},
+            {"month": "2026-10", "demand_index": 83}
+        ]
+    },
+    {
+        "job_id": "DevOps工程师",
+        "job_title": "DevOps工程师",
+        "cat": "运维",
+        "jdCount": 780,
+        "summary": "DevOps工程师正从CI/CD执行向内部开发者平台建设转型，Internal Developer Platform增长185%，供应链安全和WASM Edge成为新方向，脚本堆砌式发布被淘汰。",
+        "period": "2026-02 至 2026-07",
+        "trend": [
+            {"month": "2026-02", "demand_index": 52, "job_count": 62},
+            {"month": "2026-03", "demand_index": 54, "job_count": 67},
+            {"month": "2026-04", "demand_index": 56, "job_count": 73},
+            {"month": "2026-05", "demand_index": 59, "job_count": 78},
+            {"month": "2026-06", "demand_index": 62, "job_count": 85},
+            {"month": "2026-07", "demand_index": 65, "job_count": 92}
+        ],
+        "added": [
+            {"name": "Internal Developer Platform", "version": "新出现", "growth": "+185%"},
+            {"name": "Policy as Code", "version": "新出现", "growth": "+115%"},
+            {"name": "Supply Chain Security", "version": "新出现", "growth": "+102%"},
+            {"name": "WASM Edge", "version": "新出现", "growth": "+68%"}
+        ],
+        "removed": [
+            {"name": "脚本堆砌发布", "version": "已废弃", "decline": "-75%"},
+            {"name": "无GitOps", "version": "下降", "decline": "-60%"}
+        ],
+        "modified": [
+            {"name": "CI/CD", "change": "中级→专家", "weight": "↑"},
+            {"name": "Kubernetes", "change": "加分→必备", "weight": "↑"},
+            {"name": "可观测性", "change": "加分→必备", "weight": "↑"}
+        ],
+        "hotSkills": ["CI/CD", "Kubernetes", "Terraform", "GitOps", "Docker", "Prometheus", "ArgoCD", "Security", "Linux", "云原生"],
+        "hotValues": [370, 340, 300, 270, 250, 230, 200, 180, 170, 155],
+        "trendMust": [14, 15, 16, 17, 18, 20, 21, 23, 24, 26, 28, 30],
+        "trendNice": [11, 12, 13, 14, 15, 16, 18, 19, 21, 22, 24, 26],
+        "forecast": [
+            {"month": "2026-08", "demand_index": 68},
+            {"month": "2026-09", "demand_index": 72},
+            {"month": "2026-10", "demand_index": 76}
         ]
     }
 ]

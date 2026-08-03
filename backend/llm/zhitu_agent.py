@@ -14,8 +14,8 @@ from typing import Any
 from backend.llm import deepseek as ds
 
 KNOWLEDGE_DIR = Path(__file__).resolve().parent / "knowledge"
-POSTINGS_TBL = "zhilian_job_postings"
-DETAILS_TBL = "zhilian_job_posting_details"
+POSTINGS_TBL = "job_postings"
+DETAILS_TBL = "job_posting_details"
 
 INTENT_RULES: list[tuple[str, list[str]]] = [
     ("procure", ["采购", "优先", "入库", "采纳", "先采", "推荐清单", "审核顺序"]),

@@ -1,0 +1,7 @@
+INFO:     127.0.0.1:63839 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49938 - "POST /api/discovery/agent/scan HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62458 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57174 - "POST /api/discovery/agent/scan HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65343 - "POST /api/discovery/agent/scan HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52573 - "POST /api/discovery/agent/scan HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56256 - "POST /api/discovery/agent/scan HTTP/1.1" 200 OK

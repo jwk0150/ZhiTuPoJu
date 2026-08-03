@@ -1,0 +1,52 @@
+TASK2 REVIEW PACKAGE
+FILE: backend/routers/discovery.py
+
+--- lines 32-42 ---
+32: from pydantic import BaseModel
+33: 
+34: from backend import data
+35: from backend.llm import deepseek as ds
+36: 
+37: router = APIRouter()
+38: 
+39: PG_DSN = "host=127.0.0.1 port=3309 user=postgres password=123456 dbname=zhilian_crawl_db"
+40: POSTINGS_TBL = "zhilian_job_postings"
+41: DETAILS_TBL = "zhilian_job_posting_details"
+42: 
+
+--- lines 217-250 ---
+217:                          f"未检测到定义-技能不一致或幻觉迹象。")
+218:         step["status"] = "done"; step["elapsed_ms"] = int((time.time()-t0)*1000)
+219: 
+220:         discoveries, llm_meta = ds.enrich_discoveries(discoveries, top_n=8)
+221:         if llm_meta.get("enriched"):
+222:             step["detail"] += f" DeepSeek 已润色 {llm_meta['enriched']} 条岗位定义。"
+223:         model_info = {
+224:             "engine": "DiscoveryAgent v2.0 启发式推理机",
+225:             "backed_by": "DeepSeek" if llm_meta.get("llm") != "none" else "启发式(无LLM)",
+226:             "llm": llm_meta.get("llm", "none"),
+227:             "llm_enriched": llm_meta.get("enriched", 0),
+228:             "llm_error": llm_meta.get("error"),
+229:             "knowledge_base": f"PostgreSQL {POSTINGS_TBL} + {DETAILS_TBL}",
+230:         }
+231: 
+232:         total_ms = int((time.time()-t0)*1000)
+233:         summary = (f"智能体分析完毕: 扫描 {len(rows)} 条岗位 → {len(groups)} 个语义簇 → "
+234:                   f"{len(discoveries)} 个岗位定义(含 {len(forecasts)} 个未来预测)。"
+235:                   f"推理引擎: {model_info['engine']}。总耗时 {total_ms}ms。")
+236: 
+237:         stats = {"total_scanned": len(rows), "title_clusters": len(groups),
+238:                  "discoveries": len(discoveries), "forecasts": len(forecasts),
+239:                  "total_elapsed_ms": total_ms,
+240:                  "avg_confidence": (round(sum(d["confidence"] for d in discoveries)/max(len(discoveries),1),1) if discoveries else 0)}
+241: 
+242:         return {"reasoning_chain": chain, "discoveries": discoveries,
+243:                 "forecasts": forecasts, "summary": summary, "stats": stats, "model": model_info}
+244: 
+245:     def _add_step(self, chain, step_no, title, detail, status):
+246:         s = {"step": step_no, "title": title, "detail": detail, "status": status}
+247:         chain.append(s)
+248:         return s
+249: 
+250:     # ---- PG 查询 ----
+

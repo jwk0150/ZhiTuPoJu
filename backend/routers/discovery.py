@@ -57,8 +57,8 @@ def _build_pg_dsn() -> str:
 
 
 PG_DSN = _build_pg_dsn()
-POSTINGS_TBL = "zhilian_job_postings"
-DETAILS_TBL = "zhilian_job_posting_details"
+POSTINGS_TBL = "job_postings"
+DETAILS_TBL = "job_posting_details"
 
 
 # ============================================================================
