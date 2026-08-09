@@ -3,7 +3,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from backend.routers import agent, collection, discovery, evolution, graph, matching, data, talent_map
+from backend.routers import agent, collection, discovery, evolution, graph, matching, data, talent_map, auth
 from backend.db_async import close_pool
 from backend.config import config
 
@@ -63,3 +63,6 @@ app.include_router(data.router, prefix="/api/data", tags=["data"])
 # 注册两个前缀，分别服务地图和岗位图谱功能
 app.include_router(talent_map.router, prefix="/api/map", tags=["talent-map"])
 app.include_router(talent_map.router, prefix="/api/graph", tags=["talent-graph"])
+
+# 新增：用户认证路由（登录注册）
+app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
