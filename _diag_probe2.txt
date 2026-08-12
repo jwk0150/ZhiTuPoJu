@@ -1,0 +1,4 @@
+cwd=d:\Learning_test\newtest\ZhiTuPoJu
+python=D:\Learning_tools\python_new_3.14.5\python.exe
+asyncpg ok 0.31.0
+backend.mappings ok

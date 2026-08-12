@@ -1,0 +1,352 @@
+- generic [ref=e2]:
+  - complementary [ref=e3]:
+    - generic [ref=e13]:
+      - generic [ref=e14]: 执图破局
+      - generic [ref=e15]: Tuzhupoju · Demo
+    - navigation [ref=e16]:
+      - generic [ref=e17]:
+        - generic [ref=e18]: 核心功能
+        - generic [ref=e19] [cursor=pointer]: 总览看板
+        - generic [ref=e26] [cursor=pointer]:
+          - generic [ref=e34]: 图谱可视化
+          - generic [ref=e35]: HOT
+        - generic [ref=e36] [cursor=pointer]: 新岗位发现
+        - generic [ref=e42] [cursor=pointer]: 能力动态演化
+      - generic [ref=e47]:
+        - generic [ref=e48]: 智能服务
+        - generic [ref=e49] [cursor=pointer]:
+          - generic [ref=e53]: 人岗匹配诊断
+          - generic [ref=e54]: P0
+        - generic [ref=e55] [cursor=pointer]: 智能问答
+      - generic [ref=e59]:
+        - generic [ref=e60]: 数据管理
+        - generic [ref=e61] [cursor=pointer]: 数据采集
+        - generic [ref=e67] [cursor=pointer]: 趋势分析
+        - generic [ref=e70] [cursor=pointer]: 质量监控
+      - generic [ref=e75]:
+        - generic [ref=e76]: 系统
+        - generic [ref=e77] [cursor=pointer]: 系统设置
+    - generic [ref=e82]:
+      - generic [ref=e83]: YL
+      - generic [ref=e84]:
+        - generic [ref=e85]: 御龙 · Tech Lead
+        - generic [ref=e86]: administrator
+  - main [ref=e87]:
+    - generic [ref=e88]:
+      - generic [ref=e89]:
+        - generic [ref=e90]: 执图破局
+        - generic [ref=e93]: 图谱可视化
+      - textbox "搜索岗位、技能、简历..." [ref=e98]
+      - generic [ref=e99]:
+        - button [ref=e100] [cursor=pointer]
+        - button [ref=e105] [cursor=pointer]
+    - generic [ref=e263]:
+      - generic [ref=e264]:
+        - generic [ref=e265]:
+          - heading "数字人才地图" [level=1] [ref=e266]
+          - generic [ref=e267]: 全国人才分布 · 省份岗位洞察 · 岗位-能力知识图谱 · 37,591 个岗位 · 34 个省份 · 1 个热门省份
+        - button "导出数据" [ref=e269] [cursor=pointer]
+      - generic [ref=e273]:
+        - generic [ref=e274]:
+          - generic "展开筛选" [ref=e275] [cursor=pointer]: 筛选
+          - generic:
+            - generic:
+              - generic: 数据筛选
+              - button "✕"
+            - generic:
+              - generic: 地区
+              - combobox:
+                - option "全部地区" [selected]
+                - option "北京"
+                - option "天津"
+                - option "河北"
+                - option "山西"
+                - option "内蒙古"
+                - option "辽宁"
+                - option "吉林"
+                - option "黑龙江"
+                - option "上海"
+                - option "江苏"
+                - option "浙江"
+                - option "安徽"
+                - option "福建"
+                - option "江西"
+                - option "山东"
+                - option "河南"
+                - option "湖北"
+                - option "湖南"
+                - option "广东"
+                - option "广西"
+                - option "海南"
+                - option "重庆"
+                - option "四川"
+                - option "贵州"
+                - option "云南"
+                - option "西藏"
+                - option "陕西"
+                - option "甘肃"
+                - option "青海"
+                - option "宁夏"
+                - option "新疆"
+                - option "香港"
+                - option "澳门"
+                - option "台湾"
+            - generic:
+              - generic: 行业方向
+              - combobox:
+                - option "全部行业" [selected]
+                - option "云计算"
+                - option "云计算与基础设施"
+                - option "互联网"
+                - option "产品与数字化"
+                - option "人工智能"
+                - option "大数据"
+                - option "工业互联网"
+                - option "数字经济"
+                - option "数据与人工智能"
+                - option "数据库"
+                - option "智能制造"
+                - option "物联网"
+                - option "电子信息"
+                - option "综合"
+                - option "网络安全"
+                - option "装备制造"
+                - option "软件"
+                - option "软件开发"
+                - option "金融科技"
+                - option "集成电路"
+            - generic:
+              - generic: 岗位方向
+              - combobox:
+                - option "全部岗位" [selected]
+                - option "(Assistant) CRM Manager"
+                - option "(Associate) Item Planner"
+                - option "(Associate)Account Director-P&C Insurance ID202435"
+                - option "(CSR&Technical)Auditor (企业社会责任和质量)审核员"
+                - option "（Golang）（运维平台后端开发工程师"
+                - option "(HBK) Frontend Application Engineer"
+                - option "(Senior) Account Executive -P&C Insurance ID203334"
+                - option "(Senior) Clinical Research Physician (MJ000300)"
+                - option "(Senior) Medical Science Manager (Immunology）"
+                - option "(Senior) Sales Engineer-Converting (MJ000166)"
+                - option "（Senior) Specialist - Filling/分装(高级)专员"
+                - option "(Senior) Specialist - Packaging"
+                - option "(Sr.) Account Manager,Lava,Dental 长期职位"
+                - option "(Sr.) Analyst, Analytical Lab, Biologics"
+                - option "(Sr.) Specialist, LS & ASAT, Biologics"
+                - option "(Sr.)Medical Science Liaison-Inflammation ID212593"
+                - option "（宝安燕罗）AI大模型应用工程师"
+                - option "（初中级）前端工程师"
+                - option "（代招）生产管理担当(172642) 日语必须"
+                - option "（代招）知识产权担当(170718) 日语必须"
+                - option "（东南亚）服装外发qc"
+                - option "(俄语) 办公室主任/物流财务管理专员"
+                - option "(服装)质检员QC"
+                - option "(高级) 临床运营项目经理"
+                - option "（高级）客户经理/销售经理"
+                - option "(高级)生产支持专员 - (清洗，灭菌，正式工）"
+                - option "（高级）统计编程师"
+                - option "(高级)硬件工程师/(Senior) Hardware Engineer"
+                - option "（工业软件）大客户销售"
+                - option "（广州）技术运维"
+                - option "（杭州大厦）潮牌Edhardy兼职店员"
+                - option "（凯实生物）C#软件工程师"
+                - option "（汽车行业）质量高级经理"
+                - option "(上海)Oracle数据库工程师"
+                - option "（深圳）IC测试开发工程师"
+                - option "（深圳）系统设计工程师"
+                - option "（下属京安公司）测量技术人员"
+                - option "（校招）芯片设计工程师"
+                - option "（新塘）嵌入式软件工程师"
+                - option "（学生）兼职产品教育家，成都SKP"
+                - option "（学生）兼职产品教育家，成都双流国际机场"
+                - option "(学生)兼职产品教育家，成都太古里店"
+                - option "（助理）CRM经理"
+                - option ".net MES开发工程师"
+                - option ".Net Core工程师-外企驻场"
+                - option ".NET Developer（远程岗位）"
+                - option ".Net 高级软件工程师"
+                - option ".Net 高级软件工程师(重庆）"
+                - option ".NET 開發工程師 (深圳工作)"
+                - option ".Net 软件工程师"
+                - option ".Net/C#软件工程师"
+                - option ".NET高级后端开发工程师（成都）"
+                - option ".net高级开发工程师"
+                - option ".NET后端开发工程师"
+                - option ".net开发（金蝶云苍穹PaaS开发）"
+                - option ".net开发工程师"
+                - option ".NET开发工程师"
+                - option ".NET开发工程师（数据平台开发方向）"
+                - option ".net开发工程师（外包 AI Agent开发）"
+                - option ".net开发工程师/英文办公"
+                - option ".net软件工程师"
+                - option ".NET软件工程师"
+                - option ".NET软件工程师（南京）"
+                - option ".NET实习开发"
+                - option ".net中级开发工程师"
+                - option "[UX/UI] 实习生（需自备MacBook）"
+                - option "[应届校招]AI算法/C++/python/go开发工程师"
+                - option "【2027秋招】大模型/端到端/感知算法工程师"
+                - option "【27秋招】感知/AI大模型/端到端算法工程师"
+                - option "【AI 人工智能】A/B组 组长"
+                - option "【AI人工智能】+T0B销售+轻松月入过万"
+                - option "【Github 15k star】DevOps工程师 AIGC平台"
+                - option "【机器学习工程师】【实习岗】远程办公"
+                - option "【明星项目】多模态大模型算法"
+                - option "【人工智能ai资源】月薪8k+稳定好做！！"
+                - option "【深圳/杭州】后端开发实习生-DataLeap"
+                - option "【实习生】人工智能讲师"
+                - option "【提前批-平台研发】golang开发工程师"
+                - option "009JY2-Senior Test Engineer (MJ017529)"
+                - option "120元/时西门子PLC工程师"
+                - option "126kV组合电器 产品管理员"
+                - option "126kV组合电器 服务工程师"
+                - option "126kV组合电器 研发工程师"
+                - option "126V组合电器 销售工程师"
+                - option "13薪-软件测试工程师"
+                - option "15薪+2w补贴 线控转向软件开发 六险一金全额"
+                - option "15薪+2w补贴 智能底盘域控软件开发 六险一金全额"
+                - option "15薪+2w补贴 热管理标定开发工程师 六险一金全额"
+                - option "15薪+2w补贴 软件架构设计工程师 六险一金全额"
+                - option "15薪+2w补贴 线控制动软件开发 六险一金全额"
+                - option "1688 运营，人工智能 AI 运营专员"
+                - option "16949质量体系工程师"
+                - option "17.5kV充气式高压开关柜 销售员"
+                - option "18000起金融销售/人工智能Ai资源/五险一金"
+                - option "1w+AI人工智能销售+29%高提成+五险一金"
+                - option "1w＋AI人工智能销售+40%高提成+五险一金"
+                - option "2026-19020 Application/System Engineer (SEMI)"
+                - option "2026东风汽车海外博士招聘"
+                - option "2026年社招-系统测试工程师(J26994)"
+                - option "2026校招-FPGA验证工程师(J10184)"
+                - option "2027-AI软件工程师-成都(J10335)"
+                - option "2027-数字IC设计工程师-成都(J10331)"
+                - option "2027届实习生(J10693)"
+                - option "208678 CRM Manager - 大客户经理 ID208702"
+                - option "209667 Senior Sales Manager - China CPH ID209867"
+                - option "22614-高级软件工程师"
+                - option "252kV组合电器 产品管理员"
+                - option "252kV组合电器 服务工程师"
+                - option "252kV组合电器 销售工程师"
+                - option "252kV组合电器 研发工程师"
+                - option "26届应届生"
+                - option "26提前批机器学习数据挖掘自然语言处理工程"
+                - option "27.5kV充气式高压开关柜 销售员"
+                - option "27.5kV充气式高压开关柜 研发"
+                - option "27届内容摄影师（实习生） 包吃住 周末双休"
+                - option "280/天暑假工兼职日结"
+                - option "30岁以上金加工工艺工程师"
+                - option "35kV充气式高压开关柜 研发"
+                - option "35kV高压开关柜 销售工程师"
+                - option "35kV高压开关柜 研发工程师"
+                - option "35kV环网柜 销售工程师"
+                - option "35kV环网柜 研发工程师"
+                - option "3d场景建模师"
+                - option "3d场景模型师"
+                - option "3D场景模型师（高级）"
+                - option "3d打印操作员"
+                - option "3d打印技术员"
+                - option "3D打印技术支持工程师"
+                - option "3D打印设备组长"
+                - option "3D电商产品建模渲染"
+                - option "3D动画设计师"
+                - option "3D动画视频设计师"
+                - option "3D动作设计师"
+                - option "3D动作设计师（虚拟宠物方向）"
+                - option "3D仿真人视频剪辑"
+                - option "3D机器视觉算法开发工程师"
+                - option "3D建模带薪内培岗"
+                - option "3D建模师"
+                - option "3D建模实习生"
+                - option "3D建模头发（新人岗）"
+                - option "3D角色模型师"
+                - option "3D美术设计师（建模/平面）"
+                - option "3D模型师"
+                - option "3D前端工程师"
+                - option "3D设计师"
+                - option "3D设计师（浑南）"
+                - option "3D视觉算法开发工程师"
+                - option "3D手绘场景美术师"
+                - option "3D算法工程师"
+                - option "3D算法工程师(J11102)"
+                - option "3D显示算法工程师"
+                - option "3D资产质量评级师"
+                - option "400运维工程师-广州"
+                - option "500强德企—物流数字化项目专员"
+                - option "500强日企_系统集成项目管理工程师"
+                - option "55255 Quality Manager"
+                - option "5G C语言开发工程师（OM开发）"
+                - option "5G FPGA工程师"
+                - option "5G Java开发工程师"
+                - option "5G核心网研发工程师"
+                - option "5G协议栈开发工程师"
+                - option "5S现场管理专员"
+                - option "72.5kV组合电器 服务工程师"
+                - option "72.5kV组合电器 研发工程师"
+                - option "72.5V组合电器 销售工程师"
+                - option "A01.技术开发工程师"
+                - option "A05.技术运维工程师（系统方向）"
+                - option "A06.技术运维工程师（云平台方向）"
+                - option "A07.技术运维工程师（应用方向）"
+                - option "A09.技术支持工程师（北京）"
+                - option "ABAP开发工程师"
+                - option "ABAP软件开发工程师"
+                - option "Account Executive/Manager-Korean Speaking ID198473"
+                - option "Account Manager"
+                - option "Account Manager - Data Center"
+                - option "Account Manager of Pharma"
+                - option "Account Specialist-涂料"
+                - option "Account Supervisor, Salomon"
+                - option "Accountant"
+                - option "Accountant Intern 财务实习生"
+                - option "Acne Studios 销售顾问 - 北京三里屯"
+                - option "Acne Studios销售顾问-深圳万象城"
+                - option "ACP-DSP软件工程师（深圳） (MJ002290)"
+                - option "Actuarial Analyst ID213568"
+                - option "ADAS 碰撞规避功能开发"
+                - option "ADAS功能软件开发"
+                - option "ADAS系统实验(J11380)"
+                - option "ADC工艺开发（高级）经理(J25901)"
+                - option "ADC工艺开发助理研究员 II / I(J27733)"
+                - option "Adhesive RD Scientist"
+                - option "ADM-01 高级数据分析师（供应链+营销）"
+                - option "ADM-02 高级数据分析师（用户行为方向）"
+                - option "Admin Assistant_Front Office"
+                - option "Admin Support Associate ID212204"
+                - option "Admissions Officer"
+                - option "Advanced Manufacturing Engineer先期制造工程师"
+                - option "Advanced Manufacturing Technology Engineer (Open)"
+                - option "Advanced Service Engineer"
+                - option "Advisor, Program Management"
+                - option "AE Manager (DDR5, SPDHUB/TS focus)"
+            - generic:
+              - generic: 学历要求
+              - combobox:
+                - option "不限学历" [selected]
+                - option "本科"
+                - option "硕士"
+                - option "博士"
+                - option "大专"
+            - generic:
+              - generic: 经验要求
+              - combobox:
+                - option "不限经验" [selected]
+                - option "应届生"
+                - option "1-3年"
+                - option "3-5年"
+                - option "5-10年"
+                - option "10年以上"
+            - generic:
+              - button "重置筛选"
+              - generic: 点击省份查看详情 · 悬停预览数据
+          - generic [ref=e281]:
+            - generic [ref=e282]: 港澳区域
+            - generic [ref=e283] [cursor=pointer]:
+              - generic [ref=e284]: 香港
+              - generic [ref=e287]: "63"
+            - generic [ref=e288] [cursor=pointer]:
+              - generic [ref=e289]: 澳门
+              - generic [ref=e292]: "139"
+        - generic [ref=e294]:
+          - heading "悬停省份预览数据" [level=4] [ref=e298]
+          - paragraph [ref=e299]: 将鼠标移到地图上的省份查看实时人才数据概览

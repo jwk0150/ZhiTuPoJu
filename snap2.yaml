@@ -1,0 +1,131 @@
+- generic [ref=e2]:
+  - complementary [ref=e3]:
+    - generic [ref=e13]:
+      - generic [ref=e14]: 执图破局
+      - generic [ref=e15]: Tuzhupoju · Demo
+    - navigation [ref=e16]:
+      - generic [ref=e17]:
+        - generic [ref=e18]: 核心功能
+        - generic [ref=e19] [cursor=pointer]: 总览看板
+        - generic [ref=e26] [cursor=pointer]:
+          - generic [ref=e34]: 图谱可视化
+          - generic [ref=e35]: HOT
+        - generic [ref=e36] [cursor=pointer]: 新岗位发现
+        - generic [ref=e42] [cursor=pointer]: 能力动态演化
+      - generic [ref=e47]:
+        - generic [ref=e48]: 智能服务
+        - generic [ref=e49] [cursor=pointer]:
+          - generic [ref=e53]: 人岗匹配诊断
+          - generic [ref=e54]: P0
+        - generic [ref=e55] [cursor=pointer]: 智能问答
+      - generic [ref=e59]:
+        - generic [ref=e60]: 数据管理
+        - generic [ref=e61] [cursor=pointer]: 数据采集
+        - generic [ref=e67] [cursor=pointer]: 趋势分析
+        - generic [ref=e70] [cursor=pointer]: 质量监控
+      - generic [ref=e75]:
+        - generic [ref=e76]: 系统
+        - generic [ref=e77] [cursor=pointer]: 系统设置
+    - generic [ref=e82]:
+      - generic [ref=e83]: YL
+      - generic [ref=e84]:
+        - generic [ref=e85]: 御龙 · Tech Lead
+        - generic [ref=e86]: administrator
+  - main [ref=e87]:
+    - generic [ref=e88]:
+      - generic [ref=e89]:
+        - generic [ref=e90]: 执图破局
+        - generic [ref=e93]: 人岗匹配诊断
+      - textbox "搜索岗位、技能、简历..." [ref=e98]
+      - generic [ref=e99]:
+        - button [ref=e100] [cursor=pointer]
+        - button [ref=e105] [cursor=pointer]
+    - generic [ref=e376]:
+      - generic [ref=e377]:
+        - generic [ref=e378]:
+          - heading "人岗匹配诊断" [level=1] [ref=e379]
+          - generic [ref=e380]: 真实简历解析 · DeepSeek语义理解 · 图谱能力迁移 · 可解释学习路径
+        - generic [ref=e381]:
+          - button "重新诊断" [ref=e382] [cursor=pointer]
+          - button "选择简历" [ref=e386] [cursor=pointer]
+      - generic [ref=e391]:
+        - generic [ref=e392]:
+          - generic [ref=e393]:
+            - generic [ref=e394]:
+              - generic [ref=e395]: MatchDiagnosis AgentEVIDENCE-GROUNDED WORKFLOW
+              - generic [ref=e398]: 等待任务
+            - generic [ref=e401]:
+              - generic [ref=e402]:
+                - generic [ref=e403]: "01"
+                - generic [ref=e404]: 文件校验
+              - generic [ref=e405]:
+                - generic [ref=e406]: "02"
+                - generic [ref=e407]: 版面解析
+              - generic [ref=e408]:
+                - generic [ref=e409]: "03"
+                - generic [ref=e410]: 人才画像
+              - generic [ref=e411]:
+                - generic [ref=e412]: "04"
+                - generic [ref=e413]: 语义匹配
+              - generic [ref=e414]:
+                - generic [ref=e415]: "05"
+                - generic [ref=e416]: 图谱推理
+              - generic [ref=e417]:
+                - generic [ref=e418]: "06"
+                - generic [ref=e419]: 路径规划
+          - generic [ref=e420]:
+            - generic [ref=e421]:
+              - generic [ref=e422]: 上传真实简历
+              - generic [ref=e423]: 最大 8MB
+            - button "选择或拖入简历文件" [ref=e425] [cursor=pointer]:
+              - generic [ref=e430]: 拖拽或点击上传简历
+              - generic [ref=e431]: 上传后自动完成解析、匹配与推荐
+              - generic [ref=e432]:
+                - generic [ref=e433]: PDF
+                - generic [ref=e434]: DOC
+                - generic [ref=e435]: DOCX
+                - generic [ref=e436]: TXT
+              - generic [ref=e437]: 仅用于本次诊断，不在浏览器持久化
+          - generic [ref=e441]: 上传后在这里查看结构化人才画像
+        - generic [ref=e443]:
+          - generic [ref=e445]:
+            - generic [ref=e449]:
+              - generic [ref=e450]: "--"
+              - generic [ref=e451]: 等待诊断
+            - generic [ref=e452]:
+              - generic [ref=e453]: 上传一份简历，开启深层匹配
+              - generic [ref=e454]: 系统将完成版面解析、DeepSeek人才画像、语义匹配、图谱能力迁移与学习路径规划。
+              - generic [ref=e455]:
+                - generic [ref=e456]: 非关键词打分
+                - generic [ref=e457]: 证据可追溯
+                - generic [ref=e458]: 结果可解释
+            - generic [ref=e459]: READY
+          - generic [ref=e460]:
+            - generic [ref=e461]:
+              - generic [ref=e462]: 推荐岗位
+              - generic [ref=e463]: TOP 5
+            - generic [ref=e465]:
+              - heading "等待简历" [level=4] [ref=e470]
+              - paragraph [ref=e471]: 完成解析后，将按综合匹配度生成岗位排名
+          - generic [ref=e472]:
+            - generic [ref=e473]:
+              - generic [ref=e474]:
+                - generic [ref=e475]: 五维匹配雷达
+                - generic [ref=e476]: 可解释评分
+              - generic [ref=e479]:
+                - heading "等待评分" [level=4] [ref=e484]
+                - paragraph [ref=e485]: 技能、语义、项目、经验、图谱五维分析
+            - generic [ref=e486]:
+              - generic [ref=e487]:
+                - generic [ref=e488]: 能力差距 · 图谱路径
+                - generic [ref=e489]: 点击岗位可切换
+              - generic [ref=e491]:
+                - heading "暂无差距路径" [level=4] [ref=e496]
+                - paragraph [ref=e497]: 选择匹配岗位后展示能力迁移链路
+          - generic [ref=e498]:
+            - generic [ref=e499]:
+              - generic [ref=e500]: 个性化学习路径
+              - generic [ref=e501]: 等待诊断
+            - generic [ref=e504]:
+              - heading "暂无学习计划" [level=4] [ref=e509]
+              - paragraph [ref=e510]: 能力差距将自动转换成分阶段成长路线

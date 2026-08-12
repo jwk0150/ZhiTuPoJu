@@ -203,7 +203,7 @@ def _count_by_title(title: str, db: Session) -> int:
         for kw in group:
             params[f"kw{len(flat_kws)}"] = f"%{kw.lower()}%"
             flat_kws.append(kw)
-    sql = f"SELECT COUNT(*) FROM job_postings WHERE {where_sql}"
+    sql = f"SELECT COUNT(*) FROM the_total_table WHERE {where_sql}"
     row = db.execute(text(sql), params).fetchone()
     return int(row[0]) if row else 0
 
@@ -227,7 +227,7 @@ def _extract_skills_by_source(
 
     sql = f"""
         SELECT p.source_name, d.job_description
-        FROM job_postings p
+        FROM the_total_table p
         JOIN job_posting_details d ON d.job_id = p.id
         WHERE {where_sql}
           AND d.job_description IS NOT NULL
@@ -338,7 +338,7 @@ def _extract_rows_by_bucket(title, db):
             flat.append(kw)
     sql = text(f"""
         SELECT p.id, p.source_name, d.job_description
-        FROM job_postings p
+        FROM the_total_table p
         JOIN job_posting_details d ON d.job_id = p.id
         WHERE {where_sql} AND d.job_description IS NOT NULL
     """)
