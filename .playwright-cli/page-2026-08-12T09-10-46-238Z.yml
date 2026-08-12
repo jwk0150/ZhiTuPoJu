@@ -1,0 +1,230 @@
+- generic [ref=f3e2]:
+  - complementary [ref=f3e3]:
+    - generic [ref=f3e13]:
+      - generic [ref=f3e14]: 执图破局
+      - generic [ref=f3e15]: Tuzhupoju · Demo
+    - navigation [ref=f3e16]:
+      - generic [ref=f3e17]:
+        - generic [ref=f3e18]: 核心功能
+        - generic [ref=f3e19] [cursor=pointer]: 总览看板
+        - generic [ref=f3e26] [cursor=pointer]:
+          - generic [ref=f3e34]: 图谱可视化
+          - generic [ref=f3e35]: HOT
+        - generic [ref=f3e36] [cursor=pointer]: 新岗位发现
+        - generic [ref=f3e42] [cursor=pointer]: 能力动态演化
+      - generic [ref=f3e47]:
+        - generic [ref=f3e48]: 智能服务
+        - generic [ref=f3e49] [cursor=pointer]:
+          - generic [ref=f3e53]: 人岗匹配诊断
+          - generic [ref=f3e54]: P0
+        - generic [ref=f3e55] [cursor=pointer]: 智能问答
+      - generic [ref=f3e59]:
+        - generic [ref=f3e60]: 数据管理
+        - generic [ref=f3e61] [cursor=pointer]: 数据采集
+        - generic [ref=f3e67] [cursor=pointer]: 趋势分析
+        - generic [ref=f3e70] [cursor=pointer]: 质量监控
+      - generic [ref=f3e75]:
+        - generic [ref=f3e76]: 系统
+        - generic [ref=f3e77] [cursor=pointer]: 系统设置
+    - generic [ref=f3e82]:
+      - generic [ref=f3e83]: YL
+      - generic [ref=f3e84]:
+        - generic [ref=f3e85]: 御龙 · Tech Lead
+        - generic [ref=f3e86]: administrator
+  - main [ref=f3e87]:
+    - generic [ref=f3e88]:
+      - generic [ref=f3e89]:
+        - generic [ref=f3e90]: 执图破局
+        - generic [ref=f3e93]: 总览看板
+      - textbox "搜索岗位、技能、简历..." [ref=f3e98]
+      - generic [ref=f3e99]:
+        - button [ref=f3e100] [cursor=pointer]
+        - button [ref=f3e105] [cursor=pointer]
+    - generic [ref=f3e110]:
+      - generic [ref=f3e111]:
+        - generic [ref=f3e112]:
+          - generic [ref=f3e113]:
+            - generic [ref=f3e114]:
+              - generic [ref=f3e115]: Knowledge Graph · Demo
+              - text: 执图破局
+            - paragraph [ref=f3e116]:
+              - text: 用
+              - emphasis [ref=f3e117]: 多源异构数据
+              - text: 与
+              - emphasis [ref=f3e118]: 大模型推理
+              - text: ，把岗位、能力与行业织成一张会呼吸的图谱——让技术演化可感知，让人岗匹配可决策。
+            - generic [ref=f3e119]:
+              - button "进入图谱" [ref=f3e120] [cursor=pointer]
+              - button "开始匹配诊断" [ref=f3e128] [cursor=pointer]
+          - generic [ref=f3e132]:
+            - generic:
+              - generic: LIVE GRAPH
+              - generic: 63 节点 · 62 关系
+        - generic [ref=f3e135]:
+          - generic [ref=f3e136]:
+            - generic [ref=f3e137]: "30"
+            - generic [ref=f3e138]: 岗位节点
+          - generic [ref=f3e139]:
+            - generic [ref=f3e140]: "18"
+            - generic [ref=f3e141]: 技能节点
+          - generic [ref=f3e142]:
+            - generic [ref=f3e143]: "51"
+            - generic [ref=f3e144]: 关系边
+          - generic [ref=f3e145]:
+            - generic [ref=f3e146]: 93.7%
+            - generic [ref=f3e147]: 匹配准确率
+      - generic [ref=f3e148]:
+        - generic [ref=f3e149]:
+          - generic [ref=f3e150]: 岗位库总量
+          - generic [ref=f3e156]: 30个
+          - generic [ref=f3e157]:
+            - text: 较上周
+            - generic [ref=f3e158]: 8.2%
+        - generic [ref=f3e161]:
+          - generic [ref=f3e162]: 本月新发现岗位
+          - generic [ref=f3e167]: 10个
+          - generic [ref=f3e168]:
+            - text: 较上月
+            - generic [ref=f3e169]: 23.3%
+        - generic [ref=f3e172]:
+          - generic [ref=f3e173]: 简历匹配累计
+          - generic [ref=f3e179]: 2,701份
+          - generic [ref=f3e180]:
+            - text: 今日新增
+            - generic [ref=f3e181]: 12.6%
+        - generic [ref=f3e184]:
+          - generic [ref=f3e185]: 匹配准确率
+          - generic [ref=f3e190]: 77.8%
+          - generic [ref=f3e191]:
+            - text: 超过指标
+            - generic [ref=f3e192]: 3.7%
+      - generic [ref=f3e195]:
+        - generic [ref=f3e196]:
+          - generic [ref=f3e197]: 图谱节点
+          - generic [ref=f3e198]: "63"
+          - generic [ref=f3e199]: ↑ 实时增长
+        - generic [ref=f3e200]:
+          - generic [ref=f3e201]: 关系边
+          - generic [ref=f3e202]: "62"
+          - generic [ref=f3e203]: ↑ 12.4%
+        - generic [ref=f3e204]:
+          - generic [ref=f3e205]: 本月匹配
+          - generic [ref=f3e206]: 3,296
+          - generic [ref=f3e207]: ↑ 18.6%
+        - generic [ref=f3e208]:
+          - generic [ref=f3e209]: 数据采集
+          - generic [ref=f3e210]: 11,388
+          - generic [ref=f3e211]: ↑ 23.1%
+        - generic [ref=f3e212]:
+          - generic [ref=f3e213]: JD解析
+          - generic [ref=f3e214]: 93.2%
+          - generic [ref=f3e215]: 达标 ↑3.2%
+        - generic [ref=f3e216]:
+          - generic [ref=f3e217]: 简历提取
+          - generic [ref=f3e218]: 91.7%
+          - generic [ref=f3e219]: 达标 ↑1.7%
+      - generic [ref=f3e220]:
+        - generic [ref=f3e222]:
+          - generic [ref=f3e223]: 📈 岗位趋势
+          - generic [ref=f3e224]:
+            - generic [ref=f3e225]: 近30天
+            - generic [ref=f3e226]: 实时
+        - generic [ref=f3e232]:
+          - generic [ref=f3e233]:
+            - generic [ref=f3e234]: ⚡ 实时动态
+            - generic [ref=f3e235]: LIVE
+          - generic [ref=f3e238]:
+            - generic [ref=f3e244]:
+              - generic [ref=f3e245]: 发现新岗位「Prompt工程师」
+              - generic [ref=f3e246]: 2分钟前
+            - generic [ref=f3e252]:
+              - generic [ref=f3e253]: 简历匹配：张三 → AI算法工程师 (92.4分)
+              - generic [ref=f3e254]: 5分钟前
+            - generic [ref=f3e260]:
+              - generic [ref=f3e261]: Java开发工程师技能更新 +5/-2
+              - generic [ref=f3e262]: 12分钟前
+            - generic [ref=f3e268]:
+              - generic [ref=f3e269]: 本周JD解析准确率 91.2% (达标)
+              - generic [ref=f3e270]: 1小时前
+            - generic [ref=f3e276]:
+              - generic [ref=f3e277]: 爬虫新增3,254条JD数据
+              - generic [ref=f3e278]: 2小时前
+      - generic [ref=f3e279]:
+        - generic [ref=f3e281]:
+          - generic [ref=f3e282]: 🔥 热门技能TOP10
+          - generic [ref=f3e283]: 高频
+        - generic [ref=f3e289]:
+          - generic [ref=f3e290]: 🏢 行业分布
+          - generic [ref=f3e291]: 实时
+        - generic [ref=f3e298]:
+          - generic [ref=f3e299]: 📊 数据源贡献
+          - generic [ref=f3e300]: 本周
+      - generic [ref=f3e305]:
+        - generic [ref=f3e306]:
+          - generic [ref=f3e307]: 🚀 热门岗位
+          - button "查看更多 →" [ref=f3e309] [cursor=pointer]
+        - generic [ref=f3e311]:
+          - generic [ref=f3e312] [cursor=pointer]:
+            - generic [ref=f3e313]: AI算法工程师
+            - generic [ref=f3e314]: 滴滴 · 成都
+            - generic [ref=f3e315]: 35-60K
+            - generic [ref=f3e316]:
+              - generic [ref=f3e317]: Node.js
+              - generic [ref=f3e318]: ClickHouse
+              - generic [ref=f3e319]: 区块链
+          - generic [ref=f3e320] [cursor=pointer]:
+            - generic [ref=f3e321]: CV算法工程师
+            - generic [ref=f3e322]: 百度 · 西安
+            - generic [ref=f3e323]: 35-60K
+            - generic [ref=f3e324]:
+              - generic [ref=f3e325]: RLHF
+              - generic [ref=f3e326]: React
+              - generic [ref=f3e327]: CV
+          - generic [ref=f3e328] [cursor=pointer]:
+            - generic [ref=f3e329]: Prompt工程师
+            - generic [ref=f3e330]: 京东 · 成都
+            - generic [ref=f3e331]: 35-60K
+            - generic [ref=f3e332]:
+              - generic [ref=f3e333]: 区块链
+              - generic [ref=f3e334]: Kubernetes
+              - generic [ref=f3e335]: 风控
+          - generic [ref=f3e336] [cursor=pointer]:
+            - generic [ref=f3e337]: LLM应用工程师
+            - generic [ref=f3e338]: 商汤科技 · 成都
+            - generic [ref=f3e339]: 50-80K
+            - generic [ref=f3e340]:
+              - generic [ref=f3e341]: Node.js
+              - generic [ref=f3e342]: C#
+              - generic [ref=f3e343]: DevOps
+          - generic [ref=f3e344] [cursor=pointer]:
+            - generic [ref=f3e345]: RAG工程师
+            - generic [ref=f3e346]: 平安科技 · 厦门
+            - generic [ref=f3e347]: 80-120K
+            - generic [ref=f3e348]:
+              - generic [ref=f3e349]: C++
+              - generic [ref=f3e350]: Istio
+              - generic [ref=f3e351]: PyTorch
+          - generic [ref=f3e352] [cursor=pointer]:
+            - generic [ref=f3e353]: 向量数据库工程师
+            - generic [ref=f3e354]: 快手 · 成都
+            - generic [ref=f3e355]: 50-80K
+            - generic [ref=f3e356]:
+              - generic [ref=f3e357]: Diffusion
+              - generic [ref=f3e358]: Next.js
+              - generic [ref=f3e359]: LLM
+          - generic [ref=f3e360] [cursor=pointer]:
+            - generic [ref=f3e361]: 大模型架构师
+            - generic [ref=f3e362]: 小米 · 北京
+            - generic [ref=f3e363]: 35-60K
+            - generic [ref=f3e364]:
+              - generic [ref=f3e365]: RAG
+              - generic [ref=f3e366]: PostgreSQL
+              - generic [ref=f3e367]: CV
+          - generic [ref=f3e368] [cursor=pointer]:
+            - generic [ref=f3e369]: Python后端工程师
+            - generic [ref=f3e370]: 科大讯飞 · 重庆
+            - generic [ref=f3e371]: 50-80K
+            - generic [ref=f3e372]:
+              - generic [ref=f3e373]: Flink
+              - generic [ref=f3e374]: LLM
+              - generic [ref=f3e375]: PostgreSQL

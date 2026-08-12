@@ -1,0 +1,41 @@
+id: bigint
+source_name: text
+source_id: text
+source_id_hash: text
+job_title: text
+company_name: text
+city: text
+district: text
+salary_min: double precision
+salary_max: double precision
+salary_unit: text
+experience: text
+education: text
+job_type: text
+publish_time: text
+crawl_time: text
+status: bigint
+fingerprint: text
+completeness: bigint
+data_source: text
+industry_tags: text
+skills: text
+job_description: text
+qualification: text
+work_experience: text
+---- sample source_name values ----
+'51job': 24640
+'ai_seed': 11009
+'boss_zhipin': 1189
+'boss': 325
+---- sample city values (raw) ----
+'北京': 1153
+'上海': 1047
+'广州': 971
+'上海·浦东新区': 958
+'深圳·南山区': 912
+'广州·黄埔区': 862
+'深圳': 813
+'杭州': 796
+'深圳·宝安区': 672
+'成都': 622
