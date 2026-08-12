@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from backend.routers import agent, collection, discovery, evolution, graph, matching, data, talent_map
 from backend.db_async import close_pool
+from backend.config import config
 
 
 @asynccontextmanager
@@ -27,6 +28,24 @@ app.add_middleware(
 @app.get("/api/health")
 def health_check():
     return {"code": 0, "message": "success", "data": {"status": "ok"}}
+
+
+@app.get("/api/config-status")
+def config_status():
+    """返回当前配置状态（不暴露敏感信息）"""
+    return {
+        "code": 0,
+        "message": "success",
+        "data": {
+            "backend_host": config.BACKEND_HOST,
+            "backend_port": config.BACKEND_PORT,
+            "pg_host": config.PG_HOST,
+            "pg_port": config.PG_PORT,
+            "pg_db": config.PG_DB,
+            "deepseek_configured": bool(config.DEEPSEEK_API_KEY),
+            "table_prefix": config.TABLE_PREFIX,
+        }
+    }
 
 
 # 原有路由
