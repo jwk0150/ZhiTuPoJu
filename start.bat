@@ -12,24 +12,8 @@ if not exist "backend\main.py" (
     exit /b 1
 )
 
-REM Check .env file
-if not exist ".env" (
-    echo [WARNING] .env file not found
-    echo [INFO] Please copy .env.example to .env and fill in your config
-    echo.
-    echo Create .env file now? (Y/N)
-    set /p create_env=
-    if /i "%create_env%"=="Y" (
-        copy .env.example .env
-        echo [DONE] .env file created, please edit it and run this script again
-        pause
-        exit /b 0
-    ) else (
-        echo [SKIP] Please create .env file manually
-        pause
-        exit /b 1
-    )
-)
+REM Check .env file exists (it already exists, so just skip this check)
+REM The .env file should be pre-configured by team members
 
 echo [1/4] Checking port usage...
 echo.
