@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>趋势分析 · 执图破局</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Noto+Sans+SC:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<style>
+:root{
+  --bg-deep:#060b14;--bg-surface:#0b1220;--bg-card:#111827;--bg-card-hover:#151f32;
+  --border-subtle:rgba(55,65,81,.5);--border-card:rgba(75,85,99,.35);
+  --text-primary:#e5e7eb;--text-secondary:#9ca3af;--text-muted:#6b7280;
+  --accent:#2DD4BF;--accent-2:#60a5fa;--accent-3:#a78bfa;--accent-4:#34d399;
+  --warning:#f59e0b;--danger:#ef4444;--info:#3b82f6;
+  --radius-sm:6px;--radius-md:10px;--radius-lg:14px;
+  --font-display:'DM Sans','Noto Sans SC',sans-serif;--font-mono:'JetBrains Mono',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--font-display);background:#060b14;color:var(--text-primary);min-height:100vh;line-height:1.5;overflow-x:hidden}
+.app{max-width:1320px;margin:0 auto;padding:24px 28px 80px;position:relative;z-index:1}
+
+/* Header */
+.header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;padding-bottom:18px;border-bottom:1px solid var(--border-subtle)}
+.header-left h1{font-size:26px;font-weight:700;letter-spacing:-.01em}
+.header-left .sub{font-size:13px;color:var(--text-secondary);margin-top:4px}
+.header-right{display:flex;align-items:center;gap:16px;font-size:11px;color:var(--text-muted)}
+.header-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:12px;font-size:10px;font-weight:600;border:1px solid}
+.header-badge.live{border-color:rgba(52,211,153,.3);color:var(--accent-4)}
+.header-badge.live .dot{width:6px;height:6px;border-radius:50%;background:var(--accent-4);box-shadow:0 0 6px rgba(52,211,153,.5)}
+.header-badge.engine{border-color:rgba(96,165,250,.3);color:var(--accent-2)}
+.header-badge.engine .dot{width:6px;height:6px;border-radius:50%;background:var(--accent-2)}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:8px 16px;background:var(--bg-card);border:1px solid var(--border-card);border-radius:var(--radius-sm);font-size:12px;font-weight:600;color:var(--text-primary);cursor:pointer;transition:all .2s;font-family:inherit}
+.btn:hover{background:var(--bg-card-hover);border-color:var(--accent);box-shadow:0 0 16px rgba(45,212,191,.15)}
+.btn-primary{background:linear-gradient(135deg,#0D9488,#2DD4BF);color:#000;border:none;font-weight:700}
+.btn-primary:hover{box-shadow:0 0 24px rgba(45,212,191,.3)}
+
+/* KPI Row */
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+@media(max-width:900px){.kpi-row{grid-template-columns:repeat(2,1fr)}}
+.kpi-card{background:var(--bg-surface);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:20px 22px;position:relative;overflow:hidden}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:.3}
+.kpi-value{font-size:38px;font-weight:700;font-family:var(--font-mono);letter-spacing:-.02em;margin-bottom:2px}
+.kpi-value.rise{color:var(--accent-4)}
+.kpi-value.decline{color:var(--danger)}
+.kpi-value.stable{color:var(--accent-2)}
+.kpi-value.conf{color:var(--accent-3)}
+.kpi-sub{font-size:12px;color:var(--text-muted);display:flex;align-items:center;gap:6px}
+.kpi-change{font-size:11px;font-weight:600;padding:1px 5px;border-radius:4px}
+.kpi-change.up{color:var(--accent-4);background:rgba(52,211,153,.1)}
+.kpi-change.down{color:var(--danger);background:rgba(239,68,68,.1)}
+
+/* Section */
+.section{margin-bottom:24px}
+.section-title{font-size:14px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.section-title .dot{width:5px;height:5px;border-radius:50%;background:var(--accent)}
+.section-subtitle{font-size:11px;color:var(--text-muted);margin-bottom:14px}
+
+/* Core Row */
+.core-row{display:grid;grid-template-columns:1fr 380px;gap:16px;margin-bottom:24px}
+@media(max-width:1000px){.core-row{grid-template-columns:1fr}}
+.card{background:var(--bg-surface);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);overflow:hidden}
+.card-header{display:flex;align-items:center;gap:8px;padding:14px 18px;border-bottom:1px solid var(--border-subtle);font-size:13px;font-weight:600}
+.card-body{padding:16px 18px}
+.chart-box{width:100%;height:380px}
+.pipeline{margin:0;padding:0;list-style:none}
+.pipeline li{padding:8px 12px;font-size:11px;color:var(--text-muted);display:flex;align-items:center;gap:8px;border-left:2px solid var(--border-card);margin-left:6px;transition:all .3s}
+.pipeline li.done{color:var(--accent-4);border-left-color:var(--accent-4)}
+.pipeline li.current{color:var(--accent);border-left-color:var(--accent);font-weight:600}
+.pipeline .icon{width:14px;text-align:center;flex-shrink:0;font-size:10px}
+.engine-status{text-align:center;padding:14px 0 6px;font-size:11px;color:var(--text-muted)}
+.engine-status .big{font-size:22px;font-weight:700;font-family:var(--font-mono);color:var(--accent)}
+
+/* Job Cards Row */
+.jobs-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px}
+@media(max-width:800px){.jobs-row{grid-template-columns:1fr}}
+.job-card{background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:14px 16px;margin-bottom:8px;cursor:pointer;transition:all .2s}
+.job-card:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 4px 20px rgba(45,212,191,.08)}
+.job-card.emerging{border-left:3px solid var(--accent-4)}
+.job-card.declining{border-left:3px solid var(--warning)}
+.job-card-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px}
+.job-card-name{font-size:14px;font-weight:700}
+.job-card-growth{font-size:14px;font-weight:700;font-family:var(--font-mono)}
+.job-card-growth.up{color:var(--accent-4)}
+.job-card-growth.down{color:var(--danger)}
+.job-card-index{font-size:10px;color:var(--text-muted);margin-bottom:4px}
+.job-card-skills{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px}
+.job-card-skill{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600;background:rgba(45,212,191,.08);color:var(--accent)}
+.job-card-driver{font-size:10px;color:var(--text-muted)}
+
+/* Forecast Timeline */
+.forecast-bar{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:8px 0 16px}
+.forecast-node{flex:1;min-width:120px;text-align:center;position:relative;padding:0 10px}
+.forecast-node::before{content:'';position:absolute;top:28px;left:0;right:0;height:2px;background:var(--border-card)}
+.forecast-node:first-child::before{left:50%}
+.forecast-node:last-child::before{right:50%}
+.forecast-dot{width:14px;height:14px;border-radius:50%;background:var(--accent);margin:22px auto 10px;position:relative;z-index:1;box-shadow:0 0 12px rgba(45,212,191,.3)}
+.forecast-time{font-size:10px;color:var(--text-muted);font-family:var(--font-mono)}
+.forecast-name{font-size:12px;font-weight:600;margin-top:6px}
+.forecast-conf{font-size:11px;font-family:var(--font-mono);color:var(--accent)}
+
+/* Insight */
+.insight-card{background:var(--bg-surface);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:24px 28px;margin-bottom:24px}
+.insight-quote{font-size:16px;font-weight:700;color:var(--accent);text-align:center;margin-bottom:20px;letter-spacing:.01em}
+.insight-cols{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:700px){.insight-cols{grid-template-columns:1fr}}
+.insight-col h4{font-size:12px;font-weight:700;margin-bottom:8px;color:var(--accent-4)}
+.insight-col h4.warn{color:var(--warning)}
+.insight-tag{display:inline-block;padding:3px 10px;margin:2px 3px;border-radius:12px;font-size:10px;font-weight:600;background:rgba(45,212,191,.08);color:var(--accent)}
+.insight-tag.warn{background:rgba(245,158,11,.08);color:var(--warning)}
+.insight-footer{margin-top:16px;padding-top:14px;border-top:1px solid var(--border-subtle);font-size:12px;color:var(--text-secondary);line-height:1.7;text-align:center}
+
+/* Footer */
+.footer-bar{display:flex;justify-content:center;align-items:center;gap:24px;padding:16px 0;border-top:1px solid var(--border-subtle);font-size:10px;color:var(--text-muted);flex-wrap:wrap}
+.footer-bar span{display:flex;align-items:center;gap:4px}
+
+/* Drawer */
+.drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:100;opacity:0;pointer-events:none;transition:opacity .3s}
+.drawer-overlay.open{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:-480px;width:460px;height:100vh;background:var(--bg-surface);border-left:1px solid var(--border-subtle);z-index:101;transition:right .35s cubic-bezier(.4,0,.2,1);padding:24px;overflow-y:auto}
+.drawer.open{right:0}
+.drawer-close{position:absolute;top:14px;right:14px;width:30px;height:30px;border-radius:50%;background:var(--bg-card);border:1px solid var(--border-card);color:var(--text-secondary);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px}
+.drawer-close:hover{color:var(--text-primary)}
+.drawer h3{font-size:18px;margin-bottom:6px}
+.drawer .dr-status{display:inline-block;padding:3px 10px;border-radius:10px;font-size:11px;font-weight:600;margin-bottom:14px}
+.drawer .dr-status.rising{background:rgba(52,211,153,.12);color:var(--accent-4)}
+.drawer .dr-status.declining{background:rgba(245,158,11,.12);color:var(--warning)}
+.drawer .dr-row{margin-bottom:12px}
+.drawer .dr-label{font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:3px}
+.drawer .dr-value{font-size:13px;font-weight:600}
+.drawer .dr-skills{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+
+.toast{position:fixed;bottom:40px;left:50%;transform:translateX(-50%);padding:10px 24px;border-radius:20px;background:var(--accent);color:#000;font-size:13px;font-weight:600;z-index:200;opacity:0;transition:opacity .3s;pointer-events:none}
+</style>
+</head>
+<body>
+<div style="background:#ef4444;color:#fff;text-align:center;padding:8px;font-weight:bold;font-size:14px">🔥 如果你看到这条红色横幅，说明 HTML/CSS 正常渲染，问题在 JS</div>
+<div class="app">
+
+<!-- Header -->
+<div class="header">
+<div class="header-left">
+<h1>趋势分析 <span style="font-size:12px;color:#10b981">(页面已加载)</span></h1>
+<div class="sub">AI驱动的岗位市场趋势洞察 · 兴衰研判 · 未来推演</div>
+</div>
+<div class="header-right">
+<span class="header-badge live"><span class="dot"></span>MOCK DATA</span>
+<span class="header-badge engine"><span class="dot"></span>AI ENGINE · ONLINE</span>
+<span>更新时间 2026.08.12 10:30</span>
+<button class="btn btn-primary" onclick="startTrendAnalysis()">✦ 开始趋势分析</button>
+</div>
+</div>
+
+<!-- KPI Row -->
+<div class="kpi-row">
+<div class="kpi-card"><div class="kpi-value rise" id="kpi-emerging">0</div><div class="kpi-sub">正在兴起 <span class="kpi-change up" id="kpi-emerging-chg">+24.6%</span></div></div>
+<div class="kpi-card"><div class="kpi-value decline" id="kpi-declining">0</div><div class="kpi-sub">正在衰退 <span class="kpi-change down" id="kpi-declining-chg">-8.3%</span></div></div>
+<div class="kpi-card"><div class="kpi-value stable" id="kpi-stable">0</div><div class="kpi-sub">稳定岗位 <span class="kpi-change up">+3.2%</span></div></div>
+<div class="kpi-card"><div class="kpi-value conf" id="kpi-conf">0</div><div class="kpi-sub">AI趋势置信度 <span class="kpi-change up">预测可信度</span></div></div>
+</div>
+
+<!-- Core: Lifecycle Map + AI Engine -->
+<div class="core-row">
+<div class="card"><div class="card-header">✦ 岗位生命周期趋势地图<span style="font-size:10px;color:var(--text-muted);margin-left:4px">JOB LIFECYCLE MAP</span></div>
+<div class="card-body"><div class="section-subtitle">从岗位需求变化观察职业生命周期演化</div>
+<div class="chart-box" id="chart-lifecycle"></div></div></div>
+<div class="card"><div class="card-header">✦ AI趋势推演引擎<span style="font-size:10px;color:var(--text-muted);margin-left:4px">AI TREND ENGINE</span></div>
+<div class="card-body"><div class="section-subtitle">ANALYSIS PIPELINE</div>
+<ul class="pipeline" id="pipeline">
+<li id="pl-1"><span class="icon">○</span>招聘需求变化分析</li>
+<li id="pl-2"><span class="icon">○</span>岗位数量变化分析</li>
+<li id="pl-3"><span class="icon">○</span>技能演化速度分析</li>
+<li id="pl-4"><span class="icon">○</span>跨行业信号分析</li>
+<li id="pl-5"><span class="icon">○</span>岗位生命周期识别</li>
+<li id="pl-6"><span class="icon">○</span>未来趋势推演</li>
+</ul>
+<div class="engine-status"><div class="big" id="engine-status-text">IDLE</div><div style="margin-top:4px">CURRENT STATUS</div></div>
+</div></div>
+</div>
+
+<!-- Emerging + Declining -->
+<div class="jobs-row">
+<div class="card"><div class="card-header" style="color:var(--accent-4)">📈 正在兴起<span style="font-size:10px;color:var(--text-muted);margin-left:4px">EMERGING JOBS</span></div>
+<div class="card-body" id="emerging-list"></div></div>
+<div class="card"><div class="card-header" style="color:var(--warning)">📉 正在衰退<span style="font-size:10px;color:var(--text-muted);margin-left:4px">DECLINING JOBS</span></div>
+<div class="card-body" id="declining-list"></div></div>
+</div>
+
+<!-- Job Transition -->
+<div class="card" style="margin-bottom:24px"><div class="card-header">✦ 岗位迁移与技能演化<span style="font-size:10px;color:var(--text-muted);margin-left:4px">JOB TRANSITION & SKILL EVOLUTION</span></div>
+<div class="card-body"><div style="height:400px" id="chart-transition"></div></div></div>
+
+<!-- Forecast Timeline -->
+<div class="card" style="margin-bottom:24px"><div class="card-header">✦ 未来6-18个月趋势预测<span style="font-size:10px;color:var(--text-muted);margin-left:4px">FUTURE TREND FORECAST</span></div>
+<div class="card-body"><div class="forecast-bar" id="forecast-bar"></div></div></div>
+
+<!-- AI Insight -->
+<div class="insight-card">
+<div class="insight-quote">"AI正在重塑岗位结构，而不仅仅是减少岗位数量。"</div>
+<div class="insight-cols">
+<div class="insight-col"><h4>📈 增长趋势</h4><div id="insight-rising"></div></div>
+<div class="insight-col"><h4 class="warn">📉 收缩趋势</h4><div id="insight-declining"></div></div>
+</div>
+<div class="insight-footer" id="insight-summary"></div>
+</div>
+
+<!-- Footer -->
+<div class="footer-bar">
+<span>📊 51JOB</span><span>📊 智联招聘</span><span>📊 岗位数据库</span><span>📊 新岗位发现</span><span>🤖 AI Forecast Engine</span><span>🗄 PostgreSQL · 12,000+ Jobs</span>
+</div>
+
+</div>
+
+<!-- Drawer -->
+<div class="drawer-overlay" id="drawer-overlay" onclick="closeDrawer()"></div>
+<div class="drawer" id="drawer"><button class="drawer-close" onclick="closeDrawer()">✕</button><div id="drawer-body"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+// ==================== MOCK DATA ====================
+var TREND = {
+  overview: { emerging: 38, declining: 17, stable: 46, confidence: 82.6 },
+  lifecycle: [
+    { name: 'AI Agent工程师', stage: '新兴', growth: 68.4, demand: 240, skills: ['AI Agent','LLM','RAG','Python'], color: '#34d399' },
+    { name: '大模型应用工程师', stage: '新兴', growth: 54.2, demand: 210, skills: ['LLM','Prompt','RAG','API'], color: '#34d399' },
+    { name: '具身智能工程师', stage: '新兴', growth: 47.8, demand: 120, skills: ['ROS2','PyTorch','SLAM','RL'], color: '#34d399' },
+    { name: '合成数据工程师', stage: '新兴', growth: 41.3, demand: 95, skills: ['合成数据','Python','ML','GAN'], color: '#2DD4BF' },
+    { name: 'AI安全工程师', stage: '增长', growth: 32.6, demand: 160, skills: ['对抗攻击','RLHF','红队测试'], color: '#2DD4BF' },
+    { name: '端侧AI部署工程师', stage: '增长', growth: 28.5, demand: 140, skills: ['ONNX','TensorRT','量化'], color: '#2DD4BF' },
+    { name: '数据分析师', stage: '稳定', growth: 5.2, demand: 400, skills: ['Python','SQL','BI','统计学'], color: '#60a5fa' },
+    { name: 'Java后端工程师', stage: '稳定', growth: 2.1, demand: 520, skills: ['Java','Spring','MySQL','Redis'], color: '#60a5fa' },
+    { name: '基础测试岗位', stage: '衰退', growth: -19.6, demand: 200, skills: ['手动测试','测试用例'], color: '#f59e0b' },
+    { name: '基础客服', stage: '衰退', growth: -24.8, demand: 180, skills: ['电话客服','在线客服'], color: '#ef4444' },
+    { name: '基础报表专员', stage: '衰退', growth: -31.5, demand: 120, skills: ['Excel','固定报表'], color: '#ef4444' },
+    { name: '传统数据录入员', stage: '衰退', growth: -42.1, demand: 80, skills: ['数据录入','OCR替代'], color: '#ef4444' },
+  ],
+  emergingJobs: [
+    { name: 'AI Agent工程师', growth: 68.4, index: 92, skills: ['AI Agent','LLM','RAG','Python'], driver: 'Agent应用快速增长' },
+    { name: '大模型应用工程师', growth: 54.2, index: 88, skills: ['LLM','Prompt Engineering','RAG','API'], driver: '企业AI落地加速' },
+    { name: '具身智能工程师', growth: 47.8, index: 84, skills: ['ROS2','PyTorch','SLAM','强化学习'], driver: '人形机器人产业化' },
+    { name: '合成数据工程师', growth: 41.3, index: 79, skills: ['数据生成','Python','ML','GAN'], driver: '真实数据枯竭+隐私法规' },
+  ],
+  decliningJobs: [
+    { name: '传统数据录入员', growth: -42.1, risk: 86, reasons: ['OCR技术','RPA自动化','AI数据提取'] },
+    { name: '基础报表专员', growth: -31.5, risk: 74, reasons: ['BI自动化','AI分析','自动报表生成'] },
+    { name: '基础客服', growth: -24.8, risk: 68, reasons: ['AI客服','智能问答','Agent替代'] },
+    { name: '基础测试岗位', growth: -19.6, risk: 61, reasons: ['自动化测试','AI测试生成','CI/CD集成'] },
+  ],
+  forecasts: [
+    { name: '端侧AI部署工程师', months: 6, conf: 80, skills: ['ONNX','TensorRT','CoreML','量化'] },
+    { name: 'AI安全对齐工程师', months: 9, conf: 78, skills: ['对抗攻击','RLHF','红队测试','偏见检测'] },
+    { name: '合成数据工程师', months: 10, conf: 75, skills: ['数据生成','GAN','LLM','数据增强'] },
+    { name: '具身智能工程师', months: 12, conf: 72, skills: ['ROS2','PyTorch','SLAM','强化学习'] },
+    { name: '3D生成工程师', months: 14, conf: 68, skills: ['NeRF','Gaussian Splatting','PyTorch3D'] },
+    { name: 'AI芯片软件栈工程师', months: 15, conf: 70, skills: ['Triton','MLIR','TVM','CUDA'] },
+    { name: 'AI法律合规顾问', months: 18, conf: 65, skills: ['AI政策','数据合规','算法审计','GDPR'] },
+  ],
+  insight: {
+    rising: ['AI Agent','大模型应用','具身智能','合成数据','端侧AI','AI安全'],
+    declining: ['数据录入','基础报表','重复客服','基础测试','手工操作','固定流程'],
+    summary: '当前岗位市场呈现明显的技能迁移趋势。传统重复性岗位需求持续受到自动化工具影响，同时具备AI、数据和自动化能力的复合型岗位快速增长。建议关注AI Agent开发、大模型应用和端侧AI部署方向。'
+  }
+};
+
+// ==================== STATE ====================
+window.trendCharts = {};
+window._trendDrawn = false;
+
+// ==================== INIT ====================
+function toast(msg){var t=document.getElementById('toast');t.textContent=msg;t.style.opacity='1';setTimeout(function(){t.style.opacity='0'},2200)}
+
+function initTrendPage(){
+  if(window._trendDrawn) return;
+  window._trendDrawn = true;
+
+  // KPI animation
+  animateNum('kpi-emerging', TREND.overview.emerging);
+  animateNum('kpi-declining', TREND.overview.declining);
+  animateNum('kpi-stable', TREND.overview.stable);
+  animateNum('kpi-conf', TREND.overview.confidence, 1);
+
+  // Charts
+  setTimeout(initLifecycleChart, 200);
+  setTimeout(initTransitionChart, 400);
+
+  // Cards
+  renderEmergingJobs();
+  renderDecliningJobs();
+  renderForecast();
+  renderInsight();
+
+  // GSAP entrance
+  gsap.from('.kpi-card', {opacity:0, y:16, duration:.5, stagger:.08, ease:'power2.out'});
+  gsap.from('.card', {opacity:0, y:12, duration:.4, stagger:.06, ease:'power2.out', delay:.3});
+}
+
+function animateNum(id, target, decimals){
+  decimals = decimals || 0;
+  var el = document.getElementById(id);
+  if(!el) return;
+  var start = 0, duration = 1.5;
+  gsap.to({v:start}, {v:target, duration:duration, ease:'power3.out', onUpdate:function(){
+    el.textContent = decimals ? this.targets()[0].v.toFixed(decimals)+'%' : Math.round(this.targets()[0].v);
+  }});
+}
+
+// ==================== LIFECYCLE CHART ====================
+function initLifecycleChart(){
+  var el = document.getElementById('chart-lifecycle');
+  if(!el) return;
+  el.style.minHeight = '380px';
+  try{var c = echarts.init(el); window.trendCharts.lifecycle = c;}catch(e){return}
+  var stageMap = {'衰退':-1,'稳定':0,'增长':1,'新兴':2};
+  var data = TREND.lifecycle.map(function(j){
+    return {name:j.name,value:[stageMap[j.stage]||0,j.growth,j.demand],stage:j.stage,skills:j.skills,growth:j.growth,color:j.color};
+  });
+  c.setOption({
+    tooltip:{trigger:'item',backgroundColor:'rgba(17,24,39,.95)',borderColor:'#374151',textStyle:{color:'#e5e7eb',fontSize:12},formatter:function(p){var d=p.data;return '<b>'+d.name+'</b><br>阶段：'+d.stage+'<br>增长率：'+(d.growth>0?'+':'')+d.growth+'%<br>技能：'+(d.skills||[]).join(' · ')}},
+    grid:{left:60,right:30,top:20,bottom:40},
+    xAxis:{type:'value',min:-1.3,max:2.3,interval:1,axisLabel:{formatter:function(v){return['衰退','稳定','增长','新兴'][v+1]},color:'#9ca3af',fontSize:11},splitLine:{show:false},axisLine:{lineStyle:{color:'#374151'}}},
+    yAxis:{type:'value',name:'增长率 %',nameTextStyle:{color:'#9ca3af',fontSize:10},axisLabel:{color:'#9ca3af',fontSize:10,formatter:'{value}%'},splitLine:{lineStyle:{color:'rgba(55,65,81,.3)'}}},
+    series:[{type:'scatter',data:data,symbolSize:function(d){return Math.max(18,Math.min(60,d[2]/8))},
+      itemStyle:{color:function(p){return p.data.color},opacity:.85},
+      label:{show:true,formatter:function(p){return p.data.name},position:'top',fontSize:10,color:'#9ca3af'},
+      emphasis:{scale:1.3}
+    }]
+  });
+  c.on('click', function(p){if(p.data)openDrawer(p.data)});
+  setTimeout(function(){try{c.resize()}catch(e){}},200);
+}
+
+// ==================== TRANSITION CHART ====================
+function initTransitionChart(){
+  var el = document.getElementById('chart-transition');
+  if(!el) return;
+  el.style.minHeight = '400px';
+  try{var c = echarts.init(el); window.trendCharts.transition = c;}catch(e){return}
+
+  var transitions = [
+    {from:'传统数据录入员',via:'OCR / RPA / AI',to:'AI数据运营',final:'智能数据分析'},
+    {from:'传统运维工程师',via:'云平台 / 自动化',to:'自动化运维',final:'AIOps工程师'},
+    {from:'传统测试工程师',via:'自动化测试 / AI',to:'AI测试',final:'AI质量工程师'},
+    {from:'传统数据分析师',via:'Python / ML',to:'AI增强分析',final:'AI增强数据分析师'},
+  ];
+
+  var nodes=[], edges=[], nodeMap={}, y=0;
+  transitions.forEach(function(t,i){
+    y=i*4;
+    var ids=[t.from,t.via,t.to,t.final];
+    ids.forEach(function(name,k){
+      var id=name.replace(/\s/g,'');
+      if(!nodeMap[id]){nodeMap[id]=true;nodes.push({name:name,x:k*2.5,y:y+(k===1?.8:0),symbolSize:k===0?20:k===3?24:14,itemStyle:{color:k===0?'#60a5fa':k===1?'#f59e0b':k===2?'#a78bfa':k===3?'#34d399'},label:{show:true,fontSize:k===0||k===3?11:9,color:'#e5e7eb',position:k===1?'top':'bottom'}})}
+    });
+    for(var ei=0;ei<3;ei++){
+      edges.push({source:ids[ei].replace(/\s/g,''),target:ids[ei+1].replace(/\s/g,''),lineStyle:{color:ei===0?'#60a5fa':ei===1?'#f59e0b':'#a78bfa',width:2,curveness:.15}});
+    }
+  });
+
+  c.setOption({
+    tooltip:{trigger:'item',backgroundColor:'rgba(17,24,39,.95)',borderColor:'#374151',textStyle:{color:'#e5e7eb'},formatter:function(p){return p.dataType==='node'?'<b>'+p.name+'</b>':''}},
+    series:[{type:'graph',layout:'force',force:{repulsion:300,edgeLength:[100,300],gravity:.15},roam:true,draggable:true,data:nodes,edges:edges,lineStyle:{opacity:.6,curveness:.15},emphasis:{focus:'adjacency',lineStyle:{width:3}}}]
+  });
+  setTimeout(function(){try{c.resize()}catch(e){}},200);
+}
+
+// ==================== JOB CARDS ====================
+function renderEmergingJobs(){
+  var el=document.getElementById('emerging-list');
+  el.innerHTML=TREND.emergingJobs.map(function(j){
+    return '<div class="job-card emerging" onclick="openDrawer({name:\''+j.name+'\',growth:'+j.growth+',skills:[\''+j.skills.join("','")+'\'],stage:\'新兴\',driver:\''+j.driver+'\'})"><div class="job-card-header"><span class="job-card-name">'+j.name+'</span><span class="job-card-growth up">+'+j.growth+'%</span></div><div class="job-card-index">趋势指数：'+j.index+'</div><div class="job-card-skills">'+j.skills.map(function(s){return'<span class="job-card-skill">'+s+'</span>'}).join('')+'</div><div class="job-card-driver">驱动：'+j.driver+'</div></div>';
+  }).join('');
+}
+function renderDecliningJobs(){
+  var el=document.getElementById('declining-list');
+  el.innerHTML=TREND.decliningJobs.map(function(j){
+    return '<div class="job-card declining" onclick="openDrawer({name:\''+j.name+'\',growth:'+j.growth+',skills:[\''+j.reasons.join("','")+'\'],stage:\'衰退\',driver:\''+j.reasons[0]+'\'})"><div class="job-card-header"><span class="job-card-name">'+j.name+'</span><span class="job-card-growth down">'+j.growth+'%</span></div><div class="job-card-index">趋势风险：'+j.risk+'</div><div class="job-card-skills">'+j.reasons.map(function(r){return'<span class="job-card-skill" style="background:rgba(245,158,11,.08);color:var(--warning)">'+r+'</span>'}).join('')+'</div></div>';
+  }).join('');
+}
+
+// ==================== FORECAST ====================
+function renderForecast(){
+  var el=document.getElementById('forecast-bar');
+  var sorted=[].concat(TREND.forecasts).sort(function(a,b){return a.months-b.months});
+  el.innerHTML=sorted.map(function(f){
+    return '<div class="forecast-node"><div class="forecast-dot"></div><div class="forecast-time">'+f.months+'个月</div><div class="forecast-name">'+f.name+'</div><div class="forecast-conf">置信度 '+f.conf+'%</div></div>';
+  }).join('');
+}
+
+// ==================== INSIGHT ====================
+function renderInsight(){
+  document.getElementById('insight-rising').innerHTML=TREND.insight.rising.map(function(r){return'<span class="insight-tag">'+r+'</span>'}).join('');
+  document.getElementById('insight-declining').innerHTML=TREND.insight.declining.map(function(d){return'<span class="insight-tag warn">'+d+'</span>'}).join('');
+  document.getElementById('insight-summary').textContent='AI判断：'+TREND.insight.summary;
+}
+
+// ==================== DRAWER ====================
+function openDrawer(job){
+  var drawing=job.stage==='衰退'?'declining':'rising';
+  document.getElementById('drawer-body').innerHTML=
+    '<h3>'+job.name+'</h3><div class="dr-status '+drawing+'">'+(job.stage==='衰退'?'📉 需求收缩':'🔥 快速增长')+'</div>'+
+    '<div class="dr-row"><div class="dr-label">趋势状态</div><div class="dr-value">'+job.stage+'</div></div>'+
+    '<div class="dr-row"><div class="dr-label">需求增长</div><div class="dr-value" style="color:'+(job.growth>0?'var(--accent-4)':'var(--danger)')+'">'+(job.growth>0?'+':'')+job.growth+'%</div></div>'+
+    '<div class="dr-row"><div class="dr-label">核心技能</div><div class="dr-skills">'+(job.skills||[]).map(function(s){return'<span class="job-card-skill">'+s+'</span>'}).join('')+'</div></div>'+
+    (job.driver?'<div class="dr-row"><div class="dr-label">原因分析</div><div class="dr-value" style="color:var(--text-secondary);font-size:12px">'+job.driver+'</div></div>':'')+
+    '<div class="dr-row"><div class="dr-label">AI建议</div><div class="dr-value" style="color:var(--text-secondary);font-size:12px">建议重点关注：'+(job.skills||[]).slice(0,3).join('、')+'</div></div>';
+  document.getElementById('drawer-overlay').classList.add('open');
+  document.getElementById('drawer').classList.add('open');
+}
+function closeDrawer(){
+  document.getElementById('drawer-overlay').classList.remove('open');
+  document.getElementById('drawer').classList.remove('open');
+}
+
+// ==================== ANALYSIS SEQUENCE ====================
+function startTrendAnalysis(){
+  var steps=[1,2,3,4,5,6];
+  document.getElementById('engine-status-text').textContent='ANALYZING';
+  steps.forEach(function(s,i){
+    setTimeout(function(){
+      var el=document.getElementById('pl-'+s);
+      el.classList.add('current');
+      el.querySelector('.icon').textContent='●';
+      document.getElementById('engine-status-text').textContent='STEP '+s+'/6';
+      setTimeout(function(){el.classList.remove('current');el.classList.add('done');el.querySelector('.icon').textContent='✓'},s===6?600:400);
+    },i*700);
+  });
+  setTimeout(function(){
+    document.getElementById('engine-status-text').textContent='COMPLETE';
+    toast('趋势分析完成');
+  }, steps.length*700+300);
+}
+
+// ==================== API STUB ====================
+async function loadTrendData(){ return TREND; }
+
+// ==================== INIT ====================
+window.addEventListener('load', function(){
+  document.getElementById('kpi-emerging').textContent = '38';
+  document.getElementById('kpi-declining').textContent = '17';
+  document.getElementById('kpi-stable').textContent = '46';
+  document.getElementById('kpi-conf').textContent = '82.6%';
+  setTimeout(initTrendPage, 200);
+  window.addEventListener('resize', function(){
+    Object.values(window.trendCharts).forEach(function(c){try{c.resize()}catch(e){}});
+  });
+});
+</script>
+</body>
+</html>
