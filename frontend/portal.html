@@ -202,7 +202,6 @@ a{color:inherit;text-decoration:none}
 .legend-dot{width:10px;height:10px;border-radius:50%}
 .graph-stats{position:absolute;top:70px;right:16px;background:rgba(10,14,39,.85);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:12px 14px;color:#fff;font-size:11px;font-family:var(--font-mono),monospace;line-height:1.8}
 .graph-stats .v{color:var(--accent-cyan);font-weight:600}
-#graph-container{width:100%;height:100%}
 .graph-detail{background:#fff;border-radius:var(--radius-lg);border:1px solid var(--border-dark);overflow-y:auto}
 .detail-empty{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--text-muted);padding:40px 20px;text-align:center}
 .detail-empty svg{width:64px;height:64px;opacity:.3;margin-bottom:14px}
@@ -1641,7 +1640,6 @@ body.disc-lock .content{overflow-y:auto!important;padding:20px 24px 32px!importa
 .tech-node-tooltip{position:absolute;pointer-events:none;background:rgba(10,14,39,.95);border:1px solid rgba(45,212,191,.3);border-radius:8px;padding:8px 14px;color:#fff;font-size:13px;font-weight:500;white-space:nowrap;z-index:100;box-shadow:0 4px 20px rgba(0,0,0,.4)}
 .graph-stats{position:absolute;top:70px;right:16px;background:rgba(10,14,39,.85);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:12px 14px;color:#fff;font-size:11px;font-family:var(--font-mono),monospace;line-height:1.8}
 .graph-stats .v{color:var(--accent-cyan);font-weight:600}
-#graph-container{width:100%;height:100%}
 .graph-detail{background:#fff;border-radius:var(--radius-lg);border:1px solid var(--border-dark);overflow-y:auto}
 /* 省份详情面板滑入动画 */
 @keyframes panelSlideIn{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}
@@ -1824,7 +1822,6 @@ body.disc-lock .content{overflow-y:auto!important;padding:20px 24px 32px!importa
 <div class="nav-group">
 <div class="nav-label">核心功能</div>
 <div class="nav-item active" data-view="dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg><span>总览看板</span></div>
-<div class="nav-item" data-view="graph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="18" r="3"/><circle cx="12" cy="12" r="3"/><path d="M9 7l6 0M7 9l0 6M17 9l0 6M9 17l6 0"/></svg><span>图谱可视化</span><span class="nav-badge">HOT</span></div>
 <div class="nav-item" data-view="map"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="18" r="3"/><circle cx="12" cy="12" r="3"/><path d="M9 7l6 0M7 9l0 6M17 9l0 6M9 17l6 0"/></svg><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 2 7l10 5 10-5-10-5z"/><path d="m2 17 10 5 10-5"/><path d="m2 12 10 5 10-5"/></svg><span>数字人才地图</span><span class="nav-badge">HOT</span></div>
 <div class="nav-item" data-view="discovery"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/><path d="M11 8v6M8 11h6"/></svg><span>新岗位发现</span></div>
 <div class="nav-item" data-view="evolution"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 17 9 11 13 15 21 7"/><polyline points="14 7 21 7 21 14"/></svg><span>能力动态演化</span></div>
@@ -1889,7 +1886,7 @@ body.disc-lock .content{overflow-y:auto!important;padding:20px 24px 32px!importa
 <div class="dash-brand"><span>Knowledge Graph · Demo</span>执图破局</div>
 <p class="dash-thesis">用<em>多源异构数据</em>与<em>大模型推理</em>，把岗位、能力与行业织成一张会呼吸的图谱——让技术演化可感知，让人岗匹配可决策。</p>
 <div class="dash-hero-cta-row">
-<button class="dash-hero-cta" onclick="window.switchView('graph')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"/><circle cx="4" cy="6" r="2"/><circle cx="20" cy="6" r="2"/><circle cx="4" cy="18" r="2"/><circle cx="20" cy="18" r="2"/><path d="M6 7l4 4M18 7l-4 4M6 17l4-4M18 17l-4-4"/></svg>进入图谱</button>
+<button class="dash-hero-cta" onclick="window.switchView('map')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"/><circle cx="4" cy="6" r="2"/><circle cx="20" cy="6" r="2"/><circle cx="4" cy="18" r="2"/><circle cx="20" cy="18" r="2"/><path d="M6 7l4 4M18 7l-4 4M6 17l4-4M18 17l-4-4"/></svg>数字人才地图</button>
 <button class="dash-hero-cta ghost" onclick="window.switchView('match')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>开始匹配诊断</button>
 </div>
 </div>
@@ -1945,81 +1942,6 @@ body.disc-lock .content{overflow-y:auto!important;padding:20px 24px 32px!importa
 </div>
 <div class="card-body">
 <div class="hot-jobs" id="hot-jobs"></div>
-</div>
-</section>
-<!-- ============== 2. 图谱可视化 ============== -->
-<section class="view" id="view-graph">
-<div class="page-header">
-<div class="page-title-block">
-<h1>岗位-能力知识图谱</h1>
-<div class="subtitle">基于 Neo4j · 实时驱动 · 多维度交互 · <span id="graph-node-count">--</span> 节点 / <span id="graph-edge-count">--</span> 关系</div>
-</div>
-<div class="page-actions">
-<button class="btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>新增节点</button>
-<button class="btn btn-primary" onclick="exportData('graph')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="7 13 12 18 17 13"/><polyline points="7 6 12 11 17 6"/></svg>导出图谱</button>
-</div>
-</div>
-<div class="graph-layout">
-<div class="graph-filter">
-<div class="filter-title">图谱筛选<span style="font-size:11px;color:var(--text-muted);font-family:var(--font-mono),monospace">v5.2.1</span></div>
-<div class="filter-group"><div class="filter-group-title">节点类型</div>
-<label class="filter-option"><input type="checkbox" data-type="job" checked> 岗位 (Job)<span class="filter-count" id="cnt-job">0</span></label>
-<label class="filter-option"><input type="checkbox" data-type="skill" checked> 技能 (Skill)<span class="filter-count" id="cnt-skill">0</span></label>
-<label class="filter-option"><input type="checkbox" data-type="industry" checked> 行业 (Industry)<span class="filter-count" id="cnt-industry">0</span></label>
-<label class="filter-option"><input type="checkbox" data-type="category" checked> 类别 (Category)<span class="filter-count" id="cnt-category">0</span></label>
-</div>
-<div class="filter-group"><div class="filter-group-title">布局算法</div>
-<select class="form-input" id="graph-layout-sel" style="max-width:100%"><option value="force">力导向布局</option><option value="circular">圆形布局</option><option value="radial">径向布局</option><option value="dagre">DAG布局</option></select></div>
-<div class="filter-group"><div class="filter-group-title">视图模式</div>
-<select class="form-input" id="graph-mode-sel" style="max-width:100%"><option value="all">全部节点</option><option value="core">仅核心节点</option></select></div>
-<div style="margin-top:20px;padding:14px;background:linear-gradient(135deg,rgba(13,148,136,.06),rgba(13,148,136,.06));border-radius:10px;border:1px solid rgba(13,148,136,.1)">
-<div style="font-size:11px;font-weight:600;color:var(--text-dark);margin-bottom:8px">💡 操作提示</div>
-<div style="font-size:11px;color:var(--text-dark-secondary);line-height:1.8">
-<div>• 拖拽节点调整位置</div>
-<div>• 点击节点查看详情</div>
-<div>• 悬停节点聚焦邻域</div>
-<div>• 滚轮缩放视图</div>
-<div>• 搜索框输入关键词</div>
-</div>
-</div>
-</div>
-<div class="graph-canvas">
-<div class="graph-toolbar">
-<div class="graph-search-wrap">
-<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-<input type="text" class="graph-search" id="graph-search-input" placeholder="搜索节点 / 关系 / 路径...">
-</div>
-<div class="graph-actions">
-<button class="graph-btn" title="重置" onclick="resetGraph()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg></button>
-<button class="graph-btn" title="全屏" onclick="toggleFullscreen()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"/></svg></button>
-</div>
-</div>
-<div class="graph-stats" id="graph-stats-panel">
-<div class="gs-title">Live Metrics</div>
-<div>节点 <span class="v" id="gs-nodes">0</span></div>
-<div>关系 <span class="v" id="gs-edges">0</span></div>
-<div>密度 <span class="v" id="gs-density">0.00</span></div>
-<div>均度 <span class="v" id="gs-degree">0.0</span></div>
-<div>社区 <span class="v" id="gs-comm">0</span></div>
-<div>活性 <span class="v" id="gs-activity">--</span></div>
-<div>FPS <span class="v" id="gs-fps">60</span></div>
-</div>
-<div class="graph-pulse-ring"></div>
-<div id="graph-container"></div>
-<div class="graph-legend">
-<div class="legend-item"><span class="legend-dot" style="background:#0D9488"></span>岗位</div>
-<div class="legend-item"><span class="legend-dot" style="background:#F5A524"></span>技能</div>
-<div class="legend-item"><span class="legend-dot" style="background:#64748B"></span>行业</div>
-<div class="legend-item"><span class="legend-dot" style="background:#10b981"></span>类别</div>
-</div>
-</div>
-<div class="graph-detail">
-<div class="detail-empty" id="graph-detail-empty">
-<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6" cy="6" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="18" r="3"/><circle cx="12" cy="12" r="3"/></svg>
-<h4>选择节点查看详情</h4>
-<p>点击图谱中的任意节点<br>查看详细信息、关联关系、能力要求</p>
-</div>
-<div class="detail-content" id="graph-detail-content" style="display:none"></div>
 </div>
 </section>
 <!-- ============== 3. 岗位发现智能体（严格按原型） ============== -->
@@ -3485,7 +3407,7 @@ window.generateGraphData = function() {
 
 // ============== 视图切换 ==============
 window.viewNames = {
-    dashboard:'总览看板', graph:'图谱可视化', discovery:'新岗位发现', evolution:'能力动态演化',
+    dashboard:'总览看板', discovery:'新岗位发现', evolution:'能力动态演化',
     match:'人岗匹配诊断', qa:'智能问答', collection:'数据采集', analysis:'趋势分析',
     quality:'质量监控', settings:'系统设置', 'user-profile':'我的资料', map:'数字人才地图', learningPath:'学习路径', newSkill:'新增技能',
 };
@@ -3504,7 +3426,6 @@ window.resizeActiveVisuals = function() {
             else if (inst.resize) inst.resize(el.clientWidth, el.clientHeight);
         } catch(e){}
     };
-    resizeG6(typeof graphInstance !== 'undefined' ? graphInstance : null, 'graph-container');
     resizeG6(typeof heroGraphInstance !== 'undefined' ? heroGraphInstance : null, 'dash-graph-container');
 };
 window.switchView = function(viewId, opts) {
@@ -3512,7 +3433,6 @@ window.switchView = function(viewId, opts) {
     if (!viewId || !window.viewNames[viewId]) viewId = 'dashboard';
     const prev = window.currentViewId;
     window.currentViewId = viewId;
-    if (prev === 'graph' && viewId !== 'graph' && window.pauseGraphLiving) window.pauseGraphLiving();
     if (prev === 'discovery' && viewId !== 'discovery' && window.destroyDiscFX) window.destroyDiscFX();
     if (prev === 'analysis' && viewId !== 'analysis') { try { window.disposeTransitionGraph(); } catch(e) {} try { window.disposeForecastChart(); } catch(e) {} }
     document.body.classList.toggle('disc-lock', viewId === 'discovery');
@@ -3917,391 +3837,9 @@ window.renderActivityList = function() {
     `).join('');
 };
 
-// ============== Graph View ==============
-let graphInstance = null;
-let graphFilter = {types: {job:true, skill:true, industry:true, category:true}};
-let graphSearchTerm = '';
-window.initGraph = function() {
-    if (!window.Store.state.graph.nodes.length) window.generateAllData();
-    const container = document.getElementById('graph-container');
-    if (!container) return;
-    // 绑定搜索
-    const si = document.getElementById('graph-search-input');
-    if (si && !si.dataset.bound) {
-        si.dataset.bound = '1';
-        si.addEventListener('input', e => { graphSearchTerm = e.target.value.trim().toLowerCase(); window.highlightSearch(); });
-    }
-    // 布局切换
-    const ls = document.getElementById('graph-layout-sel');
-    if (ls && !ls.dataset.bound) {
-        ls.dataset.bound = '1';
-        ls.addEventListener('change', e => window.renderGraph(e.target.value));
-    }
-    // 类型筛选
-    document.querySelectorAll('#view-graph .filter-option input[data-type]').forEach(opt => {
-        if (opt.dataset.bound) return;
-        opt.dataset.bound = '1';
-        opt.addEventListener('change', () => {
-            graphFilter.types[opt.dataset.type] = opt.checked;
-            window.applyGraphFilter();
-        });
-    });
-    // 更新统计
-    const counts = {};
-    window.Store.state.graph.nodes.forEach(n => counts[n.type] = (counts[n.type] || 0) + 1);
-    ['job','skill','industry','category'].forEach(t => {
-        const el = document.getElementById('cnt-'+t); if (el) el.textContent = counts[t] || 0;
-    });
-    document.getElementById('graph-node-count').textContent = window.Store.state.graph.nodes.length;
-    document.getElementById('graph-edge-count').textContent = window.Store.state.graph.edges.length;
-    document.getElementById('gs-nodes').textContent = window.Store.state.graph.nodes.length;
-    document.getElementById('gs-edges').textContent = window.Store.state.graph.edges.length;
-    window.updateGraphMetrics && window.updateGraphMetrics();
-    if (graphInstance) {
-        if (container.clientWidth > 10 && container.clientHeight > 10) {
-            try {
-                if (graphInstance.changeSize) graphInstance.changeSize(container.clientWidth, container.clientHeight);
-                else if (graphInstance.resize) graphInstance.resize(container.clientWidth, container.clientHeight);
-            } catch(e){}
-        }
-        window.startGraphLiving && window.startGraphLiving();
-        return;
-    }
-    window.renderGraph();
-};
-window.getFilteredGraphData = function() {
-    const data = window.Store.state.graph;
-    const nodes = data.nodes.filter(n => graphFilter.types[n.type]);
-    const ids = new Set(nodes.map(n => n.id));
-    const edges = data.edges.filter(e => {
-        const s = typeof e.source === 'object' ? e.source.id : e.source;
-        const t = typeof e.target === 'object' ? e.target.id : e.target;
-        return ids.has(s) && ids.has(t);
-    });
-    return { nodes, edges };
-};
-window.applyGraphFilter = function() {
-    if (!graphInstance) return;
-    try {
-        graphInstance.changeData(window.normalizeGraphPayload(window.getFilteredGraphData()));
-        window.startGraphLiving && window.startGraphLiving();
-    } catch(e) { window.renderGraph(); }
-};
-window.renderGraph = function(layout) {
-    layout = layout || (document.getElementById('graph-layout-sel')?.value || 'force');
-    const container = document.getElementById('graph-container');
-    if (!container) return;
-    if (container.clientWidth < 10 || container.clientHeight < 10) {
-        setTimeout(() => window.renderGraph(layout), 120);
-        return;
-    }
-    if (typeof G6 === 'undefined' || !G6.Graph) {
-        console.warn('G6 unavailable');
-        window.renderHeroFallbackGraph(container, window.getFilteredGraphData().nodes, window.getFilteredGraphData().edges);
-        return;
-    }
-    if (graphInstance) { try { graphInstance.destroy(); } catch(e){} graphInstance = null; }
-    const data = window.getFilteredGraphData();
-    // G6 v4 兼容：补齐 size / label
-    const nodes = data.nodes.map(n => ({
-        ...n,
-        id: n.id,
-        label: n.label || n.id,
-        size: n.size || (n.type === 'job' ? 36 : 24),
-        style: Object.assign({ fill: '#0D9488', stroke: '#fff', lineWidth: 1 }, n.style || {})
-    }));
-    const edges = data.edges.map((e, i) => ({
-        ...e,
-        id: e.id || ('e' + i),
-        source: typeof e.source === 'object' ? e.source.id : e.source,
-        target: typeof e.target === 'object' ? e.target.id : e.target,
-        style: Object.assign({ stroke: 'rgba(255,255,255,.22)', lineWidth: 1.2 }, e.style || {})
-    }));
-    let layoutCfg;
-    if (layout === 'circular') layoutCfg = {type:'circular', preventOverlap:true, nodeSize:50};
-    else if (layout === 'radial') layoutCfg = {type:'radial', preventOverlap:true, nodeSize:50, unitRadius:140};
-    else if (layout === 'dagre') layoutCfg = {type:'dagre', rankdir:'LR', nodesep:30, ranksep:80};
-    else layoutCfg = {type:'force', preventOverlap:true, nodeStrength:-160, edgeStrength:0.55, collideStrength:0.75, linkDistance:110, alpha:0.35, alphaDecay:0.008, alphaMin:0.001};
-    try {
-        graphInstance = new G6.Graph({
-            container: 'graph-container',
-            width: container.clientWidth,
-            height: container.clientHeight,
-            modes: { default: ['drag-canvas', 'zoom-canvas', 'drag-node'] },
-            layout: layoutCfg,
-            animate: true,
-            defaultNode: {
-                type: 'circle',
-                labelCfg: { position: 'bottom', offset: 6, style: { fill: '#fff', fontSize: 10, fontWeight: 500 } }
-            },
-            defaultEdge: {
-                type: 'line',
-                style: { stroke: 'rgba(255,255,255,.22)', lineWidth: 1 }
-            }
-        });
-        graphInstance.data({ nodes, edges });
-        graphInstance.render();
-        graphInstance.on('node:click', evt => {
-            const model = evt.item && evt.item.getModel ? evt.item.getModel() : null;
-            const id = model && model.id;
-            const node = window.Store.state.graph.nodes.find(n => n.id === id);
-            if (node) window.showNodeDetail(node);
-        });
-        graphInstance.on('node:mouseenter', evt => {
-            const model = evt.item && evt.item.getModel ? evt.item.getModel() : null;
-            if (model && model.id) window.focusNodeNeighborhood(model.id);
-        });
-        graphInstance.on('canvas:click', () => {
-            window.clearGraphFocus();
-            document.getElementById('graph-detail-empty').style.display = 'flex';
-            document.getElementById('graph-detail-content').style.display = 'none';
-        });
-        const kickLiving = () => {
-            if (window.currentViewId === 'graph') window.startGraphLiving();
-        };
-        // afterlayout 在力导向过程中可能多次触发，只在首轮布局后启动；兜底延迟再注能
-        let livingBooted = false;
-        graphInstance.on('afterlayout', () => {
-            if (livingBooted) {
-                window.nudgeGraphForce(0.05, { target: 0.018 });
-                return;
-            }
-            livingBooted = true;
-            kickLiving();
-        });
-        setTimeout(kickLiving, 500);
-    } catch(e) {
-        console.warn('G6 init failed', e);
-        window.Utils.showToast('图谱渲染异常，已切换兜底模式', 'amber');
-        window.renderHeroFallbackGraph(container, nodes, edges);
-    }
-};
-let graphPulseT = 0;
-window.stopGraphLiving = function() {
-    window.LiveUpdater.stop('graph-breathe');
-    window.LiveUpdater.stop('graph-metrics');
-    window.LiveUpdater.stop('graph-pulse');
-};
-window.pauseGraphLiving = function() {
-    window.LiveUpdater.stop('graph-breathe');
-    window.LiveUpdater.stop('graph-metrics');
-    window.coolGraphForce && window.coolGraphForce();
-};
-window.updateGraphMetrics = function() {
-    const data = window.getFilteredGraphData();
-    const n = data.nodes.length;
-    const e = data.edges.length;
-    const dens = n > 1 ? (2 * e) / (n * (n - 1)) : 0;
-    const deg = n ? (2 * e) / n : 0;
-    const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
-    set('gs-nodes', n);
-    set('gs-edges', e);
-    set('gs-density', dens.toFixed(3));
-    set('gs-degree', deg.toFixed(1));
-    set('gs-comm', Math.max(3, Math.round(n / 6)));
-    set('gs-activity', (72 + Math.random() * 24).toFixed(0) + '%');
-    set('gs-fps', String(56 + Math.floor(Math.random() * 5)));
-    set('graph-node-count', n);
-    set('graph-edge-count', e);
-};
-window.getGraphForceSim = function() {
-    if (!graphInstance || typeof graphInstance.get !== 'function') return null;
-    try {
-        const lc = graphInstance.get('layoutController');
-        const methods = lc && (lc.layoutMethods || lc.methods);
-        const method = (methods && methods[0]) || (lc && lc.layoutMethod) || null;
-        if (!method) return null;
-        return method.forceSimulation || method.simulation || method.force || null;
-    } catch (e) { return null; }
-};
-window.isForceGraphLayout = function() {
-    const sel = document.getElementById('graph-layout-sel');
-    return !sel || sel.value === 'force';
-};
-window.coolGraphForce = function() {
-    const sim = window.getGraphForceSim();
-    if (!sim) return;
-    try {
-        if (typeof sim.alphaTarget === 'function') sim.alphaTarget(0);
-        if (typeof sim.alpha === 'function') sim.alpha(0);
-    } catch (e) {}
-};
-window.nudgeGraphForce = function(alpha, opts) {
-    if (!graphInstance || !window.isForceGraphLayout()) return;
-    opts = opts || {};
-    const a = alpha == null ? 0.12 : alpha;
-    const target = opts.target == null ? 0.018 : opts.target;
-    try {
-        const sim = window.getGraphForceSim();
-        if (sim) {
-            // 复用现有仿真：注能 + 微弱 alphaTarget，Obsidian 式持续漂浮
-            if (typeof sim.alphaTarget === 'function') sim.alphaTarget(target);
-            if (typeof sim.alpha === 'function') {
-                const cur = typeof sim.alpha === 'function' ? sim.alpha() : 0;
-                sim.alpha(Math.max(cur || 0, a));
-            } else if (sim.alpha !== undefined) {
-                sim.alpha = Math.max(sim.alpha || 0, a);
-            }
-            if (typeof sim.restart === 'function') sim.restart();
-            return;
-        }
-        // 仅在拿不到仿真时才 updateLayout（避免周期性重建导致停摆）
-        if (typeof graphInstance.updateLayout === 'function') {
-            graphInstance.updateLayout({
-                type: 'force',
-                preventOverlap: true,
-                nodeStrength: -160,
-                edgeStrength: 0.55,
-                collideStrength: 0.75,
-                linkDistance: 110,
-                alpha: a,
-                alphaDecay: 0.008,
-                alphaMin: 0.001
-            });
-        }
-    } catch (err) { /* keep UI alive */ }
-};
-window.startGraphLiving = function() {
-    if (!graphInstance || window.currentViewId !== 'graph') return;
-    window.updateGraphMetrics();
-    // 持续力导向：alphaTarget 保活 + 定时轻注能，不反复重建 layout
-    window.nudgeGraphForce(0.22, { target: 0.02 });
-    if (!window.LiveUpdater.timers['graph-breathe']) {
-        window.LiveUpdater.start('graph-breathe', () => {
-            if (!graphInstance || window.currentViewId !== 'graph') return;
-            graphPulseT += 1;
-            window.nudgeGraphForce(0.06 + (graphPulseT % 4) * 0.01, { target: 0.015 + (graphPulseT % 3) * 0.004 });
-        }, 2200);
-    }
-    if (!window.LiveUpdater.timers['graph-metrics']) {
-        window.LiveUpdater.start('graph-metrics', () => {
-            if (window.currentViewId !== 'graph') return;
-            window.updateGraphMetrics();
-        }, 1400);
-    }
-};
-window.normalizeGraphPayload = function(data) {
-    const nodes = (data.nodes || []).map(n => ({
-        ...n,
-        id: n.id,
-        label: n.label || n.id,
-        size: n.size || (n.type === 'job' ? 36 : 24),
-        style: Object.assign({ fill: '#0D9488', stroke: '#fff', lineWidth: 1, opacity: 1 }, n.style || {})
-    }));
-    const edges = (data.edges || []).map((e, i) => ({
-        ...e,
-        id: e.id || ('e' + i),
-        source: typeof e.source === 'object' ? e.source.id : e.source,
-        target: typeof e.target === 'object' ? e.target.id : e.target,
-        style: Object.assign({ stroke: 'rgba(255,255,255,.22)', lineWidth: 1.2, opacity: 1 }, e.style || {})
-    }));
-    return { nodes, edges };
-};
-window.focusNodeNeighborhood = function(nodeId) {
-    if (!graphInstance) return;
-    const data = window.Store.state.graph;
-    const neighbors = new Set([nodeId]);
-    data.edges.forEach(e => {
-        const s = typeof e.source === 'object' ? e.source.id : e.source;
-        const t = typeof e.target === 'object' ? e.target.id : e.target;
-        if (s === nodeId || t === nodeId) { neighbors.add(s); neighbors.add(t); }
-    });
-    const payload = window.normalizeGraphPayload({
-        nodes: data.nodes.map(n => ({...n, style:{...n.style, opacity: neighbors.has(n.id)?1:0.15, lineWidth: n.id===nodeId?3:(n.style?.lineWidth||1)}})),
-        edges: data.edges.map(e => {
-            const sId = typeof e.source === 'object' ? e.source.id : e.source;
-            const tId = typeof e.target === 'object' ? e.target.id : e.target;
-            const active = (sId === nodeId || tId === nodeId);
-            return {...e, style:{...e.style, stroke: active ? '#2DD4BF' : 'rgba(255,255,255,.1)', lineWidth: active?2:1}};
-        })
-    });
-    try { graphInstance.changeData(payload); } catch(e){}
-};
-window.clearGraphFocus = function() {
-    if (!graphInstance) return;
-    try { graphInstance.changeData(window.normalizeGraphPayload(window.getFilteredGraphData())); } catch(e){}
-    if (graphSearchTerm) window.highlightSearch();
-};
-window.highlightSearch = function() {
-    if (!graphInstance) return;
-    const data = window.getFilteredGraphData();
-    if (!graphSearchTerm) {
-        try { graphInstance.changeData(window.normalizeGraphPayload(data)); } catch(e){}
-        return;
-    }
-    const matched = new Set();
-    data.nodes.forEach(n => { if (n.label && n.label.toLowerCase().includes(graphSearchTerm)) matched.add(n.id); });
-    try {
-        graphInstance.changeData(window.normalizeGraphPayload({
-            nodes: data.nodes.map(n => ({...n, style:{...n.style, opacity: matched.has(n.id)?1:0.15, stroke: matched.has(n.id)?'#F5A524':'#fff', lineWidth: matched.has(n.id)?3:1}})),
-            edges: data.edges
-        }));
-    } catch(e){}
-};
-window.resetGraph = function() {
-    graphSearchTerm = '';
-    const si = document.getElementById('graph-search-input'); if (si) si.value = '';
-    if (graphInstance) {
-        try { graphInstance.changeData(window.normalizeGraphPayload(window.getFilteredGraphData())); } catch(e){ window.renderGraph(); }
-    }
-    window.Utils.showToast('图谱已重置', 'cyan');
-};
-window.toggleFullscreen = function() {
-    const el = document.querySelector('.graph-canvas');
-    if (!el) return;
-    if (!document.fullscreenElement) el.requestFullscreen();
-    else document.exitFullscreen();
-    setTimeout(() => {
-        if (graphInstance) {
-            const c = document.getElementById('graph-container');
-            if (c) graphInstance.resize(c.clientWidth, c.clientHeight);
-        }
-    }, 200);
-};
-window.showNodeDetail = function(node) {
-    document.getElementById('graph-detail-empty').style.display = 'none';
-    document.getElementById('graph-detail-content').style.display = 'block';
-    document.getElementById('graph-detail-content').innerHTML = `
-        <div class="detail-header">
-            <div class="detail-icon" style="background:${node.type==='skill'?'var(--gradient-cool)':node.type==='industry'?'linear-gradient(135deg,#134E4A,#0D9488)':'var(--gradient-primary)'}">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/></svg>
-            </div>
-            <div><div class="detail-name">${node.label}</div><div class="detail-cat">${(node.type||'').toUpperCase()} · ${node.id}</div></div>
-        </div>
-        <div class="detail-stat-grid">
-            <div class="detail-stat"><div class="detail-stat-label">关联技能</div><div class="detail-stat-value">${window.Utils.rand(8,28)}</div></div>
-            <div class="detail-stat"><div class="detail-stat-label">关联岗位</div><div class="detail-stat-value">${window.Utils.rand(3,12)}</div></div>
-            <div class="detail-stat"><div class="detail-stat-label">平均薪资</div><div class="detail-stat-value">${window.Utils.rand(20,60)}K</div></div>
-            <div class="detail-stat"><div class="detail-stat-label">需求指数</div><div class="detail-stat-value">${(Math.random()*3+7).toFixed(1)}</div></div>
-        </div>
-        <div class="detail-section-title">核心必备技能</div>
-        <div class="match-skill-list" style="margin-bottom:14px">
-            ${window.Utils.pickN(window.Store.skills, 6).map(s => `<span class="skill-matched">${s}</span>`).join('')}
-        </div>
-        <div class="detail-section-title">加分技能</div>
-        <div class="match-skill-list" style="margin-bottom:14px">
-            ${window.Utils.pickN(window.Store.skills, 4).map(s => `<span class="skill-chip">${s}</span>`).join('')}
-        </div>
-        <div class="detail-section-title">关联岗位</div>
-        <div class="detail-rel-list">
-            ${window.Store.state.jobs.slice(0, 5).map(j => `<div class="detail-rel-item"><span class="name">${j.title}</span><span class="rel">similar · ${(Math.random()*0.3+0.7).toFixed(2)}</span></div>`).join('')}
-        </div>
-        <div class="detail-section-title">热度趋势</div>
-        <div style="height:160px"><div class="chart-sm" id="detail-mini-chart"></div></div>
-    `;
-    setTimeout(() => {
-        const el = document.getElementById('detail-mini-chart');
-        if (!el) return;
-        if (echarts.getInstanceByDom(el)) echarts.getInstanceByDom(el).dispose();
-        const c = echarts.init(el);
-        c.setOption({
-            grid:{left:36, right:10, top:10, bottom:24, containLabel:true},
-            xAxis:{type:'category',data:['1月','2月','3月','4月','5月','6月'],axisLabel:{color:'#475569', fontSize:10},axisLine:{lineStyle:{color:'#e2e8f0'}}},
-            yAxis:{type:'value',axisLabel:{color:'#475569', fontSize:10},splitLine:{lineStyle:{color:'#f1f3f9'}}},
-            series:[{type:'line',smooth:true,symbol:'circle',symbolSize:5,lineStyle:{width:2, color:'#2DD4BF'},itemStyle:{color:'#2DD4BF'},areaStyle:{color:{type:'linear',x:0,y:0,x2:0,y2:1,colorStops:[{offset:0,color:'rgba(0,212,255,.4)'},{offset:1,color:'rgba(0,212,255,0)'}]}},data:Array.from({length:6}, () => window.Utils.rand(50, 350))}]
-        });
-    }, 80);
-};
+
+
+
 
 // ============== Discovery View (智能体驱动 - Mission Control) ==============
 window.API_BASE = window.API_BASE || 'http://127.0.0.1:5000';
@@ -11958,7 +11496,6 @@ window.exportNewSkillReport = function() {
 // ============== initView ==============
 window.initView = function(viewId) {
     if (viewId === 'dashboard') window.initDashboard();
-    else if (viewId === 'graph') window.initGraph();
         else if (viewId === 'map') window.initTalentMap();
         else if (viewId === 'learningPath') window.initLearningPath();
         else if (viewId === 'newSkill') window.initNewSkill();

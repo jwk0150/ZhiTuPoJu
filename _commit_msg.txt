@@ -1,0 +1,8 @@
+Merge branch 'origin/dsy': 合并队友登录重构+趋势分析+用户中心功能
+
+- 合并 dsy 分支：登录页重构(Digital Talent Mapping 入口)、用户认证/画像、趋势分析六阶段
+- index.html 采用 dsy 登录页版本（原主功能迁移至 portal.html）
+- portal.html 补回数字人才地图功能（此前 dsy 重构时丢失）：
+  中国地图渲染/级联筛选/市级下钻/港澳放大/省份详情/岗位分析/岗位能力知识图谱
+- portal.html 补回学习路径建议 + 新增技能详情功能
+- 修复地图 JS 的 API 地址为动态配置（window.API_BASE）
