@@ -28,10 +28,11 @@ def list_match_jobs():
 async def diagnose_resume(
     file: Annotated[UploadFile, File(description="PDF、DOC、DOCX或TXT简历")],
     target_job_id: Annotated[str | None, Form()] = None,
+    mode: Annotated[str, Form()] = "b",
 ):
     try:
         content = await file.read(service.MAX_FILE_BYTES + 1)
-        result = service.diagnose(file.filename or "resume", content, target_job_id)
+        result = service.diagnose(file.filename or "resume", content, target_job_id, mode)
         return data.ok(result)
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
