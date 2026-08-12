@@ -1114,3 +1114,199 @@ def get_db_stats_for_title(title: str) -> Optional[dict]:
         }
     finally:
         db.close()
+
+
+# ============================================================
+# 跨模块接口：供 Discovery Agent 调用 —— 全局技能演化速度 + 跨域汇聚
+# ============================================================
+
+# 技能领域分组（供跨域检测用，key=领域名，value=该领域包含的源组名）
+SKILL_DOMAIN_GROUPS: dict[str, list[str]] = {
+    "AI/LLM":     ["AI", "算法"],
+    "后端":       ["Java", "数据库", "Python"],
+    "前端":       ["前端", "设计", "移动"],
+    "云原生":     ["云原生"],
+    "数据":       ["数据"],
+    "产品运营":   ["产品"],
+    "测试运维":   ["测试", "运维"],
+}
+
+
+def get_skills_velocity(skills: list[str]) -> dict[str, dict]:
+    """供 Discovery Agent 调用：查询一批技能的全平台演化速度。
+
+    返回 {skill_name: {velocity, trend, evidence}} 字典。
+    velocity: -100~+100, 正值=增长中, 负值=衰退中
+    trend: "rising" | "stable" | "declining" | "unknown"
+    evidence: 匹配到的 JD 样本数
+    """
+    if not skills:
+        return {}
+
+    db = _get_session()
+    if not db:
+        return {s: {"velocity": 0, "trend": "unknown", "evidence": 0} for s in skills}
+
+    try:
+        # 一次性查出所有 source_name 的 JD 描述样本
+        sql = text("""
+            SELECT p.source_name, d.job_description
+            FROM job_postings p
+            JOIN job_posting_details d ON d.job_id = p.id
+            WHERE d.job_description IS NOT NULL
+              AND p.status = 0
+        """)
+        rows = db.execute(sql).fetchall()
+
+        if not rows:
+            return {s: {"velocity": 0, "trend": "unknown", "evidence": 0} for s in skills}
+
+        # 按 source 分组统计技能词频
+        per_source: dict[str, Counter] = {}
+        sample_cnt: dict[str, int] = {}
+        for src, desc in rows:
+            if not src:
+                continue
+            per_source.setdefault(src, Counter())
+            sample_cnt.setdefault(src, 0)
+            sample_cnt[src] += 1
+            lower = (desc or "").lower()
+
+        # 对每个目标技能在各 source 中统计
+        skill_lower_map = {s: s.lower() for s in skills}
+        for src, desc in rows:
+            lower_desc = (desc or "").lower()
+            for skill_name, skill_lower in skill_lower_map.items():
+                if skill_lower in lower_desc:
+                    per_source.setdefault(src, Counter())[skill_name] += 1
+
+        # 指定历史锚点 vs 当前快照
+        historical = per_source.get("51job", Counter())
+        current = per_source.get("zhilian", Counter()) or per_source.get("boss_zhipin", Counter())
+        n_hist = sample_cnt.get("51job", 0)
+        n_curr = max(sample_cnt.get("zhilian", 0), sample_cnt.get("boss_zhipin", 0))
+
+        result: dict[str, dict] = {}
+        for skill_name in skills:
+            cnt_h = historical.get(skill_name, 0)
+            cnt_c = current.get(skill_name, 0)
+
+            if n_hist == 0 and n_curr == 0:
+                result[skill_name] = {"velocity": 0, "trend": "unknown", "evidence": 0}
+                continue
+
+            rate_h = cnt_h / max(n_hist, 1) * 100
+            rate_c = cnt_c / max(n_curr, 1) * 100
+            evidence = cnt_h + cnt_c
+
+            if evidence == 0:
+                result[skill_name] = {"velocity": 0, "trend": "unknown", "evidence": 0}
+                continue
+
+            delta = rate_c - rate_h
+
+            if delta >= 3:
+                velocity = min(100, round(delta / max(rate_h, 0.5) * 100))
+                trend = "rising"
+            elif delta <= -3:
+                velocity = max(-100, round(delta / max(rate_h, 0.5) * 100))
+                trend = "declining"
+            elif abs(delta) < 3 and rate_c > 0:
+                velocity = round(delta / max(rate_h, 0.5) * 100)
+                trend = "stable"
+            else:
+                velocity = 0
+                trend = "unknown"
+
+            result[skill_name] = {
+                "velocity": velocity,
+                "trend": trend,
+                "evidence": evidence,
+                "rate_historical": round(rate_h, 1),
+                "rate_current": round(rate_c, 1),
+            }
+
+        return result
+    finally:
+        db.close()
+
+
+def detect_cross_domain_convergence(threshold: float = 3.0) -> list[dict]:
+    """供 Discovery Agent 调用：检测全平台中'跨域技能共现异常'的信号。
+
+    扫描每一条 JD，计算其技能在不同领域组中的命中分布。
+    若某条 JD 同时命中两个以上领域的技能各 ≥threshold 个 → 标记为跨域融合信号。
+    返回按模式聚合后的 TOP 融合信号列表。
+    """
+    db = _get_session()
+    if not db:
+        return []
+
+    try:
+        sql = text("""
+            SELECT p.job_title, p.company_name, p.city, d.job_description, d.skills
+            FROM job_postings p
+            JOIN job_posting_details d ON d.job_id = p.id
+            WHERE d.job_description IS NOT NULL
+              AND p.status = 0
+            ORDER BY p.crawl_time DESC
+            LIMIT 3000
+        """)
+        rows = db.execute(sql).fetchall()
+
+        if not rows:
+            return []
+
+        # 为每个领域组建立关键词索引
+        domain_keywords: dict[str, set[str]] = {}
+        for domain_name, source_groups in SKILL_DOMAIN_GROUPS.items():
+            kw_set: set[str] = set()
+            for grp in source_groups:
+                for kw in _SKILL_VOCAB.get(grp, []):
+                    kw_set.add(kw.lower())
+            domain_keywords[domain_name] = kw_set
+
+        # 扫描每条 JD
+        pattern_counter: Counter = Counter()
+        pattern_examples: dict[str, list[dict]] = {}
+
+        for title, company, city, desc, skills_arr in rows:
+            text_blob = ((title or "") + " " + (desc or "")).lower()
+
+            # 计算每个领域的命中数
+            domain_hits: dict[str, int] = {}
+            for dname, kws in domain_keywords.items():
+                hits = sum(1 for kw in kws if kw in text_blob)
+                if hits >= threshold:
+                    domain_hits[dname] = hits
+
+            # 至少两个领域同时命中 → 跨域融合
+            if len(domain_hits) >= 2:
+                # 生成模式标签
+                domains = sorted(domain_hits.keys())
+                pattern = " × ".join(domains)
+                pattern_counter[pattern] += 1
+
+                if pattern not in pattern_examples:
+                    pattern_examples[pattern] = []
+                if len(pattern_examples[pattern]) < 3:
+                    pattern_examples[pattern].append({
+                        "title": title or "未知",
+                        "company": company or "未知",
+                        "city": city or "未知",
+                        "domain_hits": domain_hits,
+                    })
+
+        # 输出 TOP 模式
+        results: list[dict] = []
+        for pattern, count in pattern_counter.most_common(12):
+            results.append({
+                "pattern": pattern,
+                "count": count,
+                "intensity": round(count / max(len(rows), 1) * 100, 1),
+                "examples": pattern_examples.get(pattern, []),
+            })
+
+        return results
+    finally:
+        db.close()

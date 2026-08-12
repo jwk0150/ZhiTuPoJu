@@ -9,8 +9,13 @@ import httpx
 
 try:
     from dotenv import load_dotenv
-    load_dotenv()
-except ImportError:
+    # 优先从项目根目录加载 .env（兼容不同启动目录）
+    _env_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), ".env")
+    if os.path.exists(_env_path):
+        load_dotenv(_env_path, override=True)
+    else:
+        load_dotenv()
+except (ImportError, Exception):
     pass
 
 DEFAULT_BASE = "https://api.deepseek.com"
@@ -47,7 +52,8 @@ def chat_completions(
     base = os.getenv("DEEPSEEK_BASE_URL", DEFAULT_BASE).rstrip("/")
     model = os.getenv("DEEPSEEK_MODEL", DEFAULT_MODEL)
     try:
-        with httpx.Client(timeout=timeout) as client:
+        # trust_env=False 跳过系统代理，避免 Windows 代理干扰 TLS 连接
+        with httpx.Client(timeout=timeout, trust_env=False) as client:
             resp = client.post(
                 f"{base}/v1/chat/completions",
                 headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
