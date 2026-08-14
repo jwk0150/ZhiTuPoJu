@@ -1802,6 +1802,307 @@ body.disc-lock .content{overflow-y:auto!important;padding:20px 24px 32px!importa
 .evo-spinner{width:48px;height:48px;border:3px solid var(--border-dark);border-top-color:var(--primary);border-radius:50%;animation:evoSpin .8s linear infinite}
 @keyframes evoSpin{to{transform:rotate(360deg)}}
 .evo-loading-text{font-size:14px;color:var(--text-muted);font-weight:500}
+
+/* === CareerFit Match UI (from jwk) === */
+
+/* CareerFit hall cards layout (minimal) */
+.match-hall-cards{display:flex;flex-direction:row;flex-wrap:wrap;gap:16px;margin:0 0 18px}
+.match-hall-cards .match-mode-card{flex:1;min-width:260px}
+.match-mode-card{flex:1;min-width:280px;min-height:200px;border-radius:var(--radius-xl);border:1px solid var(--border-dark);background:#fff;cursor:pointer;position:relative;overflow:hidden;transition:transform .3s,box-shadow .25s,border-color .25s}
+.match-mode-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--gradient-cool);z-index:3;pointer-events:none}
+.match-mode-card.mode-b::before{background:var(--gradient-success)}
+.match-mode-card:hover{transform:translateY(-4px);box-shadow:0 16px 40px rgba(13,148,136,.12);border-color:rgba(13,148,136,.3)}
+.match-mode-card.flipped{cursor:default}
+.match-mode-card .card-front{position:absolute;inset:0;padding:18px 20px;display:flex;flex-direction:column;z-index:1;opacity:1;visibility:visible;transform:translateY(0) scale(1);transition:opacity .3s ease,transform .3s ease,visibility .3s ease}
+.match-mode-card .card-back{position:absolute;inset:0;padding:18px 18px;background:#fff;display:flex;flex-direction:column;justify-content:center;z-index:2;opacity:0;visibility:hidden;transform:translateY(8px) scale(.97);transition:opacity .3s ease,transform .3s ease,visibility .3s ease}
+.match-mode-card.flipped .card-front{opacity:0;visibility:hidden;transform:translateY(-8px) scale(.97);pointer-events:none}
+.match-mode-card.flipped .card-back{opacity:1;visibility:visible;transform:translateY(0) scale(1);pointer-events:auto}
+.match-mode-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:14px;flex-shrink:0}
+.match-mode-icon svg{width:22px;height:22px;color:#fff}
+.match-mode-card:not(.mode-b) .match-mode-icon{background:var(--gradient-cool);box-shadow:0 6px 18px rgba(45,212,191,.25)}
+.match-mode-card.mode-b .match-mode-icon{background:var(--gradient-success);box-shadow:0 6px 18px rgba(16,185,129,.25)}
+.match-mode-card h3{font-size:16px;font-weight:700;color:var(--text-dark);margin-bottom:6px}
+.match-mode-card p.desc{font-size:12px;color:var(--text-dark-secondary);line-height:1.55;margin-bottom:14px;flex:1}
+.match-mode-features{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px}
+.match-mode-feature{padding:3px 8px;border-radius:20px;font-size:10px;font-weight:500;background:rgba(13,148,136,.08);color:var(--primary)}
+.match-mode-card.mode-b .match-mode-feature{background:rgba(16,185,129,.08);color:#059669}
+.match-mode-hint{font-size:11px;color:var(--text-muted);display:flex;align-items:center;gap:5px}
+.match-mode-output{margin-top:auto;padding-top:14px;border-top:1px dashed var(--border-dark)}
+.output-title{font-size:11px;font-weight:600;color:var(--text-dark);margin-bottom:8px}
+.output-item{font-size:11px;color:var(--text-dark-secondary);line-height:1.9;display:flex;align-items:center;gap:6px}
+.output-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.output-dot.match{background:#10b981;box-shadow:0 0 0 2px rgba(16,185,129,.18)}
+.match-mode-card .card-back .upload-zone-new{border:1.5px dashed rgba(13,148,136,.3);border-radius:14px;padding:24px 18px;text-align:center;background:rgba(255,255,255,.7);transition:all .25s;cursor:pointer}
+.match-mode-card .card-back .upload-zone-new:hover{border-color:var(--primary);background:rgba(13,148,136,.04)}
+.match-mode-card .card-back .upload-zone-new svg{width:40px;height:40px;color:var(--primary);margin-bottom:10px}
+.match-mode-card .card-back .upload-zone-new .upload-title{font-size:14px;font-weight:600;color:var(--text-dark);margin-bottom:4px}
+.match-mode-card .card-back .upload-zone-new .upload-hint{font-size:11px;color:var(--text-muted)}
+.match-mode-card .card-back .job-search-box{position:relative;margin-bottom:14px}
+.match-mode-card .card-back .job-search-box input{width:100%;padding:11px 14px 11px 40px;border:1px solid var(--border-dark);border-radius:10px;font-size:13px;background:var(--bg-page);transition:all .2s}
+.match-mode-card .card-back .job-search-box input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(13,148,136,.1)}
+.match-mode-card .card-back .job-search-box svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:var(--text-muted)}
+.match-mode-card .card-back .back-btn{display:inline-flex;align-items:center;gap:4px;font-size:12px;color:var(--text-muted);cursor:pointer;margin-top:10px;transition:color .2s}
+.match-mode-card .card-back .back-btn:hover{color:var(--primary)}
+.match-mode-card .card-back .job-suggestions{max-height:140px;overflow-y:auto;margin-bottom:12px}
+.match-mode-card .card-back .job-suggest-item{padding:8px 10px;border-radius:8px;font-size:13px;color:var(--text-dark);cursor:pointer;transition:all .15s}
+.match-mode-card .card-back .job-suggest-item:hover{background:rgba(13,148,136,.06);color:var(--primary)}
+.match-mode-card .card-back .job-suggest-item.selected{background:rgba(13,148,136,.1);color:var(--primary);font-weight:600}
+.match-hall-sidebar{display:flex;flex-direction:column;gap:10px}
+.match-hot-jobs{background:#fff;border:1px solid var(--border-dark);border-radius:12px;padding:12px 14px}
+.match-hot-jobs h4{font-size:11px;font-weight:600;color:var(--text-dark);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.match-hot-item{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px dashed var(--border-dark);cursor:pointer}
+.match-hot-item:last-child{border-bottom:none}
+.match-hot-item:hover{color:var(--primary)}
+.match-hot-item .hot-name{font-size:12px;color:var(--text-dark);font-weight:500}
+.match-hot-item .hot-count{font-size:10px;color:var(--text-muted);font-family:var(--font-mono),monospace}
+.match-tips-card{background:linear-gradient(135deg,#f0fdfa,#fff);border:1px solid rgba(13,148,136,.15);border-radius:12px;padding:12px 14px}
+.match-tips-card h4{font-size:11px;font-weight:600;color:var(--text-dark);margin-bottom:6px}
+.match-tips-card p{font-size:11px;color:var(--text-dark-secondary);line-height:1.55}
+.match-history-bar{position:relative;z-index:1;margin-top:14px;display:flex;align-items:center;gap:8px;overflow-x:auto;padding:4px 0}
+
+/* 诊断流程 Pipeline Section */
+.match-pipeline-bar{position:relative;z-index:1;background:#fff;border:1px solid var(--border-dark);border-radius:14px;padding:14px 18px;margin-top:14px;display:flex;align-items:center;gap:6px}
+.match-pipeline-step{display:flex;align-items:center;gap:8px;flex:1;min-width:0}
+.match-pipeline-step .step-orb{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:12px;flex-shrink:0}
+.match-pipeline-step:nth-child(7n+1) .step-orb{background:var(--gradient-cool)}
+.match-pipeline-step:nth-child(7n+2) .step-orb{background:var(--gradient-success)}
+.match-pipeline-step:nth-child(7n+3) .step-orb{background:var(--gradient-warm)}
+.match-pipeline-step:nth-child(7n+4) .step-orb{background:var(--gradient-primary)}
+.match-pipeline-step:nth-child(7n+5) .step-orb{background:var(--gradient-cool)}
+.match-pipeline-step:nth-child(7n+6) .step-orb{background:var(--gradient-success)}
+.match-pipeline-step .step-text{display:flex;flex-direction:column;min-width:0}
+.match-pipeline-step .step-title{font-size:11px;font-weight:600;color:var(--text-dark)}
+.match-pipeline-step .step-desc{font-size:10px;color:var(--text-muted);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.match-pipeline-arrow{color:var(--text-muted);font-size:14px;flex-shrink:0;margin:0 -2px}
+.match-history-bar::-webkit-scrollbar{height:3px}
+.match-history-chip{flex-shrink:0;padding:6px 12px;border-radius:20px;border:1px solid var(--border-dark);background:#fff;font-size:11px;color:var(--text-dark-secondary);cursor:pointer;white-space:nowrap;transition:all .2s}
+.match-history-chip:hover{border-color:var(--primary);color:var(--primary)}
+.match-history-chip svg{width:12px;height:12px;margin-right:3px;vertical-align:-2px}
+
+/* ===== Match Redesign: Diagnosis Theater ===== */
+.match-theater{position:absolute;inset:0;background:linear-gradient(165deg,#0B1220 0%,#0c1a1e 40%,#0a1f1c 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:20;visibility:hidden;opacity:0;transition:opacity .5s,visibility .5s}
+.match-theater.active{visibility:visible;opacity:1}
+.match-theater-bg{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.match-theater-particles{position:absolute;inset:0}
+.match-theater-glow{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(45,212,191,.18),transparent 65%);animation:theaterPulse 2.5s ease-in-out infinite alternate}
+@keyframes theaterPulse{from{opacity:.5;transform:translate(-50%,-50%) scale(1)}to{opacity:1;transform:translate(-50%,-50%) scale(1.25)}}
+.match-theater-icon{position:relative;z-index:1;width:80px;height:80px;border-radius:22px;background:linear-gradient(135deg,#2dd4bf,#0d9488);display:grid;place-items:center;box-shadow:0 0 0 8px rgba(45,212,191,.1),0 0 48px rgba(45,212,191,.28);animation:theaterFloat 2.5s ease-in-out infinite;margin-bottom:28px}
+.match-theater-icon svg{width:38px;height:38px;color:#fff}
+@keyframes theaterFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.match-theater-title{position:relative;z-index:1;color:#fff;font-family:var(--font-display);font-size:20px;font-weight:600;margin-bottom:10px}
+.match-theater-subtitle{position:relative;z-index:1;color:rgba(255,255,255,.5);font-size:13px;margin-bottom:24px;font-family:var(--font-mono),monospace}
+.match-theater-log{position:relative;z-index:1;background:rgba(0,0,0,.35);border:1px solid rgba(45,212,191,.15);border-radius:12px;padding:16px 20px;width:480px;max-width:90vw;max-height:220px;overflow-y:auto;font-family:var(--font-mono),monospace;font-size:12px;line-height:1.8;color:rgba(255,255,255,.65)}
+.match-theater-log .log-line{display:flex;gap:10px;animation:logFadeIn .3s ease-out}
+.match-theater-log .log-time{color:rgba(45,212,191,.55);flex-shrink:0}
+.match-theater-log .log-msg{color:rgba(255,255,255,.78)}
+.match-theater-log .log-msg.done{color:#10b981}
+.match-theater-log .log-msg.active{color:#F5A524}
+@keyframes logFadeIn{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)}}
+.match-theater-progress{position:relative;z-index:1;width:480px;max-width:90vw;margin-top:18px;height:3px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden}
+.match-theater-progress-bar{height:100%;background:var(--gradient-cool);border-radius:2px;width:0;transition:width .6s cubic-bezier(.4,0,.2,1)}
+
+/* ===== Match Redesign: Results (Single Dense Scrollable Page) ===== */
+.match-stage{position:absolute;inset:0;z-index:15;visibility:hidden;opacity:0;transition:opacity .6s,visibility .6s;display:flex;flex-direction:column}
+.match-stage.active{visibility:visible;opacity:1}
+.match-stage-viewport{flex:1;overflow-y:auto;background:var(--bg-page);padding:0}
+.match-stage-viewport::-webkit-scrollbar{width:6px}
+.match-stage-viewport::-webkit-scrollbar-thumb{background:rgba(13,148,136,.2);border-radius:3px}
+
+/* Result Section Styling */
+.result-section{padding:14px 28px}
+.result-section-white{background:#fff}
+.result-section-gray{background:var(--bg-page)}
+.result-section-dark{background:linear-gradient(135deg,#0d1f1c,#122725,#0a1f1c);color:#fff;padding:16px 28px}
+.result-section-dark h3{color:#fff}
+.result-section-dark .card-title{color:#fff}
+.result-section-row{max-width:1100px;margin:0 auto}
+.result-section-title{font-size:15px;font-weight:700;color:var(--text-dark);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.result-section-title::before{content:'';width:3px;height:14px;background:var(--gradient-cool);border-radius:2px;flex-shrink:0}
+.result-section-dark .result-section-title{color:#fff}
+.result-section-title.amber::before{background:var(--gradient-warm)}
+.result-section-title.success::before{background:var(--gradient-success)}
+.result-section-title.coral::before{background:var(--accent-coral)}
+.result-divider{height:1px;background:linear-gradient(90deg,transparent,rgba(13,148,136,.15),transparent);margin:0 28px}
+
+/* Score Bar (Horizontal Compact) */
+.score-bar{display:flex;align-items:center;gap:18px;background:#fff;border-radius:var(--radius-lg);padding:16px 20px;border:1px solid var(--border-dark);box-shadow:var(--shadow-sm)}
+.score-bar-hero{display:flex;align-items:center;gap:10px}
+.score-bar-number{font-size:42px;font-weight:800;font-family:var(--font-mono),monospace;background:var(--gradient-cool);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;line-height:1}
+.score-bar-label{font-size:12px;color:var(--text-muted)}
+.score-bar-job{flex:1;min-width:0}
+.score-bar-job-title{font-size:16px;font-weight:700;color:var(--text-dark);margin-bottom:2px}
+.score-bar-job-meta{font-size:11px;color:var(--text-muted)}
+.score-bar-stats{display:flex;gap:12px;flex-shrink:0}
+.score-bar-stat{text-align:center;min-width:50px}
+.score-bar-stat .val{font-size:18px;font-weight:700;font-family:var(--font-mono),monospace;color:var(--primary)}
+.score-bar-stat .lbl{font-size:9px;color:var(--text-muted)}
+.score-bar-stat.highlight .val{color:#059669}
+
+/* Resume VS Section (Core Visual) */
+.resume-vs{display:grid;grid-template-columns:1fr 1fr;gap:0;border-radius:var(--radius-lg);overflow:hidden;border:1px solid var(--border-dark)}
+.resume-vs-col{padding:16px 18px}
+.resume-vs-col.user{background:#fff}
+.resume-vs-col.perfect{background:linear-gradient(135deg,#f0fdfa,#e6fffa);border-left:1px solid rgba(13,148,136,.2)}
+.resume-vs-col-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding-bottom:8px;border-bottom:1px dashed var(--border-dark)}
+.resume-vs-col-header h4{font-size:13px;font-weight:700;color:var(--text-dark);display:flex;align-items:center;gap:6px}
+.resume-vs-col.perfect .resume-vs-col-header h4{color:var(--primary)}
+.resume-vs-score-tag{font-size:18px;font-weight:800;font-family:var(--font-mono),monospace;background:var(--gradient-cool);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.resume-vs-info{font-size:11px;color:var(--text-dark-secondary);line-height:1.55;margin-bottom:10px}
+.resume-vs-skills{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px}
+.resume-vs-skill{padding:2px 7px;border-radius:4px;font-size:10px;font-weight:500}
+.resume-vs-skill.match{background:rgba(16,185,129,.1);color:#059669}
+.resume-vs-skill.gap{background:rgba(239,68,68,.08);color:#dc2626}
+.resume-vs-skill.normal{background:rgba(13,148,136,.06);color:var(--primary)}
+.resume-vs-projects{font-size:10px;color:var(--text-muted);line-height:1.5}
+.resume-vs-projects span{display:block;padding:2px 0}
+
+/* Skill Comparison Table */
+.skill-table{width:100%;border-collapse:collapse;font-size:11px}
+.skill-table th{text-align:left;padding:6px 8px;background:var(--bg-page);color:var(--text-muted);font-weight:500;font-size:10px;text-transform:uppercase;letter-spacing:.5px;border-bottom:2px solid var(--border-dark)}
+.skill-table td{padding:5px 8px;border-bottom:1px solid var(--border-dark);vertical-align:middle}
+.skill-table tr:last-child td{border-bottom:none}
+.skill-gap-indicator{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px;vertical-align:-1px}
+.skill-gap-indicator.big{background:#ef4444}
+.skill-gap-indicator.medium{background:#F5A524}
+.skill-gap-indicator.small{background:#10b981}
+.skill-level-bar{display:inline-block;height:4px;border-radius:2px;background:var(--gradient-cool);vertical-align:middle;margin:0 4px}
+
+/* Radar + Gaps Row */
+.radar-gap-row{display:grid;grid-template-columns:1fr 1fr;gap:0}
+.radar-gap-row>.card{border-radius:0;box-shadow:none;border-top:none}
+.radar-gap-row>.card:first-child{border-right:1px solid var(--border-dark)}
+.dimension-radar-box{height:280px}
+.gap-grid{display:flex;flex-direction:column;gap:6px;max-height:280px;overflow-y:auto;padding-right:2px}
+.gap-card{padding:10px 12px;border-radius:8px;border:1px solid var(--border-dark);position:relative;overflow:hidden;background:#fff}
+.gap-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:#ef4444;border-radius:0 2px 2px 0}
+.gap-card.medium::before{background:#F5A524}
+.gap-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.gap-card-skill{font-size:12px;font-weight:600;color:var(--text-dark)}
+.gap-card-readiness{font-size:10px;font-family:var(--font-mono),monospace;color:var(--text-muted)}
+.gap-card-bar{height:3px;background:var(--bg-page);border-radius:2px;overflow:hidden;margin-bottom:4px}
+.gap-card-fill{height:100%;background:var(--gradient-cool);border-radius:2px}
+.gap-card-reason{font-size:10px;color:var(--text-muted);line-height:1.4}
+
+/* Suggestions Panel */
+.suggestions-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.suggestion-card{padding:14px;border-radius:10px;border:1px solid var(--border-dark);background:#fff}
+.suggestion-card.high{border-left:3px solid #ef4444;background:rgba(239,68,68,.02)}
+.suggestion-card.medium{border-left:3px solid #F5A524;background:rgba(245,158,11,.02)}
+.suggestion-card.low{border-left:3px solid #10b981;background:rgba(16,185,129,.02)}
+.suggestion-priority{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.suggestion-card.high .suggestion-priority{color:#dc2626}
+.suggestion-card.medium .suggestion-priority{color:#b45309}
+.suggestion-card.low .suggestion-priority{color:#059669}
+.suggestion-title{font-size:13px;font-weight:600;color:var(--text-dark);margin-bottom:4px}
+.suggestion-desc{font-size:11px;color:var(--text-dark-secondary);line-height:1.5;margin-bottom:6px}
+.suggestion-meta{font-size:10px;color:var(--text-muted);font-family:var(--font-mono),monospace}
+
+/* Learning Path Compact */
+.learning-path-list{display:flex;flex-direction:column;gap:8px}
+.learning-path-item{display:flex;align-items:center;gap:12px;padding:10px 14px;background:#fff;border:1px solid var(--border-dark);border-radius:10px;transition:all .15s}
+.learning-path-item:hover{border-color:var(--primary-light);box-shadow:var(--shadow-sm)}
+.learning-path-num{width:28px;height:28px;border-radius:50%;background:var(--gradient-cool);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0}
+.learning-path-item:last-child .learning-path-num{background:var(--gradient-success)}
+.learning-path-content{flex:1;min-width:0}
+.learning-path-content .title{font-size:13px;font-weight:600;color:var(--text-dark)}
+.learning-path-content .desc{font-size:11px;color:var(--text-dark-secondary);margin-top:2px}
+.learning-path-meta{font-size:10px;color:var(--text-muted);font-family:var(--font-mono),monospace;text-align:right;flex-shrink:0}
+.learning-path-impact{font-size:12px;font-weight:700;color:#059669}
+
+/* Actions Row */
+.actions-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.actions-btn{padding:10px 18px;border-radius:10px;font-size:12px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:all .2s;border:1px solid var(--border-dark);background:#fff;color:var(--text-dark)}
+.actions-btn:hover{transform:translateY(-1px);box-shadow:var(--shadow-sm);border-color:var(--primary);color:var(--primary)}
+.actions-btn svg{width:15px;height:15px}
+.actions-btn.primary{background:var(--gradient-primary);color:#fff;border:none;box-shadow:0 3px 10px rgba(13,148,136,.3)}
+.actions-btn.primary:hover{color:#fff;box-shadow:0 5px 16px rgba(13,148,136,.4)}
+.actions-deep-btn{padding:8px 14px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;background:var(--bg-page);border:1px solid var(--border-dark);color:var(--text-dark-secondary);transition:all .2s;display:inline-flex;align-items:center;gap:5px}
+.actions-deep-btn:hover{background:#fff;border-color:var(--primary);color:var(--primary)}
+.actions-deep-btn svg{width:13px;height:13px}
+
+/* Stage Nav (Hidden - no longer needed) */
+.match-stage-nav{display:none}
+
+/* ===== Overlays ===== */
+/* Job Analysis Drawer (right side) */
+.match-drawer-overlay{position:fixed;inset:0;background:rgba(11,18,32,.35);backdrop-filter:blur(4px);z-index:50;opacity:0;visibility:hidden;transition:all .35s}
+.match-drawer-overlay.show{opacity:1;visibility:visible}
+.match-drawer{position:fixed;right:0;top:0;bottom:0;width:440px;max-width:92vw;background:linear-gradient(180deg,#fff 0%,#f0fdfa 100%);z-index:51;box-shadow:-8px 0 32px rgba(11,18,32,.12);border-left:1px solid rgba(13,148,136,.15);transform:translateX(100%);transition:transform .4s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column}
+.match-drawer.show{transform:translateX(0)}
+.match-drawer-header{padding:20px 22px;border-bottom:1px solid var(--border-dark);display:flex;align-items:center;justify-content:space-between}
+.match-drawer-header h3{font-size:17px;font-weight:600;color:var(--text-dark)}
+.match-drawer-close{width:32px;height:32px;border-radius:8px;border:1px solid var(--border-dark);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-muted);transition:all .2s}
+.match-drawer-close:hover{background:var(--bg-page);color:var(--text-dark)}
+.match-drawer-body{flex:1;overflow-y:auto;padding:20px 22px}
+.match-drawer-section{margin-bottom:22px}
+.match-drawer-section h4{font-size:13px;font-weight:600;color:var(--text-dark);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.match-drawer-section h4::before{content:'';width:3px;height:12px;background:var(--gradient-cool);border-radius:2px}
+.match-drawer-section p,.match-drawer-section li{font-size:13px;color:var(--text-dark-secondary);line-height:1.7}
+.match-drawer-section ul,.match-drawer-section ol{padding-left:18px}
+.match-drawer-section li{margin-bottom:6px}
+.match-requirement-chip{display:inline-block;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:500;margin:2px;background:rgba(13,148,136,.08);color:var(--primary)}
+
+/* Competitiveness Modal (full screen) */
+.match-comp-modal{position:fixed;inset:0;background:rgba(11,18,32,.5);backdrop-filter:blur(8px);z-index:60;opacity:0;visibility:hidden;transition:all .4s;display:flex;align-items:center;justify-content:center}
+.match-comp-modal.show{opacity:1;visibility:visible}
+.match-comp-container{background:#fff;border-radius:var(--radius-xl);width:900px;max-width:94vw;max-height:85vh;overflow-y:auto;box-shadow:0 24px 64px rgba(11,18,32,.18);transform:scale(.92);transition:transform .4s cubic-bezier(.4,0,.2,1)}
+.match-comp-modal.show .match-comp-container{transform:scale(1)}
+.match-comp-header{padding:20px 24px;border-bottom:1px solid var(--border-dark);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:#fff;z-index:2}
+.match-comp-header h3{font-size:18px;font-weight:700;color:var(--text-dark)}
+.match-comp-body{padding:20px 24px}
+.match-comp-vs{display:grid;grid-template-columns:1fr auto 1fr;gap:20px;align-items:start;margin-bottom:28px}
+.match-comp-side{background:var(--bg-page);border-radius:var(--radius-lg);padding:20px;border:1px solid var(--border-dark)}
+.match-comp-side h4{font-size:14px;font-weight:600;color:var(--text-dark);margin-bottom:12px}
+.match-comp-side.perfect h4{color:var(--primary)}
+.match-comp-divider{display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:800;color:var(--primary-light)}
+.match-comp-score-bar{display:flex;align-items:center;gap:10px;margin-top:10px}
+.match-comp-bar-track{flex:1;height:8px;background:var(--border-dark);border-radius:4px;overflow:hidden}
+.match-comp-bar-fill{height:100%;background:var(--gradient-cool);border-radius:4px;transition:width .8s ease}
+.match-comp-bar-label{font-size:12px;font-weight:600;color:var(--text-dark);width:40px;text-align:right;font-family:var(--font-mono),monospace}
+.match-comp-dimensions{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-top:16px}
+.match-comp-dim{text-align:center;padding:12px 8px;border-radius:10px;background:#fff;border:1px solid var(--border-dark)}
+.match-comp-dim .dim-label{font-size:10px;color:var(--text-muted);margin-bottom:6px}
+.match-comp-dim .dim-value{font-size:20px;font-weight:700;font-family:var(--font-mono),monospace;color:var(--primary)}
+.match-comp-suggestions h4{font-size:14px;font-weight:600;color:var(--text-dark);margin-bottom:12px}
+.match-comp-suggestion{padding:12px 14px;border-radius:10px;background:var(--bg-page);margin-bottom:8px;border-left:3px solid var(--primary);font-size:13px;color:var(--text-dark-secondary);line-height:1.6}
+
+/* Improvements Bottom Drawer */
+.match-bottom-drawer{position:fixed;bottom:0;left:0;right:0;background:linear-gradient(180deg,#fff 0%,#f8fefc 100%);z-index:45;border-top:1px solid rgba(13,148,136,.2);box-shadow:0 -8px 32px rgba(11,18,32,.08);border-radius:var(--radius-xl) var(--radius-xl) 0 0;transform:translateY(100%);transition:transform .45s cubic-bezier(.4,0,.2,1);max-height:78vh;display:flex;flex-direction:column}
+.match-bottom-drawer.show{transform:translateY(0)}
+.match-bottom-handle{width:40px;height:4px;background:var(--border-dark);border-radius:2px;margin:10px auto 0;cursor:ns-resize}
+.match-bottom-header{padding:14px 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border-dark);flex-shrink:0}
+.match-bottom-header h3{font-size:16px;font-weight:600;color:var(--text-dark)}
+.match-bottom-body{flex:1;overflow-y:auto;padding:16px 24px}
+.match-bottom-priority{padding:14px 16px;border-radius:12px;margin-bottom:12px;border:1px solid var(--border-dark)}
+.match-bottom-priority.high{background:rgba(239,68,68,.04);border-color:rgba(239,68,68,.2)}
+.match-bottom-priority.medium{background:rgba(245,158,11,.04);border-color:rgba(245,158,11,.2)}
+.match-bottom-priority.low{background:rgba(13,148,136,.04);border-color:rgba(13,148,136,.15)}
+.match-bottom-priority .prio-label{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600;margin-bottom:8px;text-transform:uppercase}
+.match-bottom-priority.high .prio-label{background:rgba(239,68,68,.1);color:#dc2626}
+.match-bottom-priority.medium .prio-label{background:rgba(245,158,11,.12);color:#b45309}
+.match-bottom-priority.low .prio-label{background:rgba(13,148,136,.1);color:var(--primary)}
+.match-bottom-priority p{font-size:13px;color:var(--text-dark-secondary);line-height:1.65}
+
+/* Particle (for confetti) */
+.match-particle{position:absolute;width:8px;height:8px;border-radius:2px;pointer-events:none;animation:particleBurst .8s ease-out forwards}
+@keyframes particleBurst{to{opacity:0;transform:translate(var(--px),var(--py)) rotate(var(--r)) scale(0)}}
+
+/* Responsive */
+@media(max-width:900px){
+  .match-hall{padding:14px 16px 20px}
+  .match-hall-top,.match-hall-body{grid-template-columns:1fr;gap:14px}
+  .match-hall-cards{flex-direction:column}
+  .match-mode-card{min-width:auto;min-height:auto}
+  .match-stage-panel{padding:20px 16px}
+  .match-stage-nav{right:8px}
+  .profile-panel-grid,.dimension-panel-grid{grid-template-columns:1fr}
+  .match-drawer{width:100vw;max-width:100vw}
+  .match-comp-vs{grid-template-columns:1fr;gap:14px}
+  .match-comp-divider{transform:rotate(90deg)}
+  .match-comp-dimensions{grid-template-columns:repeat(3,1fr)}
+}
+
+
 </style>
 
 </head>
@@ -2211,6 +2512,7 @@ body.disc-lock .content{overflow-y:auto!important;padding:20px 24px 32px!importa
 </div>
 <div class="page-actions">
 <button class="btn" id="match-reset-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10"/></svg>重新诊断</button>
+<button class="btn" id="careerfit-entry-btn" type="button" onclick="window.__openCareerFitComp()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>竞争力对比</button>
 <button class="btn btn-primary" id="match-upload-trigger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M12 18v-6m-3 3 3-3 3 3"/></svg>选择简历</button>
 </div>
 </div>
@@ -2230,6 +2532,76 @@ body.disc-lock .content{overflow-y:auto!important;padding:20px 24px 32px!importa
 <div class="match-pipe-step" data-step="plan"><div class="match-pipe-dot">06</div><div class="match-pipe-label">路径规划</div></div>
 </div>
 </div>
+<!-- CareerFit dual mode cards -->
+<div class="match-hall-cards">
+<!-- Card A: Know target job -->
+<div class="match-mode-card" id="mode-card-a" onclick="window.flipModeCard('a')">
+<div class="card-front">
+<div class="match-mode-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>
+<h3>我知道目标岗位</h3>
+<p class="desc">有明确的职业方向，需要分析岗位要求、与"完美候选人"对比差距、获得竞争力评估和精准提升建议。</p>
+<div class="match-mode-features">
+<span class="match-mode-feature">岗位需求深度分析</span>
+<span class="match-mode-feature">竞争力对比评估</span>
+<span class="match-mode-feature">精准修改建议</span>
+</div>
+<div class="match-mode-output"><div class="output-title">📊 你将获得</div><div class="output-items">
+<div class="output-item"><span class="output-dot match"></span>岗位核心要求清单</div>
+<div class="output-item"><span class="output-dot match"></span>5维雷达匹配评分</div>
+<div class="output-item"><span class="output-dot match"></span>vs 完美候选人差距表</div>
+<div class="output-item"><span class="output-dot match"></span>优先级修改清单</div>
+<div class="output-item"><span class="output-dot match"></span>个性化学习时间线</div>
+</div></div>
+<div class="match-mode-hint"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="13 17 18 12 9 6"/></svg>点击选择此场景</div>
+</div>
+<div class="card-back">
+<div class="job-search-box">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+<input type="text" id="mode-a-search" placeholder="搜索目标岗位..." oninput="window.searchJobs('a')">
+</div>
+<div class="job-suggestions" id="mode-a-suggestions"></div>
+<div class="upload-zone-new" id="mode-a-upload" onclick="event.stopPropagation();document.getElementById('mode-a-file-input').click()">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/></svg>
+<div class="upload-title">上传简历文件</div>
+<div class="upload-hint">PDF / DOC / DOCX / TXT · 最大 8MB</div>
+</div>
+<input type="file" id="mode-a-file-input" accept=".pdf,.doc,.docx,.txt" hidden onchange="window.handleFileSelect(event,'a')">
+<div class="back-btn" onclick="event.stopPropagation();window.unflipModeCard('a')"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="7 17 2 12 7 7"/><line x1="2" y1="12" x2="22" y2="12"/></svg>返回选择场景</div>
+</div>
+</div>
+<!-- Card B: Just resume -->
+<div class="match-mode-card mode-b" id="mode-card-b" onclick="window.flipModeCard('b')">
+<div class="card-front">
+<div class="match-mode-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+<h3>帮我推荐岗位</h3>
+<p class="desc">仅提供简历，AI智能分析你的背景与能力，为你推荐最适合的岗位方向并对比竞争力差距。</p>
+<div class="match-mode-features">
+<span class="match-mode-feature">智能岗位推荐</span>
+<span class="match-mode-feature">能力画像分析</span>
+<span class="match-mode-feature">发展路线规划</span>
+</div>
+<div class="match-mode-output"><div class="output-title">🎯 你将获得</div><div class="output-items">
+<div class="output-item"><span class="output-dot match"></span>TOP匹配岗位排名</div>
+<div class="output-item"><span class="output-dot match"></span>每个岗位的竞争力</div>
+<div class="output-item"><span class="output-dot match"></span>技能差距可视化</div>
+<div class="output-item"><span class="output-dot match"></span>短期提升建议</div>
+<div class="output-item"><span class="output-dot match"></span>长期发展方向</div>
+</div></div>
+<div class="match-mode-hint"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="13 17 18 12 9 6"/></svg>点击选择此场景</div>
+</div>
+<div class="card-back">
+<div style="text-align:center;margin-bottom:14px;font-size:14px;font-weight:600;color:var(--text-dark)">上传简历即可开始智能推荐</div>
+<div class="upload-zone-new" id="mode-b-upload" onclick="event.stopPropagation();document.getElementById('mode-b-file-input').click()">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/></svg>
+<div class="upload-title">拖拽或点击上传简历</div>
+<div class="upload-hint">PDF / DOC / DOCX / TXT · 最大 8MB</div>
+</div>
+<input type="file" id="mode-b-file-input" accept=".pdf,.doc,.docx,.txt" hidden onchange="window.handleFileSelect(event,'b')">
+<div class="back-btn" onclick="event.stopPropagation();window.unflipModeCard('b')"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="7 17 2 12 7 7"/><line x1="2" y1="12" x2="22" y2="12"/></svg>返回选择场景</div>
+</div>
+</div>
+</div>
+
 <div class="card match-upload-card">
 <div class="card-header"><div class="card-title">上传真实简历</div><span class="tag tag-mint">最大 8MB</span></div>
 <div class="card-body">
@@ -5701,7 +6073,9 @@ window.matchState = {
     selectedJobId: null,
     processing: false,
     progressTimer: null,
-    dimensionChart: null
+    dimensionChart: null,
+    mode: 'b',
+    targetJobId: null
 };
 
 window.matchEscape = function(value) {
@@ -5810,6 +6184,10 @@ window.runMatchFromFile = async function(file) {
 
     const form = new FormData();
     form.append('file', file);
+    form.append('mode', (window.matchState && window.matchState.mode) || 'b');
+    if (window.matchState && window.matchState.targetJobId) {
+        form.append('target_job_id', window.matchState.targetJobId);
+    }
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 130000);
     try {
@@ -5820,7 +6198,7 @@ window.runMatchFromFile = async function(file) {
         if (!response.ok || payload.code !== 0) {
             throw new Error(payload.detail || payload.message || `诊断服务返回 ${response.status}`);
         }
-        window.matchState.result = payload.data;
+        window.matchState.result = payload.data; /* CareerFit diagnose hook */
         window.matchState.selectedJobId = payload.data.selected_job_id || payload.data.matches?.[0]?.job?.id;
         window.finishMatchProgress(payload.data.trace);
         window.renderMatchWorkspace();
@@ -5882,6 +6260,9 @@ window.resetMatchDiagnosis = function() {
     window.matchState.file = null;
     window.matchState.selectedJobId = null;
     window.matchState.processing = false;
+    window.matchState.mode = 'b';
+    window.matchState.targetJobId = null;
+    ['a', 'b'].forEach(m => document.getElementById('mode-card-' + m)?.classList.remove('flipped'));
     const input = document.getElementById('resume-file-input');
     if (input) input.value = '';
     const zone = document.getElementById('upload-zone');
@@ -11742,6 +12123,137 @@ window._disc3dDestroy = function() {
 if (window._disc3dPending || document.getElementById('view-discovery')?.classList.contains('active')) {
   bootDisc3D();
 }
+
+/* === CareerFit Match JS (from jwk) === */
+window.matchState = window.matchState || {};
+if (window.matchState.mode == null) window.matchState.mode = 'b';
+if (window.matchState.targetJobId == null) window.matchState.targetJobId = null;
+window.flipModeCard = function(mode) {
+    if (window.matchState.processing) return;
+    window.matchState.mode = mode;
+    const card = document.getElementById('mode-card-' + mode);
+    if (!card) return;
+    card.classList.add('flipped');
+    if (mode === 'a') {
+        // Pre-populate job suggestions
+        setTimeout(() => window.searchJobs('a'), 200);
+        // Focus search
+        setTimeout(() => {
+            const inp = document.getElementById('mode-a-search');
+            if (inp) inp.focus();
+        }, 400);
+    }
+};
+
+window.unflipModeCard = function(mode) {
+    const card = document.getElementById('mode-card-' + mode);
+    if (!card) return;
+    card.classList.remove('flipped');
+    window.matchState.mode = null;
+    window.matchState.targetJobId = null;
+};
+
+window.searchJobs = function(mode) {
+    const input = document.getElementById('mode-' + mode + '-search');
+    const container = document.getElementById('mode-' + mode + '-suggestions');
+    if (!input || !container) return;
+    const query = (input.value || '').toLowerCase().trim();
+    // Fetch jobs from data
+    const apiBase = window.API_BASE || 'http://127.0.0.1:5000';
+    fetch(apiBase + '/api/match/jobs')
+        .then(r => r.json())
+        .then(resp => {
+            const jobs = (resp.data || []);
+            const filtered = query ? jobs.filter(j => 
+                (j.title || '').toLowerCase().includes(query) || 
+                (j.description || '').toLowerCase().includes(query) ||
+                (j.company || '').toLowerCase().includes(query)
+            ).slice(0, 6) : jobs.slice(0, 6);
+            container.innerHTML = filtered.map(j => 
+                `<div class="job-suggest-item${j.id === window.matchState.targetJobId ? ' selected' : ''}" onclick="window.selectTargetJob('${j.id}', '${window.matchEscape(j.title)}')">${window.matchEscape(j.title)} · ${window.matchEscape(j.company || '')}</div>`
+            ).join('') || '<div style="padding:12px;color:var(--text-muted);font-size:12px;text-align:center">未找到匹配岗位，请尝试其他关键词</div>';
+        }).catch(() => {
+            container.innerHTML = '<div style="padding:12px;color:var(--text-muted);font-size:12px;text-align:center">岗位列表加载中...</div>';
+        });
+};
+
+window.selectTargetJob = function(jobId, title) {
+    window.matchState.targetJobId = jobId;
+    window.matchState.mode = 'a';
+    const container = document.getElementById('mode-a-suggestions');
+    if (container) {
+        container.querySelectorAll('.job-suggest-item').forEach(el => {
+            el.classList.toggle('selected', el.textContent.includes(title));
+        });
+    }
+    window.Utils.showToast('已选择目标岗位: ' + title, 'cyan');
+};
+
+window.handleFileSelect = function(event, mode) {
+    const file = event.target?.files?.[0];
+    if (!file) return;
+    window.matchState.mode = mode;
+    window.runMatchFromFile(file);
+};
+
+window.showCompetitivenessModal = function() {
+    const modal = document.getElementById('competitiveness-modal');
+    const body = document.getElementById('comp-modal-body');
+    const match = window.getSelectedMatch();
+    if (!modal || !body || !match) return;
+    const d = match.dimensions || {};
+    const score = Number(match.score || 0);
+    const comp = window.matchState.result?.competitiveness || {};
+    const perfect = window.matchState.result?.perfect_resume || {};
+    const compScores = comp.dimension_scores || {};
+    const skillCompare = comp.skill_comparison || [];
+    const suggestions = comp.improvement_suggestions || [];
+    const profile = window.matchState.result?.profile || {};
+
+    body.innerHTML = `
+        <div class="match-comp-vs">
+            <div class="match-comp-side">
+                <h4>📄 你的简历</h4>
+                <div class="match-comp-score-bar"><span style="font-size:11px;color:var(--text-muted)">综合</span><div class="match-comp-bar-track"><div class="match-comp-bar-fill" style="width:${score}%"></div></div><span class="match-comp-bar-label">${score.toFixed(0)}</span></div>
+                <div style="margin-top:12px;font-size:12px;color:var(--text-dark-secondary);line-height:1.7">${window.matchEscape(profile.name || '候选人')} · ${window.matchEscape(profile.education || '')} · ${Number(profile.experience_years||0)}年经验<br>直接匹配: <strong>${match.matched.length}</strong> 项 · 可迁移: <strong>${match.transferable.length}</strong> 项 · 差距: <strong>${match.missing.length}</strong> 项</div>
+            </div>
+            <div class="match-comp-divider">VS</div>
+            <div class="match-comp-side perfect">
+                <h4>🏆 完美候选人参考</h4>
+                <div class="match-comp-score-bar"><span style="font-size:11px;color:var(--text-muted)">综合</span><div class="match-comp-bar-track"><div class="match-comp-bar-fill" style="width:96%"></div></div><span class="match-comp-bar-label">96</span></div>
+                <div style="margin-top:12px;font-size:12px;color:var(--text-dark-secondary);line-height:1.7">${window.matchEscape(perfect.ideal_summary || 'AI推演的该岗位理想候选人画像')}<br>建议经验: <strong>${perfect.ideal_experience_years || '3-5'}年</strong> · 学历: <strong>${window.matchEscape(perfect.ideal_education || '本科及以上')}</strong></div>
+                ${perfect.key_differentiators ? `<div style="margin-top:10px;font-size:11px;color:var(--text-muted)">关键优势：${perfect.key_differentiators.map(d => `<span class="match-summary-badge" style="font-size:10px;margin:1px">${window.matchEscape(d)}</span>`).join('')}</div>` : ''}
+            </div>
+        </div>
+        <div class="match-comp-dimensions">
+            <div class="match-comp-dim"><div class="dim-label">技能覆盖</div><div class="dim-value">${compScores.skill_coverage != null ? compScores.skill_coverage.toFixed(0) : d.skills||0}</div></div>
+            <div class="match-comp-dim"><div class="dim-label">语义契合</div><div class="dim-value">${d.semantics||0}</div></div>
+            <div class="match-comp-dim"><div class="dim-label">项目证据</div><div class="dim-value">${d.projects||0}</div></div>
+            <div class="match-comp-dim"><div class="dim-label">经验适配</div><div class="dim-value">${compScores.experience_match != null ? compScores.experience_match.toFixed(0) : d.experience||0}</div></div>
+            <div class="match-comp-dim"><div class="dim-label">图谱迁移</div><div class="dim-value">${d.graph||0}</div></div>
+        </div>
+        ${skillCompare.length > 0 ? `<div style="margin-top:16px"><h4 style="font-size:14px;font-weight:600;color:var(--text-dark);margin-bottom:10px">技能逐项对比</h4><div style="max-height:240px;overflow-y:auto">${skillCompare.map(sc => {
+            const gapClass = sc.gap === 'matched' ? 'color:#059669' : 'color:#dc2626';
+            return `<div style="display:flex;align-items:center;gap:10px;padding:6px 8px;border-bottom:1px solid var(--border-dark);font-size:12px"><span style="width:90px;font-weight:600;color:var(--text-dark)">${window.matchEscape(sc.skill)}</span><span style="width:55px;text-align:center;font-size:11px;background:rgba(16,185,129,.08);border-radius:4px;padding:2px 4px;color:#059669">${window.matchEscape(sc.ideal_level)}</span><span style="width:55px;text-align:center;font-size:11px;background:rgba(239,68,68,.06);border-radius:4px;padding:2px 4px;${gapClass}">${window.matchEscape(sc.user_level)}</span><span style="font-size:10px;color:var(--text-muted);flex:1">${window.matchEscape(sc.why_important || '')}</span></div>`;
+        }).join('')}</div></div>` : ''}
+        ${suggestions.length > 0 ? `<div class="match-comp-suggestions" style="margin-top:16px"><h4>提升建议</h4>${suggestions.map(s => `<div class="match-comp-suggestion"><strong>${window.matchEscape(s.skill)}</strong>（${s.priority === 'high' ? '高' : s.priority === 'medium' ? '中' : '低'}优先级）：${window.matchEscape(s.action)} · 预计${s.effort_weeks}周</div>`).join('')}</div>` : `<div class="match-comp-suggestions" style="margin-top:16px"><h4>提升建议</h4>${(match.gaps || []).slice(0,4).map(g => `<div class="match-comp-suggestion"><strong>${window.matchEscape(g.skill)}</strong>：${window.matchEscape(g.reason)}（当前准备度 ${g.readiness}%）</div>`).join('')}${match.gaps.length === 0 ? '<div style="color:#059669;font-size:13px;padding:12px">核心能力已满足该岗位要求</div>' : ''}</div>`}
+    `;
+    modal.classList.add('show');
+};
+
+window.closeCompetitivenessModal = function() {
+    document.getElementById('competitiveness-modal')?.classList.remove('show');
+};
+
+window.__openCareerFitComp = function() {
+  if (!window.matchState || !window.matchState.result) {
+    if (window.Utils && window.Utils.showToast) window.Utils.showToast('请先完成一次简历诊断', 'amber');
+    else alert('请先完成一次简历诊断');
+    return;
+  }
+  if (typeof window.showCompetitivenessModal === 'function') window.showCompetitivenessModal();
+};
+
 </script>
 <!-- Trend Analysis Drawer -->
 <div class="trend-drawer-backdrop" id="trend-drawer-backdrop" onclick="window.closeTrendDrawer()"></div>
@@ -11751,6 +12263,19 @@ if (window._disc3dPending || document.getElementById('view-discovery')?.classLis
 <div class="drawer-insight" id="drawer-insight-content"><span style="color:var(--text-muted)">加载中...</span></div>
 <div class="drawer-summary" id="drawer-summary"></div>
 </div>
+
+<!-- CareerFit competitiveness modal -->
+<div class="match-comp-modal" id="competitiveness-modal" onclick="if(event.target===this)window.closeCompetitivenessModal()">
+<div class="match-comp-container">
+<div class="match-comp-header">
+<h3>简历竞争力对比报告</h3>
+<button class="match-drawer-close" onclick="window.closeCompetitivenessModal()"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+</div>
+<div class="match-comp-body" id="comp-modal-body"></div>
+</div>
+</div>
+
+
 </body>
 </html>
 
