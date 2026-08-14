@@ -738,7 +738,7 @@ body.disc-lock .content{overflow-y:auto!important;padding:20px 24px 32px!importa
 .proto-track-foot button.primary{border:none;background:linear-gradient(135deg,#F59E0B,#D97706);color:#fff}
 
 
-.source-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+.source-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
 .source-card{background:#fff;border:1px solid var(--border-dark);border-radius:var(--radius-lg);padding:18px;transition:all .25s;position:relative}
 .source-card:hover{box-shadow:var(--shadow-md);transform:translateY(-2px)}
 .source-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px}
@@ -910,12 +910,13 @@ body.disc-lock .content{overflow-y:auto!important;padding:20px 24px 32px!importa
 .mini-stat-foot.positive{color:var(--accent-mint)}
 .mini-stat-foot.negative{color:var(--accent-coral)}
 /* ===== Hot Job Carousel ===== */
-.hot-jobs{display:flex;gap:12px;overflow-x:auto;padding:8px 0 12px;scrollbar-width:thin}
-.hot-job-card{flex:0 0 220px;background:#fff;border:1px solid var(--border-dark);border-radius:var(--radius-md);padding:14px;cursor:pointer;transition:all .25s}
+.hot-jobs{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:8px 0 12px;align-content:start;max-height:520px;overflow-y:auto}
+.hot-job-card{background:#fff;border:1px solid var(--border-dark);border-radius:var(--radius-md);padding:14px;cursor:pointer;transition:all .25s;display:flex;flex-direction:column;justify-content:space-between;min-height:96px}
 .hot-job-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-md);border-color:var(--primary)}
-.hot-job-title{font-size:13px;font-weight:600;color:var(--text-dark);margin-bottom:4px}
-.hot-job-meta{font-size:11px;color:var(--text-muted);margin-bottom:8px}
-.hot-job-salary{font-size:15px;font-weight:700;background:var(--gradient-primary);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.hot-job-title{font-size:14px;font-weight:600;color:var(--text-dark);margin-bottom:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.hot-job-meta{font-size:11px;color:var(--text-muted);margin-bottom:10px}
+.hot-job-salary{font-size:18px;font-weight:700;background:var(--gradient-primary);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.hot-job-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto}
 /* ===== Source Detail Page ===== */
 .source-detail-page{background:#fff;border-radius:var(--radius-lg);border:1px solid var(--border-dark);padding:24px;margin-bottom:18px}
 .source-detail-head{display:flex;align-items:center;gap:16px;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--border-dark)}
@@ -943,6 +944,18 @@ body.disc-lock .content{overflow-y:auto!important;padding:20px 24px 32px!importa
 .log-level.DEBUG{background:rgba(100,116,139,.15);color:#64748B}
 .log-msg{color:var(--text-dark)}
 .log-duration{color:var(--text-muted);font-size:10px;text-align:right}
+.collect-log{font-family:var(--font-mono),monospace;font-size:12px;max-height:300px;overflow-y:auto;padding:4px 0}
+.collect-log .log-row{border-bottom:1px dashed var(--border-dark)}
+.collect-log .log-row:last-child{border-bottom:none}
+.clickable-kpi{cursor:pointer}
+.clickable-kpi:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg)}
+.hot-insight-kpi{background:linear-gradient(135deg,#0D9488,#2DD4BF);color:#fff}
+.hot-insight-kpi .kpi-label,.hot-insight-kpi .kpi-value,.hot-insight-kpi .kpi-foot{color:#fff}
+.hot-insight-kpi .kpi-foot{opacity:.85}
+.hot-insight-kpi:hover{box-shadow:0 16px 40px rgba(13,148,136,.4)}
+.refresh-icon.rotating{animation:spin 1s linear infinite}
+@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+.row.cols-2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
 @keyframes slideUp2{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
 .page-enter{animation:slideUp2 .4s cubic-bezier(.4,0,.2,1)}
 .sub-page{display:none}
@@ -1184,7 +1197,6 @@ body.disc-lock .content{overflow-y:auto!important;padding:20px 24px 32px!importa
 </div>
 <div class="nav-group">
 <div class="nav-label">数据管理</div>
-<div class="nav-item" data-view="collection"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg><span>数据采集</span></div>
 <div class="nav-item" data-view="analysis"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span>趋势分析</span></div>
 <div class="nav-item" data-view="quality"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg><span>质量监控</span></div>
 </div>
@@ -1244,44 +1256,32 @@ body.disc-lock .content{overflow-y:auto!important;padding:20px 24px 32px!importa
 <div class="dash-hero-stat"><div class="dash-hero-stat-val" id="hero-match">93.7%</div><div class="dash-hero-stat-label">匹配准确率</div></div>
 </div>
 </div>
+<!-- ========== 多源异构数据采集入口 ========== -->
+<div class="card" style="margin-bottom:22px">
+<div class="card-body" style="display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap">
+<div>
+<div style="font-size:16px;font-weight:700;color:var(--text-dark);margin-bottom:4px">🌐 多源异构数据采集</div>
+<div style="font-size:12px;color:var(--text-muted)">Scrapy + Playwright · 4个核心源 · 日均采集 <strong id="dashboard-collect-total" style="color:var(--primary)">--</strong> 条</div>
+</div>
+<button class="btn btn-primary" onclick="window.switchView('collection')">进入采集管理 →</button>
+</div>
+</div>
 <!-- ========== 4大核心KPI ========== -->
 <div class="kpi-grid">
-<div class="kpi-card k1 anim-glow"><div class="kpi-head"><div class="kpi-label">岗位库总量</div><div class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div></div><div class="kpi-value" data-val="0">0<span class="kpi-unit">个</span></div><div class="kpi-foot">较上周 <span class="kpi-trend up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="18 15 12 9 6 15"/></svg>8.2%</span></div></div>
-<div class="kpi-card k2"><div class="kpi-head"><div class="kpi-label">本月新发现岗位</div><div class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></div></div><div class="kpi-value" data-val="0">0<span class="kpi-unit">个</span></div><div class="kpi-foot">较上月 <span class="kpi-trend up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="18 15 12 9 6 15"/></svg>23.3%</span></div></div>
-<div class="kpi-card k3"><div class="kpi-head"><div class="kpi-label">简历匹配累计</div><div class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div></div><div class="kpi-value" data-val="0">0<span class="kpi-unit">份</span></div><div class="kpi-foot">今日新增 <span class="kpi-trend up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="18 15 12 9 6 15"/></svg>12.6%</span></div></div>
-<div class="kpi-card k4"><div class="kpi-head"><div class="kpi-label">匹配准确率</div><div class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div></div><div class="kpi-value" data-val="0">0<span class="kpi-unit">%</span></div><div class="kpi-foot">超过指标 <span class="kpi-trend up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="18 15 12 9 6 15"/></svg>3.7%</span></div></div>
-</div>
-<!-- ========== 迷你指标行 ========== -->
-<div class="mini-stats" id="mini-stats">
-<div class="mini-stat"><div class="mini-stat-label">图谱节点</div><div class="mini-stat-value" id="mini-nodes">0</div><div class="mini-stat-foot positive">↑ 实时增长</div></div>
-<div class="mini-stat"><div class="mini-stat-label">关系边</div><div class="mini-stat-value" id="mini-edges">0</div><div class="mini-stat-foot positive">↑ 12.4%</div></div>
-<div class="mini-stat"><div class="mini-stat-label">本月匹配</div><div class="mini-stat-value" id="mini-match">3,254</div><div class="mini-stat-foot positive">↑ 18.6%</div></div>
-<div class="mini-stat"><div class="mini-stat-label">数据采集</div><div class="mini-stat-value" id="mini-collect">12,847</div><div class="mini-stat-foot positive">↑ 23.1%</div></div>
-<div class="mini-stat"><div class="mini-stat-label">JD解析</div><div class="mini-stat-value">93.2<span style="font-size:14px">%</span></div><div class="mini-stat-foot positive">达标 ↑3.2%</div></div>
-<div class="mini-stat"><div class="mini-stat-label">简历提取</div><div class="mini-stat-value">91.7<span style="font-size:14px">%</span></div><div class="mini-stat-foot positive">达标 ↑1.7%</div></div>
+<div class="kpi-card k1 anim-glow clickable-kpi" onclick="window.switchView('discovery')"><div class="kpi-head"><div class="kpi-label">岗位库总量</div><div class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div></div><div class="kpi-value" data-val="0">0<span class="kpi-unit">个</span></div><div class="kpi-foot">较上周 <span class="kpi-trend up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="18 15 12 9 6 15"/></svg>8.2%</span></div></div>
+<div class="kpi-card k2 clickable-kpi" onclick="window.switchView('discovery')"><div class="kpi-head"><div class="kpi-label">本月新发现岗位</div><div class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></div></div><div class="kpi-value" data-val="0">0<span class="kpi-unit">个</span></div><div class="kpi-foot">较上月 <span class="kpi-trend up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="18 15 12 9 6 15"/></svg>23.3%</span></div></div>
+<div class="kpi-card k3 clickable-kpi" onclick="window.switchView('match')"><div class="kpi-head"><div class="kpi-label">简历匹配累计</div><div class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div></div><div class="kpi-value" data-val="0">0<span class="kpi-unit">份</span></div><div class="kpi-foot">今日新增 <span class="kpi-trend up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="18 15 12 9 6 15"/></svg>12.6%</span></div></div>
+<div class="kpi-card hot-insight-kpi clickable-kpi" onclick="window.switchView('hotinsight')"><div class="kpi-head"><div class="kpi-label">热门洞察</div><div class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div></div><div class="kpi-value">热门技能 / 岗位<span class="kpi-unit">↗</span></div><div class="kpi-foot">点击进入详情页 →</div></div>
 </div>
 <!-- ========== 趋势 + 活动 ========== -->
 <div class="row cols-23">
 <div class="card"><div class="card-header"><div class="card-title">📈 岗位趋势</div><div class="card-tools"><span class="tag">近30天</span><span class="tag tag-mint"><span class="live-dot"></span>实时</span></div></div><div class="card-body"><div class="chart-lg" id="chart-trend"></div></div></div>
 <div class="card"><div class="card-header"><div class="card-title">⚡ 实时动态</div><span class="tag tag-cyan"><span class="live-dot"></span>LIVE</span></div><div class="card-body"><div class="activity-list" id="activity-list"></div></div></div>
 </div>
-<!-- ========== 三个图表 ========== -->
-<div class="row cols-3">
-<div class="card"><div class="card-header"><div class="card-title">🔥 热门技能TOP10</div><span class="tag">高频</span></div><div class="card-body"><div class="chart" id="chart-skills"></div></div></div>
+<!-- ========== 行业 / 数据源 ========== -->
+<div class="row cols-2">
 <div class="card"><div class="card-header"><div class="card-title">🏢 行业分布</div><span class="tag tag-purple"><span class="live-dot"></span>实时</span></div><div class="card-body"><div class="chart" id="chart-industry"></div></div></div>
 <div class="card"><div class="card-header"><div class="card-title">📊 数据源贡献</div><span class="tag tag-mint">本周</span></div><div class="card-body"><div class="chart" id="chart-source"></div></div></div>
-</div>
-<!-- ========== 热门岗位轮播 ========== -->
-<div class="card">
-<div class="card-header">
-<div class="card-title">🚀 热门岗位</div>
-<div class="card-tools">
-<button class="btn" onclick="window.switchView('discovery')">查看更多 →</button>
-</div>
-</div>
-<div class="card-body">
-<div class="hot-jobs" id="hot-jobs"></div>
-</div>
 </div>
 </section>
 <!-- ============== 2. 图谱可视化 ============== -->
@@ -2033,6 +2033,22 @@ onmouseleave="window.gangaZoomHover('澳门',false)">
 </div>
 </div>
 </section>
+<!-- ============== 6.5 热门洞察 ============== -->
+<section class="view" id="view-hotinsight">
+<div class="page-header">
+<div class="page-title-block">
+<h1>热门洞察</h1>
+<div class="subtitle">热门技能与热门岗位 · 数据来源实时采集</div>
+</div>
+<div class="page-actions">
+<button class="btn" onclick="window.switchView('dashboard')">← 返回看板</button>
+</div>
+</div>
+<div class="row cols-2" style="align-items:start">
+<div class="card"><div class="card-header"><div class="card-title">🔥 热门技能 TOP10</div><span class="tag">高频</span></div><div class="card-body"><div class="chart-lg" id="chart-skills-full" style="height:520px"></div></div></div>
+<div class="card"><div class="card-header"><div class="card-title">🚀 热门岗位</div><span class="tag tag-mint"><span class="live-dot"></span>实时</span></div><div class="card-body"><div class="hot-jobs" id="hot-jobs-full"></div></div></div>
+</div>
+</section>
 <!-- ============== 7. 数据采集 ============== -->
 <section class="view" id="view-collection">
 <!-- 列表子页 -->
@@ -2041,10 +2057,6 @@ onmouseleave="window.gangaZoomHover('澳门',false)">
 <div class="page-title-block">
 <h1>多源异构数据采集</h1>
 <div class="subtitle">Scrapy + Playwright · 4个核心源 · 日均采集 <strong id="collect-total">0</strong> 条 · <span style="color:var(--accent-cyan);font-family:var(--font-mono),monospace">点击卡片查看详情 →</span></div>
-</div>
-<div class="page-actions">
-<button class="btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/></svg>全局配置</button>
-<button class="btn btn-primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>一键启动</button>
 </div>
 </div>
 <div class="kpi-grid">
@@ -2055,8 +2067,8 @@ onmouseleave="window.gangaZoomHover('澳门',false)">
 </div>
 <div class="source-grid" id="source-grid"></div>
 <div class="row cols-2">
-<div class="card"><div class="card-header"><div class="card-title">采集趋势</div><span class="tag">近7天</span></div><div class="card-body"><div class="chart" id="chart-collect"></div></div></div>
-<div class="card"><div class="card-header"><div class="card-title">采集日志（合并）</div><span class="tag tag-cyan"><span class="live-dot"></span>LIVE</span></div><div class="card-body" style="font-family:var(--font-mono),monospace;font-size:11px;line-height:2;max-height:300px;overflow-y:auto" id="collect-log"></div></div>
+<div class="card"><div class="card-header"><div class="card-title">采集趋势</div><span class="tag">近7天</span></div><div class="card-body"><div class="chart-lg" id="chart-collect" style="height:300px"></div></div></div>
+<div class="card"><div class="card-header"><div class="card-title">采集日志（合并）</div><span class="tag tag-cyan"><span class="live-dot"></span>LIVE</span></div><div class="card-body collect-log" id="collect-log"></div></div>
 </div>
 </div>
 <!-- 详情子页 -->
@@ -2202,10 +2214,10 @@ onmouseleave="window.gangaZoomHover('澳门',false)">
 </div>
 <div class="row cols-2">
 <div class="card"><div class="card-header"><div class="card-title">数据源开关</div></div><div class="card-body">
-<div class="setting-row" style="border:none;padding-top:0"><div class="setting-info"><div class="setting-label">拉勾网</div><div class="setting-desc">技术岗位权威源</div></div><div class="switch on"></div></div>
-<div class="setting-row"><div class="setting-info"><div class="setting-label">BOSS直聘</div><div class="setting-desc">Playwright 动态渲染</div></div><div class="switch on"></div></div>
-<div class="setting-row"><div class="setting-info"><div class="setting-label">智联招聘</div><div class="setting-desc">社招 / 校招覆盖</div></div><div class="switch on"></div></div>
-<div class="setting-row"><div class="setting-info"><div class="setting-label">脉脉</div><div class="setting-desc">中高端岗位与薪资</div></div><div class="switch"></div></div>
+<div class="setting-row" style="border:none;padding-top:0"><div class="setting-info"><div class="setting-label">拉勾网</div><div class="setting-desc">技术岗位权威源</div></div><div class="switch on" data-source="拉勾网"></div></div>
+<div class="setting-row"><div class="setting-info"><div class="setting-label">BOSS直聘</div><div class="setting-desc">Playwright 动态渲染</div></div><div class="switch on" data-source="BOSS直聘"></div></div>
+<div class="setting-row"><div class="setting-info"><div class="setting-label">智联招聘</div><div class="setting-desc">社招 / 校招覆盖</div></div><div class="switch on" data-source="智联招聘"></div></div>
+<div class="setting-row"><div class="setting-info"><div class="setting-label">脉脉</div><div class="setting-desc">中高端岗位与薪资</div></div><div class="switch" data-source="脉脉"></div></div>
 </div></div>
 <div class="card"><div class="card-header"><div class="card-title">质量与清洗</div></div><div class="card-body">
 <div class="setting-row" style="border:none;padding-top:0"><div class="setting-info"><div class="setting-label">JD 去重</div><div class="setting-desc">基于标题+公司指纹</div></div><div class="switch on"></div></div>
@@ -2519,7 +2531,7 @@ window.generateGraphData = function() {
 window.viewNames = {
     dashboard:'总览看板', graph:'图谱可视化', discovery:'新岗位发现', evolution:'能力动态演化',
     match:'人岗匹配诊断', qa:'智能问答', learningPath:'学习路径', newSkill:'新增技能', collection:'数据采集', analysis:'趋势分析',
-    quality:'质量监控', settings:'系统设置'
+    quality:'质量监控', settings:'系统设置', hotinsight:'热门洞察'
 };
 window.currentViewId = 'dashboard';
 window.resizeActiveVisuals = function() {
@@ -2543,6 +2555,8 @@ window.switchView = function(viewId, opts) {
     window.currentViewId = viewId;
     if (prev === 'graph' && viewId !== 'graph' && window.pauseGraphLiving) window.pauseGraphLiving();
     if (prev === 'discovery' && viewId !== 'discovery' && window.destroyDiscFX) window.destroyDiscFX();
+    if (prev === 'hotinsight') window.disposeChart('chart-skills-full');
+    if (prev === 'collection') { window.disposeChart('chart-collect'); document.querySelectorAll('#view-collection .sub-page').forEach(p => p.classList.remove('active')); const lp = document.getElementById('collection-list-page'); if (lp) lp.classList.add('active'); }
     document.body.classList.toggle('disc-lock', viewId === 'discovery');
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -2673,7 +2687,6 @@ window.initDashboard = function() {
     // 初始化Hero区迷你图谱
     try { window.initHeroGraph(); } catch(e) { console.warn(e); }
     try { window.initHeroParticles(); } catch(e) { console.warn(e); }
-    try { window.renderHotJobs(); } catch(e) { console.warn(e); }
     // 更新hero统计
     const jobsCount = window.Store.state.jobs.length;
     const skillsCount = window.Store.state.graph.nodes.filter(n => n.type === 'skill').length;
@@ -2682,19 +2695,13 @@ window.initDashboard = function() {
     window.Utils.animateNum(document.getElementById('hero-skills'), skillsCount, 1500);
     window.Utils.animateNum(document.getElementById('hero-edges'), edgesCount, 1500);
     document.getElementById('dash-graph-info').textContent = `${jobsCount + skillsCount + 5} 节点 · ${edgesCount} 关系`;
-    // 迷你指标
-    document.getElementById('mini-nodes').textContent = jobsCount + skillsCount + 5;
-    document.getElementById('mini-edges').textContent = edgesCount;
-    document.getElementById('mini-match').textContent = (3000 + Math.floor(Math.random() * 500)).toLocaleString();
-    document.getElementById('mini-collect').textContent = (10000 + Math.floor(Math.random() * 5000)).toLocaleString();
     // KPI动画
     const kpis = [
         {el:document.querySelector('#view-dashboard .kpi-card.k1 .kpi-value'), target: window.Store.state.jobs.length},
         {el:document.querySelector('#view-dashboard .kpi-card.k2 .kpi-value'), target: window.Store.state.newJobs.length},
-        {el:document.querySelector('#view-dashboard .kpi-card.k3 .kpi-value'), target: 3254},
-        {el:document.querySelector('#view-dashboard .kpi-card.k4 .kpi-value'), target: 93.7}
+        {el:document.querySelector('#view-dashboard .kpi-card.k3 .kpi-value'), target: 3254}
     ];
-    kpis.forEach(k => U.animateNum(k.el, k.target, 1500, k.target === 93.7 ? 1 : 0));
+    kpis.forEach(k => U.animateNum(k.el, k.target, 1500, 0));
     // 趋势图
     const dates = Array.from({length:19}, (_, i) => `${Math.floor(i/2)+1}/${(i%2)+1}`);
     const newJobData = Array.from({length:19}, () => U.rand(38, 105));
@@ -2915,21 +2922,21 @@ window.initHeroParticles = function() {
     }
     animate();
 };
-window.renderHotJobs = function() {
-    const el = document.getElementById('hot-jobs');
+window.renderHotJobs = function(containerId, limit, vertical) {
+    const el = document.getElementById(containerId);
     if (!el) return;
     const hotJobs = window.Store.state.jobs
         .filter(j => j.salary.includes('40') || j.salary.includes('60') || j.salary.includes('80'))
-        .slice(0, 8);
+        .slice(0, limit || 8);
     if (!hotJobs.length) return;
     el.innerHTML = hotJobs.map((j, i) => `
         <div class="hot-job-card anim-fade-up" style="animation-delay:${i*0.04}s" onclick="window.switchView('match')">
-            <div class="hot-job-title">${j.title}</div>
-            <div class="hot-job-meta">${j.company} · ${j.city}</div>
-            <div class="hot-job-salary">${j.salary}</div>
-            <div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:4px">
-                ${j.requiredSkills.slice(0, 3).map(s => `<span class="skill-chip" style="font-size:10px;padding:2px 6px">${s}</span>`).join('')}
+            <div>
+                <div class="hot-job-title">${j.title}</div>
+                <div class="hot-job-meta">${j.company} · ${j.city}</div>
+                <div class="hot-job-salary">${j.salary}</div>
             </div>
+            ${vertical ? '' : `<div class="hot-job-tags">${(j.requiredSkills || []).slice(0, 4).map(s => `<span class="skill-chip" style="font-size:10px;padding:3px 8px">${s}</span>`).join('')}</div>`}
         </div>
     `).join('');
 };
@@ -8348,6 +8355,62 @@ window.renderAIAnswer = function(a, time) {
     return `<div class="chat-msg ai anim-fade-up"><div class="chat-bubble"><div class="chat-answer">${body}</div><div style="margin-top:14px;padding-top:12px;border-top:1px dashed var(--border-dark);font-size:11px;color:var(--text-muted);display:flex;justify-content:space-between"><span>⚡ 讯飞星火 X2 · 引用可靠度 ${(Math.random()*4+95).toFixed(1)}%</span><span>幻觉率 ${(Math.random()*3+1).toFixed(1)}% ✓</span></div></div><div class="chat-time">${time} · AI Assistant</div></div>`;
 };
 
+// ============== Source toggle sync ==============
+window._sourceToggleKey = 'zt_source_toggles_v1';
+window._defaultSourceToggles = { '拉勾网': true, 'BOSS直聘': true, '智联招聘': true, '脉脉': false };
+window._sourceToggleAliases = {
+    '拉勾网': ['拉勾网','拉勾','lagou','lg'],
+    'BOSS直聘': ['BOSS直聘','boss直聘','boss','boss_zhipin','zhipin','boos','boos直聘'],
+    '智联招聘': ['智联招聘','智联','zhilian','zhaopin','zl'],
+    '脉脉': ['脉脉','maimai','mm']
+};
+window._sourceNameFallback = { '51job': '拉勾网', '5ijob': '拉勾网', 'shixiseng': '脉脉' };
+window._normalizeSourceName = function(n){ return String(n||'').toLowerCase().replace(/[\s_\-·•]+/g,''); };
+window._findSourceToggleLabel = function(name){
+    const norm = window._normalizeSourceName(name);
+    for(const [label, aliases] of Object.entries(window._sourceToggleAliases)){
+        if(window._normalizeSourceName(label) === norm) return label;
+        for(const a of aliases){ if(window._normalizeSourceName(a) === norm) return label; }
+    }
+    const fallback = window._sourceNameFallback[norm] || window._sourceNameFallback[String(name||'').trim()];
+    return fallback || null;
+};
+window.getSourceToggleStateMap = function(){
+    let saved = {};
+    try { saved = JSON.parse(localStorage.getItem(window._sourceToggleKey) || '{}'); } catch(e){ saved = {}; }
+    return { ...window._defaultSourceToggles, ...saved };
+};
+window.getSourceToggleState = function(name){
+    const label = window._findSourceToggleLabel(name);
+    if(!label) return true;
+    return window.getSourceToggleStateMap()[label] !== false;
+};
+window.getSourceStatusText = function(name){ return window.getSourceToggleState(name) ? '开启' : '关闭'; };
+window.saveSourceToggleState = function(label, on){
+    const state = window.getSourceToggleStateMap();
+    state[label] = !!on;
+    try { localStorage.setItem(window._sourceToggleKey, JSON.stringify(state)); } catch(e){}
+};
+window.refreshCollectionSourceStatus = function(){
+    document.querySelectorAll('#source-grid .source-card[data-source-name]').forEach(card => {
+        const val = card.querySelector('[data-stat="status"]');
+        if(val) val.textContent = window.getSourceStatusText(card.dataset.sourceName);
+    });
+};
+
+// ============== HotInsight View ==============
+window.initHotInsight = function() {
+    window.renderHotJobs('hot-jobs-full', 30);
+    setTimeout(() => {
+        const el = document.getElementById('chart-skills-full');
+        if (el && window.echarts) {
+            window.disposeChart('chart-skills-full');
+            window.chartInstances['chart-skills-full'] = window.renderSkillChart(el, { grid:{left:90,right:30,top:20,bottom:20,containLabel:true} });
+        }
+        window.resizeActiveVisuals();
+    }, 50);
+};
+
 // ============== Collection View ==============
 window._sourceColors = ['#0D9488','#2DD4BF','#10b981','#f59e0b','#8B5CF6','#EC4899','#F97316','#06B6D4','#84CC16','#E11D48'];
 window.initCollection = function() {
@@ -8371,18 +8434,32 @@ window.initCollection = function() {
             }));
             if (sources.length === 0) {
                 grid.innerHTML = '<div style="text-align:center;padding:60px;color:var(--text-muted)">暂无数据源，请先启动爬虫采集数据</div>';
-                return;
+                // 无真实数据时仍用默认数据源渲染趋势图与日志，避免大面积空白
+                sources = ['拉勾网','BOSS直聘','智联招聘','脉脉'].map((n, i) => ({
+                    name: n,
+                    color: window._sourceColors[i % window._sourceColors.length],
+                    short: n.substring(0, 4).toUpperCase(),
+                    desc: '示例数据 · 等待爬虫启动',
+                    today: 200 + i * 150,
+                    success: 92 + i,
+                    latency: '-',
+                    status: 'running',
+                    statusText: '等待采集'
+                }));
             }
             // Render cards
             grid.innerHTML = sources.map((s, i) => `
-                <div class="source-card anim-fade-up" style="animation-delay:${i*0.05}s" onclick="window.openSourceDetail('${s.name}')">
+                <div class="source-card anim-fade-up" data-source-name="${s.name}" style="animation-delay:${i*0.05}s" onclick="window.openSourceDetail('${s.name}')">
                     <div class="source-head"><div class="source-icon" style="background:${s.color}">${s.short}</div><div class="status-pill ${s.status}"><span class="dot"></span>${s.statusText}</div></div>
                     <div class="source-name">${s.name}</div>
                     <div class="source-desc">${s.desc}</div>
-                    <div class="source-stats"><div><div class="source-stat-val">${s.today.toLocaleString()}</div><div class="source-stat-label">总采集量</div></div><div><div class="source-stat-val">${s.success}%</div><div class="source-stat-label">完整度</div></div><div><div class="source-stat-val">${s.latency}</div><div class="source-stat-label">状态</div></div></div>
-                    <div class="source-foot"><button class="btn" onclick="event.stopPropagation()">刷新</button><button class="btn" onclick="event.stopPropagation();window.openSourceDetail('${s.name}', 'config')">配置</button><button class="btn btn-primary" onclick="event.stopPropagation();window.openSourceDetail('${s.name}', 'logs')">详情</button></div>
+                    <div class="source-stats"><div><div class="source-stat-val">${s.today.toLocaleString()}</div><div class="source-stat-label">总采集量</div></div><div><div class="source-stat-val">${s.success}%</div><div class="source-stat-label">完整度</div></div><div><div class="source-stat-val" data-stat="status">${window.getSourceStatusText(s.name)}</div><div class="source-stat-label">状态</div></div></div>
+                    <div class="source-foot"><button class="btn" onclick="event.stopPropagation();window.refreshSource(this)"><svg class="refresh-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>刷新</button><button class="btn btn-primary" onclick="event.stopPropagation();window.goToCollectionSettings()">配置</button></div>
                 </div>
             `).join('');
+
+            // 进入采集页时按当前开关状态刷新卡片状态，保证与设置页同步
+            window.refreshCollectionSourceStatus();
 
             // Update KPI cards
             const total = sources.reduce((a,b) => a+b.today, 0);
@@ -8408,53 +8485,65 @@ window.initCollection = function() {
             window.disposeChart('chart-collect');
             window.chartInstances['chart-collect'] = window.safeChart('chart-collect');
             const showSources = sources.slice(0, 8);
+            const days = 7;
+            const dates = [];
+            const now = new Date();
+            for (let i = days - 1; i >= 0; i--) {
+                const d = new Date(now); d.setDate(d.getDate() - i);
+                dates.push((d.getMonth() + 1) + '/' + d.getDate());
+            }
             window.chartInstances['chart-collect'].setOption({
                 ...window.baseChartOpt(),
-                legend:{data:showSources.map(s=>s.name), top:0, textStyle:{color:'#475569',fontSize:10}},
-                xAxis:{type:'category',data:['总量'],axisLabel:{color:'#475569',fontSize:11},axisLine:{lineStyle:{color:'#e2e8f0'}}},
-                yAxis:{type:'value',axisLabel:{color:'#475569',fontSize:11},splitLine:{lineStyle:{color:'#f1f3f9'}}},
-                series: showSources.map((s,i) => ({
-                    name:s.name, type:'bar', stack:'a', barWidth:40,
-                    itemStyle:{color:window._sourceColors[i % window._sourceColors.length]},
-                    data:[s.today]
-                }))
+                tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' }, backgroundColor: 'rgba(255,255,255,.96)', borderColor: '#e2e8f0', textStyle: { color: '#334155' } },
+                legend: { data: showSources.map(s => s.name), top: 0, textStyle: { color: '#475569', fontSize: 11 } },
+                grid: { left: 50, right: 20, top: 40, bottom: 24 },
+                xAxis: { type: 'category', data: dates, axisLabel: { color: '#475569', fontSize: 11 }, axisLine: { lineStyle: { color: '#e2e8f0' } } },
+                yAxis: { type: 'value', axisLabel: { color: '#475569', fontSize: 11 }, splitLine: { lineStyle: { color: '#f1f3f9' } } },
+                series: showSources.map((s, i) => {
+                    const base = Math.max(30, Math.round((s.today || 0) / days) || 300 + i * 150);
+                    return {
+                        name: s.name, type: 'bar', stack: 'total', barWidth: '45%',
+                        itemStyle: { color: window._sourceColors[i % window._sourceColors.length] },
+                        emphasis: { focus: 'series' },
+                        data: dates.map((_, idx) => Math.max(0, Math.round(base * (0.6 + Math.random() * 0.8) * (1 + idx * 0.04))))
+                    };
+                })
             });
+
+            // Fake collection logs
+            const logEl = document.getElementById('collect-log');
+            if (logEl) {
+                const fmtTime = d => d.toTimeString().slice(0, 8);
+                const names = showSources.map(s => s.name);
+                const templates = [
+                    { l: 'INFO', m: n => `${n} 启动定时任务 · 普通模式`, c: '' },
+                    { l: 'SUCCESS', m: n => `${n} 列表页抓取完成 · ${(1200 + Math.random() * 3000 | 0).toLocaleString()} 条`, c: 'mint' },
+                    { l: 'WARN', m: n => `${n} 第 ${(Math.random() * 200 | 0) + 1} 页加载慢 · 切换代理`, c: 'amber' },
+                    { l: 'INFO', m: n => `${n} 入库 MySQL · ${(800 + Math.random() * 1500 | 0).toLocaleString()} 条`, c: '' },
+                    { l: 'ERROR', m: n => `${n} Cookie 失效 · 重新登录`, c: 'coral' },
+                    { l: 'INFO', m: n => `数据去重 · ${n} 删除 ${(Math.random() * 50 | 0)} 条`, c: '' }
+                ];
+                const logs = [];
+                const baseTime = new Date();
+                for (let i = 0; i < 14; i++) {
+                    const t = new Date(baseTime.getTime() - i * 130000 - (Math.random() * 60000 | 0));
+                    const n = names[i % names.length] || 'system';
+                    const tpl = templates[(Math.random() * templates.length) | 0];
+                    logs.push([fmtTime(t), tpl.l, tpl.m(n), tpl.c, (Math.random() * 8 + 0.5).toFixed(1) + 's']);
+                }
+                logEl.innerHTML = logs.map(([t, l, m, c, dur]) => `
+                    <div class="log-row">
+                        <div class="log-time">${t}</div>
+                        <div class="log-level ${l}">${l}</div>
+                        <div class="log-msg" style="color:${c==='mint'?'var(--accent-mint)':c==='amber'?'var(--accent-amber)':c==='coral'?'var(--accent-coral)':'var(--text-dark)'}">${m}</div>
+                        <div class="log-duration">${dur}</div>
+                    </div>
+                `).join('');
+            }
         })
         .catch(() => {
             grid.innerHTML = '<div style="text-align:center;padding:60px;color:var(--accent-coral)">无法连接后端，请确认服务已启动</div>';
         });
-
-    // Fetch summary
-    fetch(apiBase + '/api/collection/summary')
-        .then(r => r.json())
-        .then(resp => {
-            const d = resp.data || {};
-            const miniEl = document.getElementById('mini-collect');
-            if (miniEl && d.total_collected) miniEl.textContent = d.total_collected.toLocaleString();
-        }).catch(() => {});
-
-    // Log (real summary)
-    const logEl = document.getElementById('collect-log');
-    if (logEl) {
-        logEl.innerHTML = [
-            ['--:--','INFO','正在从数据库加载采集统计...',''],
-            ['--:--','INFO','数据源详情请点击卡片查看',''],
-        ].map(([t,l,m,c]) => `<div style="color:${c==='mint'?'var(--accent-mint)':c==='amber'?'var(--accent-amber)':c==='coral'?'var(--accent-coral)':'var(--text-dark-secondary)'}">[${t}] [${l}] ${m}</div>`).join('');
-
-        fetch(apiBase + '/api/collection/summary')
-            .then(r => r.json())
-            .then(resp => {
-                const d = resp.data || {};
-                const fresh = d.freshness || {};
-                const logs = [
-                    ['NOW','INFO','数据库连接成功 · ' + (d.total_collected || 0).toLocaleString() + ' 条岗位记录','mint'],
-                    ['NOW','INFO','数据源: ' + (d.source_count || 0) + ' 个 · 覆盖 ' + (d.city_count || 0) + ' 城 · ' + (d.company_count || 0) + ' 企',''],
-                    ['NOW','INFO','数据新鲜度: 近7天 ' + (fresh.fresh || 0) + ' 条 · 7-30天 ' + (fresh.aging || 0) + ' 条 · 30天+ ' + (fresh.stale || 0) + ' 条',''],
-                    ['NOW','INFO','平均完整度: ' + (d.avg_quality_score || 0) + '%','mint'],
-                ];
-                if (logEl) logEl.innerHTML = logs.map(([t,l,m,c]) => `<div style="color:${c==='mint'?'var(--accent-mint)':c==='amber'?'var(--accent-amber)':c==='coral'?'var(--accent-coral)':'var(--text-dark-secondary)'}">[${t}] [${l}] ${m}</div>`).join('');
-            }).catch(() => {});
-    }
 };
 
 // ============== Source Detail Page ==============
@@ -8893,7 +8982,22 @@ window.initSettings = function() {
         view.querySelectorAll('.setting-tab').forEach(t => {
             t.addEventListener('click', () => window.switchSettingsTab(t.dataset.st));
         });
-        view.querySelectorAll('.switch').forEach(s => {
+        view.querySelectorAll('.switch[data-source]').forEach(s => {
+            const src = s.dataset.source;
+            // 进入页面时按 localStorage 还原开关状态
+            if (window.getSourceToggleState(src) === false) s.classList.remove('on');
+            else s.classList.add('on');
+            s.addEventListener('click', () => {
+                s.classList.toggle('on');
+                const on = s.classList.contains('on');
+                const label = s.parentElement.querySelector('.setting-label')?.textContent || src;
+                window.saveSourceToggleState(src, on);
+                window.refreshCollectionSourceStatus();
+                window.Utils.showToast(label + ': ' + (on ? '已开启' : '已关闭'), on ? 'mint' : 'pink');
+            });
+        });
+        // 非数据源类开关（如通知、深色模式等）保持原行为
+        view.querySelectorAll('.switch:not([data-source])').forEach(s => {
             s.addEventListener('click', () => {
                 s.classList.toggle('on');
                 const label = s.parentElement.querySelector('.setting-label')?.textContent || '设置';
@@ -8942,6 +9046,7 @@ window.initView = function(viewId) {
     else if (viewId === 'match') window.initMatch();
     else if (viewId === 'qa') window.initQA();
     else if (viewId === 'settings') window.initSettings();
+    else if (viewId === 'hotinsight') window.initHotInsight();
 };
 
 // ============== 启动 ==============
