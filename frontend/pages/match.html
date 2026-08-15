@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>执图破局 · 人岗匹配诊断</title>
+  <link rel="stylesheet" href="../css/tokens.css" />
+  <link rel="stylesheet" href="../css/shell.css" />
+  <link rel="stylesheet" href="../css/components.css" />
+</head>
+<body data-page="match">
+  <div id="app-shell"></div>
+  <main class="page-main page-main--embed" id="page-main"></main>
+  <script src="../js/api.js"></script>
+  <script src="../js/shell.js"></script>
+  <script src="../js/pages/embed.js"></script>
+  <script>
+    window.mountEmbedPage({
+      pageId: 'match',
+      view: 'match',
+      title: '人岗匹配诊断',
+      subtitle: '简历诊断与竞争力对比'
+    });
+  </script>
+</body>
+</html>

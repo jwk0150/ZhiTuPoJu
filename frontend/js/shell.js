@@ -1,21 +1,32 @@
 (function () {
-  const PAGE_HREF = {
-    home: 'home.html',
-    map: '../portal.html#view-map',
-    evolution: '../portal.html#view-evolution',
-    discovery: '../portal.html#view-discovery',
-    match: '../portal.html#view-match',
-    qa: '../portal.html#view-qa',
-    collection: '../portal.html#view-collection',
-    analysis: '../portal.html#view-analysis',
-    quality: '../portal.html#view-quality',
-    settings: '../portal.html#view-settings',
-    profile: '../profile.html'
-  };
+  function hrefBase() {
+    const path = String(location.pathname || '').replace(/\\/g, '/');
+    if (/\/pages\/more\//.test(path)) return '../';
+    return '';
+  }
+
+  function buildPageHref() {
+    const b = hrefBase();
+    return {
+      home: b + 'home.html',
+      map: b + 'map.html',
+      evolution: b + 'evolution.html',
+      discovery: b + 'discovery.html',
+      match: b + 'match.html',
+      qa: b + 'qa.html',
+      collection: b + 'more/collection.html',
+      analysis: b + 'more/analysis.html',
+      quality: b + 'more/quality.html',
+      settings: b + 'more/settings.html',
+      profile: b + 'profile.html'
+    };
+  }
+
+  const PAGE_HREF = buildPageHref();
 
   const NAV = {
     primary: [
-      { id: 'home', label: '首页 / 演示路径' },
+      { id: 'home', label: '工作台' },
       { id: 'map', label: '数字人才地图' },
       { id: 'evolution', label: '岗位能力演化' },
       { id: 'discovery', label: '新岗位发现' },
@@ -29,13 +40,6 @@
       { id: 'settings', label: '系统设置' }
     ]
   };
-
-  const DEMO_STEPS = [
-    { id: 'map', label: '地图' },
-    { id: 'evolution', label: '演化' },
-    { id: 'discovery', label: '发现' },
-    { id: 'match', label: '匹配' }
-  ];
 
   const ICONS = {
     home: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>',
@@ -66,7 +70,7 @@
       if (!raw) return null;
       return JSON.parse(raw);
     } catch (_) {
-      return { name: String(localStorage.getItem('zhitu_user') || '') };
+      return null;
     }
   }
 
@@ -81,8 +85,7 @@
   }
 
   function moreIsOpen(pageId) {
-    const inMore = NAV.more.some(function (item) { return item.id === pageId; });
-    if (inMore) return true;
+    if (NAV.more.some(function (item) { return item.id === pageId; })) return true;
     return sessionStorage.getItem('shell_more_open') === '1';
   }
 
@@ -106,9 +109,8 @@
     if (byId && !host.contains(byId)) return byId;
     const parent = host.parentElement;
     if (!parent) return null;
-    const siblings = parent.children;
-    for (let i = 0; i < siblings.length; i++) {
-      const el = siblings[i];
+    for (let i = 0; i < parent.children.length; i++) {
+      const el = parent.children[i];
       if (el !== host && el.classList && el.classList.contains('page-main')) return el;
     }
     return null;
@@ -124,13 +126,11 @@
     return (
       '<nav class="sidebar-nav">' +
         '<div class="nav-group">' +
-          '<div class="nav-label">主线</div>' +
+          '<div class="nav-label">产品能力</div>' +
           primary +
         '</div>' +
         '<div class="nav-group' + (moreOpen ? ' is-open' : '') + '" data-nav-more>' +
-          '<button type="button" class="nav-label nav-more-toggle" data-more-toggle>' +
-            '更多' +
-          '</button>' +
+          '<button type="button" class="nav-label nav-more-toggle" data-more-toggle>运维与配置</button>' +
           '<div class="nav-more-items" data-more-items style="display:' + (moreOpen ? 'block' : 'none') + '">' +
             moreItems +
           '</div>' +
@@ -139,24 +139,7 @@
     );
   }
 
-  function renderDemoPath(pageId) {
-    const idx = DEMO_STEPS.findIndex(function (step) { return step.id === pageId; });
-    const parts = ['<span class="demo-path-label">演示路径</span>'];
-    DEMO_STEPS.forEach(function (step, i) {
-      if (i > 0) parts.push('<span class="demo-path-arrow">→</span>');
-      let cls = 'demo-path-step';
-      if (step.id === pageId) cls += ' active';
-      else if (idx >= 0 && i < idx) cls += ' done';
-      parts.push('<a class="' + cls + '" href="' + PAGE_HREF[step.id] + '" data-demo="' + step.id + '">' + step.label + '</a>');
-    });
-    const next = idx < 0 ? DEMO_STEPS[0] : DEMO_STEPS[idx + 1];
-    if (next) {
-      parts.push('<a class="demo-path-next" href="' + PAGE_HREF[next.id] + '">下一步：' + next.label + '</a>');
-    }
-    return parts.join('');
-  }
-
-  function bindChrome(host, pageId) {
+  function bindChrome(host) {
     const sidebar = host.querySelector('.sidebar');
     const backdrop = host.querySelector('.sidebar-backdrop');
     const toggle = host.querySelector('.topbar-toggle');
@@ -175,9 +158,7 @@
         setSidebarOpen(!sidebar.classList.contains('is-open'));
       });
     }
-    if (backdrop) {
-      backdrop.addEventListener('click', function () { setSidebarOpen(false); });
-    }
+    if (backdrop) backdrop.addEventListener('click', function () { setSidebarOpen(false); });
     if (moreToggle && moreItems) {
       moreToggle.addEventListener('click', function () {
         const open = moreItems.style.display === 'none';
@@ -193,6 +174,7 @@
     const pageId = opts.pageId || document.body.getAttribute('data-page') || 'home';
     const title = opts.title || '';
     const subtitle = opts.subtitle || '';
+    const embed = !!opts.embed;
 
     if (!document.body.getAttribute('data-page')) {
       document.body.setAttribute('data-page', pageId);
@@ -218,10 +200,10 @@
       '<div class="sidebar-backdrop"></div>' +
       '<aside class="sidebar">' +
         '<div class="sidebar-brand">' +
-          '<div class="sidebar-brand-logo">' + ICONS.map + '</div>' +
+          '<div class="sidebar-brand-logo" role="img" aria-label="执图破局"></div>' +
           '<div class="sidebar-brand-text">' +
             '<div class="sidebar-brand-title">执图破局</div>' +
-            '<div class="sidebar-brand-sub">ZHITU POJU</div>' +
+            '<div class="sidebar-brand-sub">Talent Mapping</div>' +
           '</div>' +
         '</div>' +
         renderNav(pageId, moreOpen) +
@@ -229,7 +211,7 @@
           '<div class="sidebar-user-avatar">' + escapeHtml(userInitial(label)) + '</div>' +
           '<div class="sidebar-user-info">' +
             '<div class="sidebar-user-name">' + safeLabel + '</div>' +
-            '<div class="sidebar-user-role">演示账号</div>' +
+            '<div class="sidebar-user-role">平台账号</div>' +
           '</div>' +
         '</div>' +
       '</aside>' +
@@ -245,17 +227,20 @@
               '<span class="topbar-user-avatar">' + escapeHtml(userInitial(label)) + '</span>' +
               '<span class="topbar-user-label">' + safeLabel + '</span>' +
             '</a>' +
+            '<div class="topbar-brand-logo" title="执图破局" role="img" aria-label="平台 Logo"></div>' +
           '</div>' +
         '</header>' +
-        '<div class="demo-path">' + renderDemoPath(pageId) + '</div>' +
       '</div>';
 
     const column = host.querySelector('.main-column');
-    if (pageMain && column) column.appendChild(pageMain);
+    if (pageMain && column) {
+      if (embed) pageMain.classList.add('page-main--embed');
+      column.appendChild(pageMain);
+    }
 
-    bindChrome(host, pageId);
+    bindChrome(host);
   }
 
   window.PAGE_HREF = PAGE_HREF;
-  window.Shell = { mount: mount, NAV: NAV, DEMO_STEPS: DEMO_STEPS };
+  window.Shell = { mount: mount, NAV: NAV };
 })();

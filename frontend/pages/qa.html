@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>执图破局 · 智能问答</title>
+  <link rel="stylesheet" href="../css/tokens.css" />
+  <link rel="stylesheet" href="../css/shell.css" />
+  <link rel="stylesheet" href="../css/components.css" />
+</head>
+<body data-page="qa">
+  <div id="app-shell"></div>
+  <main class="page-main page-main--embed" id="page-main"></main>
+  <script src="../js/api.js"></script>
+  <script src="../js/shell.js"></script>
+  <script src="../js/pages/embed.js"></script>
+  <script>
+    window.mountEmbedPage({
+      pageId: 'qa',
+      view: 'qa',
+      title: '智能问答',
+      subtitle: '图谱驱动的岗位能力问答'
+    });
+  </script>
+</body>
+</html>

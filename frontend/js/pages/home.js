@@ -1,25 +1,16 @@
 (function () {
-  if (!window.Shell || typeof window.Shell.mount !== 'function') {
-    return;
+  if (window.Shell && typeof window.Shell.mount === 'function') {
+    window.Shell.mount({
+      pageId: 'home',
+      title: '工作台',
+      subtitle: '执图破局 · 数字人才图谱平台'
+    });
   }
 
-  window.Shell.mount({
-    pageId: 'home',
-    title: '演示路径',
-    subtitle: '数据 → 图谱 → 匹配'
-  });
-
-  var hrefs = window.PAGE_HREF || {};
-  var nodes = document.querySelectorAll('[data-page-href]');
-  for (var i = 0; i < nodes.length; i++) {
-    var key = nodes[i].getAttribute('data-page-href');
-    if (key && hrefs[key]) {
-      nodes[i].setAttribute('href', hrefs[key]);
+  document.querySelectorAll('[data-page-href]').forEach(function (el) {
+    const key = el.getAttribute('data-page-href');
+    if (window.PAGE_HREF && window.PAGE_HREF[key]) {
+      el.setAttribute('href', window.PAGE_HREF[key]);
     }
-  }
-
-  var canvas = document.getElementById('home-particles');
-  if (canvas && window.TealParticles) {
-    window.TealParticles.mount(canvas);
-  }
+  });
 })();
