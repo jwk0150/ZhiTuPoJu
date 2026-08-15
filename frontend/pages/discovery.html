@@ -7,20 +7,240 @@
   <link rel="stylesheet" href="../css/tokens.css" />
   <link rel="stylesheet" href="../css/shell.css" />
   <link rel="stylesheet" href="../css/components.css" />
+  <link rel="stylesheet" href="../css/legacy-views.css" />
+  <link rel="stylesheet" href="../css/page-polish.css" />
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  
 </head>
-<body data-page="discovery">
+<body class="standalone-view" data-page="discovery">
   <div id="app-shell"></div>
-  <main class="page-main page-main--embed" id="page-main"></main>
+  <main class="page-main" id="page-main">
+<section class="view active" id="view-discovery">
+<header class="proto-page-head">
+<div>
+<h1 class="proto-title">新岗位发现</h1>
+<p class="proto-subtitle">AI 持续扫描岗位信号，沉淀高价值发现与采购建议</p>
+</div>
+</header>
+
+<section class="proto-summary">
+<article class="proto-hero">
+<div class="proto-hero-label">AI 今日发现</div>
+<h2 class="proto-hero-h">今天已扫描 <em id="disc-hero-scanned">5,328</em> 个岗位</h2>
+<p class="proto-hero-p" id="disc-hero-desc">发现 8 个高价值岗位，建议优先审核其中 3 个</p>
+<button type="button" class="proto-hero-btn" onclick="openAiSuggestions()">立即查看 AI 建议 &gt;</button>
+</article>
+<div class="proto-stats">
+<button type="button" class="proto-stat" data-status="found">
+<span class="proto-stat-label">今日发现</span>
+<span class="proto-stat-val" id="kpi-discovered">8</span>
+<span class="proto-stat-foot"><span class="up" id="kpi-discovered-trend">+14%</span> 较昨日
+<svg class="proto-spark" viewBox="0 0 72 28" preserveAspectRatio="none" aria-hidden="true">
+<defs><linearGradient id="spg-found" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#3B82F6" stop-opacity=".45"/><stop offset="100%" stop-color="#3B82F6" stop-opacity="0"/></linearGradient></defs>
+<path class="spark-area" d="M0,20 C10,16 16,18 24,12 C32,6 40,14 48,8 C56,4 64,7 72,5 L72,28 L0,28 Z" fill="url(#spg-found)"/>
+<path class="spark-line" d="M0,20 C10,16 16,18 24,12 C32,6 40,14 48,8 C56,4 64,7 72,5" stroke="#2563EB"/>
+<circle class="spark-dot" cx="72" cy="5" r="2.6" fill="#2563EB"/>
+</svg></span>
+</button>
+<button type="button" class="proto-stat" data-status="pending">
+<span class="proto-stat-label">待审核</span>
+<span class="proto-stat-val" id="kpi-pending">8</span>
+<span class="proto-stat-foot"><span class="up" id="kpi-pending-trend">+33%</span> 较昨日
+<svg class="proto-spark" viewBox="0 0 72 28" preserveAspectRatio="none" aria-hidden="true">
+<defs><linearGradient id="spg-pending" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#F59E0B" stop-opacity=".4"/><stop offset="100%" stop-color="#F59E0B" stop-opacity="0"/></linearGradient></defs>
+<path class="spark-area" d="M0,18 C12,16 18,17 28,11 C38,5 46,13 56,8 C64,5 68,6 72,3 L72,28 L0,28 Z" fill="url(#spg-pending)"/>
+<path class="spark-line" d="M0,18 C12,16 18,17 28,11 C38,5 46,13 56,8 C64,5 68,6 72,3" stroke="#D97706"/>
+<circle class="spark-dot" cx="72" cy="3" r="2.6" fill="#D97706"/>
+</svg></span>
+</button>
+<button type="button" class="proto-stat" data-status="adopted">
+<span class="proto-stat-label">已采购</span>
+<span class="proto-stat-val" id="kpi-adopted">0</span>
+<span class="proto-stat-foot"><span id="kpi-adopted-trend">0%</span> 较昨日
+<svg class="proto-spark" viewBox="0 0 72 28" preserveAspectRatio="none" aria-hidden="true">
+<defs><linearGradient id="spg-adopted" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#10B981" stop-opacity=".35"/><stop offset="100%" stop-color="#10B981" stop-opacity="0"/></linearGradient></defs>
+<path class="spark-area" d="M0,16 C14,15 28,16 42,14 C56,12 64,13 72,12 L72,28 L0,28 Z" fill="url(#spg-adopted)"/>
+<path class="spark-line" d="M0,16 C14,15 28,16 42,14 C56,12 64,13 72,12" stroke="#059669"/>
+<circle class="spark-dot" cx="72" cy="12" r="2.6" fill="#059669"/>
+</svg></span>
+</button>
+<button type="button" class="proto-stat" data-status="forecast">
+<span class="proto-stat-label">AI 预测</span>
+<span class="proto-stat-val" id="kpi-forecast">6</span>
+<span class="proto-stat-foot"><span class="up" id="kpi-forecast-trend">+20%</span> 较昨日
+<svg class="proto-spark" viewBox="0 0 72 28" preserveAspectRatio="none" aria-hidden="true">
+<defs><linearGradient id="spg-forecast" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#8B5CF6" stop-opacity=".4"/><stop offset="100%" stop-color="#8B5CF6" stop-opacity="0"/></linearGradient></defs>
+<path class="spark-area" d="M0,22 C10,18 18,19 28,14 C38,9 48,12 58,7 C66,4 70,5 72,3 L72,28 L0,28 Z" fill="url(#spg-forecast)"/>
+<path class="spark-line" d="M0,22 C10,18 18,19 28,14 C38,9 48,12 58,7 C66,4 70,5 72,3" stroke="#7C3AED"/>
+<circle class="spark-dot" cx="72" cy="3" r="2.6" fill="#7C3AED"/>
+</svg></span>
+</button>
+</div>
+</section>
+
+<div class="proto-toolbar">
+<div class="proto-search">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+<input type="text" id="discovery-search" placeholder="搜索岗位名称、技能或公司...">
+</div>
+<select class="proto-select" id="discovery-city"><option value="all">城市</option><option value="北京">北京</option><option value="上海">上海</option><option value="深圳">深圳</option><option value="杭州">杭州</option><option value="广州">广州</option><option value="成都">成都</option><option value="远程">远程</option><option value="全国">全国</option></select>
+<select class="proto-select" id="discovery-cat"><option value="all">岗位类型</option><option value="人工智能">人工智能</option><option value="后端开发">后端开发</option><option value="前端开发">前端开发</option><option value="数据科学">数据科学</option><option value="产品运营">产品运营</option><option value="运维测试">运维测试</option><option value="安全">安全</option></select>
+<select class="proto-select" id="discovery-conf"><option value="all">可信度</option><option value="80">≥80%</option><option value="60">≥60%</option><option value="0">全部</option></select>
+<select class="proto-select" id="discovery-sort"><option value="confidence">AI 推荐</option><option value="date">按时间</option><option value="name">按名称</option></select>
+<div class="proto-orb-slot" id="proto-orb-slot" aria-hidden="true" title="推演胞体">
+<div class="proto-stage" id="proto-stage">
+<div class="disc-mission" id="disc-mission">
+<aside class="disc-left" id="disc-left">
+<div id="disc-3d" class="disc-3d" aria-hidden="true"></div>
+<div class="proto-stage-veil"></div>
+<div class="proto-stage-caption">
+<div class="proto-stage-phase"><span class="pulse-dot"></span><span id="disc-phase-text">待机</span></div>
+<div class="proto-stage-thought" id="disc-thought-now">智能体推演舱</div>
+</div>
+</aside>
+</div>
+</div>
+</div>
+<button type="button" class="proto-rescan" id="btn-agent-rescan" onclick="agentScan()">
+<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/><polyline points="21 3 21 9 15 9"/></svg>
+重新扫描
+</button>
+</div>
+
+<!-- 兼容旧逻辑的隐藏钩子 -->
+<div id="discovery-tabs" hidden>
+<div class="tab-item active" data-status="all"></div>
+<div class="tab-item" data-status="found"></div>
+<div class="tab-item" data-status="pending"></div>
+<div class="tab-item" data-status="adopted"></div>
+<div class="tab-item" data-status="forecast"></div>
+<div class="tab-item" data-status="rejected"></div>
+</div>
+<button type="button" id="btn-agent-scan" onclick="agentScan()" hidden>扫描</button>
+<span id="disc-pg-count" hidden></span>
+<span id="disc-engine-badge" hidden></span>
+<span id="disc-llm-badge" hidden></span>
+<span id="disc-left-meta" hidden></span>
+<div id="disc-stream" hidden></div>
+<div id="disc-phase-live" hidden><span class="pulse-dot"></span></div>
+<div id="disc-radar" hidden></div>
+<div id="disc-hallucination" hidden></div>
+<div id="disc-particles" hidden></div>
+<canvas id="disc-cluster-canvas" hidden></canvas>
+
+<div class="proto-results" id="discovery-results">
+<section class="proto-sec" id="disc-sec-found" data-sec="found">
+<div class="proto-sec-head">
+<div class="proto-sec-head-main"><h3>发现岗位</h3><span class="count" id="disc-found-count">0</span></div>
+</div>
+<div class="proto-sec-body">
+<div class="proto-grid job-grid" id="discovery-grid"></div>
+<div class="proto-sec-pager" id="found-pager-wrap" hidden>
+<nav class="proto-pager" id="found-pager" aria-label="发现岗位分页"></nav>
+<label class="proto-page-jump">跳至 <input type="number" id="found-page-input" min="1" step="1" inputmode="numeric"> 页 <button type="button" data-jump="found">前往</button></label>
+</div>
+</section>
+<section class="proto-sec is-forecast" id="disc-sec-forecast" data-sec="forecast">
+<div class="proto-sec-head">
+<div class="proto-sec-head-main"><h3>预测岗位</h3><span class="count" id="disc-forecast-count">0</span></div>
+<button type="button" class="proto-track-entry" id="proto-track-entry" onclick="window.openTrackLog()" title="查看跟踪清单">
+跟踪清单 <span class="n" id="proto-track-count">0</span>
+</button>
+</div>
+<div class="proto-sec-body">
+<div class="proto-grid job-grid" id="forecast-grid"></div>
+<div class="proto-sec-pager" id="forecast-pager-wrap" hidden>
+<nav class="proto-pager" id="forecast-pager" aria-label="预测岗位分页"></nav>
+<label class="proto-page-jump">跳至 <input type="number" id="forecast-page-input" min="1" step="1" inputmode="numeric"> 页 <button type="button" data-jump="forecast">前往</button></label>
+</div>
+</section>
+</div>
+
+<!-- 跟踪清单详情（标题右侧小入口点开） -->
+<div class="proto-track-mask" id="proto-track-mask" onclick="closeTrackLog()"></div>
+<aside class="proto-track-panel" id="proto-track-panel" role="dialog" aria-modal="true" aria-labelledby="proto-track-title" aria-hidden="true">
+<div class="proto-track-panel-head">
+<div>
+<h2 id="proto-track-title">跟踪清单</h2>
+<p id="proto-track-sub">点击预测岗位「跟踪」后记录会出现在这里</p>
+</div>
+<button type="button" class="proto-track-panel-close" onclick="closeTrackLog()" aria-label="关闭">×</button>
+</div>
+<div class="proto-track-panel-body" id="proto-track-rail-body">
+<div class="proto-track-rail-empty">暂无跟踪记录。</div>
+</div>
+</aside>
+
+<!-- 扫描时底部中央 3D + 全屏树突层 -->
+<div class="proto-scan-layer" id="proto-scan-layer" aria-hidden="true">
+<svg class="proto-bridge" id="disc-bridge" aria-hidden="true">
+<defs>
+<linearGradient id="discAxonGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+<stop offset="0%" stop-color="#60A5FA" stop-opacity="0.2"/>
+<stop offset="40%" stop-color="#3B82F6" stop-opacity="0.95"/>
+<stop offset="100%" stop-color="#93C5FD" stop-opacity="0.55"/>
+</linearGradient>
+</defs>
+</svg>
+</div>
+
+<!-- AI 建议对话框（页内居中） -->
+<div class="proto-suggest-mask" id="proto-suggest-mask" onclick="closeAiSuggestions()"></div>
+<aside class="proto-suggest" id="proto-suggest" role="dialog" aria-modal="true" aria-labelledby="proto-suggest-title" aria-hidden="true">
+<div class="proto-suggest-head">
+<div class="proto-suggest-brand">
+<div class="proto-suggest-avatar" aria-hidden="true">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l1.8 4.8L19 9.5l-4.2 2.7L16 17l-4-2.6L8 17l1.2-4.8L5 9.5l5.2-1.7L12 3z"/></svg>
+</div>
+<div>
+<h2 id="proto-suggest-title">AI 采购顾问</h2>
+<p id="proto-suggest-sub">基于本轮扫描的高置信度岗位排序</p>
+</div>
+</div>
+<button type="button" class="proto-suggest-close" onclick="closeAiSuggestions()" aria-label="关闭">×</button>
+</div>
+<div class="proto-suggest-body" id="proto-suggest-body"></div>
+<div class="proto-suggest-foot">
+<div class="proto-suggest-compose">
+<textarea id="proto-suggest-input" rows="1" placeholder="问问采购顾问：为何推荐、预算怎么排、预测岗何时入库…" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();window.sendAiSuggestChat();}"></textarea>
+<button type="button" class="proto-suggest-send" id="proto-suggest-send" onclick="window.sendAiSuggestChat()">发送</button>
+</div>
+<div class="proto-suggest-chips">
+<button type="button" class="proto-suggest-chip" onclick="window.askAiSuggest('请给出本轮优先采购清单并说明理由')">优先采购清单</button>
+<button type="button" class="proto-suggest-chip" onclick="window.askAiSuggest('待审核岗位里哪些最值得先入库？')">待审核优先</button>
+<button type="button" class="proto-suggest-chip" onclick="window.askAiSuggest('结合预测岗位，未来 6-12 个月该储备哪些能力？')">预测储备</button>
+</div>
+<div class="proto-suggest-actions">
+<button type="button" class="proto-suggest-secondary" onclick="closeAiSuggestions()">稍后再说</button>
+<button type="button" class="proto-suggest-primary" onclick="agentBatchAdopt(); closeAiSuggestions();">一键采购推荐项</button>
+</div>
+</div>
+</aside>
+
+<footer class="proto-footer">
+<span id="disc-total-label">共 0 个岗位</span>
+</footer>
+
+<aside class="disc-drawer" id="disc-drawer" aria-hidden="true">
+<div class="disc-drawer-head">
+<h2 id="disc-drawer-title">岗位详情</h2>
+<button type="button" onclick="closeDiscoveryDrawer()">×</button>
+</div>
+<div class="disc-drawer-body" id="disc-drawer-body"></div>
+<div class="disc-drawer-actions" id="disc-drawer-actions"></div>
+</aside>
+<div class="disc-drawer-mask" id="disc-drawer-mask" onclick="closeDiscoveryDrawer()"></div>
+</section>
+
+  </main>
   <script src="../js/api.js"></script>
+  <script src="../js/runtime-core.js"></script>
   <script src="../js/shell.js"></script>
-  <script src="../js/pages/embed.js"></script>
+  <script src="../js/pages/discovery.js"></script>
   <script>
-    window.mountEmbedPage({
-      pageId: 'discovery',
-      view: 'discovery',
-      title: '新岗位发现',
-      subtitle: '新兴岗位与能力信号'
-    });
+    window.Shell && window.Shell.mount({ pageId: 'discovery', title: '新岗位发现', subtitle: '新兴岗位与能力信号' });
+    window.initDiscovery && window.initDiscovery();
   </script>
 </body>
 </html>

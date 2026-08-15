@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
+  <!-- left arc -->
+  <path d="M100 18c-45.3 0-82 36.7-82 82s36.7 82 82 82" stroke="#10C8D4" stroke-width="9" stroke-linecap="round"/>
+  <!-- right bottom arc -->
+  <path d="M100 182c28 0 53.2-14.1 68.4-36" stroke="#1EA8E8" stroke-width="4" stroke-linecap="round" opacity=".85"/>
+
+  <!-- diagonal slash + bolt tip -->
+  <path d="M48 158 L118 72 L128 82 L148 52" stroke="#10C8D4" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M148 52 L132 58 L142 72 Z" fill="#10C8D4"/>
+
+  <!-- left hub + spokes -->
+  <circle cx="78" cy="100" r="11" stroke="#10C8D4" stroke-width="5"/>
+  <line x1="78" y1="89" x2="78" y2="58" stroke="#0B2F53" stroke-width="3" stroke-linecap="round"/>
+  <line x1="70" y1="94" x2="48" y2="78" stroke="#0B2F53" stroke-width="3" stroke-linecap="round"/>
+  <line x1="70" y1="108" x2="46" y2="128" stroke="#0B2F53" stroke-width="3" stroke-linecap="round"/>
+  <line x1="78" y1="111" x2="78" y2="142" stroke="#0B2F53" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="78" cy="54" r="6" fill="#F5A623"/>
+  <circle cx="44" cy="74" r="5.5" fill="#10C8D4"/>
+  <circle cx="42" cy="132" r="5.5" fill="#10C8D4"/>
+  <circle cx="78" cy="148" r="5.5" fill="#0B2F53"/>
+
+  <!-- right circuit traces -->
+  <path d="M122 96 H148 V108" stroke="#0B2F53" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M128 112 H156 V128" stroke="#0B2F53" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M134 134 H162 V150" stroke="#0B2F53" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="148" cy="108" r="5.5" fill="#0B2F53"/>
+  <circle cx="156" cy="128" r="5.5" fill="#F5A623"/>
+  <circle cx="162" cy="150" r="5.5" fill="#0B2F53"/>
+</svg>

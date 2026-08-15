@@ -1,0 +1,386 @@
+/* Insight + Discovery polish — match home glass / cyan brand. Keep all IDs & data-* intact. */
+
+body[data-page="insight"] .page-main,
+body[data-page="discovery"] .page-main {
+  --glass-card: rgba(255, 255, 255, 0.9);
+  --glass-border: rgba(255, 255, 255, 0.75);
+  --glass-shadow: 0 12px 32px rgba(20, 80, 110, 0.07);
+  --r-card: 18px;
+}
+
+/* —— Shared cards / page chrome —— */
+body[data-page="insight"] .card,
+body[data-page="discovery"] .card {
+  background: var(--glass-card) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--r-card) !important;
+  box-shadow: var(--glass-shadow) !important;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+body[data-page="insight"] .page-header,
+body[data-page="discovery"] .page-header {
+  margin-bottom: 18px;
+  gap: 14px;
+}
+
+body[data-page="insight"] .page-title-block h1,
+body[data-page="discovery"] .page-title-block h1 {
+  font-family: var(--font-display);
+  font-size: clamp(22px, 2vw, 28px);
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: var(--text-dark);
+}
+
+body[data-page="insight"] .page-title-block .subtitle,
+body[data-page="discovery"] .page-title-block .subtitle {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.55;
+  margin-top: 4px;
+}
+
+body[data-page="insight"] .hub-tabs {
+  margin-bottom: 18px;
+  padding: 5px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid var(--border);
+  box-shadow: 0 8px 22px rgba(20, 80, 110, 0.05);
+  backdrop-filter: blur(12px);
+}
+
+body[data-page="insight"] .hub-tab {
+  border-radius: 10px;
+  font-weight: 600;
+  padding: 9px 16px;
+}
+
+body[data-page="insight"] .hub-tab.active {
+  background: linear-gradient(135deg, #1FC8D9, #1EA8E8);
+  color: #fff;
+  box-shadow: 0 8px 18px rgba(30, 168, 232, 0.28);
+}
+
+/* —— Evolution —— */
+body[data-page="insight"] .evo-list {
+  background: var(--glass-card) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--r-card) !important;
+  box-shadow: var(--glass-shadow) !important;
+  backdrop-filter: blur(12px);
+  padding: 8px !important;
+}
+
+body[data-page="insight"] .evo-item {
+  border-radius: 12px !important;
+  margin: 3px 0 !important;
+  padding: 12px 14px !important;
+}
+
+body[data-page="insight"] .evo-item:hover {
+  background: rgba(31, 200, 217, 0.08) !important;
+}
+
+body[data-page="insight"] .evo-item.active {
+  background: linear-gradient(135deg, rgba(31, 200, 217, 0.16), rgba(30, 168, 232, 0.08)) !important;
+  box-shadow: inset 3px 0 0 var(--signal);
+}
+
+body[data-page="insight"] .evo-item.active .evo-title {
+  color: var(--signal-deep) !important;
+}
+
+body[data-page="insight"] .evo-stat {
+  background: var(--glass-card) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 16px !important;
+  box-shadow: var(--glass-shadow) !important;
+}
+
+body[data-page="insight"] .timeline-slider {
+  background: var(--glass-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+  box-shadow: var(--glass-shadow);
+}
+
+body[data-page="insight"] .timeline-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  gap: 12px;
+}
+
+body[data-page="insight"] .timeline-head-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+body[data-page="insight"] .timeline-head-now {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+body[data-page="insight"] .timeline-head-now strong {
+  color: var(--signal-deep);
+  font-weight: 700;
+}
+
+body[data-page="insight"] .filter-pill {
+  border-radius: 999px !important;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.8);
+  transition: all 0.2s ease;
+}
+
+body[data-page="insight"] .filter-pill.active {
+  background: linear-gradient(135deg, #1FC8D9, #1EA8E8) !important;
+  color: #fff !important;
+  border-color: transparent !important;
+  box-shadow: 0 6px 14px rgba(30, 168, 232, 0.25);
+}
+
+body[data-page="insight"] .change-item {
+  background: rgba(234, 246, 251, 0.65) !important;
+  border-radius: 12px !important;
+}
+
+/* —— Trends —— */
+body[data-page="insight"] .trend-hero {
+  background:
+    radial-gradient(ellipse 50% 80% at 90% 30%, rgba(120, 210, 240, 0.28), transparent 55%),
+    linear-gradient(115deg, #E8F6FC 0%, #F5FBFD 50%, #EAF4FB 100%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.75) !important;
+  border-radius: 22px !important;
+  box-shadow: var(--glass-shadow) !important;
+}
+
+body[data-page="insight"] .trend-hero-tag {
+  text-transform: none !important;
+  letter-spacing: 0.04em !important;
+  font-family: var(--font-body) !important;
+  font-size: 12px !important;
+  color: var(--signal-deep) !important;
+}
+
+body[data-page="insight"] .trend-kpi-card {
+  background: var(--glass-card) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 18px !important;
+  box-shadow: var(--glass-shadow) !important;
+  backdrop-filter: blur(12px);
+}
+
+body[data-page="insight"] .trend-kpi-label {
+  text-transform: none !important;
+  letter-spacing: 0.02em !important;
+  font-family: var(--font-body) !important;
+  font-size: 12px !important;
+  color: var(--text-muted) !important;
+}
+
+body[data-page="insight"] .trend-kpi-card.kpi-confidence .trend-kpi-icon {
+  background: linear-gradient(135deg, #1FC8D9, #1EA8E8) !important;
+  box-shadow: 0 0 14px rgba(31, 200, 217, 0.3) !important;
+}
+
+body[data-page="insight"] .trend-kpi-change.high {
+  background: rgba(31, 200, 217, 0.12) !important;
+  color: var(--signal-deep) !important;
+}
+
+body[data-page="insight"] .trend-section,
+body[data-page="insight"] .trend-module,
+body[data-page="insight"] .trend-panel {
+  background: var(--glass-card);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  box-shadow: var(--glass-shadow);
+}
+
+body[data-page="insight"] [class*="trend-"] .section-title,
+body[data-page="insight"] .trend-section-title,
+body[data-page="insight"] .trend-block-title {
+  font-family: var(--font-display);
+  letter-spacing: 0.01em;
+}
+
+/* —— Discovery brand retint —— */
+#view-discovery {
+  --proto-blue: #0AA8BC !important;
+  --proto-blue-deep: #088a9c !important;
+  --proto-blue-soft: rgba(31, 200, 217, 0.12) !important;
+  --proto-border: #D5E8F0 !important;
+  --proto-muted: #5B7388 !important;
+  --proto-text: #14324A !important;
+  --proto-bg: transparent !important;
+}
+
+#view-discovery .proto-title {
+  font-family: var(--font-display) !important;
+  font-size: clamp(22px, 2vw, 28px) !important;
+  color: var(--text-dark) !important;
+}
+
+#view-discovery .proto-subtitle {
+  color: var(--text-secondary) !important;
+  font-size: 13.5px !important;
+}
+
+#view-discovery .proto-hero {
+  background:
+    radial-gradient(ellipse 55% 90% at 88% 20%, rgba(160, 230, 245, 0.45), transparent 55%),
+    linear-gradient(125deg, #1FC8D9 0%, #1EA8E8 48%, #0E8FA8 100%) !important;
+  border-radius: 22px !important;
+  box-shadow: 0 16px 36px rgba(16, 168, 188, 0.22) !important;
+  min-height: 160px !important;
+}
+
+#view-discovery .proto-hero-btn {
+  background: rgba(255, 255, 255, 0.95) !important;
+  color: var(--signal-deep) !important;
+  border-radius: 999px !important;
+  padding: 10px 18px !important;
+  box-shadow: 0 8px 18px rgba(10, 60, 90, 0.12);
+}
+
+#view-discovery .proto-hero-btn:hover {
+  background: #fff !important;
+}
+
+#view-discovery .proto-stat {
+  background: var(--glass-card) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 16px !important;
+  box-shadow: var(--glass-shadow) !important;
+  backdrop-filter: blur(12px);
+}
+
+#view-discovery .proto-stat:hover,
+#view-discovery .proto-stat.active {
+  border-color: rgba(31, 200, 217, 0.45) !important;
+  box-shadow: 0 12px 28px rgba(20, 80, 110, 0.1) !important;
+}
+
+#view-discovery .proto-stat-val {
+  font-family: var(--font-display) !important;
+  color: var(--text-dark) !important;
+}
+
+#view-discovery .proto-search input,
+#view-discovery .proto-select {
+  border-radius: 12px !important;
+  border-color: var(--border) !important;
+  background: rgba(255, 255, 255, 0.92) !important;
+}
+
+#view-discovery .proto-search input:focus {
+  border-color: var(--signal) !important;
+  box-shadow: 0 0 0 3px rgba(31, 200, 217, 0.18) !important;
+}
+
+#view-discovery .proto-rescan {
+  background: linear-gradient(135deg, #1FC8D9, #1EA8E8) !important;
+  border-radius: 999px !important;
+  box-shadow: 0 8px 20px rgba(30, 168, 232, 0.28) !important;
+}
+
+#view-discovery .proto-rescan:hover {
+  filter: brightness(1.05);
+  background: linear-gradient(135deg, #1FC8D9, #1EA8E8) !important;
+}
+
+#view-discovery .proto-sec-head {
+  border-bottom-color: rgba(213, 232, 240, 0.9) !important;
+}
+
+#view-discovery .proto-sec-head h3 {
+  font-family: var(--font-display) !important;
+  color: var(--text-dark) !important;
+}
+
+#view-discovery .job-card.disc-proto,
+#view-discovery .disc-proto {
+  background: var(--glass-card) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 18px !important;
+  box-shadow: var(--glass-shadow) !important;
+  backdrop-filter: blur(10px);
+  transition: transform 0.25s cubic-bezier(.22,1,.36,1), box-shadow 0.25s, border-color 0.25s;
+}
+
+#view-discovery .job-card.disc-proto:hover,
+#view-discovery .disc-proto:hover {
+  transform: translateY(-2px);
+  border-color: rgba(31, 200, 217, 0.4) !important;
+  box-shadow: 0 14px 32px rgba(20, 80, 110, 0.1) !important;
+}
+
+#view-discovery .job-card.disc-proto.is-forecast,
+#view-discovery .disc-proto.is-forecast {
+  border-color: rgba(240, 180, 41, 0.45) !important;
+  background: linear-gradient(180deg, rgba(255, 252, 245, 0.95), rgba(255, 255, 255, 0.9)) !important;
+}
+
+#view-discovery .btn-audit,
+#view-discovery .btn-buy,
+#view-discovery .btn-track {
+  border-radius: 999px !important;
+}
+
+#view-discovery .btn-buy,
+#view-discovery .proto-banner-ico {
+  background: var(--proto-blue-soft) !important;
+  color: var(--proto-blue) !important;
+}
+
+/* Enter motion */
+body[data-page="insight"] .hub-tabs,
+body[data-page="insight"] .hub-panel.active > .view.active > .page-header,
+body[data-page="insight"] .hub-panel.active > .view.active > .evo-layout,
+body[data-page="insight"] .trend-hero,
+body[data-page="insight"] .trend-kpi-grid,
+body[data-page="discovery"] .proto-page-head,
+body[data-page="discovery"] .proto-summary,
+body[data-page="discovery"] .proto-toolbar,
+body[data-page="discovery"] #discovery-results {
+  animation: pageSoftEnter 0.75s cubic-bezier(.22,1,.36,1) both;
+}
+
+body[data-page="insight"] .hub-panel.active > .view.active > .evo-layout { animation-delay: 0.08s; }
+body[data-page="insight"] .trend-kpi-grid { animation-delay: 0.1s; }
+body[data-page="discovery"] .proto-summary { animation-delay: 0.06s; }
+body[data-page="discovery"] .proto-toolbar { animation-delay: 0.12s; }
+body[data-page="discovery"] #discovery-results { animation-delay: 0.18s; }
+
+@keyframes pageSoftEnter {
+  from { opacity: 0; transform: translateY(12px); filter: blur(4px); }
+  to { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body[data-page="insight"] .hub-tabs,
+  body[data-page="insight"] .hub-panel.active > .view.active > .page-header,
+  body[data-page="insight"] .hub-panel.active > .view.active > .evo-layout,
+  body[data-page="insight"] .trend-hero,
+  body[data-page="insight"] .trend-kpi-grid,
+  body[data-page="discovery"] .proto-page-head,
+  body[data-page="discovery"] .proto-summary,
+  body[data-page="discovery"] .proto-toolbar,
+  body[data-page="discovery"] #discovery-results {
+    animation: none !important;
+  }
+}
+
+@media (max-width: 900px) {
+  body[data-page="insight"] .evo-layout {
+    grid-template-columns: 1fr !important;
+  }
+}

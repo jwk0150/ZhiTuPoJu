@@ -1,27 +1,37 @@
 (function () {
-  function cssPrefix() {
+  function hrefBase() {
     const path = String(location.pathname || '').replace(/\\/g, '/');
-    if (/\/pages\/more\//.test(path)) return '../../';
-    if (/\/pages\//.test(path)) return '../';
-    return './';
+    if (/\/pages\/more\//.test(path)) return '../';
+    if (/\/pages\//.test(path)) return '';
+    return 'pages/';
   }
 
+  /** Legacy helper: prefer real page routes over portal iframe. */
   window.mountEmbedPage = function (opts) {
     opts = opts || {};
-    const view = opts.view;
-    const pageId = opts.pageId;
-    const title = opts.title || '';
-    const subtitle = opts.subtitle || '';
-    const prefix = cssPrefix();
-    const src = prefix + 'portal.html?embed=1#view-' + encodeURIComponent(view);
-
+    const pageId = opts.pageId || opts.view || 'home';
+    const b = hrefBase();
+    const map = {
+      home: b + 'home.html',
+      map: b + 'map.html',
+      evolution: b + 'evolution.html',
+      discovery: b + 'discovery.html',
+      match: b + 'match.html',
+      qa: b + 'qa.html',
+      collection: b + 'more/collection.html',
+      analysis: b + 'more/analysis.html',
+      quality: b + 'more/quality.html',
+      settings: b + 'more/settings.html',
+      profile: b + 'profile.html'
+    };
+    const target = map[pageId] || map.home;
     if (window.Shell) {
-      window.Shell.mount({ pageId: pageId, title: title, subtitle: subtitle, embed: true });
+      window.Shell.mount({
+        pageId: pageId,
+        title: opts.title || '',
+        subtitle: opts.subtitle || ''
+      });
     }
-
-    const main = document.getElementById('page-main');
-    if (!main) return;
-    main.classList.add('page-main--embed');
-    main.innerHTML = '<iframe class="embed-frame" title="' + (title || view) + '" src="' + src + '"></iframe>';
+    location.replace(target);
   };
 })();
