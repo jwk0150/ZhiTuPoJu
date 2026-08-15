@@ -50,7 +50,9 @@ html,body{font-family:var(--font-body);color:var(--text-dark);background:var(--b
 ::-webkit-scrollbar-thumb{background:rgba(13,148,136,.28);border-radius:4px}
 button,input,select,textarea{font-family:inherit;outline:none}
 a{color:inherit;text-decoration:none}
-.app{display:flex;height:100vh;width:100vw}
+.legacy-portal-banner{flex-shrink:0;width:100%;padding:8px 16px;background:#0D9488;color:#042f2e;font-size:13px;text-align:center;z-index:10000}
+.legacy-portal-banner a{color:#fff;font-weight:700;margin-left:8px;text-decoration:underline}
+.app{display:flex;height:calc(100vh - 36px);width:100vw}
 .sidebar{width:var(--sidebar-w);background:linear-gradient(180deg,#0B1220 0%,#0f1a24 55%,#0a1f1c 100%);display:flex;flex-direction:column;flex-shrink:0;position:relative;z-index:10}
 .sidebar::before{content:'';position:absolute;top:0;right:0;bottom:0;width:1px;background:linear-gradient(180deg,transparent,rgba(45,212,191,.35),transparent)}
 .brand{padding:22px 24px 18px;display:flex;align-items:center;gap:12px;border-bottom:1px solid rgba(255,255,255,.06)}
@@ -2107,6 +2109,7 @@ body.disc-lock .content{overflow-y:auto!important;padding:20px 24px 32px!importa
 
 </head>
 <body>
+<div class="legacy-portal-banner">你正在使用旧版单页门户 <a href="pages/home.html">返回新版首页</a></div>
 <div class="app">
 <!-- ========== 侧边栏 ========== -->
 <aside class="sidebar">
@@ -3834,11 +3837,21 @@ document.querySelectorAll('.nav-item').forEach(item => {
     item.addEventListener('click', () => window.switchView(item.dataset.view));
 });
 window.addEventListener('hashchange', () => {
-    const id = (location.hash || '').replace(/^#/, '');
+    const id = (location.hash || '').replace(/^#view-/, '').replace(/^#/, '');
     if (id && window.viewNames[id] && id !== window.currentViewId) {
         window.switchView(id, { skipHash: true });
     }
 });
+(function bootHashView() {
+  const h = (location.hash || '').replace(/^#view-/, '').replace(/^#/, '');
+  if (h && typeof window.switchView === 'function') {
+    window.switchView(h, { skipHash: true });
+  }
+  window.addEventListener('hashchange', () => {
+    const id = (location.hash || '').replace(/^#view-/, '').replace(/^#/, '');
+    if (id && window.switchView) window.switchView(id, { skipHash: true });
+  });
+})();
 
 // ============== ECharts通用配置 ==============
 window.chartInstances = {};
@@ -11896,7 +11909,7 @@ window.addEventListener('load', () => {
     window.generateAllData();
     const dateEl = document.getElementById('current-date');
     if (dateEl) dateEl.textContent = new Date().toISOString().slice(0,10);
-    const hashId = (location.hash || '').replace(/^#/, '');
+    const hashId = (location.hash || '').replace(/^#view-/, '').replace(/^#/, '');
     const startView = (hashId && window.viewNames[hashId]) ? hashId : 'dashboard';
     setTimeout(() => {
         window.switchView(startView, { skipHash: !hashId });
