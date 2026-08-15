@@ -34,3 +34,20 @@
 
 ## Report path
 `C:/Users/Ibiza/Desktop/project/挑战杯/.superpowers/sdd/task-6-report.md`
+
+---
+
+## Phase 0 review fixes (2026-08-15)
+
+### Fix 1 — localStorage key alignment
+- `login.html` dev login + API login success now write `localStorage.zhitu_user` (was `'user'`).
+- Register path unchanged (does not persist user on success).
+- Grep: no remaining `getItem('user')` / `setItem('user')` in `login.html`.
+
+### Fix 2 — HTML escape in `shell.js` mount
+- Added `escapeHtml(str)` helper.
+- `Shell.mount` escapes `label`, `title`, `subtitle` (and avatar initials derived from label) before `innerHTML`.
+
+### Re-test
+- `python .superpowers/sdd/check_task_6.py` → **OVERALL PASS**
+- Commit: `fix(frontend): align zhitu_user storage and escape shell labels`

@@ -928,7 +928,7 @@
 
         // ============ Developer Quick Entry ============
         function devLogin() {
-            localStorage.setItem('user', JSON.stringify({
+            localStorage.setItem('zhitu_user', JSON.stringify({
                 username: 'developer',
                 role: 'dev',
                 loginTime: Date.now()
@@ -965,7 +965,7 @@
                 const result = await response.json();
 
                 if (result.code === 0) {
-                    localStorage.setItem('user', JSON.stringify(result.data));
+                    localStorage.setItem('zhitu_user', JSON.stringify(result.data));
                     btn.innerHTML = '<svg class="btn-success-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><span>登录成功</span>';
                     setTimeout(() => {
                         window.location.href = 'pages/home.html';

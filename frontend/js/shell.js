@@ -51,6 +51,15 @@
     menu: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>'
   };
 
+  function escapeHtml(str) {
+    return String(str || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
   function readUser() {
     try {
       const raw = localStorage.getItem('zhitu_user');
@@ -199,6 +208,9 @@
     const pageMain = findPageMainSibling(host);
     const user = readUser();
     const label = userLabel(user);
+    const safeLabel = escapeHtml(label);
+    const safeTitle = escapeHtml(title);
+    const safeSubtitle = escapeHtml(subtitle);
     const moreOpen = moreIsOpen(pageId);
 
     host.className = 'app-frame';
@@ -214,9 +226,9 @@
         '</div>' +
         renderNav(pageId, moreOpen) +
         '<div class="sidebar-footer">' +
-          '<div class="sidebar-user-avatar">' + userInitial(label) + '</div>' +
+          '<div class="sidebar-user-avatar">' + escapeHtml(userInitial(label)) + '</div>' +
           '<div class="sidebar-user-info">' +
-            '<div class="sidebar-user-name">' + label + '</div>' +
+            '<div class="sidebar-user-name">' + safeLabel + '</div>' +
             '<div class="sidebar-user-role">演示账号</div>' +
           '</div>' +
         '</div>' +
@@ -225,13 +237,13 @@
         '<header class="topbar">' +
           '<button type="button" class="topbar-toggle" aria-label="打开导航">' + ICONS.menu + '</button>' +
           '<div class="topbar-title-block">' +
-            '<div class="topbar-title">' + title + '</div>' +
-            (subtitle ? '<div class="topbar-subtitle">' + subtitle + '</div>' : '') +
+            '<div class="topbar-title">' + safeTitle + '</div>' +
+            (subtitle ? '<div class="topbar-subtitle">' + safeSubtitle + '</div>' : '') +
           '</div>' +
           '<div class="topbar-actions">' +
             '<a class="topbar-user" href="' + PAGE_HREF.profile + '">' +
-              '<span class="topbar-user-avatar">' + userInitial(label) + '</span>' +
-              '<span class="topbar-user-label">' + label + '</span>' +
+              '<span class="topbar-user-avatar">' + escapeHtml(userInitial(label)) + '</span>' +
+              '<span class="topbar-user-label">' + safeLabel + '</span>' +
             '</a>' +
           '</div>' +
         '</header>' +
