@@ -250,3 +250,88 @@
     font-size: 21px;
   }
 }
+
+/* ── Home journey stage + teal particle canvas ── */
+
+.home-stage {
+  position: relative;
+  isolation: isolate;
+  margin: -28px -32px -48px;
+  padding: 36px 32px 56px;
+  min-height: calc(100vh - var(--topbar-h) - var(--demo-h));
+  background:
+    radial-gradient(ellipse at 18% 0%, rgba(45, 212, 191, 0.2), transparent 46%),
+    radial-gradient(ellipse at 88% 18%, rgba(13, 148, 136, 0.16), transparent 42%),
+    linear-gradient(180deg, #071412 0%, #0B1220 52%, #0a1f1c 100%);
+}
+
+.home-stage.is-static {
+  background:
+    radial-gradient(ellipse at 30% 10%, rgba(45, 212, 191, 0.22), transparent 48%),
+    linear-gradient(180deg, #042f2e 0%, #0B1220 55%, #0a1f1c 100%);
+}
+
+.home-particles {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.home-journey {
+  position: relative;
+  z-index: 1;
+  max-width: 760px;
+}
+
+.home-lead {
+  margin-bottom: 28px;
+}
+
+.home-lead-kicker {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+  color: var(--signal);
+  margin-bottom: 8px;
+}
+
+.home-lead-title {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 700;
+  color: #F8FAFC;
+  letter-spacing: 0.02em;
+  line-height: 1.35;
+  margin-bottom: 8px;
+}
+
+.home-lead-desc {
+  font-size: 14px;
+  line-height: 1.65;
+  color: rgba(226, 232, 240, 0.78);
+  max-width: 560px;
+}
+
+.home-stage .journey-step {
+  background: rgba(255, 255, 255, 0.96);
+}
+
+.home-stage .journey-step.is-primary {
+  background: linear-gradient(135deg, #fff 0%, rgba(45, 212, 191, 0.1) 100%);
+}
+
+@media (max-width: 900px) {
+  .home-stage {
+    margin: -20px -16px -36px;
+    padding: 24px 16px 40px;
+  }
+
+  .home-lead-title {
+    font-size: 22px;
+  }
+}

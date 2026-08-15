@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>执图破局 · 演示路径</title>
+  <link rel="stylesheet" href="../css/tokens.css" />
+  <link rel="stylesheet" href="../css/shell.css" />
+  <link rel="stylesheet" href="../css/components.css" />
+</head>
+<body data-page="home">
+  <div id="app-shell"></div>
+  <main class="page-main" id="page-main">
+    <div class="home-stage">
+      <canvas class="home-particles" id="home-particles" aria-hidden="true"></canvas>
+      <div class="home-journey">
+        <div class="home-lead">
+          <div class="home-lead-kicker">Judge path</div>
+          <h1 class="home-lead-title">先走通一条演示路径</h1>
+          <p class="home-lead-desc">数据沉淀为图谱，图谱落到地图与演化，最后用人岗匹配收束结论。不堆运维指标，只讲评委要看的故事。</p>
+        </div>
+
+        <section class="journey-step" data-step="1">
+          <div class="journey-step-num">01 · 底座</div>
+          <h2 class="journey-step-title">数据与图谱底座</h2>
+          <p class="journey-step-desc">多源异构数据驱动岗位能力图谱。招聘、培训与评价信号经采集与质检后，沉淀为可检索、可演化的能力节点与岗位关系。</p>
+          <div class="journey-step-actions">
+            <a class="btn-ghost" data-page-href="collection" href="../portal.html#view-collection">采集与质量</a>
+            <a class="btn-ghost" data-page-href="quality" href="../portal.html#view-quality">质量监控</a>
+          </div>
+        </section>
+
+        <section class="journey-step" data-step="2">
+          <div class="journey-step-num">02 · 地图</div>
+          <h2 class="journey-step-title">看地图</h2>
+          <p class="journey-step-desc">进入数字人才地图，按区域与岗位热度读供需格局，把图谱铺到地理空间上。</p>
+          <div class="journey-step-actions">
+            <a class="btn btn-primary" data-page-href="map" href="../portal.html#view-map">进入地图</a>
+          </div>
+        </section>
+
+        <section class="journey-step" data-step="3">
+          <div class="journey-step-num">03 · 演化</div>
+          <h2 class="journey-step-title">看演化与发现</h2>
+          <p class="journey-step-desc">沿能力演化轨迹看岗位变迁，并发现尚未被目录覆盖的新岗位信号。</p>
+          <div class="journey-step-actions">
+            <a class="btn" data-page-href="evolution" href="../portal.html#view-evolution">岗位能力演化</a>
+            <a class="btn" data-page-href="discovery" href="../portal.html#view-discovery">新岗位发现</a>
+          </div>
+        </section>
+
+        <section class="journey-step is-primary" data-step="4">
+          <div class="journey-step-num">04 · 匹配</div>
+          <h2 class="journey-step-title">做人岗匹配</h2>
+          <p class="journey-step-desc">把能力图谱落到具体人岗诊断，给出缺口与补齐路径。这是演示路径的收束动作。</p>
+          <div class="journey-step-actions">
+            <a class="btn btn-primary btn-lg" data-page-href="match" href="../portal.html#view-match">开始人岗匹配</a>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+  <script src="../js/api.js"></script>
+  <script src="../js/shell.js"></script>
+  <script src="../js/pages/particles-teal.js"></script>
+  <script src="../js/pages/home.js"></script>
+</body>
+</html>
