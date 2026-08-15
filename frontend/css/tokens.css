@@ -1,0 +1,25 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@600;700&family=IBM+Plex+Mono:wght@500;600&display=swap');
+
+:root {
+  --signal: #2DD4BF;
+  --signal-deep: #0D9488;
+  --signal-dim: rgba(45, 212, 191, 0.14);
+  --primary: #0D9488;
+  --primary-light: #2DD4BF;
+  --bg-page: #F4F7F8;
+  --bg-sidebar: #0B1220;
+  --bg-card: #FFFFFF;
+  --text-dark: #0F172A;
+  --text-secondary: #64748B;
+  --text-muted: #94A3B8;
+  --text-on-dark: #E2E8F0;
+  --border: #E2E8F0;
+  --shadow-md: 0 8px 24px rgba(15, 23, 42, 0.08);
+  --radius: 12px;
+  --font-display: 'Noto Serif SC', 'Songti SC', serif;
+  --font-body: 'DM Sans', 'Noto Sans SC', "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+  --sidebar-w: 248px;
+  --topbar-h: 56px;
+  --demo-h: 44px;
+}
