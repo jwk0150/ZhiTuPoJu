@@ -3,8 +3,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from backend.routers import agent, collection, discovery, evolution, graph, matching, data, talent_map, auth
+from backend.routers import agent, collection, discovery, evolution, graph, matching, data, talent_map, auth, profile, trends
 from backend.db_async import close_pool
+from backend.config import config
 
 
 @asynccontextmanager
@@ -29,6 +30,24 @@ def health_check():
     return {"code": 0, "message": "success", "data": {"status": "ok"}}
 
 
+@app.get("/api/config-status")
+def config_status():
+    """返回当前配置状态（不暴露敏感信息）"""
+    return {
+        "code": 0,
+        "message": "success",
+        "data": {
+            "backend_host": config.BACKEND_HOST,
+            "backend_port": config.BACKEND_PORT,
+            "pg_host": config.PG_HOST,
+            "pg_port": config.PG_PORT,
+            "pg_db": config.PG_DB,
+            "deepseek_configured": bool(config.DEEPSEEK_API_KEY),
+            "table_prefix": config.TABLE_PREFIX,
+        }
+    }
+
+
 # 原有路由
 app.include_router(collection.router, prefix="/api/collection", tags=["collection"])
 app.include_router(graph.router, prefix="/api/graph", tags=["graph"])
@@ -47,3 +66,9 @@ app.include_router(talent_map.router, prefix="/api/graph", tags=["talent-graph"]
 
 # 新增：用户认证路由（登录注册）
 app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
+
+# 新增：用户中心路由（个人资料、简历、职业访谈、画像分析）
+app.include_router(profile.router, prefix="/api/profile", tags=["user-profile"])
+
+# 新增：趋势分析路由（仪表盘、岗位兴衰、AI推演、洞察）
+app.include_router(trends.router, prefix="/api/trends", tags=["trends"])

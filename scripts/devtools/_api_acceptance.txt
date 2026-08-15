@@ -1,0 +1,20 @@
+北京|北京|total=2819|types=100|top5=嵌入式软件工程师/软件开发工程师/java开发工程师/前端开发工程师/机器学习|stable=True
+上海|上海|total=3689|types=100|top5=全栈开发工程师/数据分析师/大模型算法/运维工程师/EHS工程师|stable=True
+广东|广州|total=3877|types=100|top5=嵌入式软件工程师/前端开发工程师/测试工程师/软件工程师/后端开发工程师|stable=True
+广东|深圳|total=3945|types=100|top5=嵌入式软件工程师/算法工程师/后端开发工程师/软件工程师/全栈开发工程师|stable=True
+广东|佛山|total=110|types=64|top5=应用运维工程师/IDC值班长（数据中心）/IDC运维经理（数据中心）/BI工程师/DevOps工程师|stable=True
+江西|南昌|total=64|types=54|top5=产品设计专职教师/外科产品销售（南昌）/数据架构师/设备联网工程师/系统运维工程师|stable=True
+江西|九江|total=50|types=47|top5=Kubernetes工程师/边缘计算工程师/Oracle数据库工程师/Linux运维工程师/企业信息化工程师|stable=True
+江西|赣州|total=42|types=42|top5=机器学习工程师/MES系统工程师/后端开发工程师/PLC工程师/前端开发工程师|stable=True
+江苏|南京|total=1254|types=100|top5=前端开发工程师/电气工程师/质检员/java开发工程师/PLC工程师|stable=True
+江苏|苏州|total=126|types=66|top5=AI应用工程师/产品经理/cnc操机/数据科学家/OP-化合物管理专员|stable=True
+江苏|无锡|total=846|types=100|top5=质量工程师/Ai剪辑作学徒/软件工程师/系统运维工程师/运维工程师|stable=True
+四川|成都|total=2312|types=100|top5=软件工程师/自动化工程师/质量体系工程师/现场QA/大数据开发工程师|stable=True
+四川|绵阳|total=88|types=76|top5=边缘计算工程师/新媒体艺术专业教师/.NET开发工程师/安全运维工程师/数据仓库工程师|stable=True
+四川|南充|total=72|types=67|top5=PLC工程师/数据架构师/数据平台工程师/MES系统工程师/容器技术工程师|stable=True
+山东|济南|total=192|types=89|top5=测试工程师/前端开发工程师/嵌入式软件工程师/电竞工作室/电子测试助理|stable=True
+山东|青岛|total=149|types=100|top5=自然语言处理工程师/信息安全工程师/软件工程师/自动化软件工程师/Product Quality Engineer 产品质量工程师 (MJ001122)|stable=True
+山东|烟台|total=108|types=47|top5=机械设计工程师/工艺技术员/磁组件工程师/机床设计师/应届大学生储备干部（工艺技术）|stable=True
+湖北|武汉|total=1520|types=100|top5=FPGA工程师/运维工程师/软件工程师/前端开发工程师/供应链主管|stable=True
+湖北|宜昌|total=80|types=69|top5=工业数据分析师/数字化项目经理/系统运维工程师/人工智能工程师/安全运维工程师|stable=True
+湖北|襄阳|total=88|types=72|top5=C++开发工程师/数据架构师/AI产品经理/BI工程师/工业互联网工程师|stable=True

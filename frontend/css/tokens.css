@@ -1,0 +1,31 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700&family=Sora:wght@600;700&family=IBM+Plex+Mono:wght@500;600&display=swap');
+
+/* Brand palette from platform hero (cyan / soft sky / navy / gold accent) */
+:root {
+  --signal: #1FC8D9;
+  --signal-deep: #0AA8BC;
+  --signal-dim: rgba(31, 200, 217, 0.14);
+  --primary: #0AA8BC;
+  --primary-light: #3DD5E5;
+  --primary-navy: #1E3A5F;
+  --accent-gold: #F0B429;
+  --bg-page: #EAF6FB;
+  --bg-page-soft: #F5FBFD;
+  --bg-sidebar: #FFFFFF;
+  --bg-card: #FFFFFF;
+  --bg-topbar: rgba(255, 255, 255, 0.82);
+  --text-dark: #14324A;
+  --text-secondary: #5B7388;
+  --text-muted: #8AA0B2;
+  --text-on-dark: #E8F7FA;
+  --border: #D5E8F0;
+  --shadow-md: 0 10px 28px rgba(20, 80, 110, 0.08);
+  --radius: 14px;
+  --font-display: 'Sora', 'Noto Sans SC', sans-serif;
+  --font-body: 'DM Sans', 'Noto Sans SC', "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+  --sidebar-w: 248px;
+  --topbar-h: 60px;
+  --brand-logo: url('../assets/brand/logo.png');
+  --brand-hero: url('../assets/brand/hero-bg.png');
+}

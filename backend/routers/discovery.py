@@ -2,12 +2,14 @@
 
 智能体设计
 ==========
-本模块实现一个**启发式岗位发现智能体**,模拟人类分析师的思考链:
+本模块实现一个**发现-演化融合智能体**,模拟人类分析师的思考链:
   Step 1 - 数据扫描    : 从 PG 抓取最近 5000 条 IT 岗位
   Step 2 - 标题聚类    : 归一化标题,识别高频新词(AI/LLM/Agent/RAG...)
-  Step 3 - 置信度评分  : 标题新颖度×0.5 + 技能组合新颖度×0.3 + 跨行业溢出×0.2
+  Step 3 - 置信度评分  : 标题新颖度(0.35) + 技能组合新颖度(0.25) + 跨行业溢出(0.15) + 技能演化速度(0.20) + 跨域汇聚加成(0.05)
+                       ★ 融合 Evolution Agent 的技能演化数据,技能增速越快置信度越高
   Step 4 - 岗位定义生成: 从真实 JD 描述抽取,模板兜底
   Step 5 - 未来预测    : 基于当前新兴技能的趋势外推,预测 6-12 个月后可能出现的新岗位
+  Step 6 - 幻觉检测    : 交叉校验证据来源,标记低证据项
 
 接口
 ====
@@ -35,6 +37,7 @@ from fastapi import APIRouter, Query
 from pydantic import BaseModel
 
 from backend import data
+from backend.evolution_agent.evolution_agent import get_skills_velocity, detect_cross_domain_convergence
 from backend.llm import deepseek as ds
 
 router = APIRouter()
@@ -152,14 +155,14 @@ class DiscoveryAgent:
         if not rows:
             chain.append({"step":"error","title":"❌ 数据源为空","detail":"PG 查询返回空","status":"error"})
             empty_model = {
-                "engine": "DiscoveryAgent v2.0 启发式推理机",
+                "engine": "DiscoveryAgent v3.0 发现-演化融合推理机",
                 "backed_by": "启发式(无LLM)",
                 "llm": "none",
                 "llm_enriched": 0,
                 "llm_error": None,
-                "knowledge_base": f"PostgreSQL {POSTINGS_TBL} + {DETAILS_TBL}",
+                "knowledge_base": f"PostgreSQL {POSTINGS_TBL} + {DETAILS_TBL} + EvolutionAgent技能演化数据",
             }
-            return {"reasoning_chain":chain,"discoveries":[],"forecasts":[],"summary":"","stats":{},"model":empty_model}
+            return {"reasoning_chain":chain,"discoveries":[],"forecasts":[],"cross_domain_signals":[],"summary":"","stats":{},"model":empty_model}
 
         # ==== Phase 2: 语义消歧与实体对齐 ====
         step = self._add_step(chain, 2, "🧠 语义消歧与实体归一化",
@@ -174,9 +177,10 @@ class DiscoveryAgent:
         step["metrics"] = f"聚类压缩比: {len(rows)/max(len(groups),1):.1f}x | 技能词典: {len(all_skills_global)} 词"
         step["status"] = "done"; step["elapsed_ms"] = int((time.time()-t0)*1000)
 
-        # ==== Phase 3: 新兴度评分 ====
-        step = self._add_step(chain, 3, "📈 多维度新兴度评分",
-            "三维度加权模型:标题新颖度(0.5) + 技能组合熵(0.3) + 跨行业溢出指数(0.2)。扫描 {0} 个语义簇...".format(len(groups)), "running")
+        # ==== Phase 3: 新兴度评分（★ 融合演化速度） ====
+        step = self._add_step(chain, 3, "📈 多维度新兴度评分（演化融合）",
+            "四维加权模型:标题新颖度(0.35) + 技能组合熵(0.25) + 跨行业溢出(0.15) + 技能演化速度(0.20) + 跨域汇聚加成(0.05)。"
+            "调用 Evolution Agent 获取技能全平台增速数据...扫描 {0} 个语义簇...".format(len(groups)), "running")
         time.sleep(0.6)
         # 对每个聚类评分
         all_scored = []
@@ -241,12 +245,12 @@ class DiscoveryAgent:
         if llm_meta.get("enriched"):
             step["detail"] += f" DeepSeek 已润色 {llm_meta['enriched']} 条岗位定义。"
         model_info = {
-            "engine": "DiscoveryAgent v2.0 启发式推理机",
+            "engine": "DiscoveryAgent v3.0 发现-演化融合推理机",
             "backed_by": "DeepSeek" if llm_meta.get("llm") != "none" else "启发式(无LLM)",
             "llm": llm_meta.get("llm", "none"),
             "llm_enriched": llm_meta.get("enriched", 0),
             "llm_error": llm_meta.get("error"),
-            "knowledge_base": f"PostgreSQL {POSTINGS_TBL} + {DETAILS_TBL}",
+            "knowledge_base": f"PostgreSQL {POSTINGS_TBL} + {DETAILS_TBL} + EvolutionAgent技能演化数据",
         }
 
         total_ms = int((time.time()-t0)*1000)
@@ -259,8 +263,16 @@ class DiscoveryAgent:
                  "total_elapsed_ms": total_ms,
                  "avg_confidence": (round(sum(d["confidence"] for d in discoveries)/max(len(discoveries),1),1) if discoveries else 0)}
 
+        # ★ 获取全平台跨域技能汇聚信号
+        cross_domain_signals: list[dict] = []
+        try:
+            cross_domain_signals = detect_cross_domain_convergence(threshold=2.0)
+        except Exception:
+            pass
+
         return {"reasoning_chain": chain, "discoveries": discoveries,
-                "forecasts": forecasts, "summary": summary, "stats": stats, "model": model_info}
+                "forecasts": forecasts, "cross_domain_signals": cross_domain_signals,
+                "summary": summary, "stats": stats, "model": model_info}
 
     def _add_step(self, chain, step_no, title, detail, status):
         s = {"step": step_no, "title": title, "detail": detail, "status": status}
@@ -273,15 +285,14 @@ class DiscoveryAgent:
             rows = conn.execute(
                 f"""SELECT p.job_title, p.company_name, p.city, p.salary_min, p.salary_max,
                        p.experience, p.education, p.source_name, p.publish_time, p.crawl_time,
-                       d.company_industry, d.skills, d.job_description, d.company_nature,
-                       d.job_category_l1, d.job_category_l2
+                       d.company_industry, d.skills, d.job_description, d.company_nature
                 FROM {POSTINGS_TBL} p JOIN {DETAILS_TBL} d ON d.job_id = p.id
                 WHERE p.status = 0 ORDER BY p.crawl_time DESC LIMIT %s""",
                 (limit,),
             ).fetchall()
         cols = ["title", "company_name", "city", "salary_min", "salary_max",
                 "experience", "education", "source_name", "publish_time", "crawl_time",
-                "industry", "skills", "description", "company_nature", "cat_l1", "cat_l2"]
+                "industry", "skills", "description", "company_nature"]
         return [dict(zip(cols, r)) for r in rows if r[0]]
 
     # ---- 聚类 ----
@@ -309,24 +320,66 @@ class DiscoveryAgent:
                     cnt[kw] += 1
         return [k for k, _ in cnt.most_common(15)]
 
-    # ---- 评分 ----
+    # ---- 评分（★ 融合 Evolution Agent 技能演化速度） ----
     def _score_group_detailed(self, items: list[dict], kw_hits: list[tuple[str, int]]) -> dict:
         n = len(items)
-        # a) 标题新颖度(0-50)
-        title_score = min(sum(w for _, w in kw_hits), 50)
-        # b) 技能组合新颖度(0-30)
-        all_skills = set()
+        # a) 标题新颖度 (0-35)
+        title_score = min(sum(w for _, w in kw_hits), 35)
+        # b) 技能组合新颖度 (0-25)
+        all_skills: set[str] = set()
         for it in items:
             for s in (it.get("skills") or []):
                 all_skills.add(s)
         novel_skills = [s for s in all_skills if any(kw.lower() in s.lower() for kw, _ in self.EMERGING_KW[:30])]
-        skill_score = min(len(novel_skills) * 5, 30)
-        # c) 跨行业溢出(0-20)
+        skill_score = min(len(novel_skills) * 4, 25)
+        # c) 跨行业溢出 (0-15)
         industries = {it.get("industry", "") for it in items}
         traditional = sum(1 for ind in industries if any(
             ti in (ind or "") for ti in ("制造", "金融", "医疗", "教育", "能源", "汽车", "零售", "政府", "法律")))
-        cross_score = min(traditional * 5, 20)
-        confidence = title_score + skill_score + cross_score
+        cross_score = min(traditional * 4, 15)
+
+        # ★ d) 技能演化速度 (0-20) —— 调用 Evolution Agent，技能增速越快分越高
+        velocity_score: float = 0.0
+        velocity_detail: dict[str, dict] = {}
+        try:
+            candidate_skills = list(all_skills)[:20]
+            if candidate_skills:
+                velocities = get_skills_velocity(candidate_skills)
+                rising_count = 0
+                total_vel = 0.0
+                for skill, vinfo in velocities.items():
+                    if vinfo["trend"] == "rising":
+                        rising_count += 1
+                        total_vel += min(vinfo["velocity"], 100)
+                    velocity_detail[skill] = vinfo
+                if rising_count > 0:
+                    avg_vel = total_vel / max(rising_count, 1)
+                    velocity_score = min(avg_vel * 0.20, 20)
+        except Exception:
+            velocity_detail = {}
+
+        # ★ e) 跨域汇聚加成 (0-5) —— 检测技能是否横跨多个技术领域
+        cross_domain_bonus: float = 0.0
+        cross_domain_hits: list[str] = []
+        try:
+            from backend.evolution_agent.evolution_agent import SKILL_DOMAIN_GROUPS, _SKILL_VOCAB
+            skill_lower_set = {s.lower() for s in all_skills}
+            domain_hit_count: dict[str, int] = {}
+            for dname, source_groups in SKILL_DOMAIN_GROUPS.items():
+                cnt = 0
+                for grp in source_groups:
+                    for kw in _SKILL_VOCAB.get(grp, []):
+                        if kw.lower() in skill_lower_set:
+                            cnt += 1
+                if cnt >= 2:
+                    domain_hit_count[dname] = cnt
+            if len(domain_hit_count) >= 2:
+                cross_domain_bonus = min(len(domain_hit_count) * 2.5, 5)
+                cross_domain_hits = sorted(domain_hit_count.keys())
+        except Exception:
+            cross_domain_bonus = 0.0
+
+        confidence = title_score + skill_score + cross_score + velocity_score + cross_domain_bonus
         confidence = max(0.0, min(100.0, confidence))
         # 增长率
         recent = sum(1 for it in items if it.get("publish_time") and isinstance(it["publish_time"], datetime)
@@ -336,6 +389,8 @@ class DiscoveryAgent:
         growth_rate = round(recent / max(n, 1) * 200, 1)
         return {"confidence": round(confidence, 1), "growth_rate": growth_rate,
                 "title_score": title_score, "skill_score": skill_score, "cross_score": cross_score,
+                "velocity_score": round(velocity_score, 1), "cross_domain_bonus": round(cross_domain_bonus, 1),
+                "velocity_detail": velocity_detail, "cross_domain_hits": cross_domain_hits,
                 "core_skills": list(novel_skills)[:8], "sample_count": n,
                 "company_count": len({it["company_name"] for it in items}),
                 "city_count": len({it["city"] for it in items})}
@@ -384,7 +439,14 @@ class DiscoveryAgent:
             "requiredSkills": skills,
             "description": clean[:200],
             "discoveredAt": datetime.now(timezone.utc).isoformat(),
-            "reasoning": f"标题新颖度{info.get('title_score',0)}分 + 技能组合熵{info.get('skill_score',0)}分 + 跨行业溢出{info.get('cross_score',0)}分 = 综合置信度{info['confidence']}%",
+            "reasoning": (f"标题新颖度{info.get('title_score',0)} + 技能组合熵{info.get('skill_score',0)} + "
+                         f"跨行业溢出{info.get('cross_score',0)} + 技能演化速度{info.get('velocity_score',0)}"
+                         + (f" + 跨域融合{info.get('cross_domain_bonus',0)}" if info.get('cross_domain_bonus') else "")
+                         + f" = 综合置信度{info['confidence']}%"),
+            # 演化融合字段
+            "velocity_detail": info.get("velocity_detail", {}),
+            "cross_domain_hits": info.get("cross_domain_hits", []),
+            "cross_domain_bonus": info.get("cross_domain_bonus", 0),
         }
 
     # ---- 未来预测 ----

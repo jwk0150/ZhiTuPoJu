@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>智能问答</title>
+  <link rel="stylesheet" href="../css/tokens.css" />
+  <link rel="stylesheet" href="../css/legacy-views.css" />
+  <style>
+    :root {
+      --qa-pad: 12px;
+    }
+    html, body {
+      margin: 0;
+      height: 100%;
+      background: #f4f7f8;
+      font-family: var(--font-body, "DM Sans", "Noto Sans SC", sans-serif);
+      color: var(--text-dark, #0f172a);
+      overflow: hidden;
+    }
+    .qa-panel {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      min-height: 0;
+    }
+    .qa-panel-tools {
+      display: flex;
+      gap: 8px;
+      padding: 10px var(--qa-pad) 0;
+      flex-shrink: 0;
+    }
+    .qa-panel-tools .btn {
+      flex: 1;
+      justify-content: center;
+      padding: 8px 10px;
+      font-size: 12px;
+    }
+    .qa-suggest-wrap {
+      flex-shrink: 0;
+      padding: 10px var(--qa-pad) 8px;
+      border-bottom: 1px solid var(--border, #e2e8f0);
+      background: #fff;
+    }
+    .qa-suggest-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted, #94a3b8);
+      letter-spacing: 0.04em;
+      margin-bottom: 8px;
+    }
+    .qa-suggest-row {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+      scrollbar-width: thin;
+    }
+    .qa-suggest {
+      flex: 0 0 auto;
+      max-width: 220px;
+      padding: 8px 10px;
+      border-radius: 10px;
+      background: #f1f5f9;
+      font-size: 12px;
+      line-height: 1.45;
+      color: var(--text-secondary, #64748b);
+      cursor: pointer;
+      border-left: 3px solid transparent;
+      white-space: normal;
+    }
+    .qa-suggest:hover {
+      background: rgba(15, 168, 188, 0.1);
+      color: var(--text-dark, #0f172a);
+      border-left-color: var(--signal-deep, #0aa8bc);
+      transform: none;
+    }
+    #view-qa {
+      display: flex !important;
+      flex-direction: column;
+      height: 100%;
+      min-height: 0;
+      padding: 0;
+      margin: 0;
+      animation: none;
+    }
+    .qa-chat-card {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      margin: 0;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+    }
+    .chat-area {
+      flex: 1;
+      min-height: 0;
+      padding: 14px var(--qa-pad);
+      overflow-y: auto;
+      background: linear-gradient(180deg, #fff 0%, #f8fafc 100%);
+    }
+    .chat-msg {
+      max-width: 100%;
+    }
+    .chat-input-area {
+      flex-shrink: 0;
+      padding: 10px var(--qa-pad) 14px;
+      border-top: 1px solid var(--border, #e2e8f0);
+      background: #fff;
+      gap: 8px;
+    }
+    .chat-attach { display: none; }
+    .chat-input {
+      min-width: 0;
+      font-size: 13px;
+      padding: 10px 14px;
+    }
+    .chat-send {
+      flex-shrink: 0;
+      padding: 10px 12px;
+      font-size: 12px;
+    }
+    .chat-send svg { width: 14px; height: 14px; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid var(--border, #e2e8f0);
+      background: #fff;
+      border-radius: 8px;
+      cursor: pointer;
+      color: var(--text-dark, #0f172a);
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #1fc8d9, #0aa8bc);
+      border-color: transparent;
+      color: #fff;
+    }
+    .btn svg { width: 14px; height: 14px; }
+  </style>
+</head>
+<body>
+<section class="view active qa-panel" id="view-qa">
+  <div class="qa-panel-tools">
+    <button type="button" class="btn" onclick="clearChat()">清空对话</button>
+    <button type="button" class="btn btn-primary" onclick="showToast('点上方推荐问题，或在底部输入提问', 'cyan')">使用提示</button>
+  </div>
+
+  <div class="qa-suggest-wrap">
+    <div class="qa-suggest-label">推荐问题</div>
+    <div class="qa-suggest-row">
+      <div class="qa-suggest" onclick="sendQAQuestion(this.textContent)">AI算法工程师需要哪些核心技能？</div>
+      <div class="qa-suggest" onclick="sendQAQuestion(this.textContent)">前端工程师近半年新增了哪些技能要求？</div>
+      <div class="qa-suggest" onclick="sendQAQuestion(this.textContent)">产品经理和大模型有哪些交集？</div>
+      <div class="qa-suggest" onclick="sendQAQuestion(this.textContent)">数据科学家和数据分析师有什么区别？</div>
+      <div class="qa-suggest" onclick="sendQAQuestion(this.textContent)">过去一年增长最快的技术栈是？</div>
+      <div class="qa-suggest" onclick="sendQAQuestion(this.textContent)">AI方向岗位的平均薪资水平</div>
+    </div>
+  </div>
+
+  <div class="qa-chat-card">
+    <div class="chat-area" id="chat-area"></div>
+    <div class="chat-input-area">
+      <button class="chat-attach" title="附加文件" type="button" tabindex="-1" aria-hidden="true"></button>
+      <input type="text" class="chat-input" id="qa-input" placeholder="输入问题，例如：AI 岗位核心技能？">
+      <button class="chat-send" id="qa-send" type="button">发送</button>
+    </div>
+  </div>
+</section>
+  <script src="../js/api.js"></script>
+  <script src="../js/runtime-core.js"></script>
+  <script src="../js/pages/qa.js"></script>
+  <script>
+    window.initQA && window.initQA();
+    // drawer greeting: shorten first message for narrow panel
+    if (window.qaState && window.qaState.chatHistory && window.qaState.chatHistory[0]) {
+      window.qaState.chatHistory[0].content =
+        '您好！我是图谱问答助手。可点上方推荐问题，或直接输入岗位/技能/薪资相关问题。';
+      window.renderChatHistory && window.renderChatHistory();
+    }
+  </script>
+</body>
+</html>

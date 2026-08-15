@@ -1,0 +1,133 @@
+- generic [ref=e2]:
+  - complementary [ref=e3]:
+    - generic [ref=e13]:
+      - generic [ref=e14]: 执图破局
+      - generic [ref=e15]: Tuzhupoju · Demo
+    - navigation [ref=e16]:
+      - generic [ref=e17]:
+        - generic [ref=e18]: 核心功能
+        - generic [ref=e19] [cursor=pointer]: 总览看板
+        - generic [ref=e26] [cursor=pointer]:
+          - generic [ref=e34]: 图谱可视化
+          - generic [ref=e35]: HOT
+        - generic [ref=e36] [cursor=pointer]: 新岗位发现
+        - generic [ref=e42] [cursor=pointer]: 能力动态演化
+      - generic [ref=e47]:
+        - generic [ref=e48]: 智能服务
+        - generic [ref=e49] [cursor=pointer]:
+          - generic [ref=e53]: 人岗匹配诊断
+          - generic [ref=e54]: P0
+        - generic [ref=e55] [cursor=pointer]: 智能问答
+      - generic [ref=e59]:
+        - generic [ref=e60]: 数据管理
+        - generic [ref=e61] [cursor=pointer]: 数据采集
+        - generic [ref=e67] [cursor=pointer]: 趋势分析
+        - generic [ref=e70] [cursor=pointer]: 质量监控
+      - generic [ref=e75]:
+        - generic [ref=e76]: 系统
+        - generic [ref=e77] [cursor=pointer]: 系统设置
+    - generic [ref=e82]:
+      - generic [ref=e83]: YL
+      - generic [ref=e84]:
+        - generic [ref=e85]: 御龙 · Tech Lead
+        - generic [ref=e86]: administrator
+  - main [ref=e87]:
+    - generic [ref=e88]:
+      - generic [ref=e89]:
+        - generic [ref=e90]: 执图破局
+        - generic [ref=e93]: 图谱可视化
+      - textbox "搜索岗位、技能、简历..." [ref=e98]
+      - generic [ref=e99]:
+        - button [ref=e100] [cursor=pointer]
+        - button [ref=e105] [cursor=pointer]
+    - generic [ref=e376]:
+      - generic [ref=e377]:
+        - generic [ref=e378]:
+          - heading "数字人才地图" [level=1] [ref=e379]
+          - generic [ref=e380]: 全国人才分布 · 省份岗位洞察 · 岗位-能力知识图谱 · 37,591 个岗位 · 34 个省份 · 1 个热门省份
+        - button "导出数据" [ref=e382] [cursor=pointer]
+      - generic [ref=e386]:
+        - generic [ref=e387]:
+          - generic "展开筛选" [ref=e388] [cursor=pointer]: 筛选
+          - generic:
+            - generic:
+              - generic: 数据筛选
+              - button "✕"
+            - generic:
+              - generic: 省份
+              - combobox:
+                - option "全部省份" [selected]
+                - option "北京市"
+                - option "天津市"
+                - option "河北省"
+                - option "山西省"
+                - option "内蒙古自治区"
+                - option "辽宁省"
+                - option "吉林省"
+                - option "黑龙江省"
+                - option "上海市"
+                - option "江苏省"
+                - option "浙江省"
+                - option "安徽省"
+                - option "福建省"
+                - option "江西省"
+                - option "山东省"
+                - option "河南省"
+                - option "湖北省"
+                - option "湖南省"
+                - option "广东省"
+                - option "广西壮族自治区"
+                - option "海南省"
+                - option "重庆市"
+                - option "四川省"
+                - option "贵州省"
+                - option "云南省"
+                - option "西藏自治区"
+                - option "陕西省"
+                - option "甘肃省"
+                - option "青海省"
+                - option "宁夏回族自治区"
+                - option "新疆维吾尔自治区"
+                - option "香港特别行政区"
+                - option "澳门特别行政区"
+                - option "台湾省"
+            - generic:
+              - generic: 城市
+              - combobox:
+                - option "全部城市" [selected]
+            - generic:
+              - generic: 岗位
+              - combobox:
+                - option "全部岗位" [selected]
+            - generic:
+              - generic: 学历要求
+              - combobox:
+                - option "不限学历" [selected]
+                - option "本科"
+                - option "硕士"
+                - option "博士"
+                - option "大专"
+            - generic:
+              - generic: 经验要求
+              - combobox:
+                - option "不限经验" [selected]
+                - option "应届生"
+                - option "1-3年"
+                - option "3-5年"
+                - option "5-10年"
+                - option "10年以上"
+            - generic:
+              - button "重置筛选"
+              - button "应用筛选"
+              - generic: 省份 → 城市 → 岗位 级联筛选 · 应用筛选进入对应岗位分析
+          - generic [ref=e394]:
+            - generic [ref=e395]: 港澳区域
+            - generic [ref=e396] [cursor=pointer]:
+              - generic [ref=e397]: 香港
+              - generic [ref=e400]: "63"
+            - generic [ref=e401] [cursor=pointer]:
+              - generic [ref=e402]: 澳门
+              - generic [ref=e405]: "139"
+        - generic [ref=e407]:
+          - heading "悬停省份预览数据" [level=4] [ref=e411]
+          - paragraph [ref=e412]: 将鼠标移到地图上的省份查看实时人才数据概览

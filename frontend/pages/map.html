@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>执图破局 · 数字人才地图</title>
+  <link rel="stylesheet" href="../css/tokens.css" />
+  <link rel="stylesheet" href="../css/shell.css" />
+  <link rel="stylesheet" href="../css/components.css" />
+  <link rel="stylesheet" href="../css/legacy-views.css" />
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@antv/g6@4.8.24/dist/g6.min.js"></script>
+</head>
+<body class="standalone-view" data-page="map">
+  <div id="app-shell"></div>
+  <main class="page-main" id="page-main">
+<section class="view active" id="view-map">
+<div class="page-header">
+<div class="page-title-block">
+<h1>数字人才地图</h1>
+<div class="subtitle">全国人才分布 · 省份岗位洞察 · 岗位-能力知识图谱 · <span id="talent-stats-text">--</span></div>
+</div>
+<div class="page-actions">
+<button class="btn" onclick="window.talentMapBack()" id="talent-back-btn" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>返回</button>
+<button class="btn btn-primary" id="talent-export-btn" onclick="window.exportData('graph')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="7 13 12 18 17 13"/><polyline points="7 6 12 11 17 6"/></svg>导出数据</button>
+</div>
+</div>
+<div class="graph-layout">
+
+<!-- 中间可视化区 -->
+<div class="graph-canvas" id="talent-map-canvas">
+
+<!-- 左侧边缘筛选触发标签 -->
+<div class="graph-filter-edge-tab" id="graph-filter-toggle" onclick="window.talentMapToggleFilter()" title="展开筛选">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" style="flex-shrink:0"><path d="M0 4h24L13.5 12v8l-3-2.5V12z"/></svg>
+<span class="tab-label">筛选</span>
+</div>
+<!-- 悬浮筛选面板 -->
+<div class="graph-filter-float-panel" id="graph-filter-panel">
+<div class="filter-panel-title"><span>数据筛选</span><button class="filter-panel-close" onclick="window.talentMapToggleFilter()">✕</button></div>
+<div class="filter-group-vert">
+<label>省份</label>
+<select id="talent-filter-province" onchange="window.talentOnProvinceChange()"><option value="">全部省份</option></select>
+</div>
+<div class="filter-group-vert">
+<label>地区</label>
+<select id="talent-filter-city" onchange="window.talentOnCityChange()"><option value="">全部地区</option></select>
+</div>
+<div class="filter-group-vert">
+<label>岗位</label>
+<select id="talent-filter-job"><option value="">全部岗位</option></select>
+</div>
+<div class="filter-group-vert">
+<label>学历要求</label>
+<select id="talent-filter-edu" onchange="window.talentMapApplyFilter()"><option value="">不限学历</option><option>本科</option><option>硕士</option><option>博士</option><option>大专</option></select>
+</div>
+<div class="filter-group-vert">
+<label>经验要求</label>
+<select id="talent-filter-exp" onchange="window.talentMapApplyFilter()"><option value="">不限经验</option><option>应届生</option><option>1-3年</option><option>3-5年</option><option>5-10年</option><option>10年以上</option></select>
+</div>
+<div class="filter-panel-actions">
+<div style="display:flex;gap:8px;width:100%">
+<button class="btn btn-primary" style="flex:1;padding:10px 0;font-size:13px" onclick="window.talentMapResetFilter()">重置筛选</button>
+<button class="btn btn-primary" style="flex:1;padding:10px 0;font-size:13px" onclick="window.talentMapApplyFilter()">应用筛选</button>
+</div>
+<div class="filter-hint">省份 → 地区 → 岗位 级联筛选 · 应用筛选进入对应岗位分析</div>
+</div>
+</div>
+<!-- 省份飞入过渡叠加层 -->
+<div class="talent-flyin-overlay" id="talent-flyin-overlay"></div>
+<!-- Layer 1: 中国地图 -->
+<div class="talent-map-layer" id="talent-layer-map" style="width:100%;height:100%"></div>
+<!-- 港澳局部放大框 -->
+<div class="ganga-zoom-box" id="ganga-zoom-box">
+<div class="ganga-zoom-title">港澳区域</div>
+<div class="ganga-zoom-province" id="ganga-zoom-hk" data-province="香港"
+onclick="window.gangaZoomClick('香港')"
+onmouseenter="window.gangaZoomHover('香港',true)"
+onmouseleave="window.gangaZoomHover('香港',false)">
+<span class="ganga-zoom-name">香港</span>
+<div class="ganga-zoom-bar-wrap"><div class="ganga-zoom-bar" id="ganga-bar-hk"></div></div>
+<span class="ganga-zoom-data" id="ganga-data-hk">--</span>
+</div>
+<div class="ganga-zoom-province" id="ganga-zoom-mo" data-province="澳门"
+onclick="window.gangaZoomClick('澳门')"
+onmouseenter="window.gangaZoomHover('澳门',true)"
+onmouseleave="window.gangaZoomHover('澳门',false)">
+<span class="ganga-zoom-name">澳门</span>
+<div class="ganga-zoom-bar-wrap"><div class="ganga-zoom-bar" id="ganga-bar-mo"></div></div>
+<span class="ganga-zoom-data" id="ganga-data-mo">--</span>
+</div>
+</div>
+<!-- 引导线 SVG -->
+<svg class="ganga-guide-svg" id="ganga-guide-svg">
+<path id="ganga-path-hk" d=""/>
+<circle class="ganga-dot" id="ganga-dot-hk" cx="0" cy="0" r="3"/>
+<path id="ganga-path-mo" d=""/>
+<circle class="ganga-dot" id="ganga-dot-mo" cx="0" cy="0" r="3"/>
+</svg>
+<!-- Layer 2: 省份岗位列表 -->
+<div class="talent-map-layer" id="talent-layer-province" style="display:none;width:100%;height:100%;overflow-y:auto;padding:20px">
+<div class="talent-province-header" style="display:flex;align-items:center;gap:12px">
+<button class="btn" onclick="window.talentMapBack()" style="flex-shrink:0;margin-bottom:8px">← 返回全国总览</button>
+<h2 id="talent-province-title" style="margin:0"></h2>
+</div>
+<div class="talent-province-stats" id="talent-province-stats"></div>
+<div id="talent-province-jobs"></div>
+</div>
+<!-- Layer 3: 岗位能力知识图谱（脑图） -->
+<div class="talent-map-layer" id="talent-layer-graph" style="display:none">
+<div style="width:100%;height:100%;position:relative;display:flex;flex-direction:column;min-width:0">
+<div class="graph-toolbar">
+<div class="graph-toolbar-left">
+<button class="graph-btn" title="返回" onclick="window.talentGraphBack()" style="margin-right:4px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button>
+<div class="graph-city-label" id="talent-graph-city-label">--</div>
+</div>
+<div class="graph-actions">
+<button class="graph-btn" title="适应窗口" onclick="window.talentGraphFit()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></button>
+</div>
+</div>
+<div id="talent-graph-container" style="flex:1;overflow:hidden;position:relative"></div>
+<div class="graph-legend">
+<div class="legend-item"><span class="legend-dot" style="background:#2563EB"></span>编程语言</div>
+<div class="legend-item"><span class="legend-dot" style="background:#7C3AED"></span>框架与开发</div>
+<div class="legend-item"><span class="legend-dot" style="background:#F59E0B"></span>数据存储</div>
+<div class="legend-item"><span class="legend-dot" style="background:#10B981"></span>工程化运维</div>
+<div class="legend-item"><span class="legend-dot" style="background:#EC4899"></span>AI与算法</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- 右侧详情 -->
+<div class="graph-detail" id="talent-detail-panel">
+<div class="detail-empty" id="talent-detail-empty">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+<h4>悬停省份预览数据</h4>
+<p>将鼠标移到地图上的省份<br>查看实时人才数据概览</p>
+</div>
+<div id="talent-detail-hover" style="display:none;padding:20px">
+<h3 style="color:var(--text-dark);margin-bottom:6px" id="talent-hover-name"></h3>
+<div style="display:flex;gap:8px;margin-bottom:14px">
+<span id="talent-hover-badge" class="detail-cat" style="padding:2px 8px;font-size:11px;border-radius:6px"></span>
+</div>
+<div class="detail-stat-grid">
+<div class="detail-stat"><div class="detail-stat-label">岗位数量</div><div class="detail-stat-value" id="talent-hover-jobs">--</div></div>
+<div class="detail-stat" id="talent-hover-hot-wrap"><div class="detail-stat-label">热门指数</div><div class="detail-stat-value" id="talent-hover-hot">--</div></div>
+<div class="detail-stat" id="talent-hover-growth-wrap"><div class="detail-stat-label">增长率</div><div class="detail-stat-value" id="talent-hover-growth">--</div></div>
+<div class="detail-stat"><div class="detail-stat-label">平均薪资</div><div class="detail-stat-value" id="talent-hover-salary">--</div></div>
+</div>
+<div id="talent-hover-city-block" style="display:none">
+<div class="detail-section-title">热门岗位</div>
+<div id="talent-hover-hotjobs" style="display:flex;flex-direction:column;gap:6px"></div>
+<div class="detail-section-title">热门技术</div>
+<div id="talent-hover-skills" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+<div class="detail-section-title">行业占比</div>
+<div id="talent-hover-industry" style="display:flex;flex-direction:column;gap:6px"></div>
+<div class="detail-section-title">学历占比</div>
+<div id="talent-hover-edu" style="display:flex;flex-direction:column;gap:6px"></div>
+</div>
+<button class="btn btn-primary" style="width:100%" id="talent-hover-btn" onclick="window.talentMapClickCurrent()">查看详情 →</button>
+</div>
+<div id="talent-detail-province" style="display:none;padding:20px">
+<button class="btn" style="margin-bottom:12px" onclick="window.talentMapBack()">← 返回地图</button>
+<h3 style="color:var(--text-dark);margin-bottom:4px" id="talent-prov-detail-name"></h3>
+<div style="font-size:12px;color:var(--text-muted);margin-bottom:14px" id="talent-prov-detail-sub"></div>
+<div class="detail-stat-grid" id="talent-prov-stats-grid"></div>
+<div class="detail-section-title">TOP 岗位</div>
+<div id="talent-prov-top-jobs" style="margin-bottom:14px"></div>
+<div class="detail-section-title">7日热度趋势</div>
+<div style="height:140px" id="talent-prov-trend"></div>
+<button class="btn btn-primary" style="width:100%;margin-top:14px" onclick="window.talentMapEnterProvince()">进入省份岗位分析 →</button>
+</div>
+</div>
+</div>
+</section>
+  </main>
+  <script src="../js/api.js"></script>
+  <script src="../js/runtime-core.js"></script>
+  <script src="../js/shell.js"></script>
+  <script src="../js/pages/map.js"></script>
+  <script>
+    window.Shell && window.Shell.mount({ pageId: 'map', title: '数字人才地图', subtitle: '区域人才与岗位能力空间洞察' });
+    if (typeof window.initTalentMap === 'function') window.initTalentMap();
+  </script>
+</body>
+</html>

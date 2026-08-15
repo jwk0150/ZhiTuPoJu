@@ -593,8 +593,6 @@ def build_gap_graph(profile: dict[str, Any], best_match: dict[str, Any]) -> dict
         source_id = "skill_" + re.sub(r"\W+", "_", skill.lower())
         edges.append({"source": source_id, "target": "target_job", "label": "直接匹配"})
     return {"nodes": nodes, "edges": edges}
-
-
 def generate_perfect_resume(target_job: dict[str, Any], profile: dict[str, Any]) -> dict[str, Any]:
     """AI-generated ideal resume profile for the target position as benchmark."""
     system = """你是资深HR与岗位建模专家。基于目标岗位要求，推演该岗位"完美候选人"的画像，不得虚构具体人名。
