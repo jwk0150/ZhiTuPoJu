@@ -28,7 +28,8 @@ class Config:
 
     # ============ 后端服务 ============
     BACKEND_HOST: str = os.getenv("BACKEND_HOST", "127.0.0.1")
-    BACKEND_PORT: int = int(os.getenv("BACKEND_PORT", "8000"))
+    # 前端静态页面默认连接 5000，后端默认值必须与其一致。
+    BACKEND_PORT: int = int(os.getenv("BACKEND_PORT", "5000"))
 
     # ============ 表名前缀配置 ============
     # 不同环境可能使用不同的表名前缀（如：zhilian_、boss_、lagou_）
