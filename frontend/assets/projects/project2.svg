@@ -1,0 +1,7 @@
+<svg width="280" height="140" xmlns="http://www.w3.org/2000/svg">
+  <rect width="280" height="140" fill="#2d1b3d"/>
+  <rect x="20" y="20" width="60" height="60" fill="#a855f7" opacity="0.2"/>
+  <rect x="100" y="40" width="40" height="40" fill="#a855f7" opacity="0.15"/>
+  <text x="140" y="85" font-family="Inter, sans-serif" font-size="48" font-weight="600" fill="#a855f7" opacity="0.8">02</text>
+  <text x="20" y="120" font-family="Inter, sans-serif" font-size="14" font-weight="500" fill="rgba(255,255,255,0.6)">PROJECT</text>
+</svg>
