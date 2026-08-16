@@ -203,6 +203,33 @@ a {
   white-space: nowrap;
 }
 
+.topnav-logout {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-secondary);
+  font: 500 13px var(--font-body);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: border-color 0.2s, background 0.2s, color 0.2s;
+}
+
+.topnav-logout svg {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+}
+
+.topnav-logout:hover {
+  color: #FCA5A5;
+  border-color: rgba(252, 165, 165, 0.45);
+  background: rgba(239, 68, 68, 0.12);
+}
+
 /* ============ Hub tabs ============ */
 .hub-tabs {
   display: flex;
@@ -412,6 +439,14 @@ a {
 
   .topnav-user-label {
     display: none;
+  }
+
+  .topnav-logout span {
+    display: none;
+  }
+
+  .topnav-logout {
+    padding: 7px;
   }
 
   .page-main {

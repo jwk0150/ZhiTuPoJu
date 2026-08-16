@@ -59,7 +59,8 @@
     menu: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>',
     close: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
     bell: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>',
-    search: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>'
+    search: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>',
+    logout: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>'
   };
 
   function escapeHtml(str) {
@@ -220,6 +221,10 @@
             '<span class="topnav-user-avatar">' + escapeHtml(userInitial(label)) + '</span>' +
             '<span class="topnav-user-label">' + safeLabel + '</span>' +
           '</a>' +
+          '<button type="button" class="topnav-logout" id="shell-logout" title="退出到首页">' +
+            ICONS.logout +
+            '<span>退出</span>' +
+          '</button>' +
         '</div>' +
       '</header>' +
       '<div class="main-column"></div>';
@@ -228,6 +233,14 @@
     if (pageMain && column) {
       if (embed) pageMain.classList.add('page-main--embed');
       column.appendChild(pageMain);
+    }
+
+    const logoutBtn = host.querySelector('#shell-logout');
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', function () {
+        try { localStorage.removeItem('zhitu_user'); } catch (_) {}
+        window.location.href = hrefBase() + '../index.html';
+      });
     }
 
     ensureQaUi();
