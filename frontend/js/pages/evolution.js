@@ -30,13 +30,43 @@ window.initEvolution = function() {
     document.querySelectorAll('.filter-pill[data-evo-filter]').forEach(p => {
         if (p.dataset.bound) return;
         p.dataset.bound = '1';
-        p.addEventListener('click', () => {
+        p.addEventListener('click', (e) => {
+            e.stopPropagation();
             document.querySelectorAll('.filter-pill[data-evo-filter]').forEach(x => x.classList.remove('active'));
             p.classList.add('active');
             evolutionState.filter = p.dataset.evoFilter;
             window.renderEvolutionChanges();
         });
     });
+    // 详细变更清单：可折叠下拉框（仅在工具栏空白处点击才折叠，筛选项不触发）
+    const toggle = document.getElementById('evo-change-toggle');
+    const cardEl = document.getElementById('evo-change-card');
+    const collapseEl = document.getElementById('evo-change-collapse');
+    // 强制默认收起（防止 CSS 缓存或遗留 class 导致默认展开）
+    if (cardEl) cardEl.classList.remove('open');
+    if (collapseEl) collapseEl.style.display = 'none';
+    if (toggle && cardEl && !toggle.dataset.bound) {
+        toggle.dataset.bound = '1';
+        toggle.addEventListener('click', (e) => {
+            if (e.target.closest('.filter-pill') || e.target.closest('.change-chevron')) return;
+            const willOpen = !cardEl.classList.contains('open');
+            cardEl.classList.toggle('open');
+            if (collapseEl) collapseEl.style.display = willOpen ? 'block' : 'none';
+        });
+        // 点击箭头也能切换
+        const chevron = document.getElementById('evo-change-chevron');
+        if (chevron && !chevron.dataset.bound) {
+            chevron.dataset.bound = '1';
+            chevron.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const willOpen = !cardEl.classList.contains('open');
+                cardEl.classList.toggle('open');
+                if (collapseEl) collapseEl.style.display = willOpen ? 'block' : 'none';
+            });
+        }
+    }
+    // 绑定“详细变更清单”技能项 → 新增技能详情页 的点击跳转
+    window.bindEvolutionChangeLinks();
 };
 window.renderEvolutionList = function() {
     const el = document.getElementById('evo-list');
@@ -57,7 +87,6 @@ window.renderEvolutionList = function() {
             item.classList.add('active');
             evolutionState.currentJobId = item.dataset.job;
             window.renderEvolution();
-            window.Utils.showToast('已切换至: ' + item.dataset.job, 'cyan');
         });
     });
 };
@@ -98,20 +127,42 @@ window.renderEvolutionChanges = function() {
     const data = window.getEvolutionForJob(evolutionState.currentJobId);
     let html = '';
     if (evolutionState.filter === 'all' || evolutionState.filter === 'added') {
-        html += data.added.slice(0, 8).map(c => `<div class="change-item anim-fade-up"><div class="change-badge add">+</div><div class="change-name">${c.name}</div><div class="change-meta">${c.version} · 引用 ${c.growth}</div></div>`).join('');
+        html += data.added.slice(0, 8).map(c => `<div class="change-item clickable anim-fade-up" data-skill="${c.name}"><div class="change-badge add">+</div><div class="change-name">${c.name}</div><div class="change-meta">${c.version} · 引用 ${c.growth}</div></div>`).join('');
     }
     if (evolutionState.filter === 'all' || evolutionState.filter === 'modified') {
-        html += data.modified.slice(0, 10).map(c => `<div class="change-item anim-fade-up"><div class="change-badge modify">~</div><div class="change-name">${c.name}</div><div class="change-meta">${c.change} · 权重 ${c.weight}</div></div>`).join('');
+        html += data.modified.slice(0, 10).map(c => `<div class="change-item clickable anim-fade-up" data-skill="${c.name}"><div class="change-badge modify">~</div><div class="change-name">${c.name}</div><div class="change-meta">${c.change} · 权重 ${c.weight}</div></div>`).join('');
     }
     if (evolutionState.filter === 'all' || evolutionState.filter === 'removed') {
-        html += data.removed.map(c => `<div class="change-item anim-fade-up"><div class="change-badge remove">-</div><div class="change-name">${c.name}</div><div class="change-meta">${c.version} · 引用 ${c.decline}</div></div>`).join('');
+        html += data.removed.map(c => `<div class="change-item clickable anim-fade-up" data-skill="${c.name}"><div class="change-badge remove">-</div><div class="change-name">${c.name}</div><div class="change-meta">${c.version} · 引用 ${c.decline}</div></div>`).join('');
     }
     list.innerHTML = html || '<div class="empty-state" style="padding:40px">暂无变化数据</div>';
-    document.getElementById('evo-add-count').textContent = data.added.length;
-    document.getElementById('evo-remove-count').textContent = data.removed.length;
-    document.getElementById('evo-modify-count').textContent = data.modified.length;
+    const addEl = document.getElementById('evo-add-count');
+    const rmEl = document.getElementById('evo-remove-count');
+    const modEl = document.getElementById('evo-modify-count');
+    if (addEl) addEl.textContent = data.added.length;
+    if (rmEl) rmEl.textContent = data.removed.length;
+    if (modEl) modEl.textContent = data.modified.length;
+    // 写入当前筛选下的变更总数（标题徽标）
+    const totalEl = document.getElementById('evo-change-total');
+    if (totalEl) totalEl.textContent = list.querySelectorAll('.change-item').length;
     const sub = document.querySelector('#view-evolution .subtitle');
     if (sub) sub.innerHTML = `当前岗位：<strong style="color:var(--primary)">${evolutionState.currentJobId}</strong> · 基于时序图谱识别技能新增/删除/修改`;
+};
+
+// 点击“详细变更清单”中的技能项 → 跳转到对应技能的新增技能详情页面
+window.bindEvolutionChangeLinks = function() {
+    const list = document.getElementById('evo-change-list');
+    if (!list || list.dataset.nsBound) return;
+    list.dataset.nsBound = '1';
+    list.addEventListener('click', function (e) {
+        const item = e.target.closest('.change-item.clickable');
+        if (!item) return;
+        const skill = item.getAttribute('data-skill');
+        const job = evolutionState.currentJobId;
+        const href = (window.PAGE_HREF && window.PAGE_HREF.newSkill) || 'new-skill.html';
+        const url = href + (href.indexOf('?') > -1 ? '&' : '?') + 'skill=' + encodeURIComponent(skill) + '&job=' + encodeURIComponent(job);
+        window.location.href = url;
+    });
 };
 window.renderEvolutionCharts = function() {
     window.disposeChart('chart-evo-trend');
@@ -250,9 +301,36 @@ window.initLearningPath = function() {
     const profiles = window.EVOLUTION_JOB_PROFILES || {};
     const jobs = Object.keys(profiles).length ? Object.keys(profiles) : [learningPathState.currentJobId];
     learningPathState.currentJobId = evolutionState.currentJobId || jobs[0] || 'Java开发工程师';
+    console.log('[initLearningPath] jobId=', learningPathState.currentJobId, 'profiles=', jobs.length);
+    // 直接渲染左侧岗位列表、步骤、效果、详情
+    const lpList = document.getElementById('lp-job-list');
+    const lpSteps = document.getElementById('lp-steps');
+    const lpDetail = document.getElementById('lp-detail');
+    const lpPct = document.getElementById('lp-effect-pct');
+    const lpStars = document.getElementById('lp-stars');
+    console.log('[initLearningPath] elements:', !!lpList, !!lpSteps, !!lpDetail, !!lpPct, !!lpStars);
     window.renderLpJobList();
     window.renderLpPage();
     window.bindLearningPathEvents();
+    // 兜底：若 lp-steps 仍为空，直接基于当前岗位数据手动渲染
+    if (lpSteps && !lpSteps.innerHTML.trim()) {
+      const d = window.getEvolutionForJob(learningPathState.currentJobId);
+      let steps = (d.added || []).slice(0, 3);
+      if (steps.length < 3) (d.modified || []).forEach(m => { if (steps.length < 3 && m.name) steps.push(m); });
+      if (steps.length < 3) ['核心框架','工程实践','架构设计'].forEach(n => { if (steps.length < 3) steps.push({ name: n }); });
+      const periods = ['2-3 周', '1-2 周', '2-3 周'];
+      const priorities = ['高', '高', '中'];
+      lpSteps.innerHTML = steps.map((s, i) => `
+        <div class="lp-step anim-fade-up" style="animation-delay:${i * 0.05}s">
+          <div class="lp-step-num">${i + 1}</div>
+          <div class="lp-step-name">${s.name}</div>
+          <div class="lp-step-priority">优先级: <strong>${priorities[i]}</strong></div>
+          <div class="lp-step-meta">预计学习周期 ${periods[i]}</div>
+        </div>
+        ${i < steps.length - 1 ? '<div class="lp-step-arrow">→</div>' : ''}
+      `).join('');
+      console.log('[initLearningPath] fallback steps rendered:', lpSteps.children.length);
+    }
 };
 
 window.bindLearningPathEvents = function() {
@@ -404,10 +482,28 @@ window.initNewSkill = function() {
     if (!window.EVOLUTION_JOB_PROFILES || !Object.keys(window.EVOLUTION_JOB_PROFILES).length) {
         window.generateAllData();
     }
+    // 从 URL 读取 job / skill 参数（由演化页“详细变更清单”技能项跳转带入）
+    try {
+        const q = new URLSearchParams(window.location.search);
+        const qJob = q.get('job');
+        const qSkill = q.get('skill');
+        if (qJob && window.EVOLUTION_JOB_PROFILES[qJob]) {
+            newSkillState.currentJobId = qJob;
+            evolutionState.currentJobId = qJob;
+        }
+        window.__nsFocusSkill = qSkill || '';
+    } catch (e) {}
     newSkillState.currentJobId = evolutionState.currentJobId;
     window.renderNsJobList();
     window.renderNewSkillDetail();
     window.bindNewSkillEvents();
+    // 若带有 skill 参数，自动定位到该技能详情并高亮
+    if (window.__nsFocusSkill) {
+        setTimeout(function () {
+            const target = document.getElementById('ns-skill-name');
+            if (target) { target.textContent = window.__nsFocusSkill; target.classList.add('ns-focus'); }
+        }, 60);
+    }
 };
 
 window.bindNewSkillEvents = function() {
@@ -506,11 +602,16 @@ window.renderNewSkillDetail = function() {
     const aiBody = `这个 <strong style="color:var(--primary)">${skill}</strong> 是近 ${period} 个月新增的核心技能，需求增长率达 <strong style="color:#10b981">${growth}</strong>，呈现「${trend}」趋势。该技能的岗位需求占比已达 <strong>${ratio}%</strong>，影响等级 ${label}。建议${urgency}纳入学习计划，掌握 ${skill} 相关技术栈（含 ${related.slice(0, 3).join('、')} 等关联技能），以提升在 ${d.cat || '相关'} 岗位的竞争力。`;
     document.getElementById('ns-ai-body').innerHTML = aiBody;
 
-    // Charts
-    setTimeout(() => {
+    // Charts：等布局完成后再 init，避免 display:none/未挂载时容器尺寸为 0
+    requestAnimationFrame(() => {
         window.renderNsGrowthChart(growthNum);
         window.renderNsTrendChart(skill, growthNum, period);
-    }, 30);
+        // 主动 resize 一次，处理容器从 display:none 切到 block 后的尺寸为 0 问题
+        setTimeout(() => {
+            try { window.chartInstances['ns-trend-chart'] && window.chartInstances['ns-trend-chart'].resize(); } catch(e){}
+            try { window.chartInstances['ns-growth-chart'] && window.chartInstances['ns-growth-chart'].resize(); } catch(e){}
+        }, 60);
+    });
 };
 
 window.renderNsGrowthChart = function(growthNum) {

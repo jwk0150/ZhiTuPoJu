@@ -10,9 +10,11 @@
     return {
       home: b + 'home.html',
       map: b + 'map.html',
-      insight: b + 'insight.html',
-      evolution: b + 'insight.html',
-      analysis: b + 'insight.html?tab=trends',
+      insight: b + 'insight.html?v=2',
+      evolution: b + 'insight.html?v=2',
+      learningPath: b + 'learning-path.html',
+      newSkill: b + 'new-skill.html',
+      analysis: b + 'insight.html?tab=trends&v=2',
       discovery: b + 'discovery.html',
       match: b + 'match.html',
       profile: b + 'match.html?tab=profile',
@@ -42,6 +44,8 @@
   const NAV_ALIASES = {
     evolution: 'insight',
     analysis: 'insight',
+    learningPath: 'insight',
+    newSkill: 'insight',
     collection: 'data',
     quality: 'data',
     profile: 'match'

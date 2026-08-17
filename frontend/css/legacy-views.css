@@ -376,7 +376,33 @@ html.embed-mode body{overflow:auto}
 .evo-stat-icon svg{width:18px;height:18px}
 .evo-stat-val{font-size:22px;font-weight:700;color:var(--text-dark)}
 .evo-stat-label{font-size:11px;color:var(--text-muted);margin-top:2px}
-.change-list{display:flex;flex-direction:column;gap:8px}
+/* ====== 演化页 → 独立页面 跳转入口 ====== */
+.evo-jump-row{display:flex;gap:10px;margin:12px 0 2px;flex-wrap:wrap}
+.evo-jump-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;text-decoration:none;font-size:13px;font-weight:500;color:#fff;background:linear-gradient(135deg,#1FC8D9,#1EA8E8);border:none;cursor:pointer;transition:transform .12s ease,box-shadow .12s ease}
+.evo-jump-btn svg{width:16px;height:16px;flex:none}
+.evo-jump-btn:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(30,168,232,.35)}
+/* ====== 详细变更清单：可折叠 ====== */
+.change-card{padding:0}
+.change-toggle{display:flex;align-items:center;gap:12px;padding:14px 18px;cursor:pointer;user-select:none;background:transparent}
+.change-title-wrap{flex:1;min-width:0;display:flex;align-items:center}
+.change-title-wrap .card-title{margin:0}
+.change-count{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;padding:0 7px;margin-left:8px;border-radius:999px;background:linear-gradient(135deg,#1FC8D9,#1EA8E8);color:#fff;font-size:12px;font-weight:700;vertical-align:middle;flex:none}
+.change-tools{display:flex;align-items:center;gap:6px;flex:none}
+.change-tools .filter-pill{padding:5px 12px}
+.evo-tool-btn{display:inline-flex;align-items:center;gap:5px;margin-left:6px;padding:5px 12px;border-radius:8px;text-decoration:none;font-size:12px;font-weight:600;color:#fff;background:linear-gradient(135deg,#1FC8D9,#1EA8E8);transition:transform .12s ease,box-shadow .12s ease}
+.evo-tool-btn svg{width:14px;height:14px;flex:none}
+.evo-tool-btn:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(30,168,232,.35)}
+.change-item.clickable{cursor:pointer;transition:background .15s ease,transform .1s ease}
+.change-item.clickable:hover{background:rgba(30,168,232,.08);transform:translateX(2px)}
+.change-chevron{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;margin-left:8px;border-radius:6px;background:linear-gradient(135deg,#1FC8D9,#1EA8E8);color:#fff;font-size:16px;font-weight:700;line-height:1;transition:transform .25s ease,box-shadow .15s ease;user-select:none;cursor:pointer;box-shadow:0 2px 8px rgba(30,168,232,.25)}
+.change-chevron:hover{box-shadow:0 4px 12px rgba(30,168,232,.4)}
+.change-card.open .change-chevron{transform:rotate(180deg)}
+.change-collapse{display:none;padding:0 18px 16px}
+.change-card.open .change-collapse{display:block}
+.change-collapse-inner{max-height:260px;overflow-y:auto;padding-right:4px}
+.change-collapse-inner::-webkit-scrollbar{width:6px}
+.change-collapse-inner::-webkit-scrollbar-thumb{background:rgba(13,148,136,.35);border-radius:3px}
+.change-list{display:flex;flex-direction:column;gap:8px;padding-top:4px}
 .change-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:10px;background:var(--bg-page);transition:all .2s}
 .change-item:hover{transform:translateX(4px);background:rgba(13,148,136,.04)}
 .change-badge{width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:11px}
@@ -385,6 +411,8 @@ html.embed-mode body{overflow:auto}
 .change-badge.modify{background:var(--gradient-primary)}
 .change-name{font-size:13px;font-weight:600;color:var(--text-dark);flex:1}
 .change-meta{font-size:11px;color:var(--text-muted);font-family:var(--font-mono),monospace}
+/* 新增技能详情页：从演化页带入的技能高亮 */
+.ns-focus{outline:2px solid #1EA8E8;outline-offset:2px;background:rgba(30,168,232,.10);border-radius:8px;padding:2px 6px}
 /* ===== Discovery Prototype (strict) ===== */
 body.disc-lock .content{overflow-y:auto!important;padding:20px 24px 32px!important;display:block}
 #view-discovery.active{display:block!important;animation:none;height:auto;max-height:none;overflow:visible}
