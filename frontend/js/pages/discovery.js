@@ -1,5 +1,5 @@
 // ============== Discovery View (智能体驱动 - Mission Control) ==============
-window.API_BASE = window.API_BASE || 'http://127.0.0.1:5000';
+window.API_BASE = window.API_BASE || ((location.hostname === '127.0.0.1' || location.hostname === 'localhost') ? 'http://127.0.0.1:5000' : location.origin);
 window.discoveryState = {
   phase: 'idle', activeStep: 0, scanning: false,
   dataSource: 'api', llmEnabled: false,
@@ -1151,7 +1151,7 @@ window.sendAiSuggestChat = async function(opts) {
     try {
         const ctrl = new AbortController();
         const timer = setTimeout(() => ctrl.abort(), 70000);
-        const r = await fetch((window.API_BASE || 'http://127.0.0.1:5000') + '/api/agent/chat', {
+        const r = await fetch((window.API_BASE || ((location.hostname === '127.0.0.1' || location.hostname === 'localhost') ? 'http://127.0.0.1:5000' : location.origin)) + '/api/agent/chat', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             signal: ctrl.signal,

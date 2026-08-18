@@ -1,4 +1,4 @@
-var API=(window.API_BASE||'http://127.0.0.1:5000'),UID='demo_user',editMode=false,ivState={msgs:[],active:false};
+var API=(window.API_BASE||((location.hostname==='127.0.0.1'||location.hostname==='localhost')?'http://127.0.0.1:5000':location.origin)),UID='demo_user',editMode=false,ivState={msgs:[],active:false};
 
 document.querySelectorAll('.tab').forEach(function(t){t.onclick=function(){
     var id=this.dataset.tab;

@@ -124,7 +124,7 @@ window.searchJobs = function(mode) {
     if (!input || !container) return;
     const query = (input.value || '').toLowerCase().trim();
     // Fetch jobs from data
-    const apiBase = window.API_BASE || 'http://127.0.0.1:5000';
+    const apiBase = window.API_BASE || ((location.hostname === '127.0.0.1' || location.hostname === 'localhost') ? 'http://127.0.0.1:5000' : location.origin);
     fetch(apiBase + '/api/match/jobs')
         .then(r => r.json())
         .then(resp => {
@@ -536,7 +536,7 @@ window.runMatchFromFile = async function(file) {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 130000);
     try {
-        const response = await fetch((window.API_BASE || 'http://127.0.0.1:5000') + '/api/match/diagnose', {
+        const response = await fetch((window.API_BASE || ((location.hostname === '127.0.0.1' || location.hostname === 'localhost') ? 'http://127.0.0.1:5000' : location.origin)) + '/api/match/diagnose', {
             method:'POST', body:form, signal:controller.signal
         });
         const payload = await response.json().catch(() => ({}));
@@ -945,7 +945,7 @@ window.exportMatchReport = function() {
 window.loadHotJobs = function() {
     const container = document.getElementById('hall-hot-jobs');
     if (!container) return;
-    const apiBase = window.API_BASE || 'http://127.0.0.1:5000';
+    const apiBase = window.API_BASE || ((location.hostname === '127.0.0.1' || location.hostname === 'localhost') ? 'http://127.0.0.1:5000' : location.origin);
     fetch(apiBase + '/api/match/jobs')
         .then(r => r.json())
         .then(resp => {

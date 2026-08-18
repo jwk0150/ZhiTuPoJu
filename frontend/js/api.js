@@ -1,5 +1,5 @@
 (function () {
-  window.API_BASE = window.API_BASE || 'http://127.0.0.1:5000';
+  window.API_BASE = window.API_BASE || ((location.hostname === '127.0.0.1' || location.hostname === 'localhost') ? 'http://127.0.0.1:5000' : location.origin);
 
   window.showToast = function (message, tone) {
     let el = document.getElementById('app-toast');

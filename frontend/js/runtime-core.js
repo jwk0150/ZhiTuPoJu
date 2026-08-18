@@ -1,5 +1,5 @@
 /* Shared runtime extracted for standalone pages */
-window.API_BASE = window.API_BASE || 'http://127.0.0.1:5000';
+window.API_BASE = window.API_BASE || ((location.hostname === '127.0.0.1' || location.hostname === 'localhost') ? 'http://127.0.0.1:5000' : location.origin);
 window.Utils = {
     rand: (min, max) => Math.floor(Math.random() * (max - min + 1)) + min,
     pick: arr => arr[Math.floor(Math.random() * arr.length)],

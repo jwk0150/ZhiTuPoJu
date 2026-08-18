@@ -959,7 +959,7 @@
             <span class="logo-node logo-node--a" aria-hidden="true"></span>
             <span class="logo-node logo-node--b" aria-hidden="true"></span>
             <div class="brand-mark-core">
-              <img src="assets/brand/logo.png?v=8" width="96" height="96" alt="执图破局" />
+              <img src="assets/brand/logo.png?v=14" width="96" height="96" alt="执图破局" />
             </div>
           </div>
           <div class="brand-wordmark is-typing" id="brand-wordmark">
@@ -1025,8 +1025,8 @@
 
       <section class="auth enter-right" style="--d:.2s" aria-label="登录">
         <div class="auth-head enter" style="--d:.38s">
-          <h2>欢迎回来</h2>
-          <p>登录执图破局，开启智能职业新体验</p>
+          <h2>进入工作台</h2>
+          <p>登录后可使用地图、演化、发现与匹配等模块</p>
         </div>
 
         <div class="segment enter" style="--d:.48s" role="tablist">
@@ -1061,11 +1061,11 @@
             <a class="forgot" href="#" onclick="return false;">忘记密码？</a>
           </div>
           <div class="error" id="login-error"></div>
-          <button type="button" class="btn-primary" onclick="handleLogin()"><span>立即登录</span></button>
+          <button type="button" class="btn-primary" onclick="handleLogin()"><span>登录</span></button>
           <div class="divider">或</div>
           <button type="button" class="btn-ghost" onclick="devLogin()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21h18"/><path d="M5 21V8l7-4 7 4v13"/><path d="M9 21v-6h6v6"/></svg>
-            <span>进入平台入口</span>
+            <span>访客进入</span>
           </button>
           <p class="legal">登录即代表同意<a href="#" onclick="return false;">《用户协议》</a>和<a href="#" onclick="return false;">《隐私政策》</a></p>
         </div>
@@ -1113,7 +1113,7 @@
   </div>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
   <script>
-    const API_BASE = window.API_BASE || 'http://127.0.0.1:5000';
+    const API_BASE = window.API_BASE || ((location.hostname === '127.0.0.1' || location.hostname === 'localhost') ? 'http://127.0.0.1:5000' : location.origin);
 
     (function initLogoMotion() {
       const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
