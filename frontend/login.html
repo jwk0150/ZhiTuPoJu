@@ -1062,11 +1062,13 @@
           </div>
           <div class="error" id="login-error"></div>
           <button type="button" class="btn-primary" onclick="handleLogin()"><span>登录</span></button>
-          <div class="divider">或</div>
-          <button type="button" class="btn-ghost" onclick="devLogin()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21h18"/><path d="M5 21V8l7-4 7 4v13"/><path d="M9 21v-6h6v6"/></svg>
-            <span>访客进入</span>
-          </button>
+          <div class="dev-skip" id="devSkip" hidden>
+            <div class="divider">或</div>
+            <button type="button" class="btn-ghost" onclick="devLogin()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21h18"/><path d="M5 21V8l7-4 7 4v13"/><path d="M9 21v-6h6v6"/></svg>
+              <span>开发者入口</span>
+            </button>
+          </div>
           <p class="legal">登录即代表同意<a href="#" onclick="return false;">《用户协议》</a>和<a href="#" onclick="return false;">《隐私政策》</a></p>
         </div>
 
@@ -1297,12 +1299,23 @@
       });
     });
 
+    function isLocalHost() {
+      const host = location.hostname;
+      return host === '127.0.0.1' || host === 'localhost';
+    }
+
+    (function revealDevSkip() {
+      const skip = document.getElementById('devSkip');
+      if (skip && isLocalHost()) skip.hidden = false;
+    })();
+
     function togglePassword(id) {
       const input = document.getElementById(id);
       input.type = input.type === 'password' ? 'text' : 'password';
     }
 
     function devLogin() {
+      if (!isLocalHost()) return;
       localStorage.setItem('zhitu_user', JSON.stringify({
         username: 'developer', role: 'dev', loginTime: Date.now()
       }));

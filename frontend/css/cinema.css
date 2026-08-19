@@ -1703,6 +1703,57 @@ body.project-detail-open .content-track { pointer-events: none; }
   box-shadow: none;
 }
 
+.login-tabs {
+  display: flex;
+  gap: 22px;
+  margin: 0 0 22px;
+}
+
+.login-tab {
+  padding: 0 0 6px;
+  border: 0;
+  border-bottom: 1px solid transparent;
+  background: none;
+  color: rgba(255, 250, 243, 0.5);
+  font-family: var(--font-chart);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  cursor: pointer;
+}
+
+.login-tab.is-active,
+.login-tab:hover,
+.login-tab:focus-visible {
+  color: #fffaf3;
+  border-bottom-color: #ecc984;
+}
+
+.login-error {
+  margin: 0;
+  color: #ecc984;
+  font-family: var(--font-brand);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.login-dev {
+  margin-top: 22px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: rgba(255, 250, 243, 0.42);
+  font-family: var(--font-chart);
+  font-size: 13px;
+  letter-spacing: 0.16em;
+  cursor: pointer;
+}
+
+.login-dev:hover,
+.login-dev:focus-visible {
+  color: #ecc984;
+}
+
 /* ===== Progress UI ===== */
 .progress-ui {
   position: fixed;

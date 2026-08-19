@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600&family=Noto+Serif+SC:wght@500;600;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="./css/cinema.css?v=33" />
+  <link rel="stylesheet" href="./css/cinema.css?v=34" />
 </head>
 <body>
   <main class="site-shell" aria-label="场景滚动式入口">
@@ -127,6 +127,10 @@
           <div class="login-card" aria-labelledby="loginTitle">
             <h2 id="loginTitle">登录</h2>
             <p class="login-lead">登录后进入地图、洞察、发现、匹配、问答与数据底座。</p>
+            <div class="login-tabs" role="tablist" aria-label="登录或注册">
+              <button type="button" class="login-tab is-active" data-auth-tab="login" role="tab" aria-selected="true">登录</button>
+              <button type="button" class="login-tab" data-auth-tab="register" role="tab" aria-selected="false">注册</button>
+            </div>
             <form class="login-form" id="entryLoginForm">
               <label>
                 <span>用户名</span>
@@ -136,8 +140,26 @@
                 <span>密码</span>
                 <input type="password" name="password" autocomplete="current-password" placeholder="请输入密码" />
               </label>
+              <p class="login-error" id="entryLoginError" hidden></p>
               <button type="submit" class="login-submit">登录</button>
             </form>
+            <form class="login-form" id="entryRegisterForm" hidden>
+              <label>
+                <span>用户名</span>
+                <input type="text" name="username" autocomplete="username" placeholder="3-20个字符" />
+              </label>
+              <label>
+                <span>密码</span>
+                <input type="password" name="password" autocomplete="new-password" placeholder="至少6位" />
+              </label>
+              <label>
+                <span>确认密码</span>
+                <input type="password" name="confirm" autocomplete="new-password" placeholder="再次输入密码" />
+              </label>
+              <p class="login-error" id="entryRegisterError" hidden></p>
+              <button type="submit" class="login-submit">注册</button>
+            </form>
+            <button type="button" class="login-dev" id="entryDevSkip" hidden>开发者入口</button>
           </div>
         </div>
       </section>
@@ -154,8 +176,8 @@
 
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/TextPlugin.min.js"></script>
-  <script src="./js/entry.js?v=33"></script>
-  <script src="./js/project-cards.js?v=33"></script>
+  <script src="./js/entry.js?v=34"></script>
+  <script src="./js/project-cards.js?v=34"></script>
   <script>
     (function initLogoMotion() {
       const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;

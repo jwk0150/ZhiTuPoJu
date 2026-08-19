@@ -365,7 +365,7 @@
       card.classList.add('is-entering');
       return;
     }
-    const parts = card.querySelectorAll('h2, .login-lead, .login-form label, .login-submit');
+    const parts = card.querySelectorAll('h2, .login-lead, .login-tabs, .login-form label, .login-submit, .login-dev');
     gsap.set(card, { opacity: 1, x: 0 });
     gsap.fromTo(parts,
       { opacity: 0, y: 16 },
@@ -844,14 +844,116 @@
   });
 
   const loginForm = document.getElementById('entryLoginForm');
-  loginForm?.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const username = loginForm.querySelector('[name="username"]').value.trim() || '访客';
+  const registerForm = document.getElementById('entryRegisterForm');
+  const isLocalHost = () => {
+    const host = location.hostname;
+    return host === '127.0.0.1' || host === 'localhost';
+  };
+  const authApiBase = () => window.API_BASE || (isLocalHost() ? 'http://127.0.0.1:5000' : location.origin);
+
+  const showAuthError = (el, message) => {
+    if (!el) return;
+    el.hidden = !message;
+    el.textContent = message || '';
+  };
+
+  const finishAuth = (payload) => {
+    const data = payload && typeof payload === 'object' ? payload : {};
     localStorage.setItem('zhitu_user', JSON.stringify({
-      username, role: 'user', loginTime: Date.now()
+      username: data.username || 'user',
+      role: data.role || 'user',
+      loginTime: Date.now()
     }));
     window.location.href = 'pages/home.html';
+  };
+
+  const postAuth = async (path, body) => {
+    const res = await fetch(authApiBase() + path, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    return res.json();
+  };
+
+  document.querySelectorAll('[data-auth-tab]').forEach((tab) => {
+    tab.addEventListener('click', (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      const name = tab.dataset.authTab;
+      document.querySelectorAll('[data-auth-tab]').forEach((el) => {
+        const on = el === tab;
+        el.classList.toggle('is-active', on);
+        el.setAttribute('aria-selected', on ? 'true' : 'false');
+      });
+      if (loginForm) loginForm.hidden = name !== 'login';
+      if (registerForm) registerForm.hidden = name !== 'register';
+      const title = document.getElementById('loginTitle');
+      if (title) title.textContent = name === 'register' ? '注册' : '登录';
+    });
   });
+
+  loginForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const errorEl = document.getElementById('entryLoginError');
+    const username = loginForm.querySelector('[name="username"]').value.trim();
+    const password = loginForm.querySelector('[name="password"]').value;
+    if (!username || !password) {
+      showAuthError(errorEl, '请输入用户名和密码');
+      return;
+    }
+    showAuthError(errorEl, '');
+    try {
+      const result = await postAuth('/api/auth/login', { username, password });
+      if (result.code === 0) finishAuth(result.data);
+      else showAuthError(errorEl, result.message || '登录失败，请先注册');
+    } catch (_) {
+      showAuthError(errorEl, '网络错误，请稍后重试');
+    }
+  });
+
+  registerForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const errorEl = document.getElementById('entryRegisterError');
+    const username = registerForm.querySelector('[name="username"]').value.trim();
+    const password = registerForm.querySelector('[name="password"]').value;
+    const confirm = registerForm.querySelector('[name="confirm"]').value;
+    if (!username || username.length < 3 || username.length > 20) {
+      showAuthError(errorEl, '用户名长度应为3-20个字符');
+      return;
+    }
+    if (!password || password.length < 6) {
+      showAuthError(errorEl, '密码长度至少6位');
+      return;
+    }
+    if (password !== confirm) {
+      showAuthError(errorEl, '两次密码输入不一致');
+      return;
+    }
+    showAuthError(errorEl, '');
+    try {
+      const registered = await postAuth('/api/auth/register', { username, password });
+      if (registered.code !== 0) {
+        showAuthError(errorEl, registered.message || '注册失败');
+        return;
+      }
+      const loggedIn = await postAuth('/api/auth/login', { username, password });
+      if (loggedIn.code === 0) finishAuth(loggedIn.data);
+      else showAuthError(errorEl, '注册成功，请切换到登录');
+    } catch (_) {
+      showAuthError(errorEl, '网络错误，请稍后重试');
+    }
+  });
+
+  const devSkip = document.getElementById('entryDevSkip');
+  if (devSkip && isLocalHost()) {
+    devSkip.hidden = false;
+    devSkip.addEventListener('click', (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      finishAuth({ username: 'developer', role: 'dev' });
+    });
+  }
 
   readMetadata().then(() => {
     document.body.dataset.phase = 'scene1';
