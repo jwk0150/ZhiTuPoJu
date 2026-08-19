@@ -25,15 +25,15 @@
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--signal), var(--signal-deep));
-  border-color: transparent;
-  color: #fff;
-  box-shadow: 0 8px 18px rgba(10, 168, 188, 0.25);
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.4);
+  color: var(--text-dark);
 }
 
 .btn-primary:hover {
-  transform: translateY(-1px);
-  color: #fff;
+  border-color: var(--signal);
+  background: rgba(31, 200, 217, 0.12);
+  color: var(--text-dark);
 }
 
 .btn-ghost {

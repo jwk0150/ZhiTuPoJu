@@ -2,6 +2,7 @@
 """统一配置管理 — 解决不同开发者环境差异"""
 import os
 from pathlib import Path
+from urllib.parse import quote_plus
 
 from dotenv import load_dotenv
 
@@ -39,7 +40,7 @@ class Config:
     def get_db_url(cls) -> str:
         """生成数据库连接URL"""
         return (
-            f"postgresql://{cls.PG_USER}:{cls.PG_PASSWORD}@"
+            f"postgresql://{cls.PG_USER}:{quote_plus(cls.PG_PASSWORD)}@"
             f"{cls.PG_HOST}:{cls.PG_PORT}/{cls.PG_DB}"
         )
 

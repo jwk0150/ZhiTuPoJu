@@ -87,7 +87,7 @@ var REGIONS_FOR_SERIES = [
 ];
 
 // API 基础路径
-const API_BASE = (window.API_BASE || 'http://127.0.0.1:5000') + '/api';
+const API_BASE = (window.API_BASE || ((location.hostname === '127.0.0.1' || location.hostname === 'localhost') ? 'http://127.0.0.1:5000' : location.origin)) + '/api';
 
 // ============== 初始化 ==============
 window.initTalentMap = async function() {

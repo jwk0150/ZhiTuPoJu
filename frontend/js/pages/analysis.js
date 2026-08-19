@@ -47,7 +47,7 @@ window.trendTimer = null;
 window.trendDataState = {dashboard: null, lifecycle: null, emerging: null, insight: null, source: 'loading'};
 
 window.fetchTrendData = async function() {
-    const API = (window.API_BASE || 'http://127.0.0.1:5000');
+    const API = (window.API_BASE || ((location.hostname === '127.0.0.1' || location.hostname === 'localhost') ? 'http://127.0.0.1:5000' : location.origin));
     try {
         const [dash, lc, em, ins] = await Promise.all([
             fetch(API+'/api/trends/dashboard').then(r=>r.json()).then(d=>d.data).catch(()=>null),
@@ -1921,7 +1921,7 @@ window.openTrendDrawer = async function() {
 
     // Fetch insight if not already loaded
     if (!window.trendDataState.insight || window.trendDataState.insight.data_source === 'default') {
-        var API = (window.API_BASE || 'http://127.0.0.1:5000');
+        var API = (window.API_BASE || ((location.hostname === '127.0.0.1' || location.hostname === 'localhost') ? 'http://127.0.0.1:5000' : location.origin));
         try {
             var resp = await fetch(API+'/api/trends/ai-insight');
             var data = await resp.json();

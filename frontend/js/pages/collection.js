@@ -4,7 +4,7 @@ window.initCollection = function() {
     const grid = document.getElementById('source-grid');
     if (!grid) return;
     // Fetch real data from backend
-    const apiBase = window.API_BASE || 'http://127.0.0.1:5000';
+    const apiBase = window.API_BASE || ((location.hostname === '127.0.0.1' || location.hostname === 'localhost') ? 'http://127.0.0.1:5000' : location.origin);
     fetch(apiBase + '/api/collection/sources')
         .then(r => r.json())
         .then(resp => {

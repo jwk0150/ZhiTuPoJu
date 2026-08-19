@@ -63,7 +63,8 @@
     menu: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>',
     close: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
     bell: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>',
-    search: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>'
+    search: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>',
+    logout: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>'
   };
 
   function escapeHtml(str) {
@@ -99,16 +100,6 @@
     return NAV_ALIASES[pageId] || pageId;
   }
 
-  function moreIsOpen(pageId) {
-    const navId = resolveNavId(pageId);
-    if (NAV.more.some(function (item) { return item.id === navId; })) return true;
-    return sessionStorage.getItem('shell_more_open') === '1';
-  }
-
-  function setMoreOpen(open) {
-    sessionStorage.setItem('shell_more_open', open ? '1' : '0');
-  }
-
   function navItemHtml(item, pageId) {
     const navId = resolveNavId(pageId);
     const active = item.id === navId ? ' active' : '';
@@ -133,40 +124,11 @@
     return null;
   }
 
-  function renderNav(pageId, moreOpen) {
-    const primary = NAV.primary.map(function (item) {
-      return navItemHtml(item, pageId);
-    }).join('');
-    const moreItems = NAV.more.map(function (item) {
-      return navItemHtml(item, pageId);
-    }).join('');
-    // Single ops entry: always visible, no collapse chrome
-    if (NAV.more.length === 1) {
-      return (
-        '<nav class="sidebar-nav">' +
-          '<div class="nav-group">' +
-            '<div class="nav-label">产品能力</div>' +
-            primary +
-          '</div>' +
-          '<div class="nav-group is-open">' +
-            '<div class="nav-label">运维</div>' +
-            moreItems +
-          '</div>' +
-        '</nav>'
-      );
-    }
+  function renderNav(pageId) {
+    const items = NAV.primary.concat(NAV.more);
     return (
-      '<nav class="sidebar-nav">' +
-        '<div class="nav-group">' +
-          '<div class="nav-label">产品能力</div>' +
-          primary +
-        '</div>' +
-        '<div class="nav-group' + (moreOpen ? ' is-open' : '') + '" data-nav-more>' +
-          '<button type="button" class="nav-label nav-more-toggle" data-more-toggle>运维</button>' +
-          '<div class="nav-more-items" data-more-items style="display:' + (moreOpen ? 'block' : 'none') + '">' +
-            moreItems +
-          '</div>' +
-        '</div>' +
+      '<nav class="topnav-nav">' +
+        items.map(function (item) { return navItemHtml(item, pageId); }).join('') +
       '</nav>'
     );
   }
@@ -225,110 +187,10 @@
     window.ShellQA = { open: function () { setOpen(true); }, close: function () { setOpen(false); } };
   }
 
-  function bindChrome(host) {
-    const sidebar = host.querySelector('.sidebar');
-    const backdrop = host.querySelector('.sidebar-backdrop');
-    const toggle = host.querySelector('.topbar-toggle');
-    const moreToggle = host.querySelector('[data-more-toggle]');
-    const moreItems = host.querySelector('[data-more-items]');
-    const moreGroup = host.querySelector('[data-nav-more]');
-
-    function setSidebarOpen(open) {
-      if (!sidebar) return;
-      sidebar.classList.toggle('is-open', open);
-      if (backdrop) backdrop.classList.toggle('is-visible', open);
-    }
-
-    if (toggle) {
-      toggle.addEventListener('click', function () {
-        setSidebarOpen(!sidebar.classList.contains('is-open'));
-      });
-    }
-    if (backdrop) backdrop.addEventListener('click', function () { setSidebarOpen(false); });
-    if (moreToggle && moreItems) {
-      moreToggle.addEventListener('click', function () {
-        const open = moreItems.style.display === 'none';
-        moreItems.style.display = open ? 'block' : 'none';
-        if (moreGroup) moreGroup.classList.toggle('is-open', open);
-        setMoreOpen(open);
-      });
-    }
-  }
-
-  function userRole(user) {
-    if (!user) return '平台账号';
-    const role = String(user.role || '').toLowerCase();
-    if (role === 'admin') return '平台管理员';
-    if (role === 'dev' || role === 'developer') return '平台管理员';
-    return user.roleLabel || '平台账号';
-  }
-
-  function greetTitle(label) {
-    const hour = new Date().getHours();
-    let hi = '你好';
-    if (hour < 11) hi = '早上好';
-    else if (hour < 14) hi = '中午好';
-    else if (hour < 18) hi = '下午好';
-    else hi = '晚上好';
-    return hi + ', ' + label;
-  }
-
-  function renderTopbar(opts) {
-    const pageId = opts.pageId;
-    const label = opts.label;
-    const safeLabel = opts.safeLabel;
-    const safeTitle = opts.safeTitle;
-    const safeSubtitle = opts.safeSubtitle;
-    const homeTopbar = !!opts.homeTopbar;
-
-    if (homeTopbar) {
-      return (
-        '<header class="topbar topbar--home">' +
-          '<button type="button" class="topbar-toggle" aria-label="打开导航">' + ICONS.menu + '</button>' +
-          '<div class="topbar-greet">' +
-            '<div class="topbar-greet-title" id="shell-greet-title">' + escapeHtml(greetTitle(label)) + '</div>' +
-            '<div class="topbar-greet-sub">探索数据，发现职业新机遇</div>' +
-          '</div>' +
-          '<label class="topbar-search">' +
-            '<span class="topbar-search-icon" aria-hidden="true">' + ICONS.search + '</span>' +
-            '<input type="search" placeholder="搜索岗位、技能、地区..." aria-label="搜索" />' +
-          '</label>' +
-          '<div class="topbar-actions">' +
-            '<button type="button" class="topbar-icon-btn" title="通知" aria-label="通知">' + ICONS.bell + '</button>' +
-            '<a class="topbar-user topbar-user--compact" href="' + PAGE_HREF.profile + '" title="' + safeLabel + '">' +
-              '<span class="topbar-user-avatar">' + escapeHtml(userInitial(label)) + '</span>' +
-            '</a>' +
-          '</div>' +
-        '</header>'
-      );
-    }
-
-    return (
-      '<header class="topbar">' +
-        '<button type="button" class="topbar-toggle" aria-label="打开导航">' + ICONS.menu + '</button>' +
-        '<div class="topbar-title-block">' +
-          '<div class="topbar-title">' + safeTitle + '</div>' +
-          (safeSubtitle ? '<div class="topbar-subtitle">' + safeSubtitle + '</div>' : '') +
-        '</div>' +
-        '<div class="topbar-actions">' +
-          '<a class="topbar-icon-btn" href="' + PAGE_HREF.settings + '" title="系统设置" aria-label="系统设置">' + ICONS.settings + '</a>' +
-          '<a class="topbar-user" href="' + PAGE_HREF.profile + '">' +
-            '<span class="topbar-user-avatar">' + escapeHtml(userInitial(label)) + '</span>' +
-            '<span class="topbar-user-label">' + safeLabel + '</span>' +
-          '</a>' +
-          '<div class="topbar-brand-logo" title="执图破局" role="img" aria-label="平台 Logo"></div>' +
-        '</div>' +
-      '</header>'
-    );
-  }
-
   function mount(opts) {
     opts = opts || {};
     const pageId = opts.pageId || document.body.getAttribute('data-page') || 'home';
-    const title = opts.title || '';
-    const subtitle = opts.subtitle || '';
     const embed = !!opts.embed;
-    const homeTopbar = !!opts.homeTopbar || pageId === 'home';
 
     if (!document.body.getAttribute('data-page')) {
       document.body.setAttribute('data-page', pageId);
@@ -345,41 +207,31 @@
     const user = readUser();
     const label = userLabel(user);
     const safeLabel = escapeHtml(label);
-    const safeTitle = escapeHtml(title);
-    const safeSubtitle = escapeHtml(subtitle);
-    const moreOpen = moreIsOpen(pageId);
-    const roleText = escapeHtml(userRole(user));
 
     host.className = 'app-frame';
     host.innerHTML =
-      '<div class="sidebar-backdrop"></div>' +
-      '<aside class="sidebar">' +
-        '<div class="sidebar-brand">' +
-          '<div class="sidebar-brand-logo" role="img" aria-label="执图破局"></div>' +
-          '<div class="sidebar-brand-text">' +
-            '<div class="sidebar-brand-title">执图破局</div>' +
-            '<div class="sidebar-brand-sub">Digital Talent Mapping</div>' +
-          '</div>' +
+      '<header class="topnav">' +
+        '<div class="topnav-left">' +
+          '<a class="topnav-brand" href="' + PAGE_HREF.home + '" aria-label="执图破局">' +
+            '<span class="topnav-brand-logo" role="img" aria-label="执图破局"></span>' +
+            '<span class="topnav-brand-title">执图破局</span>' +
+          '</a>' +
         '</div>' +
-        renderNav(pageId, moreOpen) +
-        '<div class="sidebar-footer">' +
-          '<div class="sidebar-user-avatar">' + escapeHtml(userInitial(label)) + '</div>' +
-          '<div class="sidebar-user-info">' +
-            '<div class="sidebar-user-name">' + safeLabel + '</div>' +
-            '<div class="sidebar-user-role">' + roleText + '</div>' +
-          '</div>' +
+        '<div class="topnav-center">' +
+          renderNav(pageId) +
         '</div>' +
-      '</aside>' +
-      '<div class="main-column">' +
-        renderTopbar({
-          pageId: pageId,
-          label: label,
-          safeLabel: safeLabel,
-          safeTitle: safeTitle,
-          safeSubtitle: safeSubtitle,
-          homeTopbar: homeTopbar
-        }) +
-      '</div>';
+        '<div class="topnav-right">' +
+          '<a class="topnav-user" href="' + PAGE_HREF.profile + '" title="' + safeLabel + '">' +
+            '<span class="topnav-user-avatar">' + escapeHtml(userInitial(label)) + '</span>' +
+            '<span class="topnav-user-label">' + safeLabel + '</span>' +
+          '</a>' +
+          '<button type="button" class="topnav-logout" id="shell-logout" title="退出到首页">' +
+            ICONS.logout +
+            '<span>退出</span>' +
+          '</button>' +
+        '</div>' +
+      '</header>' +
+      '<div class="main-column"></div>';
 
     const column = host.querySelector('.main-column');
     if (pageMain && column) {
@@ -387,7 +239,14 @@
       column.appendChild(pageMain);
     }
 
-    bindChrome(host);
+    const logoutBtn = host.querySelector('#shell-logout');
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', function () {
+        try { localStorage.removeItem('zhitu_user'); } catch (_) {}
+        window.location.href = hrefBase() + '../index.html';
+      });
+    }
+
     ensureQaUi();
   }
 

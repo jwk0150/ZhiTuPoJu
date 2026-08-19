@@ -84,7 +84,7 @@ window.sendQAQuestion = async function(question) {
             .filter(m => m.content);
         // 去掉当前这轮 user，避免与 message 重复
         const historyPayload = hist.slice(0, -1);
-        const r = await fetch((window.API_BASE || 'http://127.0.0.1:5000') + '/api/agent/chat', {
+        const r = await fetch((window.API_BASE || ((location.hostname === '127.0.0.1' || location.hostname === 'localhost') ? 'http://127.0.0.1:5000' : location.origin)) + '/api/agent/chat', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             signal: ctrl.signal,

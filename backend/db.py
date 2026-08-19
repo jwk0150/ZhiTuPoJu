@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """PostgreSQL 数据库连接模块 (SQLAlchemy)"""
 import os
+from urllib.parse import quote_plus
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 
@@ -16,7 +17,7 @@ if not DATABASE_URL:
     _user = os.getenv("PG_USER", "postgres")
     _pwd = os.getenv("PG_PASSWORD", "20051122")
     _db = os.getenv("PG_DB", "zhitu_crawl_db")
-    DATABASE_URL = f"postgresql://{_user}:{_pwd}@{_host}:{_port}/{_db}"
+    DATABASE_URL = f"postgresql://{_user}:{quote_plus(_pwd)}@{_host}:{_port}/{_db}"
 
 engine = create_engine(DATABASE_URL, pool_pre_ping=True, pool_size=5)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
