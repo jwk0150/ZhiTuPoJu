@@ -384,3 +384,700 @@ body[data-page="discovery"] #discovery-results { animation-delay: 0.18s; }
     grid-template-columns: 1fr !important;
   }
 }
+
+/* =========================================================
+ * New-Skill Detail Page — 玻璃态 + 渐变色带（基于 cinema-bg 视频背景）
+ * ========================================================= */
+body[data-page="newSkill"] .page-main {
+  --glass-card: rgba(255, 255, 255, 0.78);
+  --glass-border: rgba(31, 200, 217, 0.18);
+  --glass-shadow: 0 14px 36px rgba(20, 80, 110, 0.08);
+  --r-card: 18px;
+  --ns-cyan: #0AA8BC;
+  --ns-cyan-deep: #088a9c;
+  --ns-cyan-soft: rgba(31, 200, 217, 0.14);
+  --ns-amber: #F0B429;
+  --ns-amber-deep: #C68A0C;
+  --ns-amber-soft: rgba(240, 180, 41, 0.14);
+  --ns-text-strong: #0F2A3A;
+  --ns-text-soft: #5B7388;
+  position: relative;
+  min-height: 100vh;
+  background: transparent;
+  z-index: 0;
+}
+
+body[data-page="newSkill"] #page-main {
+  position: relative;
+  z-index: 1;
+}
+
+/* 顶部色带：青蓝→琥珀，呼应参考图标题区 */
+body[data-page="newSkill"] .page-header {
+  position: relative;
+  margin: 0 0 18px;
+  padding: 18px 22px;
+  border-radius: var(--r-card);
+  background: linear-gradient(120deg, rgba(10, 168, 188, 0.28) 0%, rgba(31, 200, 217, 0.14) 45%, rgba(240, 180, 41, 0.22) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 16px 40px rgba(8, 60, 80, 0.25);
+  overflow: hidden;
+}
+
+body[data-page="newSkill"] .page-header::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.08) 50%, transparent 100%);
+  pointer-events: none;
+}
+
+body[data-page="newSkill"] .page-header .btn {
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  color: #F2FBFD;
+  backdrop-filter: blur(8px);
+}
+
+body[data-page="newSkill"] .page-header .btn:hover {
+  background: rgba(255, 255, 255, 0.28);
+  color: #fff;
+}
+
+body[data-page="newSkill"] .page-title-block h1 {
+  font-family: var(--font-display);
+  font-size: clamp(24px, 2.2vw, 30px);
+  font-weight: 700;
+  background: linear-gradient(95deg, #6FE6F2 0%, #0AA8BC 38%, #F0B429 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  letter-spacing: 0.02em;
+  text-shadow: 0 2px 18px rgba(10, 168, 188, 0.18);
+}
+
+body[data-page="newSkill"] .page-title-block .subtitle {
+  color: rgba(232, 245, 248, 0.78);
+  font-size: 13px;
+  margin-top: 6px;
+}
+
+/* 卡片：玻璃态半透明，透出底层视频背景 */
+body[data-page="newSkill"] .card {
+  background: var(--glass-card) !important;
+  border: 1px solid var(--glass-border) !important;
+  border-radius: var(--r-card) !important;
+  box-shadow: var(--glass-shadow) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  position: relative;
+  overflow: hidden;
+}
+
+body[data-page="newSkill"] .card-header {
+  border-bottom: 1px solid rgba(31, 200, 217, 0.12);
+  padding: 14px 18px;
+}
+
+body[data-page="newSkill"] .card-title {
+  font-family: var(--font-display);
+  color: var(--ns-text-strong);
+  font-weight: 600;
+  font-size: 14px;
+  position: relative;
+  padding-left: 12px;
+}
+
+body[data-page="newSkill"] .card-title::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 4px;
+  bottom: 4px;
+  width: 3px;
+  border-radius: 3px;
+  background: linear-gradient(180deg, var(--ns-cyan) 0%, var(--ns-amber) 100%);
+}
+
+/* 头部主信息卡：突出展示技能名 */
+body[data-page="newSkill"] .ns-header-card {
+  background: linear-gradient(120deg, rgba(10, 168, 188, 0.20) 0%, rgba(31, 200, 217, 0.10) 60%, rgba(240, 180, 41, 0.18) 100%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.20) !important;
+  box-shadow: 0 18px 44px rgba(8, 60, 80, 0.20) !important;
+}
+
+body[data-page="newSkill"] .ns-skill-name {
+  background: linear-gradient(95deg, #0F2A3A 0%, #0AA8BC 55%, #C68A0C 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-size: 32px;
+  letter-spacing: 0.01em;
+}
+
+body[data-page="newSkill"] .ns-skill-meta {
+  color: var(--ns-text-soft);
+  font-family: var(--font-mono, ui-monospace);
+}
+
+body[data-page="newSkill"] .new-badge {
+  background: linear-gradient(95deg, #0AA8BC, #F0B429);
+  color: #fff;
+  border: none;
+  box-shadow: 0 4px 12px rgba(10, 168, 188, 0.35);
+  letter-spacing: 0.08em;
+}
+
+/* 统计卡：玻璃态，左侧渐变竖线 */
+body[data-page="newSkill"] .ns-stat-card .card-body {
+  position: relative;
+}
+
+body[data-page="newSkill"] .ns-stat-card .card-body::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 18px;
+  bottom: 18px;
+  width: 3px;
+  border-radius: 0 4px 4px 0;
+  background: linear-gradient(180deg, var(--ns-cyan) 0%, var(--ns-amber) 100%);
+  opacity: 0.85;
+}
+
+body[data-page="newSkill"] .ns-stat-label {
+  color: var(--ns-text-soft);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+}
+
+body[data-page="newSkill"] .ns-stat-val {
+  color: var(--ns-text-strong);
+  font-family: var(--font-mono, ui-monospace);
+  font-weight: 700;
+  font-size: 26px;
+  margin: 4px 0 2px;
+}
+
+body[data-page="newSkill"] .ns-stat-val.ns-stat-up {
+  background: linear-gradient(95deg, #0AA8BC, #10b981);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+body[data-page="newSkill"] .ns-stat-val.ns-stars {
+  background: linear-gradient(95deg, #F0B429, #C68A0C);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+body[data-page="newSkill"] .ns-stat-sub {
+  color: var(--ns-text-soft);
+}
+
+/* 侧边栏：玻璃态 */
+body[data-page="newSkill"] .ns-sidebar {
+  position: sticky;
+  top: 16px;
+}
+
+body[data-page="newSkill"] .ns-sidebar .input {
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(31, 200, 217, 0.22);
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-size: 12px;
+  color: var(--ns-text-strong);
+}
+
+body[data-page="newSkill"] .ns-sidebar .input:focus {
+  outline: none;
+  border-color: var(--ns-cyan);
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 0 0 3px rgba(10, 168, 188, 0.15);
+}
+
+body[data-page="newSkill"] .lp-job-list .lp-job-item {
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid rgba(31, 200, 217, 0.12);
+  color: var(--ns-text-strong);
+  transition: all 0.2s;
+}
+
+body[data-page="newSkill"] .lp-job-list .lp-job-item:hover {
+  background: rgba(255, 255, 255, 0.85);
+  border-color: var(--ns-cyan);
+  transform: translateX(2px);
+}
+
+body[data-page="newSkill"] .lp-job-list .lp-job-item.active {
+  background: linear-gradient(95deg, rgba(10, 168, 188, 0.16), rgba(240, 180, 41, 0.14));
+  border-color: var(--ns-cyan);
+  box-shadow: 0 4px 14px rgba(10, 168, 188, 0.15);
+}
+
+/* 关联技能标签 */
+body[data-page="newSkill"] .ns-related-tag {
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(31, 200, 217, 0.18);
+  color: var(--ns-text-strong);
+  font-weight: 500;
+}
+
+body[data-page="newSkill"] .ns-related-tag:hover {
+  background: linear-gradient(95deg, var(--ns-cyan-soft), var(--ns-amber-soft));
+  border-color: var(--ns-cyan);
+  color: var(--ns-cyan-deep);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(10, 168, 188, 0.15);
+}
+
+/* JD 示例列表 */
+body[data-page="newSkill"] .ns-jd-list li {
+  background: rgba(255, 255, 255, 0.65) !important;
+  border: 1px solid rgba(31, 200, 217, 0.12);
+  border-left: 3px solid var(--ns-cyan) !important;
+  color: var(--ns-text-strong);
+  border-radius: 10px;
+}
+
+/* AI 分析解读卡 */
+body[data-page="newSkill"] .ns-ai-body {
+  color: var(--ns-text-strong);
+  line-height: 1.75;
+  font-size: 13px;
+}
+
+body[data-page="newSkill"] .ns-ai-body,
+body[data-page="newSkill"] .card:has(.ns-ai-body) {
+  background: linear-gradient(120deg, rgba(10, 168, 188, 0.10) 0%, rgba(240, 180, 41, 0.08) 100%) !important;
+}
+
+/* 响应式 */
+@media (max-width: 1100px) {
+  body[data-page="newSkill"] .ns-stats-row {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  body[data-page="newSkill"] .ns-charts-row {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 800px) {
+  body[data-page="newSkill"] .ns-layout {
+    grid-template-columns: 1fr !important;
+  }
+  body[data-page="newSkill"] .ns-skill-name {
+    font-size: 24px;
+  }
+}
+
+/* =========================================================
+ * Learning-Path Page — 玻璃态 + 渐变色带（基于 cinema-bg 视频背景）
+ * ========================================================= */
+body[data-page="learningPath"] .page-main {
+  --glass-card: rgba(255, 255, 255, 0.78);
+  --glass-border: rgba(31, 200, 217, 0.18);
+  --glass-shadow: 0 14px 36px rgba(20, 80, 110, 0.08);
+  --r-card: 18px;
+  --ns-cyan: #0AA8BC;
+  --ns-cyan-deep: #088a9c;
+  --ns-cyan-soft: rgba(31, 200, 217, 0.14);
+  --ns-amber: #F0B429;
+  --ns-amber-deep: #C68A0C;
+  --ns-amber-soft: rgba(240, 180, 41, 0.14);
+  --ns-text-strong: #0F2A3A;
+  --ns-text-soft: #5B7388;
+  position: relative;
+  min-height: 100vh;
+  background: transparent;
+  z-index: 0;
+}
+
+body[data-page="learningPath"] #page-main {
+  position: relative;
+  z-index: 1;
+}
+
+/* 顶部色带：青蓝→琥珀 */
+body[data-page="learningPath"] .page-header {
+  position: relative;
+  margin: 0 0 18px;
+  padding: 18px 22px;
+  border-radius: var(--r-card);
+  background: linear-gradient(120deg, rgba(10, 168, 188, 0.28) 0%, rgba(31, 200, 217, 0.14) 45%, rgba(240, 180, 41, 0.22) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 16px 40px rgba(8, 60, 80, 0.25);
+  overflow: hidden;
+}
+
+body[data-page="learningPath"] .page-header::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.08) 50%, transparent 100%);
+  pointer-events: none;
+}
+
+body[data-page="learningPath"] .page-header .btn {
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  color: #F2FBFD;
+  backdrop-filter: blur(8px);
+}
+
+body[data-page="learningPath"] .page-header .btn:hover {
+  background: rgba(255, 255, 255, 0.28);
+  color: #fff;
+}
+
+body[data-page="learningPath"] .page-title-block h1 {
+  font-family: var(--font-display);
+  font-size: clamp(24px, 2.2vw, 30px);
+  font-weight: 700;
+  background: linear-gradient(95deg, #6FE6F2 0%, #0AA8BC 38%, #F0B429 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  letter-spacing: 0.02em;
+  text-shadow: 0 2px 18px rgba(10, 168, 188, 0.18);
+}
+
+body[data-page="learningPath"] .page-title-block .subtitle {
+  color: rgba(232, 245, 248, 0.78);
+  font-size: 13px;
+  margin-top: 6px;
+}
+
+/* 卡片：玻璃态半透明，透出底层视频背景 */
+body[data-page="learningPath"] .card {
+  background: var(--glass-card) !important;
+  border: 1px solid var(--glass-border) !important;
+  border-radius: var(--r-card) !important;
+  box-shadow: var(--glass-shadow) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  position: relative;
+  overflow: hidden;
+}
+
+body[data-page="learningPath"] .card-header {
+  border-bottom: 1px solid rgba(31, 200, 217, 0.12);
+  padding: 14px 18px;
+}
+
+body[data-page="learningPath"] .card-title {
+  font-family: var(--font-display);
+  color: var(--ns-text-strong);
+  font-weight: 600;
+  font-size: 14px;
+  position: relative;
+  padding-left: 12px;
+}
+
+body[data-page="learningPath"] .card-title::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 4px;
+  bottom: 4px;
+  width: 3px;
+  border-radius: 3px;
+  background: linear-gradient(180deg, var(--ns-cyan) 0%, var(--ns-amber) 100%);
+}
+
+/* 侧边栏：玻璃态 */
+body[data-page="learningPath"] .lp-sidebar {
+  position: sticky;
+  top: 16px;
+}
+
+body[data-page="learningPath"] .lp-sidebar .input {
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(31, 200, 217, 0.22);
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-size: 12px;
+  color: var(--ns-text-strong);
+}
+
+body[data-page="learningPath"] .lp-sidebar .input:focus {
+  outline: none;
+  border-color: var(--ns-cyan);
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 0 0 3px rgba(10, 168, 188, 0.15);
+}
+
+body[data-page="learningPath"] .lp-job-list .lp-job-item {
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid rgba(31, 200, 217, 0.12);
+  color: var(--ns-text-strong);
+  transition: all 0.2s;
+}
+
+body[data-page="learningPath"] .lp-job-list .lp-job-item:hover {
+  background: rgba(255, 255, 255, 0.85);
+  border-color: var(--ns-cyan);
+  transform: translateX(2px);
+}
+
+body[data-page="learningPath"] .lp-job-list .lp-job-item.active {
+  background: linear-gradient(95deg, rgba(10, 168, 188, 0.16), rgba(240, 180, 41, 0.14));
+  border-color: var(--ns-cyan);
+  box-shadow: 0 4px 14px rgba(10, 168, 188, 0.15);
+}
+
+/* 步骤卡：3 个玻璃卡横排 */
+body[data-page="learningPath"] .lp-steps-card .card-body {
+  padding: 18px 14px;
+}
+
+body[data-page="learningPath"] .lp-steps {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr auto 1fr;
+  gap: 12px;
+  align-items: stretch;
+}
+
+body[data-page="learningPath"] .lp-step {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.85) 0%, rgba(31, 200, 217, 0.08) 100%);
+  border: 1px solid rgba(31, 200, 217, 0.22);
+  border-radius: 14px;
+  padding: 14px 16px;
+  position: relative;
+  color: var(--ns-text-strong);
+  transition: all 0.25s;
+}
+
+body[data-page="learningPath"] .lp-step:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(10, 168, 188, 0.20);
+  border-color: var(--ns-cyan);
+}
+
+body[data-page="learningPath"] .lp-step-index {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: linear-gradient(95deg, var(--ns-cyan) 0%, var(--ns-amber) 100%);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  box-shadow: 0 4px 10px rgba(10, 168, 188, 0.3);
+}
+
+body[data-page="learningPath"] .lp-step-name {
+  font-weight: 700;
+  font-size: 15px;
+  margin-bottom: 4px;
+  background: linear-gradient(95deg, #0F2A3A 0%, #0AA8BC 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+body[data-page="learningPath"] .lp-step-priority {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 999px;
+  margin-bottom: 6px;
+}
+
+body[data-page="learningPath"] .lp-step-priority.is-high {
+  background: linear-gradient(95deg, rgba(240, 180, 41, 0.22), rgba(198, 138, 12, 0.18));
+  color: #C68A0C;
+  border: 1px solid rgba(240, 180, 41, 0.4);
+}
+
+body[data-page="learningPath"] .lp-step-priority.is-mid {
+  background: rgba(31, 200, 217, 0.18);
+  color: var(--ns-cyan-deep);
+  border: 1px solid rgba(31, 200, 217, 0.4);
+}
+
+body[data-page="learningPath"] .lp-step-priority.is-low {
+  background: rgba(91, 115, 136, 0.12);
+  color: var(--ns-text-soft);
+  border: 1px solid rgba(91, 115, 136, 0.3);
+}
+
+body[data-page="learningPath"] .lp-step-time {
+  color: var(--ns-text-soft);
+  font-size: 12px;
+}
+
+/* 步骤之间的箭头连接器 */
+body[data-page="learningPath"] .lp-step-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ns-cyan);
+  font-size: 18px;
+  font-weight: 700;
+  text-shadow: 0 2px 8px rgba(10, 168, 188, 0.4);
+}
+
+/* 效果预估卡：渐变数值 + 渐变星 */
+body[data-page="learningPath"] .lp-effect-card {
+  background: linear-gradient(120deg, rgba(10, 168, 188, 0.18) 0%, rgba(240, 180, 41, 0.14) 100%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+}
+
+body[data-page="learningPath"] .lp-effect {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 8px 4px;
+}
+
+body[data-page="learningPath"] .lp-effect-pct {
+  font-family: var(--font-mono, ui-monospace);
+  font-size: 42px;
+  font-weight: 800;
+  background: linear-gradient(95deg, #0AA8BC 0%, #10b981 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  line-height: 1.1;
+}
+
+body[data-page="learningPath"] .lp-effect-pct span {
+  font-size: 22px;
+  margin-left: 2px;
+  color: var(--ns-cyan);
+  -webkit-text-fill-color: var(--ns-cyan);
+}
+
+body[data-page="learningPath"] .lp-effect-label {
+  color: var(--ns-text-soft);
+  font-size: 12px;
+  margin: 4px 0 8px;
+}
+
+body[data-page="learningPath"] .lp-chart {
+  width: 100%;
+  height: 70px;
+}
+
+body[data-page="learningPath"] .lp-stars {
+  background: linear-gradient(95deg, #F0B429 0%, #C68A0C 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-size: 20px;
+  letter-spacing: 4px;
+  margin: 6px 0 2px;
+}
+
+body[data-page="learningPath"] .lp-effect-sub {
+  color: var(--ns-text-soft);
+  font-size: 12px;
+}
+
+/* 路径详情卡 */
+body[data-page="learningPath"] .lp-detail {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+body[data-page="learningPath"] .lp-detail .lp-detail-section {
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(31, 200, 217, 0.12);
+  border-radius: 12px;
+  padding: 14px 16px;
+  transition: all 0.2s;
+}
+
+body[data-page="learningPath"] .lp-detail .lp-detail-section:hover {
+  background: rgba(255, 255, 255, 0.75);
+  border-color: var(--ns-cyan);
+}
+
+body[data-page="learningPath"] .lp-detail-section-title {
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--ns-text-strong);
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(31, 200, 217, 0.14);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+body[data-page="learningPath"] .lp-detail-section-title::before {
+  content: "";
+  display: inline-block;
+  width: 4px;
+  height: 14px;
+  border-radius: 2px;
+  background: linear-gradient(180deg, var(--ns-cyan) 0%, var(--ns-amber) 100%);
+}
+
+body[data-page="learningPath"] .lp-detail ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+body[data-page="learningPath"] .lp-detail li {
+  color: var(--ns-text-strong);
+  font-size: 13px;
+  padding-left: 18px;
+  position: relative;
+  line-height: 1.65;
+}
+
+body[data-page="learningPath"] .lp-detail li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 8px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--ns-cyan) 0%, var(--ns-amber) 100%);
+  box-shadow: 0 0 0 2px rgba(10, 168, 188, 0.15);
+}
+
+/* 响应式 */
+@media (max-width: 1100px) {
+  body[data-page="learningPath"] .lp-layout {
+    grid-template-columns: 1fr !important;
+  }
+  body[data-page="learningPath"] .lp-top-row {
+    grid-template-columns: 1fr !important;
+  }
+  body[data-page="learningPath"] .lp-steps {
+    grid-template-columns: 1fr !important;
+  }
+  body[data-page="learningPath"] .lp-step-arrow {
+    transform: rotate(90deg);
+    padding: 4px 0;
+  }
+}
+
+@media (max-width: 800px) {
+  body[data-page="learningPath"] .lp-effect-pct {
+    font-size: 32px;
+  }
+}
