@@ -888,8 +888,6 @@
       });
       if (loginForm) loginForm.hidden = name !== 'login';
       if (registerForm) registerForm.hidden = name !== 'register';
-      const title = document.getElementById('loginTitle');
-      if (title) title.textContent = name === 'register' ? '注册' : '登录';
     });
   });
 

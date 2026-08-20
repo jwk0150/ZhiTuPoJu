@@ -205,29 +205,32 @@
     const safeLabel = escapeHtml(label);
 
     host.className = 'app-frame';
+    const logoSrc = (hrefBase() === '../' ? '../../' : '../') + 'assets/brand/logo-gold.png';
     host.innerHTML =
-      '<header class="topnav">' +
-        '<div class="topnav-left">' +
-          '<a class="topnav-brand" href="' + PAGE_HREF.home + '" aria-label="执图破局">' +
-            '<span class="topnav-brand-logo" role="img" aria-label="执图破局"></span>' +
-            '<span class="topnav-brand-title">执图破局</span>' +
-          '</a>' +
-        '</div>' +
-        '<div class="topnav-center">' +
-          renderNav(pageId) +
-        '</div>' +
-        '<div class="topnav-right">' +
-          '<a class="topnav-user" href="' + PAGE_HREF.profile + '" title="' + safeLabel + '">' +
-            '<span class="topnav-user-avatar">' + escapeHtml(userInitial(label)) + '</span>' +
-            '<span class="topnav-user-label">' + safeLabel + '</span>' +
-          '</a>' +
-          '<button type="button" class="topnav-logout" id="shell-logout" title="退出到首页">' +
-            ICONS.logout +
-            '<span>退出</span>' +
-          '</button>' +
-        '</div>' +
-      '</header>' +
-      '<div class="main-column"></div>';
+      '<div class="app-stage">' +
+        '<header class="topnav">' +
+          '<div class="topnav-left">' +
+            '<a class="topnav-brand" href="' + PAGE_HREF.home + '" aria-label="执图破局">' +
+              '<img class="topnav-brand-logo" src="' + logoSrc + '" width="36" height="36" alt="" />' +
+              '<span class="topnav-brand-title">执图破局</span>' +
+            '</a>' +
+          '</div>' +
+          '<div class="topnav-center">' +
+            renderNav(pageId) +
+          '</div>' +
+          '<div class="topnav-right">' +
+            '<a class="topnav-user" href="' + PAGE_HREF.profile + '" title="' + safeLabel + '">' +
+              '<span class="topnav-user-avatar">' + escapeHtml(userInitial(label)) + '</span>' +
+              '<span class="topnav-user-label">' + safeLabel + '</span>' +
+            '</a>' +
+            '<button type="button" class="topnav-logout" id="shell-logout" title="退出到首页">' +
+              ICONS.logout +
+              '<span>退出</span>' +
+            '</button>' +
+          '</div>' +
+        '</header>' +
+        '<div class="main-column"></div>' +
+      '</div>';
 
     const column = host.querySelector('.main-column');
     if (pageMain && column) {

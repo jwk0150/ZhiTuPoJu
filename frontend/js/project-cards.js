@@ -1,4 +1,4 @@
-// Scene2：六个真实功能气泡 + 详情浮层
+// Scene2：关于我们六大模块 · 专业简介浮层
 const ICONS = {
   map: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2 2 7l10 5 10-5-10-5z"/><path d="m2 17 10 5 10-5"/><path d="m2 12 10 5 10-5"/></svg>',
   insight: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="3 17 9 11 13 15 21 7"/><polyline points="14 7 21 7 21 14"/></svg>',
@@ -13,127 +13,79 @@ const projects = [
     id: "talent-map",
     title: "数字人才地图",
     type: "空间分布 · 供需对照",
-    x: "18%",
-    y: "22%",
-    place: "top",
-    align: "left",
-    hover: "按区域看见人才供给与岗位需求，对照能力结构。",
     roleLabel: "看见分布",
-    accent: "#38d6c5",
+    accent: "#ecc984",
     icon: ICONS.map,
-    description: "按省、市查看岗位与技能分布。",
-    summary: "从全国落到城市，看人才与岗位在哪里、缺什么。",
-    background: "评委和用人单位先要看见空间格局。本模块把招聘数据落到地图上，支持省—市下钻，并对照本地热门岗位与技能。",
-    features: ["全国 / 省级 / 市级下钻", "岗位密度与薪资对照", "区域热门技能", "与筛选条件联动"],
-    role: ["前端工程师", "数据工程师"],
-    tech: ["ECharts", "GeoJSON", "PostgreSQL"],
-    tags: ["地图", "区域", "供需"],
-    status: "已实现"
+    summary: "把招聘数据落到省—市尺度，对照本地岗位密度、薪资与技能结构，让区域人才供需一眼可读。",
+    background: "面向评委、用人单位与区域研究场景：先建立可核对的空间底图，再下钻到城市热门岗位与能力缺口，避免只谈全国均值。",
+    features: ["省—市下钻对照", "岗位密度与薪资"],
+    role: ["高校与研究机构", "人社 / 产业园区", "用人单位与咨询方"],
+    tech: ["ECharts", "GeoJSON", "PostGIS", "PostgreSQL", "热力层", "区域筛选"]
   },
   {
     id: "job-insight",
     title: "岗位洞察",
     type: "能力演化 · 宏观趋势",
-    x: "50%",
-    y: "12%",
-    place: "top",
-    align: "left",
-    hover: "分析岗位需求变化，识别关键能力与技能趋势。",
     roleLabel: "读懂变化",
-    accent: "#38d6c5",
+    accent: "#ecc984",
     icon: ICONS.insight,
-    description: "追踪同一岗位技能如何随时间变化。",
-    summary: "对比不同时期的岗位要求，标出技能新增、删除与调整。",
-    background: "同一岗位的技能清单会随技术栈迁移。本模块做时序差分，并提供宏观趋势与学习路径入口。",
-    features: ["技能新增 / 删除 / 修改", "近十二月热度", "学习路径建议", "宏观趋势对照"],
-    role: ["数据工程师", "后端/AI 工程师"],
-    tech: ["Neo4j", "ECharts", "时序分析"],
-    tags: ["演化", "趋势", "图谱"],
-    status: "已实现"
+    summary: "对同一岗位做技能时序差分，标出新增、消退与结构调整，把“岗位在变什么”说清楚。",
+    background: "技术栈迁移会重写岗位说明书。本模块以图谱关系与招聘文本为证据，输出可解释的能力演化轨迹与学习路径入口。",
+    features: ["技能时序差分", "趋势与学习路径"],
+    role: ["培养方案设计者", "职业发展顾问", "企业 HR / 培训负责人"],
+    tech: ["Neo4j", "时序差分", "ECharts", "技能热度", "路径推荐", "趋势对照"]
   },
   {
     id: "job-discovery",
     title: "新岗位发现",
     type: "多源文本 · 岗位识别",
-    x: "82%",
-    y: "22%",
-    place: "top",
-    align: "right",
-    hover: "从招聘文本中识别正在形成的新兴岗位。",
     roleLabel: "发现新岗",
-    accent: "#38d6c5",
+    accent: "#ecc984",
     icon: ICONS.discovery,
-    description: "从招聘文本里识别正在出现的岗位。",
-    summary: "从多源招聘与行业材料中抽出新兴岗位，整理成可修订的定义。",
-    background: "新技术出现后，岗位名称往往先散落在招聘文本里。本模块识别岗位实体与职责，并保留出处。",
-    features: ["多源文本去重", "岗位实体抽取", "可编辑岗位定义", "出现频次与时间线"],
-    role: ["数据工程师", "后端/AI 工程师"],
-    tech: ["Scrapy", "Playwright", "HanLP", "PostgreSQL"],
-    tags: ["发现", "文本", "岗位"],
-    status: "已实现"
+    summary: "从多源招聘与行业材料中识别正在成形的岗位实体，整理为可修订的标准定义与时间线。",
+    background: "新兴岗位往往先出现在散落文本里，而不是目录表。本模块抽取职责与名称变体，并保留出处，便于评审与后续入库。",
+    features: ["新兴岗位抽取", "定义与时间线"],
+    role: ["产业研究与政策团队", "高校专业建设", "人才市场分析"],
+    tech: ["Scrapy", "Playwright", "HanLP", "PostgreSQL", "文本去重", "实体归一"]
   },
   {
     id: "job-match",
     title: "人岗匹配",
     type: "简历解析 · 差距诊断",
-    x: "18%",
-    y: "78%",
-    place: "bottom",
-    align: "left",
-    hover: "将人才画像与岗位要求对照，给出可解释的匹配依据。",
     roleLabel: "对照人岗",
-    accent: "#38d6c5",
+    accent: "#ecc984",
     icon: ICONS.match,
-    description: "把简历和岗位放在同一套语言里对照。",
-    summary: "解析简历后给出匹配分、能力差距和可执行的补齐建议。",
-    background: "关键词对不上，不等于能力对不上。本模块抽取简历技能，结合图谱路径打分，并给出就业指导入口。",
-    features: ["简历解析", "匹配分与证据", "差距清单", "补齐建议 / 就业指导"],
-    role: ["后端/AI 工程师", "前端工程师"],
-    tech: ["OCR", "图谱路径", "语义相似度"],
-    tags: ["匹配", "简历", "诊断"],
-    status: "已实现"
+    summary: "将简历技能与岗位要求放到同一套图谱语言中对照，给出匹配分、证据链与可执行补齐建议。",
+    background: "关键词对不上，不等于能力对不上。本模块强调可解释匹配：分项证据、差距清单与就业指导入口一体呈现。",
+    features: ["可解释匹配分", "差距与补齐建议"],
+    role: ["求职者与在校生", "就业指导老师", "招聘与人才评估"],
+    tech: ["OCR", "图谱路径", "语义相似", "技能词典", "证据回链", "指导接口"]
   },
   {
     id: "smart-qa",
     title: "智能问答",
-    type: "图谱 · RAG",
-    x: "50%",
-    y: "86%",
-    place: "bottom",
-    align: "left",
-    hover: "用自然语言查询岗位、技能与匹配关系。",
+    type: "图谱检索 · RAG",
     roleLabel: "问清图谱",
-    accent: "#38d6c5",
+    accent: "#ecc984",
     icon: ICONS.qa,
-    description: "用自然语言问岗位、技能与匹配。",
-    summary: "结合知识图谱与检索，回答岗位能力、演化与匹配相关问题。",
-    background: "路演和日常使用都需要一句话问清楚。问答挂在工作台侧栏，查询图谱并给出带出处的说明。",
-    features: ["自然语言提问", "图谱检索", "来源片段", "工作台随时唤起"],
-    role: ["后端/AI 工程师"],
-    tech: ["DeepSeek", "RAG", "Neo4j"],
-    tags: ["问答", "RAG", "顾问"],
-    status: "已实现"
+    summary: "用自然语言查询岗位、技能与匹配关系，结合图谱检索与来源片段给出可核对答复。",
+    background: "路演与日常使用都需要“一句话问清楚”。问答挂在工作台侧栏，回答绑定出处，避免空泛生成。",
+    features: ["自然语言查询", "出处可回溯"],
+    role: ["演示与答辩场景", "业务咨询与客服支撑", "内部知识检索"],
+    tech: ["DeepSeek", "RAG", "Neo4j", "向量检索", "来源片段", "侧栏唤起"]
   },
   {
     id: "data-base",
     title: "数据底座",
-    type: "采集 · 质量监控",
-    x: "82%",
-    y: "78%",
-    place: "bottom",
-    align: "right",
-    hover: "汇聚多源招聘数据，并持续监控数据质量。",
+    type: "采集治理 · 质量监控",
     roleLabel: "守住数据",
-    accent: "#38d6c5",
+    accent: "#ecc984",
     icon: ICONS.data,
-    description: "多源招聘数据汇聚，并盯质量。",
-    summary: "采集招聘与行业文本，监控去重、完整性和可用率。",
-    background: "地图、演化、发现都建立在可核对的数据上。本模块负责多源采集、清洗与质量看板。",
-    features: ["多源采集", "去重与清洗", "质量合格率", "任务启停"],
-    role: ["数据工程师"],
-    tech: ["Scrapy", "Playwright", "PostgreSQL"],
-    tags: ["采集", "质量", "底座"],
-    status: "已实现"
+    summary: "汇聚多源招聘与行业文本，完成清洗、去重与质量看板，为上层地图与洞察提供可审计底数。",
+    background: "上层分析可信度取决于底座。本模块负责采集任务启停、完整性与合格率监控，保证结果可复核。",
+    features: ["多源采集清洗", "质量看板监控"],
+    role: ["数据工程与运维", "产品与算法协同", "审计与合规查阅"],
+    tech: ["Scrapy", "Playwright", "PostgreSQL", "去重校验", "合格率", "任务告警"]
   }
 ];
 
@@ -142,6 +94,8 @@ const aboutProjects = projects;
 let activeProject = null;
 let isAnimating = false;
 let modalElements = {};
+let openTimeline = null;
+const reduceMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 function initProjectCards() {
   modalElements = {
@@ -158,9 +112,7 @@ function initProjectCards() {
     features: document.getElementById("projectModalFeatures"),
     role: document.getElementById("projectModalRole"),
     tech: document.getElementById("projectModalTech"),
-    status: document.getElementById("projectModalStatus"),
-    demo: document.getElementById("projectModalDemo"),
-    github: document.getElementById("projectModalGithub")
+    demo: document.getElementById("projectModalDemo")
   };
 
   if (!modalElements.overlay || !modalElements.card) return;
@@ -182,7 +134,7 @@ function renderProjectCards() {
     <p class="about-kicker">关于我们</p>
     <div class="about-matrix">
       ${aboutProjects.map((project, index) => `
-        <article class="project-card atlas-plate" data-project-id="${project.id}" style="--d:${0.16 + index * 0.07}s">
+        <article class="project-card atlas-plate" data-project-id="${project.id}" style="--d:${0.16 + index * 0.07}s" aria-label="查看${project.title}简介">
           <span class="atlas-index">${String(index + 1).padStart(2, "0")}</span>
           <span class="atlas-title">为您${project.roleLabel}</span>
           <span class="atlas-name">${project.title}</span>
@@ -225,8 +177,12 @@ function bindModalEvents() {
   modalElements.backdrop?.addEventListener("click", closeProjectModal);
   modalElements.closeBtn?.addEventListener("click", closeProjectModal);
   modalElements.closeTextBtn?.addEventListener("click", closeProjectModal);
-  modalElements.demo?.addEventListener("click", handlePlaceholderLink);
-  modalElements.github?.addEventListener("click", handlePlaceholderLink);
+  modalElements.demo?.addEventListener("click", (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    forceCloseProjectModal();
+    document.querySelector("[data-go-login]")?.click();
+  });
   modalElements.card.addEventListener("click", (event) => event.stopPropagation());
   modalElements.card.addEventListener("wheel", (event) => event.stopPropagation(), { passive: true });
   modalElements.card.addEventListener("touchstart", (event) => event.stopPropagation(), { passive: true });
@@ -237,18 +193,114 @@ function bindModalEvents() {
   });
 }
 
-function handlePlaceholderLink(event) {
-  const target = event.currentTarget;
-  const href = target.getAttribute("href");
-  if (target.classList.contains("is-disabled") || target.getAttribute("aria-disabled") === "true" || !href || href === "#") {
-    event.preventDefault();
-  }
-}
-
 function handleCardClick(event) {
   event.preventDefault();
   event.stopPropagation();
-  document.querySelector("[data-go-login]")?.click();
+  const card = event.currentTarget.closest?.(".project-card") || event.target.closest(".project-card");
+  const id = card?.dataset.projectId;
+  const project = aboutProjects.find((item) => item.id === id);
+  if (!project || isAnimating) return;
+  openProjectModal(project);
+}
+
+function contentTargets() {
+  return [
+    modalElements.type,
+    modalElements.title,
+    modalElements.summary,
+    ...modalElements.card.querySelectorAll(".project-detail-section"),
+    ...modalElements.card.querySelectorAll(".project-modal-actions > *"),
+    modalElements.media?.querySelector(".project-modal-orb")
+  ].filter(Boolean);
+}
+
+function playOpenChoreography(project) {
+  if (openTimeline) {
+    openTimeline.kill();
+    openTimeline = null;
+  }
+
+  const targets = contentTargets();
+  const orb = modalElements.media?.querySelector(".project-modal-orb");
+
+  if (reduceMotion() || typeof gsap === "undefined") {
+    targets.forEach((el) => {
+      el.style.opacity = "1";
+      el.style.transform = "none";
+      el.style.filter = "none";
+    });
+    if (modalElements.summary) modalElements.summary.textContent = project.summary;
+    return;
+  }
+
+  if (typeof TextPlugin !== "undefined") {
+    gsap.registerPlugin(TextPlugin);
+  }
+
+  gsap.set(targets, { opacity: 0, y: 22, filter: "blur(6px)" });
+  if (orb) gsap.set(orb, { scale: 0.92 });
+
+  openTimeline = gsap.timeline({
+    defaults: { ease: "power3.out" }
+  });
+
+  openTimeline
+    .to(modalElements.card, {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      duration: 0.85,
+      ease: "expo.out"
+    }, 0)
+    .to(orb, { opacity: 1, y: 0, scale: 1, filter: "blur(0px)", duration: 0.9 }, 0.08)
+    .to(modalElements.type, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.55 }, 0.16)
+    .to(modalElements.title, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.7 }, 0.24);
+
+  if (typeof TextPlugin !== "undefined" && modalElements.summary) {
+    modalElements.summary.textContent = "";
+    openTimeline.to(modalElements.summary, {
+      opacity: 1,
+      y: 0,
+      filter: "blur(0px)",
+      duration: 0.35
+    }, 0.34);
+    openTimeline.to(modalElements.summary, {
+      duration: Math.min(1.35, 0.45 + project.summary.length * 0.018),
+      text: project.summary,
+      ease: "none"
+    }, 0.38);
+  } else if (modalElements.summary) {
+    modalElements.summary.textContent = project.summary;
+    openTimeline.to(modalElements.summary, {
+      opacity: 1,
+      y: 0,
+      filter: "blur(0px)",
+      duration: 0.6
+    }, 0.34);
+  }
+
+  openTimeline.to(
+    modalElements.card.querySelectorAll(".project-detail-section"),
+    { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.58, stagger: 0.08 },
+    0.52
+  );
+  openTimeline.to(
+    modalElements.card.querySelectorAll(".project-modal-actions > *"),
+    { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.5, stagger: 0.06 },
+    0.78
+  );
+  openTimeline.call(() => {
+    isAnimating = false;
+    if (orb) {
+      gsap.to(orb, {
+        y: -4,
+        duration: 2.4,
+        ease: "sine.inOut",
+        yoyo: true,
+        repeat: -1
+      });
+    }
+  });
 }
 
 function openProjectModal(project) {
@@ -261,33 +313,76 @@ function openProjectModal(project) {
   modalElements.overlay.setAttribute("aria-hidden", "false");
   modalElements.card.scrollTop = 0;
 
+  if (typeof gsap !== "undefined") {
+    gsap.set(modalElements.card, { opacity: 0, y: 18, scale: 0.97 });
+  }
+
   requestAnimationFrame(() => {
     modalElements.overlay.classList.add("is-open");
     modalElements.card.focus({ preventScroll: true });
+    playOpenChoreography(project);
   });
 
-  setTimeout(() => {
-    isAnimating = false;
-  }, 360);
+  if (reduceMotion() || typeof gsap === "undefined") {
+    setTimeout(() => {
+      isAnimating = false;
+    }, 360);
+  }
 }
 
 function closeProjectModal() {
-  if (isAnimating || !activeProject) return;
+  if (!activeProject) return;
+  if (isAnimating) {
+    // allow close once content has rendered; force if still entering
+  }
   isAnimating = true;
-  modalElements.overlay.classList.remove("is-open");
-  modalElements.overlay.classList.add("is-closing");
 
-  setTimeout(() => {
+  if (openTimeline) {
+    openTimeline.kill();
+    openTimeline = null;
+  }
+  const orb = modalElements.media?.querySelector(".project-modal-orb");
+  if (typeof gsap !== "undefined") {
+    if (orb) gsap.killTweensOf(orb);
+    gsap.killTweensOf(contentTargets());
+  }
+
+  const finish = () => {
     modalElements.overlay.classList.remove("is-closing");
     modalElements.overlay.style.display = "none";
     modalElements.overlay.setAttribute("aria-hidden", "true");
     document.body.classList.remove("project-detail-open");
     activeProject = null;
     isAnimating = false;
-  }, 280);
+  };
+
+  modalElements.overlay.classList.remove("is-open");
+  modalElements.overlay.classList.add("is-closing");
+
+  if (typeof gsap !== "undefined" && !reduceMotion()) {
+    gsap.to(modalElements.card, {
+      opacity: 0,
+      y: 12,
+      scale: 0.98,
+      duration: 0.28,
+      ease: "power2.in",
+      onComplete: finish
+    });
+    return;
+  }
+
+  setTimeout(finish, 280);
 }
 
 function forceCloseProjectModal() {
+  if (openTimeline) {
+    openTimeline.kill();
+    openTimeline = null;
+  }
+  if (typeof gsap !== "undefined") {
+    gsap.killTweensOf(modalElements.card);
+    gsap.killTweensOf(contentTargets());
+  }
   modalElements.overlay?.classList.remove("is-open", "is-closing");
   if (modalElements.overlay) {
     modalElements.overlay.style.display = "none";
@@ -302,44 +397,16 @@ function renderProject(project) {
   modalElements.type.textContent = project.type;
   modalElements.title.textContent = project.title;
   modalElements.summary.textContent = project.summary;
-  modalElements.background.textContent = project.background || project.description;
-  modalElements.status.textContent = project.status;
-  renderProjectLink(modalElements.demo, {
-    isAvailable: false,
-    url: "",
-    availableText: "演示",
-    unavailableText: "登录后进入"
-  });
-  renderProjectLink(modalElements.github, {
-    isAvailable: false,
-    url: "",
-    availableText: "代码",
-    unavailableText: "代码未公开"
-  });
+  modalElements.background.textContent = project.background;
+  if (modalElements.demo) {
+    modalElements.demo.textContent = "登录体验";
+    modalElements.demo.classList.remove("is-disabled");
+    modalElements.demo.removeAttribute("aria-disabled");
+  }
   renderMedia(project);
   renderList(modalElements.features, project.features);
   renderList(modalElements.role, project.role);
   renderTech(project.tech);
-}
-
-function renderProjectLink(element, { isAvailable, url, availableText, unavailableText }) {
-  const canOpen = Boolean(isAvailable && url);
-  element.textContent = canOpen ? availableText : unavailableText;
-  element.classList.toggle("is-disabled", !canOpen);
-  element.setAttribute("aria-disabled", canOpen ? "false" : "true");
-
-  if (canOpen) {
-    element.href = url;
-    element.target = "_blank";
-    element.rel = "noopener noreferrer";
-    element.tabIndex = 0;
-    return;
-  }
-
-  element.removeAttribute("href");
-  element.removeAttribute("target");
-  element.removeAttribute("rel");
-  element.tabIndex = -1;
 }
 
 function renderMedia(project) {
