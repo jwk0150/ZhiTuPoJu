@@ -1,4 +1,4 @@
-/* Discovery evolve map — stage 3 of discovery → detail → evolve */
+/* Discovery evolve map — standalone page OR embed in detail tab 05 */
 (function () {
   let currentJob = null;
   let selectedId = 'center';
@@ -8,6 +8,15 @@
   let trendChart = null;
   let forecastChart = null;
   let graph = null;
+  let rootEl = document;
+  let embedMode = false;
+  let bound = false;
+
+  function $(sel) {
+    if (!rootEl || rootEl === document) return document.querySelector(sel);
+    if (sel.charAt(0) === '#') return rootEl.querySelector(sel);
+    return rootEl.querySelector(sel);
+  }
 
   function esc(s) {
     return String(s == null ? '' : s)
@@ -30,7 +39,11 @@
   }
 
   function detailHref(id) {
-    return 'discovery-detail.html?id=' + encodeURIComponent(id || (currentJob && currentJob.id) || 'disc_mock_1');
+    return (
+      'discovery-detail.html?id=' +
+      encodeURIComponent(id || (currentJob && currentJob.id) || 'disc_mock_1') +
+      '&tab=evolve'
+    );
   }
 
   function loadJob() {
@@ -145,44 +158,27 @@
   function buildLayout(job, depth) {
     const W = 1100;
     const H = 420;
-    const cols = {
-      hist: 70,
-      skill: 290,
-      center: 480,
-      real: 700,
-      pred: 920
-    };
-
+    const cols = { hist: 70, skill: 290, center: 480, real: 700, pred: 920 };
     const nodes = [];
     const edges = [];
 
     const hist = job.sources.slice(0, depth >= 4 ? 5 : 4);
     hist.forEach((s, i) => {
       const y = 36 + i * ((H - 80) / Math.max(hist.length - 1, 1));
-      nodes.push({
-        ...s,
-        type: 'hist',
-        x: cols.hist,
-        y: Math.min(H - 90, y),
-        kicker: '已有岗位'
-      });
+      nodes.push({ ...s, type: 'hist', x: cols.hist, y: Math.min(H - 90, y), kicker: '已有岗位' });
       edges.push({ from: s.id, to: 'center', kind: 'solid', soft: i > 2 });
     });
 
-    const skillAll = [...job.skillsNew, ...job.skillsBoost];
-    skillAll.forEach((sk, i) => {
-      const y = 70 + i * 48;
+    [...job.skillsNew, ...job.skillsBoost].forEach((sk, i) => {
       nodes.push({
         id: sk.id,
         name: sk.name,
         type: 'skill',
         kind: sk.kind,
         x: cols.skill + (i % 2) * 18,
-        y
+        y: 70 + i * 48
       });
-      if (sk.kind === 'new') {
-        edges.push({ from: sk.id, to: 'center', kind: 'solid', soft: true });
-      }
+      if (sk.kind === 'new') edges.push({ from: sk.id, to: 'center', kind: 'solid', soft: true });
     });
 
     nodes.push({
@@ -191,7 +187,7 @@
       type: 'center',
       x: cols.center,
       y: H / 2 - 55,
-      kicker: job.isForecast ? 'AI 预测岗位' : '真实发现岗位',
+      kicker: '真实发现岗位',
       skills: (job.requiredSkills || ['LLM', 'RAG', 'Agent', 'Tool Calling']).slice(0, 4),
       heat: job.conf,
       growth: job.growth,
@@ -201,26 +197,14 @@
     const rel = job.related.slice(0, depth >= 3 ? 4 : 3);
     rel.forEach((r, i) => {
       const y = 48 + i * ((H - 100) / Math.max(rel.length - 1, 1));
-      nodes.push({
-        ...r,
-        type: 'real',
-        x: cols.real,
-        y: Math.min(H - 90, y),
-        kicker: '真实发现'
-      });
+      nodes.push({ ...r, type: 'real', x: cols.real, y: Math.min(H - 90, y), kicker: '真实关联' });
       edges.push({ from: 'center', to: r.id, kind: 'solid', soft: i > 1 });
     });
 
     const pred = job.predicted.slice(0, depth >= 4 ? 5 : 4);
     pred.forEach((p, i) => {
       const y = 40 + i * ((H - 90) / Math.max(pred.length - 1, 1));
-      nodes.push({
-        ...p,
-        type: 'pred',
-        x: cols.pred,
-        y: Math.min(H - 90, y),
-        kicker: 'AI 预测'
-      });
+      nodes.push({ ...p, type: 'pred', x: cols.pred, y: Math.min(H - 90, y), kicker: '潜在方向' });
       edges.push({ from: 'center', to: p.id, kind: 'dash', soft: i > 1 });
     });
 
@@ -268,8 +252,7 @@
       );
     }
 
-    const cls =
-      n.type === 'hist' ? 'is-hist' : n.type === 'pred' ? 'is-pred' : 'is-real';
+    const cls = n.type === 'hist' ? 'is-hist' : n.type === 'pred' ? 'is-pred' : 'is-real';
     const meta =
       n.type === 'pred'
         ? '<div class="de-n-meta"><span>' +
@@ -298,9 +281,7 @@
       esc(n.name) +
       '</span>' +
       (n.skills
-        ? '<div class="de-n-skills">' +
-          n.skills.map((s) => '<span>' + esc(s) + '</span>').join('') +
-          '</div>'
+        ? '<div class="de-n-skills">' + n.skills.map((s) => '<span>' + esc(s) + '</span>').join('') + '</div>'
         : '') +
       meta +
       '</button>'
@@ -310,19 +291,12 @@
   function anchor(n) {
     const w = n.type === 'center' ? 178 : n.type === 'skill' ? 110 : 148;
     const h = n.type === 'center' ? 118 : n.type === 'skill' ? 28 : 78;
-    return {
-      cx: n.x + w / 2,
-      cy: n.y + h / 2,
-      l: n.x,
-      r: n.x + w,
-      t: n.y,
-      b: n.y + h
-    };
+    return { cx: n.x + w / 2, cy: n.y + h / 2, l: n.x, r: n.x + w, t: n.y, b: n.y + h };
   }
 
   function drawEdges(g) {
-    const svg = document.getElementById('de-edges');
-    const canvas = document.getElementById('de-canvas');
+    const svg = $('#de-edges');
+    const canvas = $('#de-canvas');
     if (!svg || !canvas || !g) return;
     const rect = canvas.getBoundingClientRect();
     svg.setAttribute('viewBox', '0 0 ' + rect.width + ' ' + rect.height);
@@ -383,21 +357,13 @@
       if (!labeledSrc && a.type === 'hist' && b.id === 'center') {
         labeledSrc = true;
         parts.push(
-          '<text class="de-edge-label" x="' +
-            (mx - 18) +
-            '" y="' +
-            (Math.min(y1, y2) - 6) +
-            '">能力来源</text>'
+          '<text class="de-edge-label" x="' + (mx - 18) + '" y="' + (Math.min(y1, y2) - 6) + '">能力来源</text>'
         );
       }
       if (!labeledPred && e.kind === 'dash') {
         labeledPred = true;
         parts.push(
-          '<text class="de-edge-label" x="' +
-            (mx + 4) +
-            '" y="' +
-            (Math.max(y1, y2) + 14) +
-            '">未来演化</text>'
+          '<text class="de-edge-label" x="' + (mx + 4) + '" y="' + (Math.max(y1, y2) + 14) + '">潜在方向</text>'
         );
       }
     });
@@ -405,30 +371,27 @@
   }
 
   function applyTransform() {
-    const nodes = document.getElementById('de-nodes');
+    const nodes = $('#de-nodes');
     if (!nodes) return;
-    nodes.style.transform =
-      'translate(' + pan.x + 'px,' + pan.y + 'px) scale(' + scale + ')';
+    nodes.style.transform = 'translate(' + pan.x + 'px,' + pan.y + 'px) scale(' + scale + ')';
     drawEdges(graph);
   }
 
   function renderGraph() {
-    const depth = Number(document.getElementById('de-depth')?.value || 3);
+    const depth = Number($('#de-depth')?.value || 3);
     graph = buildLayout(currentJob, depth);
-    const host = document.getElementById('de-nodes');
-    const canvas = document.getElementById('de-canvas');
+    const host = $('#de-nodes');
+    const canvas = $('#de-canvas');
     if (!host || !canvas) return;
 
     const rect = canvas.getBoundingClientRect();
+    if (rect.width < 40 || rect.height < 40) return;
     const sx = rect.width / graph.W;
     const sy = rect.height / graph.H;
     graph.nodes.forEach((n) => {
-      n._x = n.x;
-      n._y = n.y;
-      n.x = n._x * sx;
-      n.y = n._y * sy;
+      n.x = n.x * sx;
+      n.y = n.y * sy;
     });
-    // keep logical size for edge draw scale = 1 after pixel layout
     graph.W = rect.width;
     graph.H = rect.height;
 
@@ -442,8 +405,8 @@
 
   function highlight(id) {
     selectedId = id || 'center';
-    const q = (document.getElementById('de-search')?.value || '').trim();
-    document.querySelectorAll('.de-node').forEach((el) => {
+    const q = ($('#de-search')?.value || '').trim();
+    (rootEl === document ? document : rootEl).querySelectorAll('.de-node').forEach((el) => {
       const nid = el.getAttribute('data-id');
       el.classList.toggle('is-active', nid === selectedId);
       if (q) {
@@ -453,6 +416,32 @@
         el.classList.remove('is-dim');
       }
     });
+  }
+
+  function setNote(title, tag, blurb, showJump, jumpPayload) {
+    const t = $('#de-rail-title') || $('#de-embed-title');
+    const tagEl = $('#de-rail-tag') || $('#de-embed-tag');
+    const b = $('#de-rail-blurb') || $('#de-embed-blurb');
+    const jump = $('#de-open-detail') || $('#de-embed-jump');
+    if (t) t.textContent = title;
+    if (tagEl) {
+      tagEl.textContent = tag;
+      tagEl.classList.toggle('is-pred', tag.indexOf('潜在') !== -1 || tag.indexOf('预测') !== -1);
+    }
+    if (b) b.textContent = blurb;
+    if (jump) {
+      jump.hidden = !showJump;
+      if (showJump && jumpPayload) {
+        jump.onclick = function (e) {
+          e.preventDefault();
+          try {
+            sessionStorage.setItem('zhitu_disc_job', JSON.stringify(jumpPayload));
+            sessionStorage.setItem('zhitu_disc_lane', 'found');
+          } catch (_) {}
+          location.href = detailHref(jumpPayload.id);
+        };
+      }
+    }
   }
 
   function selectNode(id) {
@@ -465,24 +454,44 @@
       return;
     }
 
-    // Related / predicted nodes: jump to detail for exploration loop
-    if (n.type === 'real' || n.type === 'pred' || n.type === 'hist') {
+    if (n.type === 'pred') {
+      setNote(
+        n.name,
+        '潜在方向',
+        '仅示意演化可能，不会跳进「未来预测」线。预测岗位请从首页「未来预测」进入。',
+        false
+      );
+      toast('潜在方向仅示意，不进入预测线', 'amber');
+      return;
+    }
+
+    if (n.type === 'real' || n.type === 'hist') {
       const payload = {
         id: 'disc_evo_' + n.id,
         title: n.name,
         category: currentJob.category || '人工智能',
         confidence: n.score || n.conf || 75,
-        is_forecast: n.type === 'pred',
-        status: n.type === 'pred' ? 'forecast' : 'found',
+        is_forecast: false,
+        status: 'found',
         requiredSkills: n.skills || ['LLM', 'Agent'],
-        definition: n.name + ' · 由「' + currentJob.title + '」演化图谱关联进入。',
+        definition: n.name + ' · 由「' + currentJob.title + '」演化路径关联进入。',
         freshness: n.when || currentJob.firstSeen
       };
-      try {
-        sessionStorage.setItem('zhitu_disc_job', JSON.stringify(payload));
-      } catch (_) {}
-      toast((n.type === 'pred' ? '进入预测岗位详情：' : '进入关联岗位详情：') + n.name, n.type === 'pred' ? 'amber' : 'mint');
-      location.href = detailHref(payload.id);
+      setNote(
+        n.name,
+        n.type === 'hist' ? '已有岗位' : '真实关联',
+        '仍在真实发现线内。可打开该岗位详情继续查看演化路径。',
+        true,
+        payload
+      );
+      if (!embedMode) {
+        try {
+          sessionStorage.setItem('zhitu_disc_job', JSON.stringify(payload));
+          sessionStorage.setItem('zhitu_disc_lane', 'found');
+        } catch (_) {}
+        toast('进入关联岗位详情：' + n.name, 'mint');
+        location.href = detailHref(payload.id);
+      }
     }
   }
 
@@ -504,89 +513,88 @@
   }
 
   function fillRail(job) {
-    document.getElementById('de-rail-title').textContent = job.title;
-    const tag = document.getElementById('de-rail-tag');
-    if (tag) {
-      tag.textContent = job.isForecast ? 'AI 预测' : '真实发现';
-      tag.classList.toggle('is-pred', !!job.isForecast);
+    setNote(job.title, '真实发现', job.positioning, false);
+
+    const kpis = $('#de-kpis');
+    if (kpis) {
+      kpis.innerHTML =
+        '<div class="de-kpi"><span class="lab">首次出现</span><strong>' +
+        esc(job.firstSeen) +
+        '</strong></div>' +
+        '<div class="de-kpi"><span class="lab">热度指数</span><strong>' +
+        job.conf +
+        '</strong></div>' +
+        '<div class="de-kpi"><span class="lab">需求增长</span><strong class="is-up">↑ ' +
+        job.growth +
+        '%</strong></div>' +
+        '<div class="de-kpi"><span class="lab">数据置信度</span><strong>' +
+        job.dataConf +
+        '%</strong></div>';
     }
-    document.getElementById('de-rail-blurb').textContent = job.positioning;
-    document.getElementById('de-open-detail').href = detailHref(job.id);
 
-    document.getElementById('de-kpis').innerHTML =
-      '<div class="de-kpi"><span class="lab">首次出现</span><strong>' +
-      esc(job.firstSeen) +
-      '</strong></div>' +
-      '<div class="de-kpi"><span class="lab">热度指数</span><strong>' +
-      job.conf +
-      '</strong></div>' +
-      '<div class="de-kpi"><span class="lab">需求增长</span><strong class="is-up">↑ ' +
-      job.growth +
-      '%</strong></div>' +
-      '<div class="de-kpi"><span class="lab">数据置信度</span><strong>' +
-      job.dataConf +
-      '%</strong></div>';
+    const src = $('#de-src-bars');
+    if (src) src.innerHTML = barsHtml(job.sources.slice(0, 5), 'score');
+    const mig = $('#de-mig-bars');
+    if (mig) mig.innerHTML = barsHtml(job.related.slice(0, 5), 'score');
 
-    document.getElementById('de-src-bars').innerHTML = barsHtml(job.sources.slice(0, 5), 'score');
-    document.getElementById('de-mig-bars').innerHTML = barsHtml(job.related.slice(0, 5), 'score');
-
-    document.getElementById('de-path').innerHTML =
-      '<li class="is-now"><span class="when">当前</span><span class="who">' +
-      esc(job.title) +
-      '</span></li>' +
-      job.predicted
-        .slice(0, 3)
-        .map(
-          (p) =>
-            '<li><span class="when">' +
-            esc(p.eta) +
-            '</span><span class="who">' +
-            esc(p.name) +
-            '</span><span class="conf">' +
-            p.conf +
-            '%</span></li>'
-        )
-        .join('');
+    const path = $('#de-path');
+    if (path) {
+      path.innerHTML =
+        '<li class="is-now"><span class="when">当前</span><span class="who">' +
+        esc(job.title) +
+        '</span></li>' +
+        job.predicted
+          .slice(0, 3)
+          .map(
+            (p) =>
+              '<li><span class="when">' +
+              esc(p.eta) +
+              '</span><span class="who">' +
+              esc(p.name) +
+              '</span><span class="conf">' +
+              p.conf +
+              '%</span></li>'
+          )
+          .join('');
+    }
 
     renderMiniCharts(job);
   }
 
   function fillBottom(job) {
-    document.getElementById('de-why').textContent = job.why;
-    document.getElementById('de-stages').innerHTML = job.stages
-      .map((s, i) => {
-        const arrow = i < job.stages.length - 1 ? '<i>→</i>' : '';
-        return (
-          '<span class="' +
-          (s.now ? 'is-now' : '') +
-          '">' +
-          esc(s.label) +
-          '</span>' +
-          arrow
-        );
-      })
-      .join('');
-
-    document.getElementById('de-skill-delta').innerHTML = job.skillDelta
-      .map(
-        (d) =>
-          '<div class="de-delta-row"><span>' +
-          esc(d.name) +
-          '</span><span class="track"><b style="width:' +
-          d.delta +
-          '%"></b></span><span class="up">+' +
-          d.delta +
-          '%</span></div>'
-      )
-      .join('');
-
+    const why = $('#de-why');
+    if (why) why.textContent = job.why;
+    const stages = $('#de-stages');
+    if (stages) {
+      stages.innerHTML = job.stages
+        .map((s, i) => {
+          const arrow = i < job.stages.length - 1 ? '<i>→</i>' : '';
+          return '<span class="' + (s.now ? 'is-now' : '') + '">' + esc(s.label) + '</span>' + arrow;
+        })
+        .join('');
+    }
+    const delta = $('#de-skill-delta');
+    if (delta) {
+      delta.innerHTML = job.skillDelta
+        .map(
+          (d) =>
+            '<div class="de-delta-row"><span>' +
+            esc(d.name) +
+            '</span><span class="track"><b style="width:' +
+            d.delta +
+            '%"></b></span><span class="up">+' +
+            d.delta +
+            '%</span></div>'
+        )
+        .join('');
+    }
     renderForecast(job);
   }
 
   function renderMiniCharts(job) {
     if (!window.echarts) return;
-    const indEl = document.getElementById('de-industry-chart');
-    const trEl = document.getElementById('de-trend-chart');
+    const indEl = $('#de-industry-chart');
+    const trEl = $('#de-trend-chart');
     if (indEl) {
       if (!industryChart) industryChart = window.echarts.init(indEl);
       industryChart.setOption({
@@ -631,7 +639,7 @@
   }
 
   function renderForecast(job) {
-    const el = document.getElementById('de-forecast-chart');
+    const el = $('#de-forecast-chart');
     if (!el || !window.echarts) return;
     if (!forecastChart) forecastChart = window.echarts.init(el);
     const hist = [42, 48, 55, 61, 70, 78, job.conf];
@@ -679,35 +687,41 @@
   }
 
   function renderHeader(job) {
-    document.getElementById('de-job-title').textContent = job.title;
-    const tag = document.getElementById('de-tag');
+    const jt = $('#de-job-title');
+    if (jt) jt.textContent = job.title;
+    const tag = $('#de-tag');
     if (tag) {
-      tag.textContent = job.isForecast ? 'AI 预测岗位' : '真实发现岗位';
-      tag.classList.toggle('is-pred', !!job.isForecast);
+      tag.textContent = '真实发现岗位';
+      tag.classList.remove('is-pred');
     }
-    document.getElementById('de-meta').innerHTML =
-      '<span class="de-chip">首次出现 <b>' +
-      esc(job.firstSeen) +
-      '</b></span>' +
-      '<span class="de-chip">热度 <b>' +
-      job.conf +
-      '</b></span>' +
-      '<span class="de-chip">增长 <b>+' +
-      job.growth +
-      '%</b></span>' +
-      '<span class="de-chip">关联岗位 <b>' +
-      job.relatedCount +
-      '</b></span>';
-
-    const back = detailHref(job.id);
-    document.getElementById('de-back-detail').href = back;
-    document.getElementById('de-back-btn').href = back;
-    document.title = '执图破局 · ' + job.title + ' · 岗位演化图谱';
+    const meta = $('#de-meta');
+    if (meta) {
+      meta.innerHTML =
+        '<span class="de-chip">首次出现 <b>' +
+        esc(job.firstSeen) +
+        '</b></span>' +
+        '<span class="de-chip">热度 <b>' +
+        job.conf +
+        '</b></span>' +
+        '<span class="de-chip">增长 <b>+' +
+        job.growth +
+        '%</b></span>' +
+        '<span class="de-chip">关联岗位 <b>' +
+        job.relatedCount +
+        '</b></span>';
+    }
+    const back = 'discovery-detail.html?id=' + encodeURIComponent(job.id || 'disc_mock_1') + '&tab=evolve';
+    const bd = $('#de-back-detail');
+    const bb = $('#de-back-btn');
+    if (bd) bd.href = back;
+    if (bb) bb.href = back;
+    document.title = '执图破局 · ' + job.title + ' · 岗位演化路径';
   }
 
   function bindCanvasPan() {
-    const canvas = document.getElementById('de-canvas');
-    if (!canvas) return;
+    const canvas = $('#de-canvas');
+    if (!canvas || canvas.dataset.panBound === '1') return;
+    canvas.dataset.panBound = '1';
     let dragging = false;
     let last = null;
     canvas.addEventListener('pointerdown', (e) => {
@@ -733,35 +747,28 @@
     canvas.addEventListener('pointercancel', end);
   }
 
-  window.initDiscoveryEvolve = function () {
-    currentJob = loadJob();
-    renderHeader(currentJob);
-    renderGraph();
-    fillRail(currentJob);
-    fillBottom(currentJob);
-    bindCanvasPan();
-
-    document.getElementById('de-depth')?.addEventListener('change', () => {
-      renderGraph();
-    });
-    document.getElementById('de-range')?.addEventListener('change', () => {
+  function bindChrome() {
+    if (bound) return;
+    bound = true;
+    $('#de-depth')?.addEventListener('change', () => renderGraph());
+    $('#de-range')?.addEventListener('change', () => {
       toast('已切换时间维度（演示）');
       renderMiniCharts(currentJob);
       renderForecast(currentJob);
     });
-    document.getElementById('de-search')?.addEventListener('input', () => highlight(selectedId));
-    document.getElementById('de-reset')?.addEventListener('click', () => {
+    $('#de-search')?.addEventListener('input', () => highlight(selectedId));
+    $('#de-reset')?.addEventListener('click', () => {
       scale = 1;
       pan = { x: 0, y: 0 };
-      document.getElementById('de-search').value = '';
+      const s = $('#de-search');
+      if (s) s.value = '';
       applyTransform();
       highlight('center');
       fillRail(currentJob);
       toast('视图已重置');
     });
-    document.getElementById('de-export')?.addEventListener('click', () => toast('图谱导出任务已创建'));
-
-    document.querySelectorAll('.de-zoom button').forEach((btn) => {
+    $('#de-export')?.addEventListener('click', () => toast('图谱导出任务已创建'));
+    (rootEl === document ? document : rootEl).querySelectorAll('.de-zoom button').forEach((btn) => {
       btn.addEventListener('click', () => {
         const z = btn.getAttribute('data-zoom');
         if (z === 'in') scale = Math.min(1.6, scale + 0.1);
@@ -773,25 +780,65 @@
         applyTransform();
       });
     });
+  }
 
-    window.addEventListener('resize', () => {
-      drawEdges(graph);
+  function mountCore(job) {
+    currentJob = enrich(job || loadJob());
+    if (currentJob.isForecast) return false;
+    try {
+      sessionStorage.setItem('zhitu_disc_lane', 'found');
+    } catch (_) {}
+    scale = 1;
+    pan = { x: 0, y: 0 };
+    selectedId = 'center';
+    renderHeader(currentJob);
+    bindChrome();
+    bindCanvasPan();
+    fillRail(currentJob);
+    fillBottom(currentJob);
+    requestAnimationFrame(() => {
+      renderGraph();
       industryChart && industryChart.resize();
       trendChart && trendChart.resize();
       forecastChart && forecastChart.resize();
     });
+    return true;
+  }
 
-    if (window.gsap && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      try {
-        gsap.from('.de-crumb, .de-hero, .de-toolbar, .de-shell, .de-bottom', {
-          opacity: 0,
-          y: 12,
-          duration: 0.75,
-          stagger: 0.06,
-          ease: 'power3.out',
-          clearProps: 'opacity,transform'
-        });
-      } catch (_) {}
+  /** Embed into detail tab 05 */
+  window.mountDiscoveryEvolveEmbed = function (root, job) {
+    if (!root) return false;
+    rootEl = root;
+    embedMode = true;
+    industryChart = null;
+    trendChart = null;
+    forecastChart = null;
+    bound = false;
+    return mountCore(job);
+  };
+
+  window.resizeDiscoveryEvolveEmbed = function () {
+    renderGraph();
+    industryChart && industryChart.resize();
+    trendChart && trendChart.resize();
+    forecastChart && forecastChart.resize();
+  };
+
+  window.initDiscoveryEvolve = function () {
+    // Old standalone URL → detail tab 05
+    const id = qs('id') || 'disc_mock_1';
+    let job = null;
+    try {
+      const raw = sessionStorage.getItem('zhitu_disc_job');
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (!qs('id') || parsed.id === id) job = parsed;
+      }
+    } catch (_) {}
+    if (job && (job.is_forecast || job.status === 'forecast')) {
+      location.replace('discovery-detail.html?id=' + encodeURIComponent(job.id || id));
+      return;
     }
+    location.replace('discovery-detail.html?id=' + encodeURIComponent(id) + '&tab=evolve');
   };
 })();

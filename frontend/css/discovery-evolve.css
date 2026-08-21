@@ -85,6 +85,19 @@ body.de-cockpit-page .page-main--cockpit {
   font-weight: 700;
 }
 
+.de-lane-note {
+  margin-left: 8px;
+  font-style: normal;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #2ec4b6;
+  padding: 3px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(46, 196, 182, 0.35);
+  background: rgba(46, 196, 182, 0.1);
+}
+
 /* Hero */
 .de-hero {
   flex-shrink: 0;
@@ -218,8 +231,20 @@ body.de-cockpit-page .page-main--cockpit {
   background: var(--de-real-soft);
 }
 
-.de-btn.ghost {
-  background: transparent;
+.de-btn.is-pred-link {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+  color: #1a1208;
+  border: 0;
+  background: linear-gradient(135deg, #ecc984, #c4a574);
+  box-shadow: 0 6px 18px rgba(212, 176, 122, 0.22);
+}
+
+.de-btn.is-pred-link:hover {
+  filter: brightness(1.05);
+  color: #1a1208;
+  background: linear-gradient(135deg, #ecc984, #c4a574);
 }
 
 /* Toolbar */
@@ -906,10 +931,68 @@ body.de-cockpit-page .page-main--cockpit {
   height: 92px;
 }
 
+/* ── Embed inside discovery-detail tab 05 ── */
+.de-embed {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 0;
+  flex: 1;
+}
+
+.de-toolbar--embed {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.de-toolbar--embed .de-mini {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 650;
+}
+
+.de-toolbar--embed .de-mini select {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 4px 8px;
+  background: rgba(0, 0, 0, 0.35);
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.de-shell--embed {
+  flex: 1;
+  min-height: 320px;
+  max-height: none;
+}
+
+.de-bottom--embed {
+  flex-shrink: 0;
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 10px;
+}
+
+.de-rail--embed {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
 @media (max-width: 1200px) {
   .de-shell { grid-template-columns: 1fr; }
   .de-rail { max-height: 280px; }
   .de-bottom { grid-template-columns: 1fr; }
+  .de-bottom--embed { grid-template-columns: 1fr; }
 }
 
 @media (max-height: 780px), (max-width: 1024px) {

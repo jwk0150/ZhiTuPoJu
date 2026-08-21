@@ -1376,9 +1376,12 @@ window.selectDiscoveryJob = function(id) {
     const all = [...(window.discoveryState.discoveries||[]), ...(window.discoveryState.forecasts||[])];
     const job = all.find(j => j.id === id);
     if (!job) return;
-    try { sessionStorage.setItem('zhitu_disc_job', JSON.stringify(job)); } catch (e) {}
-    const href = 'discovery-detail.html?id=' + encodeURIComponent(job.id);
-    location.href = href;
+    const isForecast = !!(job.is_forecast || job.status === 'forecast');
+    try {
+      sessionStorage.setItem('zhitu_disc_job', JSON.stringify(job));
+      sessionStorage.setItem('zhitu_disc_lane', isForecast ? 'forecast' : 'found');
+    } catch (e) {}
+    location.href = 'discovery-detail.html?id=' + encodeURIComponent(job.id);
 };
 
 window.showDiscoveryDetail = function(id) {

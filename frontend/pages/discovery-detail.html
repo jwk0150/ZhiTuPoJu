@@ -8,255 +8,290 @@
   <link rel="stylesheet" href="../css/shell.css?v=50" />
   <link rel="stylesheet" href="../css/components.css?v=50" />
   <link rel="stylesheet" href="../css/page-polish.css?v=50" />
-  <link rel="stylesheet" href="../css/discovery-detail.css?v=6" />
+  <link rel="stylesheet" href="../css/discovery-detail.css?v=18" />
+  <link rel="stylesheet" href="../css/discovery-evolve.css?v=4" />
   <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 </head>
 <body class="standalone-view dd-cockpit-page" data-page="discovery">
   <div id="app-shell"></div>
   <main class="page-main page-main--cockpit" id="page-main">
-    <section class="view active dd-page dd-page--cockpit" id="view-discovery-detail">
+    <section class="view active dd-page dd-page--cockpit dd-page--unified" id="view-discovery-detail">
 
-      <nav class="dd-crumb enter" style="--d:.02s" aria-label="面包屑">
-        <a href="discovery.html">← 返回新岗位发现</a>
-        <span class="dd-crumb-sep" aria-hidden="true">/</span>
-        <span>岗位详情</span>
-      </nav>
+      <!-- ========== 真实发现：整页统一看板 ========== -->
+      <div class="dd-found" id="dd-found" hidden>
+        <nav class="dd-found-crumb enter" style="--d:.02s" aria-label="面包屑">
+          <a href="discovery.html" id="dd-found-back">← 返回岗位列表</a>
+        </nav>
 
-      <!-- 英雄带：左身份 + 右脉冲指标（对齐原型读法） -->
-      <header class="dd-hero enter" style="--d:.05s">
-        <div class="dd-hero-main">
-          <div class="dd-title-row">
-            <h1 class="dd-title" id="dd-title">岗位详情</h1>
-            <span class="dd-tag" id="dd-tag">真实发现</span>
-          </div>
-          <div class="dd-meta-chips" id="dd-path"></div>
-          <p class="dd-blurb" id="dd-blurb">—</p>
-          <div class="dd-actions">
-            <button type="button" class="dd-act" id="dd-fav"><span class="ico" aria-hidden="true">☆</span>收藏</button>
-            <button type="button" class="dd-act" id="dd-compare"><span class="ico" aria-hidden="true">⊞</span>对比</button>
-            <button type="button" class="dd-act" id="dd-share"><span class="ico" aria-hidden="true">↗</span>分享</button>
-            <a class="dd-act is-evolve" id="dd-open-evolve" href="#">查看岗位演化图谱</a>
-          </div>
-        </div>
-
-        <div class="dd-metrics" aria-label="核心洞察">
-          <div class="dd-metric-chart" id="dd-hero-spark" role="img" aria-label="近 12 个月热度趋势"></div>
-          <div class="dd-metric">
-            <span class="lab">首次出现</span>
-            <strong id="dd-first">—</strong>
-            <em id="dd-first-note">近 12 个月首现</em>
-          </div>
-          <div class="dd-metric is-accent">
-            <span class="lab">热度指数</span>
-            <strong id="dd-heat">—</strong>
-            <em id="dd-heat-note">同行百分位</em>
-          </div>
-          <div class="dd-metric">
-            <span class="lab">需求增长</span>
-            <strong class="is-up" id="dd-growth">—</strong>
-            <em>近 12 个月</em>
-          </div>
-          <div class="dd-metric">
-            <span class="lab">数据置信度</span>
-            <strong id="dd-conf">—</strong>
-            <em id="dd-conf-note">证据可靠度</em>
-          </div>
-        </div>
-      </header>
-
-      <div class="dd-nav-band enter" style="--d:.09s">
-        <div class="dd-tabs" role="tablist" aria-label="详情分区">
-          <button type="button" class="is-active" data-sec="overview" role="tab" aria-selected="true">
-            <span class="dd-tab-i">01</span>岗位概览
-          </button>
-          <button type="button" data-sec="skills" role="tab" aria-selected="false">
-            <span class="dd-tab-i">02</span>核心技能
-          </button>
-          <button type="button" data-sec="trend" role="tab" aria-selected="false">
-            <span class="dd-tab-i">03</span>发展趋势
-          </button>
-          <button type="button" data-sec="related" role="tab" aria-selected="false">
-            <span class="dd-tab-i">04</span>关联岗位
-          </button>
-          <button type="button" data-sec="evolve" role="tab" aria-selected="false">
-            <span class="dd-tab-i">05</span>演化路径
-          </button>
-          <button type="button" data-sec="evidence" role="tab" aria-selected="false">
-            <span class="dd-tab-i">06</span>数据依据
-          </button>
-        </div>
-        <p class="dd-guide" id="dd-guide">
-          <span class="dd-guide-k">读法</span>
-          先看左侧岗位定义 → 中间技能与趋势 → 底部为何被发现；右侧可收藏关注或导出。
-        </p>
-      </div>
-
-      <div class="dd-shell enter" style="--d:.13s">
-        <div class="dd-main">
-
-          <div class="dd-compose" id="sec-overview" data-panel="overview">
-            <section class="dd-card dd-card-overview">
-              <div class="dd-card-head">
-                <span class="dd-eyebrow">01 · 定义</span>
-                <h2 class="dd-h2">岗位概览</h2>
-                <p class="dd-sec-lead">这个岗位做什么、落在哪些场景</p>
-              </div>
-              <div class="dd-box">
-                <h3>岗位定位</h3>
-                <p id="dd-positioning">—</p>
-              </div>
-              <div class="dd-box">
-                <h3>核心职责</h3>
-                <ul class="dd-list dd-list-check" id="dd-duties"></ul>
-              </div>
-              <div class="dd-box dd-box-scenes">
-                <h3>典型应用场景</h3>
-                <div class="dd-scenes" id="dd-scenes"></div>
-              </div>
-            </section>
-
-            <section class="dd-card dd-card-skills">
-              <div class="dd-card-head">
-                <span class="dd-eyebrow">02 · 能力</span>
-                <h2 class="dd-h2">核心技能</h2>
-                <p class="dd-sec-lead">相关度越高，岗位越依赖该能力</p>
-              </div>
-              <div class="dd-skills-scroll" id="dd-skills-scroll">
-                <div class="dd-skills" id="dd-skills"></div>
-              </div>
-              <div class="dd-skills-pager" id="dd-skills-pager" hidden>
-                <button type="button" data-skills-page="-1" aria-label="上一页技能">上一页</button>
-                <span class="dd-skills-page-meta">
-                  <strong id="dd-skills-page-label">1 / 1</strong>
-                  <em id="dd-skills-more-hint">块内翻页</em>
-                </span>
-                <button type="button" data-skills-page="1" aria-label="下一页技能">下一页</button>
-              </div>
-            </section>
-
-            <section class="dd-card dd-card-trend">
-              <div class="dd-card-head dd-trend-head">
-                <div>
-                  <span class="dd-eyebrow">03 · 走势</span>
-                  <h2 class="dd-h2">发展趋势</h2>
-                </div>
-                <div class="dd-range" role="group" aria-label="时间范围">
-                  <button type="button" data-range="6">6月</button>
-                  <button type="button" class="is-active" data-range="12">12月</button>
-                  <button type="button" data-range="24">24月</button>
-                </div>
-              </div>
-              <div class="dd-trend-chart" id="dd-trend-chart" role="img" aria-label="热度与需求趋势"></div>
-              <div class="dd-insights">
-                <h3>趋势洞察 · 怎么读这条线</h3>
-                <ul id="dd-trend-insights"></ul>
-              </div>
-            </section>
-          </div>
-
-          <section class="dd-card dd-focus" id="sec-skills" data-panel="skills" hidden>
-            <div class="dd-card-head">
-              <span class="dd-eyebrow">02 · 能力全景</span>
-              <h2 class="dd-h2">核心技能</h2>
-              <p class="dd-sec-lead">按岗位相关度排序，反映能力依赖强度</p>
-            </div>
-            <div class="dd-skills-scroll">
-              <div class="dd-skills" id="dd-skills-focus"></div>
-            </div>
-            <div class="dd-skills-pager" id="dd-skills-pager-focus" hidden>
-              <button type="button" data-skills-page-focus="-1" aria-label="上一页">上一页</button>
-              <span class="dd-skills-page-meta">
-                <strong id="dd-skills-page-label-focus">1 / 1</strong>
-                <em>块内翻页</em>
+        <header class="dd-found-hero enter" style="--d:.06s">
+          <div class="dd-found-hero-left">
+            <div class="dd-found-title-row">
+              <span class="dd-found-mark" aria-hidden="true">
+                <svg viewBox="0 0 40 40" width="40" height="40">
+                  <circle cx="20" cy="20" r="18" fill="none" stroke="currentColor" stroke-width="1.4" opacity=".55"/>
+                  <path d="M12 22c2.2-6 5.2-9 8-9s5.8 3 8 9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                  <circle cx="15.5" cy="17.5" r="1.4" fill="currentColor"/>
+                  <circle cx="24.5" cy="17.5" r="1.4" fill="currentColor"/>
+                  <path d="M14 26h12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" opacity=".7"/>
+                </svg>
               </span>
-              <button type="button" data-skills-page-focus="1" aria-label="下一页">下一页</button>
-            </div>
-          </section>
-
-          <section class="dd-card dd-focus" id="sec-trend" data-panel="trend" hidden>
-            <div class="dd-card-head dd-trend-head">
-              <div>
-                <span class="dd-eyebrow">03 · 走势全景</span>
-                <h2 class="dd-h2">发展趋势</h2>
+              <div class="dd-found-title-block">
+                <span class="dd-found-tag">真实发现岗位</span>
+                <h1 class="dd-found-title" id="dd-found-title">岗位详情</h1>
               </div>
-              <div class="dd-range dd-range-focus" role="group" aria-label="时间范围">
-                <button type="button" data-range="6">6个月</button>
-                <button type="button" class="is-active" data-range="12">12个月</button>
-                <button type="button" data-range="24">24个月</button>
+              <div class="dd-found-heat" title="热度指数">
+                <span class="lab">热度指数</span>
+                <strong id="dd-found-heat">—</strong>
               </div>
             </div>
-            <div class="dd-trend-chart dd-trend-chart-lg" id="dd-trend-chart-focus"></div>
-            <div class="dd-insights">
-              <h3>趋势洞察</h3>
-              <ul id="dd-trend-insights-focus"></ul>
-            </div>
-          </section>
+            <div class="dd-found-meta" id="dd-found-meta"></div>
+          </div>
+          <div class="dd-found-hero-actions">
+            <button type="button" class="dd-found-btn is-primary" id="dd-found-compare" title="与自己的简历报告对比">
+              <span class="ico" aria-hidden="true">⊞</span>对比简历报告
+            </button>
+            <button type="button" class="dd-found-btn" id="dd-found-fav"><span class="ico" aria-hidden="true">☆</span>收藏</button>
+            <button type="button" class="dd-found-btn is-ghost" id="dd-found-report">
+              <span class="ico" aria-hidden="true">↓</span>下载报告
+            </button>
+          </div>
+        </header>
 
-          <section class="dd-card dd-focus" id="sec-related" data-panel="related" hidden>
-            <div class="dd-card-head">
-              <span class="dd-eyebrow">04 · 能力输入</span>
-              <h2 class="dd-h2">关联岗位</h2>
-              <p class="dd-sec-lead">这些已有岗位是当前角色的能力来源</p>
-            </div>
-            <div class="dd-rel-grid" id="dd-related"></div>
-          </section>
+        <aside class="dd-verdict enter" style="--d:.09s" id="dd-found-verdict" aria-label="阅读结论">
+          <div class="dd-verdict-main">
+            <span class="dd-verdict-kicker" id="dd-found-verdict-kicker">判断</span>
+            <p class="dd-verdict-text" id="dd-found-verdict-text">—</p>
+          </div>
+          <div class="dd-verdict-chips" id="dd-found-verdict-chips"></div>
+          <div class="dd-verdict-trust" id="dd-found-trust"></div>
+        </aside>
 
-          <section class="dd-card dd-focus" id="sec-evolve" data-panel="evolve" hidden>
-            <div class="dd-card-head">
-              <span class="dd-eyebrow">05 · 能力输出</span>
-              <h2 class="dd-h2">演化路径</h2>
-              <p class="dd-sec-lead">基于技能迁移，可能进一步衍生的方向 — 完整脉络请进入演化图谱</p>
-            </div>
-            <div class="dd-evolve-cta">
-              <a class="dd-btn is-primary" id="dd-open-evolve-tab" href="#">打开岗位演化图谱 →</a>
-              <p>在图谱中查看：已有基础岗位 → 能力演化 → 当前岗位 → 真实关联 → 未来预测</p>
-            </div>
-            <div class="dd-rel-grid is-pred" id="dd-derived"></div>
-          </section>
-
-          <section class="dd-evidence-band" id="sec-evidence" data-panel="evidence">
-            <div class="dd-evidence-head">
-              <div>
-                <span class="dd-eyebrow">为何被发现</span>
-                <h2 class="dd-h2">AI 发现依据</h2>
+        <div class="dd-found-board enter" style="--d:.12s" id="dd-found-board">
+          <!-- 左：基本信息 -->
+          <section class="dd-panel dd-panel-basics" aria-labelledby="dd-basics-h">
+            <header class="dd-panel-head">
+              <h2 id="dd-basics-h">岗位基本信息</h2>
+            </header>
+            <dl class="dd-found-kv" id="dd-found-basics"></dl>
+            <div class="dd-salary" id="dd-found-salary" hidden>
+              <div class="dd-salary-bar" role="img" aria-label="薪资分布示意">
+                <span class="dd-salary-fill" id="dd-salary-fill"></span>
+                <span class="dd-salary-peak" id="dd-salary-peak"></span>
               </div>
-              <p class="dd-sec-lead">系统判定「值得关注」的四条证据链</p>
+              <div class="dd-salary-scale"><span>偏低</span><span>中位</span><span>偏高</span></div>
             </div>
-            <div class="dd-evidence-grid" id="dd-evidence"></div>
+          </section>
+
+          <!-- 中：能力 TOP10 -->
+          <section class="dd-panel dd-panel-skills" aria-labelledby="dd-skills-h">
+            <header class="dd-panel-head">
+              <h2 id="dd-skills-h">核心能力需求 TOP 10</h2>
+            </header>
+            <p class="dd-read">读法：从高到低看；先补前三项，通常就能覆盖大部分 JD。</p>
+            <div class="dd-found-skills" id="dd-found-skills"></div>
+          </section>
+
+          <!-- 右上：能力对比（替代难读雷达） -->
+          <section class="dd-panel dd-panel-radar" aria-labelledby="dd-radar-h">
+            <header class="dd-panel-head">
+              <h2 id="dd-radar-h">能力对照</h2>
+            </header>
+            <p class="dd-read">读法：青色条是该岗位要求，灰条是行业平均。拉开越大，越是差异化能力。</p>
+            <div class="dd-cmp" id="dd-found-radar" role="list" aria-label="能力对照"></div>
+          </section>
+
+          <!-- 右中：典型职责 -->
+          <section class="dd-panel dd-panel-duties" aria-labelledby="dd-duties-h">
+            <header class="dd-panel-head dd-panel-head-split">
+              <h2 id="dd-duties-h">典型职责 (Top 5)</h2>
+              <span class="dd-panel-hint">出现概率</span>
+            </header>
+            <p class="dd-read">读法：概率越高，招聘文本里越常写到这件事。</p>
+            <ol class="dd-found-duties" id="dd-found-duties"></ol>
+          </section>
+
+          <!-- 左下：趋势 -->
+          <section class="dd-panel dd-panel-trend" aria-labelledby="dd-trend-h">
+            <header class="dd-panel-head">
+              <h2 id="dd-trend-h">岗位需求趋势</h2>
+            </header>
+            <p class="dd-read">读法：看曲线是否持续抬升；两条线同向上，说明热度不是偶发。</p>
+            <div class="dd-found-trend" id="dd-found-trend" role="img" aria-label="岗位需求趋势"></div>
+            <p class="dd-chart-note" id="dd-found-trend-note">近半年发布量与搜索热度同步抬升</p>
+          </section>
+
+          <!-- 中下：相关岗位（替代关系网） -->
+          <section class="dd-panel dd-panel-graph" aria-labelledby="dd-graph-h">
+            <header class="dd-panel-head">
+              <h2 id="dd-graph-h">从哪些岗位走过来</h2>
+            </header>
+            <p class="dd-read">读法：关联越高，能力重叠越多，越适合作为转岗起点。</p>
+            <div class="dd-rel-ladder" id="dd-found-graph" role="list"></div>
+          </section>
+
+          <!-- 右下：供需 -->
+          <section class="dd-panel dd-panel-supply" aria-labelledby="dd-supply-h">
+            <header class="dd-panel-head">
+              <h2 id="dd-supply-h">人才供需情况</h2>
+            </header>
+            <p class="dd-read">读法：供需比 &gt; 1 表示需求快于供给，人才更紧俏。</p>
+            <div class="dd-supply-stats" id="dd-found-supply"></div>
+            <div class="dd-supply-note">
+              <span class="kicker">观察结论</span>
+              <p id="dd-found-supply-note">—</p>
+            </div>
           </section>
         </div>
-
-        <aside class="dd-rail" aria-label="基础信息与下一步行动">
-          <div class="dd-rail-card">
-            <div class="dd-rail-head">
-              <h3>基础信息</h3>
-              <span class="dd-rail-hint">速览卡片</span>
-            </div>
-            <dl class="dd-kv" id="dd-basics"></dl>
-          </div>
-          <div class="dd-rail-card">
-            <div class="dd-rail-head">
-              <h3>关联岗位</h3>
-              <span class="sub">能力输入</span>
-            </div>
-            <div class="dd-rail-list" id="dd-rail-related"></div>
-          </div>
-          <div class="dd-rail-card">
-            <div class="dd-rail-head">
-              <h3>可衍生岗位</h3>
-              <span class="sub is-pred">能力输出</span>
-            </div>
-            <div class="dd-rail-list is-pred" id="dd-rail-derived"></div>
-          </div>
-          <div class="dd-rail-actions">
-            <p class="dd-rail-cta-label">下一步</p>
-            <button type="button" class="dd-btn is-primary" id="dd-watch">加入关注清单</button>
-            <button type="button" class="dd-btn" id="dd-focus">标记为重点</button>
-            <button type="button" class="dd-btn is-ghost" id="dd-export">导出分析报告</button>
-          </div>
-        </aside>
       </div>
+
+      <!-- ========== 未来预测：整页统一看板（金色） ========== -->
+      <div class="dd-fc" id="dd-forecast-shell" hidden>
+        <nav class="dd-fc-crumb enter" style="--d:.02s" aria-label="面包屑">
+          <a href="discovery.html">← 返回预测岗位列表</a>
+        </nav>
+
+        <header class="dd-fc-hero enter" style="--d:.06s">
+          <div class="dd-fc-hero-left">
+            <div class="dd-fc-title-row">
+              <span class="dd-fc-mark" aria-hidden="true">
+                <svg viewBox="0 0 40 40" width="40" height="40">
+                  <circle cx="20" cy="20" r="18" fill="none" stroke="currentColor" stroke-width="1.4" opacity=".5"/>
+                  <path d="M20 8l2.4 7.4H30l-6 4.4 2.3 7.2L20 22.8l-6.3 4.2 2.3-7.2-6-4.4h7.6z" fill="currentColor" opacity=".85"/>
+                </svg>
+              </span>
+              <div class="dd-fc-title-block">
+                <span class="dd-fc-tag">AI 预测岗位</span>
+                <h1 class="dd-fc-title" id="dd-fc-title">预测岗位</h1>
+              </div>
+              <div class="dd-fc-conf" title="预测置信度">
+                <span class="lab">预测置信度</span>
+                <strong id="dd-fc-conf">—</strong>
+              </div>
+            </div>
+            <div class="dd-fc-meta" id="dd-fc-meta"></div>
+          </div>
+          <div class="dd-fc-hero-actions">
+            <button type="button" class="dd-fc-btn is-primary" id="dd-fc-compare" title="与自己的简历报告对比">
+              <span class="ico" aria-hidden="true">⊞</span>对比简历报告
+            </button>
+            <button type="button" class="dd-fc-btn" id="dd-fc-fav"><span class="ico" aria-hidden="true">☆</span>收藏</button>
+            <button type="button" class="dd-fc-btn is-ghost" id="dd-fc-report">
+              <span class="ico" aria-hidden="true">↓</span>下载报告
+            </button>
+          </div>
+        </header>
+
+        <aside class="dd-verdict dd-verdict--fc enter" style="--d:.09s" id="dd-fc-verdict" aria-label="阅读结论">
+          <div class="dd-verdict-main">
+            <span class="dd-verdict-kicker" id="dd-fc-verdict-kicker">判断</span>
+            <p class="dd-verdict-text" id="dd-fc-verdict-text">—</p>
+          </div>
+          <div class="dd-verdict-chips" id="dd-fc-verdict-chips"></div>
+          <div class="dd-verdict-trust" id="dd-fc-trust"></div>
+        </aside>
+
+        <div class="dd-fc-board enter" style="--d:.12s" id="dd-fc-board">
+          <section class="dd-panel dd-fc-panel dd-fc-basics" aria-labelledby="dd-fc-basics-h">
+            <header class="dd-panel-head"><h2 id="dd-fc-basics-h">预测岗位基本信息</h2></header>
+            <dl class="dd-found-kv dd-fc-kv" id="dd-fc-basics"></dl>
+            <div class="dd-salary dd-fc-salary">
+              <div class="dd-salary-bar dd-fc-salary-bar" role="img" aria-label="预测薪资区间">
+                <span class="dd-salary-peak" id="dd-fc-salary-peak"></span>
+              </div>
+              <div class="dd-salary-scale"><span>20K</span><span>50K</span><span>80K</span></div>
+            </div>
+          </section>
+
+          <section class="dd-panel dd-fc-panel dd-fc-skills" aria-labelledby="dd-fc-skills-h">
+            <header class="dd-panel-head"><h2 id="dd-fc-skills-h">预测核心能力需求 TOP 10</h2></header>
+            <p class="dd-read">读法：金色越长，窗口内成型后越可能写进 JD。</p>
+            <div class="dd-found-skills dd-fc-skills-list" id="dd-fc-skills"></div>
+          </section>
+
+          <section class="dd-panel dd-fc-panel dd-fc-duties" aria-labelledby="dd-fc-duties-h">
+            <header class="dd-panel-head dd-panel-head-split">
+              <h2 id="dd-fc-duties-h">预测职责 (Top 5)</h2>
+              <span class="dd-panel-hint">发现概率</span>
+            </header>
+            <p class="dd-read">读法：这些是推演出的职责雏形，不是已大规模招聘的原文。</p>
+            <ol class="dd-found-duties dd-fc-duties-list" id="dd-fc-duties"></ol>
+          </section>
+
+          <section class="dd-panel dd-fc-panel dd-fc-evolve" id="dd-fc-evolve-panel" aria-labelledby="dd-fc-evolve-h">
+            <header class="dd-panel-head"><h2 id="dd-fc-evolve-h">能力怎么长出来的</h2></header>
+            <p class="dd-read">读法：从左到右——已有岗位提供能力 → 能力交汇 → 汇成预测岗位。</p>
+            <div class="dd-flow" id="dd-fc-sankey" aria-label="能力演化三栏"></div>
+          </section>
+
+          <section class="dd-panel dd-fc-panel dd-fc-prob" aria-labelledby="dd-fc-prob-h">
+            <header class="dd-panel-head"><h2 id="dd-fc-prob-h">出现概率趋势</h2></header>
+            <p class="dd-read">读法：曲线抬升表示「越来越像会成型」；靠近 100% 仍不等于已招聘。</p>
+            <div class="dd-fc-chart" id="dd-fc-prob-chart" role="img" aria-label="出现概率趋势"></div>
+            <p class="dd-chart-note">24 个月内成型概率由低到高抬升</p>
+          </section>
+
+          <section class="dd-panel dd-fc-panel dd-fc-dev" aria-labelledby="dd-fc-dev-h">
+            <header class="dd-panel-head"><h2 id="dd-fc-dev-h">关键能力发展预测</h2></header>
+            <p class="dd-read">读法：颜色越深，该能力在未来越可能变成硬门槛。</p>
+            <div class="dd-fc-table-wrap">
+              <table class="dd-fc-table" id="dd-fc-dev-table">
+                <thead>
+                  <tr>
+                    <th>能力维度</th>
+                    <th>当前</th>
+                    <th>6月</th>
+                    <th>12月</th>
+                    <th>24月</th>
+                  </tr>
+                </thead>
+                <tbody id="dd-fc-dev-body"></tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="dd-panel dd-fc-panel dd-fc-industry" aria-labelledby="dd-fc-ind-h">
+            <header class="dd-panel-head"><h2 id="dd-fc-ind-h">需求可能落在哪</h2></header>
+            <p class="dd-read">读法：条越长，该行业越可能先出现编制；不必平均用力。</p>
+            <div class="dd-share" id="dd-fc-industry-chart" role="list"></div>
+          </section>
+
+          <section class="dd-panel dd-fc-panel dd-fc-supply" aria-labelledby="dd-fc-sup-h">
+            <header class="dd-panel-head"><h2 id="dd-fc-sup-h">预测供需趋势</h2></header>
+            <p class="dd-read">读法：金线（需求）若持续高于蓝线（供给），窗口内更可能缺人。</p>
+            <div class="dd-fc-chart" id="dd-fc-supply-chart" role="img" aria-label="供需趋势"></div>
+          </section>
+
+          <section class="dd-panel dd-fc-panel dd-fc-risk" aria-labelledby="dd-fc-risk-h">
+            <header class="dd-panel-head"><h2 id="dd-fc-risk-h">不确定性说明</h2></header>
+            <p class="dd-read">读法：预测会变；把这些当成风险清单，而不是否定结论。</p>
+            <p class="dd-fc-risk-lead" id="dd-fc-risk-lead">—</p>
+            <ul class="dd-fc-risk-list" id="dd-fc-risk-list"></ul>
+            <div class="dd-fc-orb" aria-hidden="true"></div>
+          </section>
+        </div>
+      </div>
+
+      <!-- 对比简历报告 -->
+      <div class="dd-resume-modal" id="dd-resume-modal" hidden>
+        <div class="dd-resume-backdrop" data-close-resume></div>
+        <div class="dd-resume-sheet" role="dialog" aria-modal="true" aria-labelledby="dd-resume-title">
+          <header class="dd-resume-head">
+            <div>
+              <span class="dd-fc-tag">适合度对照</span>
+              <h2 id="dd-resume-title">与我的简历报告对比</h2>
+              <p class="dd-resume-sub" id="dd-resume-sub">对照预测岗位所需能力与你的简历报告缺口</p>
+            </div>
+            <button type="button" class="dd-fc-btn" data-close-resume aria-label="关闭">关闭</button>
+          </header>
+          <div class="dd-resume-body" id="dd-resume-body"></div>
+          <footer class="dd-resume-foot">
+            <button type="button" class="dd-fc-btn" data-close-resume>稍后再说</button>
+            <a class="dd-fc-btn is-primary" href="match.html" id="dd-resume-match-cta">去补齐优先缺口</a>
+          </footer>
+        </div>
+      </div>
+
     </section>
   </main>
   <script src="../js/api.js"></script>
@@ -264,7 +299,7 @@
   <script src="../js/cinema-bg.js"></script>
   <script src="../js/cinema-music.js"></script>
   <script src="../js/shell.js"></script>
-  <script src="../js/pages/discovery-detail.js?v=6"></script>
+  <script src="../js/pages/discovery-detail.js?v=22"></script>
   <script>
     window.Shell && window.Shell.mount({ pageId: 'discovery', title: '岗位详情', subtitle: '新岗位发现' });
     window.initDiscoveryDetail && window.initDiscoveryDetail();
