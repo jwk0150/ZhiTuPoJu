@@ -67,10 +67,11 @@ body[data-page="insight"] .hub-tab.active {
 /* —— Evolution —— */
 body[data-page="insight"] .evo-list {
   background: var(--glass-card) !important;
-  border: 1px solid var(--border) !important;
+  border: 1px solid var(--glass-border) !important;
   border-radius: var(--r-card) !important;
   box-shadow: var(--glass-shadow) !important;
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   padding: 8px !important;
 }
 
@@ -102,11 +103,13 @@ body[data-page="insight"] .evo-stat {
 
 body[data-page="insight"] .timeline-slider {
   background: var(--glass-card);
-  border: 1px solid var(--border);
+  border: 1px solid var(--glass-border);
   border-radius: 16px;
   padding: 14px 16px;
   margin-bottom: 16px;
   box-shadow: var(--glass-shadow);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
 }
 
 body[data-page="insight"] .timeline-head {
@@ -150,6 +153,49 @@ body[data-page="insight"] .filter-pill.active {
 body[data-page="insight"] .change-item {
   background: rgba(234, 246, 251, 0.65) !important;
   border-radius: 12px !important;
+}
+
+/* === Frosted glass 强化（覆盖 cinema-theme 默认 .card 覆盖）===
+   使用 #view-evolution ID 选择器提升特异性，胜出 cinema-bg.js 注入的 .card !important 规则。
+   目标：岗位清单 / 时间轴 / 技能需求演化 / 技能热度变化 / 详细变更清单，全部一致。 */
+body[data-page="insight"] #view-evolution .evo-list,
+body[data-page="insight"] #view-evolution .timeline-slider,
+body[data-page="insight"] #view-evolution .card {
+  background: linear-gradient(160deg, rgba(20, 32, 46, 0.78) 0%, rgba(14, 22, 34, 0.82) 100%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  border-radius: var(--r-card) !important;
+  box-shadow:
+    0 12px 32px rgba(0, 0, 0, 0.36),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.18) !important;
+  backdrop-filter: blur(20px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(160%) !important;
+}
+
+body[data-page="insight"] #view-evolution .evo-list .evo-item {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 12px !important;
+}
+
+body[data-page="insight"] #view-evolution .evo-list .evo-item:hover {
+  background: rgba(31, 200, 217, 0.14) !important;
+  border-color: rgba(31, 200, 217, 0.4) !important;
+}
+
+body[data-page="insight"] #view-evolution .change-item {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-radius: 10px !important;
+}
+
+/* 技能需求演化 / 技能热度变化 图表卡片统一磨砂效果 */
+body[data-page="insight"] .row.cols-12 > .card {
+  background: var(--glass-card) !important;
+  border: 1px solid var(--glass-border) !important;
+  border-radius: var(--r-card) !important;
+  box-shadow: var(--glass-shadow) !important;
+  backdrop-filter: blur(14px) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
 }
 
 /* —— Trends —— */
