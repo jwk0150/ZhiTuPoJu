@@ -44,48 +44,158 @@
 <div class="page-actions">
 </div>
 </div>
-<div class="card change-card" id="evo-change-card">
-<div class="change-toggle" id="evo-change-toggle">
-  <div class="change-title-wrap">
-    <span class="card-title">详细变更清单 <span class="change-count" id="evo-change-total">0</span></span>
+<!-- ===== 能力动态更新（参考页风格：左主区+右栏） ===== -->
+<div class="evo-job-head">
+  <div class="evo-job-title">
+    <span class="evo-job-name" id="evo-current-job">Java 开发工程师</span>
+    <span class="evo-job-badge">· 能力动态更新</span>
   </div>
-  <div class="change-tools" id="evo-change-tools">
-    <span class="filter-pill active" data-evo-filter="all">全部</span>
-    <span class="filter-pill" data-evo-filter="added">新增</span>
-    <span class="filter-pill" data-evo-filter="modified">修改</span>
-    <span class="filter-pill" data-evo-filter="removed">删除</span>
-    <span class="change-chevron" id="evo-change-chevron" aria-hidden="true">▾</span>
-  </div>
-</div>
-<div class="change-collapse" id="evo-change-collapse">
-  <div class="change-collapse-inner">
-    <div class="change-list" id="evo-change-list"></div>
+  <div class="evo-job-meta">
+    <span class="evo-job-dot"></span>
+    <span>最近分析：<strong id="evo-last-analysis">2025-05-16 10:30</strong></span>
+    <span class="evo-job-tag">最新分析</span>
   </div>
 </div>
-</div>
-<div class="evo-layout">
-<div class="evo-list" id="evo-list"></div>
-<div>
-<div class="evo-summary">
-</div>
-<div class="timeline-slider">
-<div class="timeline-head">
-<div class="timeline-head-label">时间轴 · 选择观察点</div>
-<div class="timeline-head-now">当前：<strong id="evo-current-time">2026-01</strong></div>
-</div>
-<div class="slider-track" id="evo-slider"><div class="slider-thumb" id="evo-thumb"></div></div>
-<div class="slider-marks"><span>2026-01</span><span>03</span><span>05</span><span>07</span><span>09</span><span>11</span><span>2026-12</span></div>
-</div>
-<div class="row cols-12">
-<div class="card"><div class="card-header"><div class="card-title">技能需求演化</div><span class="tag">近12个月</span></div><div class="card-body"><div class="chart" id="chart-evo-trend"></div></div></div>
-<div class="card"><div class="card-header"><div class="card-title">技能热度变化 TOP10</div><span class="tag tag-cyan"><span class="live-dot"></span>实时</span></div><div class="card-body"><div class="chart" id="chart-evo-bar"></div></div></div>
+<div class="evo-new-layout">
+  <!-- 左主区 -->
+  <div class="evo-new-main">
+    <!-- 能力变化时间轴（双线图） -->
+    <div class="card evo-timeline-card">
+      <div class="card-header">
+        <div class="card-title">能力变化时间轴</div>
+        <div class="evo-timeline-range" id="evo-timeline-range">
+          <span class="range-pill active" data-range="6">近 6 个月</span>
+          <span class="range-pill" data-range="3">近 3 个月</span>
+          <span class="range-pill" data-range="12">近 1 年</span>
+          <span class="range-pill" data-range="all">全部</span>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="evo-timeline-legend">
+          <span class="legend-item"><i class="dot dot-cyan"></i>能力总数</span>
+          <span class="legend-item"><i class="dot dot-amber"></i>新生变化的能力</span>
+        </div>
+        <div class="chart evo-timeline-chart" id="chart-evo-timeline"></div>
+      </div>
+    </div>
+    <!-- 本期重要变化 -->
+    <div class="card evo-important-card">
+      <div class="card-header">
+        <div class="card-title"><span id="evo-important-period">2025-05</span> 本期重点变化</div>
+        <div class="card-head-right">
+          <span class="evo-vs-text" id="evo-important-scope">与 <span id="evo-important-prev">2025-04</span> 相比</span>
+          <a class="evo-view-all" href="#">查看全部变化 ▸</a>
+        </div>
+      </div>
+      <div class="card-body">
+        <!-- 状态层 -->
+        <div class="evo-important-loading" id="evo-important-loading" style="display:none;">
+          <div class="evo-spinner"></div><span>正在分析岗位能力演化趋势…</span>
+        </div>
+        <div class="evo-important-empty" id="evo-important-empty" style="display:none;">
+          <div class="evo-empty-ico">○</div>
+          <div>当前时间范围暂无重点能力变化</div>
+        </div>
+        <div class="evo-important-error" id="evo-important-error" style="display:none;">
+          <div class="evo-error-ico">!</div>
+          <div>数据加载失败，请稍后重试</div>
+          <button class="evo-error-retry" id="evo-important-retry">重新加载</button>
+        </div>
+        <!-- 三组：新增/修改/删除 -->
+        <div class="evo-groups" id="evo-groups" style="display:none;">
+          <div class="evo-group evo-group-add">
+            <div class="evo-group-side">
+              <div class="evo-group-icon ico-add">+</div>
+              <div class="evo-group-name">新增能力<br><span class="evo-group-name-en" id="evo-group-add-count">0 项</span></div>
+            </div>
+            <div class="evo-group-table" id="evo-group-add">
+              <div class="evo-table-header">
+                <div class="evo-table-cell col-name">能力</div>
+                <div class="evo-table-cell col-type">类型</div>
+                <div class="evo-table-cell col-imp">重要性</div>
+                <div class="evo-table-cell col-reason">变化原因</div>
+              </div>
+            </div>
+          </div>
+          <div class="evo-group evo-group-mod">
+            <div class="evo-group-side">
+              <div class="evo-group-icon ico-edit">✓</div>
+              <div class="evo-group-name">修改能力<br><span class="evo-group-name-en" id="evo-group-mod-count">0 项</span></div>
+            </div>
+            <div class="evo-group-table" id="evo-group-mod">
+              <div class="evo-table-header">
+                <div class="evo-table-cell col-name">能力</div>
+                <div class="evo-table-cell col-type">类型</div>
+                <div class="evo-table-cell col-imp">重要性</div>
+                <div class="evo-table-cell col-reason">变化原因</div>
+              </div>
+            </div>
+          </div>
+          <div class="evo-group evo-group-del">
+            <div class="evo-group-side">
+              <div class="evo-group-icon ico-del">−</div>
+              <div class="evo-group-name">删除能力<br><span class="evo-group-name-en" id="evo-group-del-count">0 项</span></div>
+            </div>
+            <div class="evo-group-table" id="evo-group-del">
+              <div class="evo-table-header">
+                <div class="evo-table-cell col-name">能力</div>
+                <div class="evo-table-cell col-type">类型</div>
+                <div class="evo-table-cell col-imp">重要性</div>
+                <div class="evo-table-cell col-reason">变化原因</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- 重要性图例 -->
+        <div class="evo-importance-legend" id="evo-importance-legend" style="display:none;">
+          <span>重要性说明：</span>
+          <span class="star-line"><i class="evo-stars-mini">★★★★★</i> 非常重要</span>
+          <span class="star-line"><i class="evo-stars-mini">★★★★☆</i> 重要</span>
+          <span class="star-line"><i class="evo-stars-mini">★★★☆☆</i> 一般</span>
+          <span class="star-line"><i class="evo-stars-mini">★☆☆☆☆</i> 较低</span>
+          <span class="star-line"><i class="evo-stars-mini">☆☆☆☆☆</i> 不重要</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- 右侧栏 -->
+  <div class="evo-new-side">
+    <div class="card evo-insight-card">
+      <div class="card-header"><div class="card-title"><i class="ico-spark"></i>核心洞察</div></div>
+      <div class="card-body">
+        <ul class="evo-insight-list" id="evo-insight-list">
+          <!-- 由 JS 渲染 -->
+        </ul>
+      </div>
+    </div>
+    <div class="card evo-source-card">
+      <div class="card-header">
+        <div class="card-title"><i class="ico-db"></i>数据来源</div>
+        <a class="evo-view-all" href="#">查看全部 ▸</a>
+      </div>
+      <div class="card-body">
+        <div class="evo-source-sub">多源数据综合分析（6 个）</div>
+        <ul class="evo-source-list" id="evo-source-list">
+          <!-- 由 JS 渲染 -->
+        </ul>
+      </div>
+    </div>
+    <div class="card evo-history-card">
+      <div class="card-header">
+        <div class="card-title"><i class="ico-history"></i>历史版本对比</div>
+        <a class="evo-view-all" href="#">查看全部 ▸</a>
+      </div>
+      <div class="card-body evo-history-body" id="evo-history-body">
+        <!-- 由 JS 渲染 -->
+      </div>
+    </div>
+  </div>
 </div>
 <div class="evo-jump-row">
   <a class="btn evo-jump-btn" id="evo-jump-learning" href="learning-path.html">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
     学习路径建议
   </a>
-</div>
 </div>
 </section>
 
@@ -458,8 +568,8 @@
   <script src="../js/cinema-bg.js"></script>
   <script src="../js/cinema-music.js"></script>
   <script src="../js/shell.js"></script>
-  <script src="../js/pages/evolution.js"></script>
-  <script src="../js/pages/analysis.js"></script>
+  <script src="../js/pages/evolution.js?v=2026082106"></script>
+  <script src="../js/pages/analysis.js?v=2026082106"></script>
   <script src="../js/pages/hub-tabs.js"></script>
   <script>
     window.Shell && window.Shell.mount({ pageId: 'insight', title: '岗位洞察', subtitle: '能力演化与宏观趋势' });
