@@ -4,11 +4,16 @@
    ============================================================ */
 
 :root {
-  --ink: #ecc984;
-  --ink-bright: #f3d9a0;
-  --text: #ecc984;
-  --muted: rgba(236, 201, 132, 0.72);
-  --faint: rgba(236, 201, 132, 0.22);
+  /* 金色层级：品牌最亮 > 标题偏淡但清晰 > 正文更淡仍可读 */
+  --gold-brand: #f0d090;
+  --gold-title: #e2c48c;
+  --gold-body: rgba(240, 216, 168, 0.82);
+  --gold-body-soft: rgba(236, 201, 132, 0.62);
+  --ink: var(--gold-brand);
+  --ink-bright: #f7e2b0;
+  --text: var(--gold-title);
+  --muted: var(--gold-body);
+  --faint: rgba(236, 201, 132, 0.28);
   --panel: rgba(13, 16, 22, 0.32);
   --panel-strong: rgba(10, 12, 18, 0.48);
   --stroke: rgba(236, 201, 132, 0.28);
@@ -309,7 +314,7 @@ body[data-phase="scene1"] .cinema-vignette {
 .brand-name {
   position: relative;
   padding-left: 18px;
-  color: #ecc984;
+  color: var(--gold-brand);
   font-family: var(--font-brand);
   font-size: clamp(36px, 3.5vw, 48px);
   font-weight: 600;
@@ -346,7 +351,7 @@ body[data-phase="scene1"] .brand-name {
 /* ===== Scene2：顶栏无底色；Logo 与第一幕同尺寸 ===== */
 body[data-phase="scene2"] .topbar {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   height: auto;
   padding: clamp(20px, 3vw, 42px) clamp(22px, 5vw, 72px);
@@ -367,7 +372,11 @@ body[data-phase="scene2"] .brand-en {
   display: none;
 }
 
-body[data-phase="scene2"] .platform-nav,
+/* 上栏六模块导航去掉；仅保留立即登录 */
+body[data-phase="scene2"] .platform-nav {
+  display: none !important;
+}
+
 body[data-phase="scene2"] .platform-enter,
 body[data-phase="scene2"] .platform-status {
   display: flex;
@@ -427,7 +436,7 @@ body[data-phase="scene2"] .platform-status {
   padding: 8px 4px;
   border: 0;
   background: none;
-  color: #f5ddb0;
+  color: var(--gold-brand);
   font-family: var(--font-body);
   font-size: clamp(16px, 1.12vw, 18px);
   font-weight: 600;
@@ -438,7 +447,7 @@ body[data-phase="scene2"] .platform-status {
 
 .platform-enter:hover,
 .platform-enter:focus-visible {
-  color: var(--text);
+  color: var(--ink-bright);
   background: none;
   border: 0;
 }
@@ -790,7 +799,7 @@ body[data-phase="scene3"] .login-card {
 
 .welcome-kicker {
   margin: 0 0 14px;
-  color: rgba(236, 201, 132, 0.5);
+  color: var(--gold-body-soft);
   font-family: var(--font-brand);
   font-size: 13px;
   font-weight: 500;
@@ -805,7 +814,7 @@ body[data-phase="scene3"] .login-card {
   top: auto;
   max-width: none;
   margin: 0 0 16px;
-  color: #ecc984;
+  color: var(--gold-brand);
   font-family: var(--font-brand);
   font-size: clamp(68px, 9.6vw, 124px);
   font-weight: 700;
@@ -820,7 +829,7 @@ body[data-phase="scene3"] .login-card {
 .welcome-lead {
   max-width: 18em;
   margin: 0 0 0 auto;
-  color: rgba(236, 201, 132, 0.55);
+  color: var(--gold-body);
   font-size: clamp(14px, 1.15vw, 16px);
   font-weight: 300;
   line-height: 1.75;
@@ -1053,7 +1062,7 @@ h3 {
 .section-header h2 {
   max-width: none;
   margin: 0 0 22px;
-  color: var(--text);
+  color: var(--gold-title);
   font-family: var(--font-brand);
   font-size: clamp(30px, 3.15vw, 44px);
   font-weight: 600;
@@ -1061,16 +1070,16 @@ h3 {
   white-space: nowrap;
   text-align: left;
   text-shadow:
-    0 1px 0 rgba(8, 14, 16, 0.35),
-    0 10px 28px rgba(0, 0, 0, 0.55),
-    0 0 28px rgba(0, 0, 0, 0.28);
+    0 1px 0 rgba(8, 14, 16, 0.55),
+    0 2px 8px rgba(0, 0, 0, 0.55),
+    0 12px 32px rgba(0, 0, 0, 0.5);
 }
 
 .platform-lead {
   max-width: none;
   margin: 0;
   padding: 0;
-  color: rgba(236, 201, 132, 0.92);
+  color: var(--gold-body);
   font-family: var(--font-brand);
   font-size: 17px;
   font-weight: 500;
@@ -1078,8 +1087,9 @@ h3 {
   text-align: left;
   text-indent: 0;
   text-shadow:
-    0 1px 0 rgba(8, 14, 16, 0.4),
-    0 8px 22px rgba(0, 0, 0, 0.52);
+    0 1px 0 rgba(8, 14, 16, 0.55),
+    0 2px 10px rgba(0, 0, 0, 0.58),
+    0 10px 24px rgba(0, 0, 0, 0.45);
 }
 
 .platform-lead.typewriter {
@@ -1101,8 +1111,8 @@ h3 {
   height: 0.92em;
   margin-left: 5px;
   vertical-align: -0.1em;
-  background: #ecc984;
-  box-shadow: 0 0 10px rgba(236, 201, 132, 0.55);
+  background: var(--gold-title);
+  box-shadow: 0 0 10px rgba(212, 184, 138, 0.4);
   animation: intro-caret 0.92s steps(1) infinite;
 }
 
@@ -1277,7 +1287,7 @@ h3 {
   position: relative;
   width: 100%;
   margin: 0;
-  color: var(--text);
+  color: var(--gold-title);
   font-family: var(--font-brand);
   font-size: clamp(36px, 4vw, 60px);
   font-weight: 600;
@@ -1286,8 +1296,9 @@ h3 {
   line-height: 1;
   text-align: center;
   text-shadow:
-    0 1px 0 rgba(8, 14, 16, 0.45),
-    0 12px 32px rgba(0, 0, 0, 0.58);
+    0 1px 0 rgba(8, 14, 16, 0.55),
+    0 2px 10px rgba(0, 0, 0, 0.55),
+    0 14px 36px rgba(0, 0, 0, 0.52);
 }
 
 .about-matrix {
@@ -1365,21 +1376,25 @@ h3 {
 }
 
 .atlas-title {
-  color: var(--text);
+  color: var(--gold-body);
   font-family: var(--font-brand);
   font-size: 17px;
   font-weight: 600;
   letter-spacing: 0.04em;
   line-height: 1.3;
-  text-shadow: 0 8px 18px rgba(0, 0, 0, 0.4);
+  text-shadow:
+    0 1px 0 rgba(8, 14, 16, 0.5),
+    0 2px 8px rgba(0, 0, 0, 0.55),
+    0 8px 18px rgba(0, 0, 0, 0.4);
 }
 
 .atlas-name {
-  color: rgba(236, 201, 132, 0.55);
+  color: var(--gold-body-soft);
   font-family: var(--font-chart);
   font-size: 12px;
   font-weight: 500;
   letter-spacing: 0.16em;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.55);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1749,7 +1764,7 @@ body.project-detail-open .content-track { pointer-events: none; }
 
 .login-card h2 {
   margin: 0 0 10px;
-  color: var(--text);
+  color: var(--gold-title);
   font-family: var(--font-brand);
   font-size: clamp(36px, 4vw, 52px);
   font-weight: 600;
@@ -1761,7 +1776,7 @@ body.project-detail-open .content-track { pointer-events: none; }
 .login-lead {
   margin: 0 0 28px;
   max-width: 18em;
-  color: rgba(236, 201, 132, 0.78);
+  color: var(--gold-body);
   font-family: var(--font-brand);
   font-size: 15px;
   line-height: 1.7;
@@ -1778,7 +1793,7 @@ body.project-detail-open .content-track { pointer-events: none; }
 .login-form label {
   display: grid;
   gap: 8px;
-  color: rgba(236, 201, 132, 0.62);
+  color: var(--gold-body-soft);
   font-family: var(--font-chart);
   font-size: 13px;
   letter-spacing: 0.18em;
