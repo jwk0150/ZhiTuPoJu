@@ -1,0 +1,34 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@500;600;700&family=Sora:wght@600;700&family=IBM+Plex+Mono:wght@500;600&display=swap');
+
+/* Brand palette — 深色电影风（源自 personal-homepage） */
+:root {
+  --signal: #1FC8D9;
+  --signal-deep: #3DD5E5;
+  --signal-dim: rgba(31, 200, 217, 0.16);
+  --primary: #0AA8BC;
+  --primary-light: #3DD5E5;
+  --primary-navy: #1E3A5F;
+  --accent-gold: #F0B429;
+  --brand-gold: #ecc984;
+  --brand-gold-bright: #f5ddb0;
+  --bg-page: #06070a;
+  --bg-page-soft: #0b0e14;
+  --bg-sidebar: rgba(10, 12, 18, 0.72);
+  --bg-card: rgba(255, 255, 255, 0.06);
+  --bg-topbar: rgba(10, 12, 18, 0.55);
+  --text-dark: #E8F2F8;
+  --text-secondary: #A9BDCB;
+  --text-muted: #7C8FA0;
+  --text-on-dark: #E8F7FA;
+  --border: rgba(255, 255, 255, 0.12);
+  --shadow-md: 0 10px 28px rgba(0, 0, 0, 0.35);
+  --radius: 14px;
+  --font-display: 'Sora', 'Noto Sans SC', sans-serif;
+  --font-body: 'DM Sans', 'Noto Sans SC', "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+  --sidebar-w: 248px;
+  --topbar-h: 64px;
+  --brand-logo: url('../assets/brand/logo.png');
+  --brand-logo-gold: url('../assets/brand/logo-gold.png');
+  --brand-hero: url('../assets/brand/hero-bg.png');
+}

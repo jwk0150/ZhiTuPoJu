@@ -1,0 +1,1426 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>执图破局 · 登录</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&family=Noto+Serif+SC:wght@600;700&display=swap" rel="stylesheet" />
+    <style>
+        :root {
+      --c-cyan: #10C8D4;
+      --c-sky: #1EA8E8;
+      --c-blue: #0E56C2;
+      --ink: #061E38;
+      --muted: #3D5670;
+      --line: rgba(120, 160, 190, 0.28);
+      --ice: #F6FBFF;
+      --white: #FFFFFF;
+      --font: "DM Sans", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+      --font-display: "Noto Serif SC", "Songti SC", "STSong", serif;
+      --glass-bg: rgba(255, 255, 255, 0.44);
+      --glass-bg-hover: rgba(255, 255, 255, 0.56);
+      --glass-border: rgba(255, 255, 255, 0.58);
+      --glass-shadow: 0 16px 42px rgba(11, 47, 83, 0.07), inset 0 1px 0 rgba(255, 255, 255, 0.72);
+      --glass-blur: blur(26px) saturate(1.32);
+      --ease-out: cubic-bezier(.22, 1, .36, 1);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; min-height: 100%; }
+        body {
+      font-family: var(--font);
+      color: var(--ink);
+      background: #EEF4F8;
+      overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+    }
+
+    .bg-scene {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+      background: #C8E8F4;
+    }
+    .bg-photo {
+            position: absolute;
+      inset: -4%;
+      background-image: image-set(
+        url("assets/brand/login-bg.png?v=10") 1x,
+        url("assets/brand/login-bg@2x.png?v=10") 2x
+      );
+      background-size: cover;
+      background-position: 48% 46%;
+      background-repeat: no-repeat;
+      animation: bgPhotoDrift 42s ease-in-out infinite alternate;
+      will-change: transform, background-position;
+    }
+    .bg-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(72px);
+      mix-blend-mode: soft-light;
+    }
+    .bg-orb--a {
+      width: min(48vw, 580px);
+      height: min(48vw, 580px);
+      left: 4%;
+      top: 12%;
+      background: radial-gradient(circle, rgba(255,255,255,0.55) 0%, rgba(16,200,212,0.2) 40%, transparent 72%);
+      animation: bgOrbA 26s ease-in-out infinite alternate;
+    }
+    .bg-orb--b {
+      width: min(42vw, 520px);
+      height: min(42vw, 520px);
+      right: 2%;
+      top: 8%;
+      background: radial-gradient(circle, rgba(30,168,232,0.35) 0%, transparent 70%);
+      animation: bgOrbB 32s ease-in-out infinite alternate;
+    }
+    .bg-orb--c {
+      width: min(50vw, 620px);
+      height: min(50vw, 620px);
+      left: 28%;
+      bottom: -18%;
+      background: radial-gradient(circle, rgba(16,200,212,0.28) 0%, transparent 68%);
+      animation: bgOrbC 36s ease-in-out infinite alternate;
+    }
+    .bg-waves {
+      position: absolute;
+      left: -8%;
+      right: -8%;
+      bottom: -6%;
+      height: min(42vh, 420px);
+      opacity: 0.72;
+    }
+    .bg-waves svg {
+            width: 100%;
+            height: 100%;
+      display: block;
+    }
+    .bg-waves .w1 {
+      fill: url(#waveGrad1);
+      animation: bgWaveShift 18s ease-in-out infinite alternate;
+      transform-origin: 50% 100%;
+    }
+    .bg-waves .w2 {
+      fill: url(#waveGrad2);
+      animation: bgWaveShift 24s ease-in-out infinite alternate-reverse;
+      transform-origin: 50% 100%;
+      opacity: 0.85;
+    }
+    .bg-swirl {
+      position: absolute;
+      right: -8%;
+      top: -12%;
+      width: min(52vw, 640px);
+      height: min(52vw, 640px);
+      background:
+        conic-gradient(from 210deg at 50% 50%,
+          transparent 0deg,
+          rgba(16, 200, 212, 0.18) 60deg,
+          rgba(255, 255, 255, 0.35) 120deg,
+          rgba(30, 168, 232, 0.22) 200deg,
+          transparent 300deg);
+      border-radius: 50%;
+      filter: blur(28px);
+      mix-blend-mode: screen;
+      animation: bgSwirl 48s linear infinite;
+      opacity: 0.7;
+    }
+    .bg-shimmer {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        115deg,
+        transparent 0%,
+        transparent 38%,
+        rgba(255,255,255,0.14) 48%,
+        transparent 58%,
+        transparent 100%
+      );
+      background-size: 220% 100%;
+      animation: bgShimmer 16s ease-in-out infinite;
+      mix-blend-mode: soft-light;
+    }
+    .bg-grain {
+      position: absolute;
+      inset: 0;
+      opacity: 0.035;
+      mix-blend-mode: multiply;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 180px 180px;
+    }
+    .bg-veil {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(105deg, rgba(255,255,255,0.28) 0%, rgba(255,255,255,0.08) 34%, transparent 58%),
+        radial-gradient(ellipse 46% 40% at 78% 44%, rgba(255,255,255,0.18), transparent 70%),
+        linear-gradient(180deg, rgba(210, 236, 248, 0.12) 0%, transparent 28%, rgba(180, 220, 236, 0.1) 100%);
+      animation: bgVeilFloat 26s ease-in-out infinite alternate;
+    }
+
+    .frame {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      min-height: 100dvh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+      padding: 40px 48px 52px;
+    }
+
+    .stage {
+      width: min(1380px, 100%);
+      min-height: min(860px, calc(100vh - 48px));
+      display: grid;
+      grid-template-columns: minmax(0, 1.22fr) 400px;
+      column-gap: clamp(40px, 5.5vw, 80px);
+      align-items: center;
+      padding: 0 8px;
+    }
+
+    .brand {
+      max-width: 580px;
+    }
+
+    /* Staggered entrance */
+    .enter {
+      opacity: 0;
+      transform: translateY(16px);
+      filter: blur(4px);
+      animation: enterUp .85s var(--ease-out) forwards;
+      animation-delay: var(--d, 0s);
+    }
+    .enter-scale {
+      opacity: 0;
+      transform: translateY(12px) scale(.97);
+      filter: blur(4px);
+      animation: enterScale .9s var(--ease-out) forwards;
+      animation-delay: var(--d, 0s);
+    }
+    .enter-right {
+      opacity: 0;
+      transform: translateX(20px);
+      filter: blur(4px);
+      animation: enterRight .9s var(--ease-out) forwards;
+      animation-delay: var(--d, 0s);
+    }
+
+    .brand-lockup {
+            display: flex;
+            align-items: center;
+      gap: 18px;
+      margin-bottom: 32px;
+      width: fit-content;
+    }
+
+    .brand-mark {
+      position: relative;
+      width: 96px;
+      height: 96px;
+      flex-shrink: 0;
+      display: grid;
+      place-items: center;
+      isolation: isolate;
+      margin: 22px 8px 22px 18px;
+    }
+    .logo-halo {
+      position: absolute;
+      inset: -18px;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 0;
+      background:
+        radial-gradient(circle at 50% 45%, rgba(16, 200, 212, 0.48) 0%, rgba(30, 168, 232, 0.16) 42%, transparent 70%);
+      filter: blur(8px);
+      animation: logoHaloBreath 3.6s ease-in-out infinite;
+      opacity: .9;
+    }
+    .logo-orbit {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      pointer-events: none;
+      box-sizing: border-box;
+      z-index: 0;
+    }
+    .logo-orbit--a {
+      inset: -14px;
+      border: 2px solid transparent;
+      border-top-color: rgba(16, 200, 212, 0.95);
+      border-right-color: rgba(30, 168, 232, 0.45);
+      filter: drop-shadow(0 0 10px rgba(16, 200, 212, 0.55));
+      animation: logoOrbitSpin 12s linear infinite;
+    }
+    .logo-orbit--b {
+      inset: -26px;
+      border: 1.5px dashed rgba(30, 168, 232, 0.5);
+      border-bottom-color: rgba(16, 200, 212, 0.78);
+      animation: logoOrbitSpinRev 18s linear infinite;
+    }
+    .logo-orbit--c {
+      inset: -38px;
+      border: 1px solid rgba(14, 86, 194, 0.28);
+      box-shadow: 0 0 0 1px rgba(16, 200, 212, 0.08);
+      animation: logoOrbitPulse 4.2s ease-in-out infinite;
+    }
+    .logo-node {
+      position: absolute;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 2;
+      background: radial-gradient(circle at 35% 35%, #fff 0%, #7ef0f8 45%, #10c8d4 100%);
+      box-shadow:
+        0 0 0 2px rgba(255, 255, 255, 0.35),
+        0 0 12px 3px rgba(16, 200, 212, 0.65),
+        0 0 28px 6px rgba(30, 168, 232, 0.28);
+    }
+    .logo-node--a {
+      top: 50%;
+      left: 50%;
+      margin: -3.5px 0 0 -3.5px;
+      animation: logoNodeOrbitA 12s linear infinite;
+    }
+    .logo-node--b {
+      top: 50%;
+      left: 50%;
+      margin: -2.5px 0 0 -2.5px;
+      width: 5px;
+      height: 5px;
+      opacity: .85;
+      animation: logoNodeOrbitB 18s linear infinite;
+    }
+    .logo-spark {
+      position: absolute;
+      inset: -32px;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 0;
+      background: conic-gradient(
+        from 0deg,
+        transparent 0deg,
+        transparent 290deg,
+        rgba(16, 200, 212, 0.15) 310deg,
+        rgba(16, 200, 212, 0.55) 335deg,
+        rgba(255, 255, 255, 0.75) 348deg,
+        transparent 360deg
+      );
+      -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 1.5px));
+      mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 1.5px));
+      animation: logoOrbitSpin 7.2s linear infinite;
+      opacity: .95;
+    }
+    .brand-mark-core {
+      position: relative;
+      z-index: 1;
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      overflow: visible;
+      background: transparent;
+      display: grid;
+      place-items: center;
+    }
+    .brand-mark-core img {
+      width: 96px;
+      height: 96px;
+      object-fit: contain;
+            display: block;
+      will-change: transform, filter;
+      transform-origin: 50% 50%;
+      filter: drop-shadow(0 8px 18px rgba(11, 47, 83, 0.16));
+    }
+
+    .brand-wordmark {
+      min-width: 0;
+      max-width: 22em;
+    }
+    .brand-wordmark .name {
+      font-size: 36px;
+      font-weight: 700;
+      color: var(--ink);
+      letter-spacing: 0.04em;
+      line-height: 1.08;
+      text-shadow: 0 1px 12px rgba(255,255,255,.7);
+      min-height: 1.08em;
+    }
+    .brand-wordmark .name .typed {
+      background: linear-gradient(120deg, #0B2F53 0%, #0A5AA8 55%, #0E8FA8 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 1px 10px rgba(255,255,255,.55));
+    }
+    .brand-wordmark .brand-chat {
+      margin-top: 10px;
+            font-size: 14px;
+      font-weight: 600;
+      line-height: 1.45;
+      letter-spacing: 0.02em;
+      color: #35506A;
+      text-shadow: 0 1px 8px rgba(255,255,255,.75);
+      min-height: 1.45em;
+    }
+    .brand-wordmark .caret {
+      display: inline-block;
+      width: 2px;
+      height: 0.92em;
+      margin-left: 2px;
+      vertical-align: -0.08em;
+      border-radius: 1px;
+      background: linear-gradient(180deg, #10C8D4, #1EA8E8);
+      box-shadow: 0 0 8px rgba(16, 200, 212, 0.55);
+      animation: caretBlink 1.05s ease-in-out infinite;
+      transition: opacity .25s ease;
+    }
+    .brand-wordmark .caret.is-done {
+      opacity: 0;
+      animation: none;
+    }
+    .brand-wordmark .name .caret {
+      height: 0.88em;
+      vertical-align: 0.02em;
+    }
+    @keyframes caretBlink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.18; }
+    }
+
+    .brand-kicker {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: #0A4AA8;
+      width: fit-content;
+      text-shadow: 0 1px 8px rgba(255,255,255,.8);
+    }
+    .brand-kicker i {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--c-cyan), var(--c-sky));
+      box-shadow: 0 0 0 3px rgba(16, 200, 212, 0.14);
+    }
+
+    .brand-headline {
+      font-family: var(--font-display);
+      font-size: clamp(26px, 2.35vw, 40px);
+      font-weight: 700;
+      line-height: 1.15;
+      color: #061E38;
+      max-width: none;
+      white-space: nowrap;
+      letter-spacing: 0.1em;
+      text-shadow: 0 1px 16px rgba(255,255,255,.85);
+    }
+
+    .brand-sub {
+      margin-top: 14px;
+      font-size: 15px;
+      line-height: 1.7;
+      color: #2F4A63;
+      max-width: 26em;
+      font-weight: 500;
+      text-shadow: 0 1px 10px rgba(255,255,255,.85);
+    }
+
+    .feature-stage {
+      margin-top: 28px;
+      max-width: 420px;
+      opacity: 0;
+      transform: translateY(14px);
+      filter: blur(4px);
+      animation: enterUp .85s var(--ease-out) .42s forwards;
+    }
+    .feature-bubble {
+      position: relative;
+      min-height: 88px;
+      padding: 20px 22px 18px;
+      border-radius: 28px;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--glass-shadow);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      overflow: hidden;
+    }
+    .feature-bubble::before {
+      content: "";
+      position: absolute;
+      inset: -40% auto auto -20%;
+      width: 160px;
+      height: 160px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(16,200,212,0.22), transparent 70%);
+      pointer-events: none;
+      animation: featureGlow 6s ease-in-out infinite alternate;
+    }
+    .feature-slides {
+      position: relative;
+      min-height: 52px;
+    }
+    .feature-slide {
+      position: absolute;
+      inset: 0;
+            display: flex;
+            align-items: center;
+      gap: 14px;
+      opacity: 0;
+      transform: translateY(10px) scale(0.98);
+      filter: blur(6px);
+      pointer-events: none;
+      transition:
+        opacity .7s var(--ease-out),
+        transform .7s var(--ease-out),
+        filter .7s var(--ease-out);
+    }
+    .feature-slide.is-active {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      filter: blur(0);
+      pointer-events: auto;
+      position: relative;
+    }
+    .feature-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 16px;
+      flex-shrink: 0;
+      display: grid;
+      place-items: center;
+      color: var(--c-blue);
+      background: linear-gradient(145deg, rgba(255,255,255,0.72), rgba(255,255,255,0.28));
+      border: 1px solid rgba(255,255,255,0.65);
+      box-shadow: 0 8px 20px rgba(11,47,83,0.06);
+    }
+    .feature-icon svg { width: 20px; height: 20px; }
+    .feature-copy strong {
+      display: block;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      color: #061E38;
+      margin-bottom: 4px;
+    }
+    .feature-copy span {
+      display: block;
+            font-size: 13px;
+      line-height: 1.45;
+      color: #3A536B;
+      font-weight: 500;
+    }
+    .feature-dots {
+      display: flex;
+      gap: 7px;
+      margin-top: 14px;
+      padding-left: 4px;
+    }
+    .feature-dots button {
+      width: 7px;
+      height: 7px;
+      border: 0;
+      padding: 0;
+      border-radius: 999px;
+      background: rgba(14, 86, 194, 0.22);
+            cursor: pointer;
+      transition: width .35s var(--ease-out), background .35s ease;
+    }
+    .feature-dots button.is-active {
+      width: 22px;
+      background: linear-gradient(90deg, var(--c-cyan), var(--c-sky));
+    }
+
+    .brand-kicker.enter,
+    .brand-headline.enter,
+    .brand-sub.enter {
+      animation:
+        enterUp .85s var(--ease-out) forwards,
+        textBreath 6.2s ease-in-out infinite;
+      animation-delay: var(--d, 0s), calc(var(--d, 0s) + 1s);
+      transform-origin: left center;
+    }
+    .brand-wordmark {
+      animation: textBreath 6.8s ease-in-out .4s infinite;
+      transform-origin: left center;
+    }
+    .brand-wordmark.is-typing {
+      animation: none;
+    }
+    .brand-headline.enter { animation-duration: .85s, 7s; }
+    .brand-sub.enter { animation-duration: .85s, 7.4s; }
+    @keyframes featureGlow {
+      from { transform: translate(0, 0) scale(1); opacity: 0.55; }
+      to { transform: translate(18%, 12%) scale(1.15); opacity: 1; }
+    }
+
+    .auth {
+      position: relative;
+      width: 400px;
+      max-width: 100%;
+      justify-self: end;
+      padding: 32px 28px 24px;
+      border-radius: 24px;
+      border: 1px solid var(--glass-border);
+      background: var(--glass-bg);
+      box-shadow: var(--glass-shadow);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      isolation: isolate;
+    }
+    .auth::before,
+    .auth::after { content: none; display: none; }
+
+    .auth-head { position: relative; z-index: 1; }
+    .auth-head h2 {
+      font-size: 25px;
+      font-weight: 700;
+      color: #061E38;
+      letter-spacing: 0.015em;
+    }
+    .auth-head p {
+      margin-top: 8px;
+      font-size: 13px;
+      color: #3D5670;
+      line-height: 1.55;
+      font-weight: 500;
+    }
+
+    .segment {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      margin: 22px 0 20px;
+      padding: 0;
+      background: transparent;
+      box-shadow: none;
+      border-bottom: 1px solid var(--line);
+    }
+    .segment .tab {
+      border: 0;
+      background: transparent;
+      padding: 11px 0 12px;
+      border-radius: 0;
+      font: inherit;
+            font-size: 14px;
+      font-weight: 600;
+      color: #6A829A;
+            cursor: pointer;
+            position: relative;
+      transition: color .2s;
+    }
+    .segment .tab.active {
+      background: transparent;
+      color: #0E56C2;
+      box-shadow: none;
+    }
+    .segment .tab.active::after {
+      content: "";
+      position: absolute;
+      left: 22%;
+      right: 22%;
+      bottom: -1px;
+      height: 2px;
+      border-radius: 2px;
+      background: linear-gradient(90deg, var(--c-cyan), var(--c-sky));
+    }
+
+    .form-panel { display: none; position: relative; z-index: 1; }
+    .form-panel.active { display: block; }
+    .field { margin-bottom: 13px; }
+    .field label {
+      display: block;
+      margin-bottom: 7px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--ink);
+      letter-spacing: 0.02em;
+    }
+    .control {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .control .lead {
+      position: absolute;
+      left: 14px;
+      width: 18px;
+      height: 18px;
+      color: #6F8AA6;
+      pointer-events: none;
+    }
+    .control .lead svg,
+    .control .trail svg { width: 18px; height: 18px; display: block; }
+    .control input {
+      width: 100%;
+      height: 48px;
+      border: 1px solid rgba(150, 185, 210, 0.45);
+      border-radius: 14px;
+      padding: 0 44px 0 42px;
+      font: inherit;
+      font-size: 14px;
+      color: var(--ink);
+      background: rgba(255, 255, 255, 0.48);
+      transition: border-color .2s, background .2s, box-shadow .2s;
+    }
+    .control input::placeholder { color: #9BB0C4; }
+    .control input:focus {
+      outline: none;
+      border-color: rgba(30, 168, 232, 0.55);
+      background: rgba(255, 255, 255, 0.72);
+      box-shadow: 0 0 0 3px rgba(30, 168, 232, 0.1);
+    }
+    .control .trail {
+      position: absolute;
+      right: 10px;
+      width: 34px;
+      height: 34px;
+      border: 0;
+      background: transparent;
+      color: #8AA3BC;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      border-radius: 8px;
+    }
+
+    .row-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 2px 0 14px;
+      font-size: 13px;
+    }
+    .remember {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      cursor: pointer;
+    }
+    .remember input { width: 15px; height: 15px; accent-color: var(--c-blue); }
+    .forgot { color: var(--c-blue); text-decoration: none; font-weight: 500; }
+
+    .error {
+      display: none;
+      margin: -2px 0 10px;
+      font-size: 12px;
+      color: #D64545;
+    }
+    .error.show { display: block; }
+
+    .btn-primary,
+    .btn-ghost {
+            width: 100%;
+      height: 48px;
+      border-radius: 14px;
+      font: inherit;
+      font-size: 15px;
+      font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+      transition: transform .18s var(--ease-out), box-shadow .18s, opacity .15s, background .15s;
+      position: relative;
+      z-index: 1;
+    }
+    .btn-primary {
+      border: 0;
+      color: #fff;
+      background: linear-gradient(100deg, #14c8d4 0%, #1ea8e8 100%);
+      box-shadow: 0 10px 22px rgba(30, 168, 232, 0.2);
+      letter-spacing: 0.04em;
+    }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 12px 26px rgba(30, 168, 232, 0.26); }
+    .btn-primary:disabled { opacity: .7; cursor: wait; transform: none; }
+
+    .btn-ghost {
+      border: 1px solid rgba(140, 180, 210, 0.42);
+      background: rgba(255, 255, 255, 0.32);
+      color: var(--ink);
+      box-shadow: none;
+      backdrop-filter: blur(8px);
+    }
+    .btn-ghost svg { width: 16px; height: 16px; color: var(--c-blue); }
+
+        .divider {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin: 14px 0 11px;
+      color: var(--muted);
+      font-size: 12px;
+            position: relative;
+      z-index: 1;
+        }
+        .divider::before,
+        .divider::after {
+      content: "";
+      flex: 1;
+            height: 1px;
+      background: var(--line);
+    }
+
+    .legal {
+      margin-top: 14px;
+      text-align: center;
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 1.65;
+      position: relative;
+      z-index: 1;
+    }
+    .legal a { color: var(--c-blue); text-decoration: none; }
+
+    .spin {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,.35);
+      border-top-color: #fff;
+      animation: spin .7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes enterUp {
+      to { opacity: 1; transform: translateY(0); filter: blur(0); }
+    }
+    @keyframes enterScale {
+      to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+    }
+    @keyframes enterRight {
+      to { opacity: 1; transform: translateX(0); filter: blur(0); }
+    }
+    @keyframes ringPulse {
+      0%, 100% { opacity: .4; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.04); }
+    }
+    @keyframes logoHaloBreath {
+      0%, 100% { opacity: .55; transform: scale(0.92); }
+      50% { opacity: 1; transform: scale(1.12); }
+    }
+    @keyframes logoOrbitSpin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    @keyframes logoOrbitSpinRev {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(-360deg); }
+    }
+    @keyframes logoOrbitPulse {
+      0%, 100% { opacity: .22; transform: scale(0.94); }
+      50% { opacity: .75; transform: scale(1.06); }
+    }
+    @keyframes logoNodeOrbitA {
+      from { transform: rotate(0deg) translateX(62px) rotate(0deg); }
+      to { transform: rotate(360deg) translateX(62px) rotate(-360deg); }
+    }
+    @keyframes logoNodeOrbitB {
+      from { transform: rotate(120deg) translateX(74px) rotate(-120deg); }
+      to { transform: rotate(-240deg) translateX(74px) rotate(240deg); }
+    }
+    @keyframes bgPhotoDrift {
+      from { transform: scale(1.02) translate(0, 0); background-position: 46% 48%; }
+      to { transform: scale(1.08) translate(-1.2%, -0.8%); background-position: 54% 42%; }
+    }
+    @keyframes bgOrbA {
+      from { transform: translate(0, 0) scale(1); opacity: 0.7; }
+      to { transform: translate(5%, 6%) scale(1.14); opacity: 1; }
+    }
+    @keyframes bgOrbB {
+      from { transform: translate(0, 0) scale(1); opacity: 0.65; }
+      to { transform: translate(-7%, 4%) scale(1.18); opacity: 1; }
+    }
+    @keyframes bgOrbC {
+      from { transform: translate(0, 0) scale(1); }
+      to { transform: translate(-3%, -8%) scale(1.2); }
+    }
+    @keyframes bgWaveShift {
+      from { transform: translateX(-2%) scaleY(1); }
+      to { transform: translateX(3%) scaleY(1.08); }
+    }
+    @keyframes bgSwirl {
+      from { transform: rotate(0deg) scale(1); }
+      to { transform: rotate(360deg) scale(1.06); }
+    }
+    @keyframes bgShimmer {
+      0% { background-position: 120% 0; }
+      100% { background-position: -40% 0; }
+    }
+    @keyframes bgVeilFloat {
+      from { opacity: 0.85; transform: translateX(0); }
+      to { opacity: 1; transform: translateX(1.2%); }
+    }
+    @keyframes textBreath {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.012); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      body, .brand-mark, .logo-orbit, .logo-spark, .logo-halo, .logo-node,
+      .brand-mark-core img, .brand-wordmark,
+      .bg-photo, .bg-orb, .bg-waves .w1, .bg-waves .w2, .bg-swirl, .bg-shimmer, .bg-veil {
+        animation: none !important;
+      }
+      .enter, .enter-scale, .enter-right, .feature-stage,
+      .brand-kicker.enter, .brand-headline.enter, .brand-sub.enter {
+        opacity: 1 !important;
+        transform: none !important;
+        filter: none !important;
+        animation: none !important;
+      }
+      .feature-slide {
+        transition: none !important;
+      }
+      .feature-bubble::before { animation: none !important; }
+      .logo-orbit, .logo-spark, .logo-halo { opacity: .35; }
+      .logo-node { opacity: .4; transform: none; }
+      .bg-photo { transform: none; background-position: center; }
+    }
+
+    @media (max-width: 1100px) {
+      .stage {
+        grid-template-columns: 1fr;
+        min-height: 0;
+        gap: 28px;
+      }
+      .auth { justify-self: center; width: min(400px, 100%); }
+      .feature-stage { max-width: none; }
+      .frame { padding: 28px 18px 36px; align-items: flex-start; }
+    }
+
+    @media (max-width: 560px) {
+      .brand-lockup {
+        border-radius: 24px;
+        padding: 12px;
+        gap: 14px;
+      }
+      .brand-mark,
+      .brand-mark-core { width: 72px; height: 72px; }
+      .brand-mark-core img { width: 72px; height: 72px; }
+      .brand-wordmark .name { font-size: 26px; }
+      .feature-bubble { border-radius: 22px; padding: 16px 16px 14px; }
+      .feature-copy strong { font-size: 15px; }
+        }
+    </style>
+</head>
+<body>
+  <div class="bg-scene" aria-hidden="true">
+    <div class="bg-photo"></div>
+    <div class="bg-orb bg-orb--a"></div>
+    <div class="bg-orb bg-orb--b"></div>
+    <div class="bg-orb bg-orb--c"></div>
+    <div class="bg-swirl"></div>
+    <div class="bg-waves">
+      <svg viewBox="0 0 1440 320" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="waveGrad1" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#7AD8E8" stop-opacity="0.35"/>
+            <stop offset="55%" stop-color="#10C8D4" stop-opacity="0.22"/>
+            <stop offset="100%" stop-color="#ffffff" stop-opacity="0.08"/>
+          </linearGradient>
+          <linearGradient id="waveGrad2" x1="1" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#1EA8E8" stop-opacity="0.28"/>
+            <stop offset="100%" stop-color="#ffffff" stop-opacity="0.05"/>
+          </linearGradient>
+        </defs>
+        <path class="w2" d="M0,220 C180,160 320,280 520,210 C720,140 880,260 1080,200 C1240,155 1360,180 1440,150 L1440,320 L0,320 Z"/>
+        <path class="w1" d="M0,250 C220,190 380,300 560,240 C760,170 940,290 1140,230 C1280,190 1380,210 1440,190 L1440,320 L0,320 Z"/>
+                </svg>
+            </div>
+    <div class="bg-shimmer"></div>
+    <div class="bg-grain"></div>
+    <div class="bg-veil"></div>
+                </div>
+  <div class="frame">
+    <div class="stage">
+      <section class="brand" aria-label="品牌与平台能力">
+        <div class="brand-lockup enter-scale" style="--d:.06s">
+          <div class="brand-mark" id="brand-mark">
+            <span class="logo-halo" aria-hidden="true"></span>
+            <span class="logo-orbit logo-orbit--a" aria-hidden="true"></span>
+            <span class="logo-orbit logo-orbit--b" aria-hidden="true"></span>
+            <span class="logo-orbit logo-orbit--c" aria-hidden="true"></span>
+            <span class="logo-spark" aria-hidden="true"></span>
+            <span class="logo-node logo-node--a" aria-hidden="true"></span>
+            <span class="logo-node logo-node--b" aria-hidden="true"></span>
+            <div class="brand-mark-core">
+              <img src="assets/brand/logo.png?v=14" width="96" height="96" alt="执图破局" />
+                </div>
+            </div>
+          <div class="brand-wordmark is-typing" id="brand-wordmark">
+            <div class="name" aria-label="执图破局">
+              <span class="typed" id="brand-name-typed"></span><span class="caret" id="brand-name-caret" aria-hidden="true"></span>
+        </div>
+            <p class="brand-chat" aria-live="polite">
+              <span class="typed" id="brand-intro-typed"></span><span class="caret is-done" id="brand-intro-caret" aria-hidden="true"></span>
+            </p>
+                </div>
+                </div>
+
+        <div class="brand-kicker enter" style="--d:.16s"><i></i>AI 数字人才地图平台</div>
+        <h1 class="brand-headline enter" style="--d:.26s">让人才与机会更精准连接</h1>
+        <p class="brand-sub enter" style="--d:.36s">
+          用图谱与数据，把求职、研究与决策连成清晰路径。
+        </p>
+
+        <div class="feature-stage" aria-label="平台能力">
+          <div class="feature-bubble">
+            <div class="feature-slides" id="feature-slides">
+              <article class="feature-slide is-active" data-i="0">
+                <div class="feature-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2 2 7l10 5 10-5-10-5z"/><path d="m2 17 10 5 10-5"/><path d="m2 12 10 5 10-5"/></svg>
+                        </div>
+                <div class="feature-copy">
+                  <strong>数字人才地图</strong>
+                  <span>区域供需与能力分布，一眼看清</span>
+                    </div>
+              </article>
+              <article class="feature-slide" data-i="1">
+                <div class="feature-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 7h-7l-2-2H4a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="m9 14 2 2 4-4"/></svg>
+                        </div>
+                <div class="feature-copy">
+                  <strong>人岗智能匹配</strong>
+                  <span>精准对齐能力与岗位</span>
+                    </div>
+              </article>
+              <article class="feature-slide" data-i="2">
+                <div class="feature-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="3 17 9 11 13 15 21 7"/><polyline points="14 7 21 7 21 14"/></svg>
+                </div>
+                <div class="feature-copy">
+                  <strong>能力演化洞察</strong>
+                  <span>捕捉技能兴衰与新岗位信号</span>
+                </div>
+              </article>
+              <article class="feature-slide" data-i="3">
+                <div class="feature-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+                </div>
+                <div class="feature-copy">
+                  <strong>数据驱动决策</strong>
+                  <span>多源数据，支撑每一步判断</span>
+                </div>
+              </article>
+            </div>
+          </div>
+          <div class="feature-dots" id="feature-dots" role="tablist" aria-label="切换特点"></div>
+        </div>
+      </section>
+
+      <section class="auth enter-right" style="--d:.2s" aria-label="登录">
+        <div class="auth-head enter" style="--d:.38s">
+          <h2>进入工作台</h2>
+          <p>登录后可使用地图、演化、发现与匹配等模块</p>
+                    </div>
+
+        <div class="segment enter" style="--d:.48s" role="tablist">
+          <button type="button" class="tab active" data-tab="login" role="tab" aria-selected="true">登录</button>
+          <button type="button" class="tab" data-tab="register" role="tab" aria-selected="false">注册</button>
+        </div>
+
+        <div class="form-panel active enter" style="--d:.58s" id="login-form">
+          <div class="field">
+            <label for="login-username">用户名</label>
+            <div class="control">
+              <span class="lead" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        </span>
+              <input id="login-username" type="text" placeholder="请输入用户名或邮箱" autocomplete="username" />
+            </div>
+          </div>
+          <div class="field">
+            <label for="login-password">密码</label>
+            <div class="control">
+              <span class="lead" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              </span>
+              <input id="login-password" type="password" placeholder="请输入密码" autocomplete="current-password" />
+              <button type="button" class="trail" onclick="togglePassword('login-password')" aria-label="显示或隐藏密码">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                    </button>
+                </div>
+                        </div>
+          <div class="row-meta">
+            <label class="remember"><input type="checkbox" id="remember-me" /><span>记住我</span></label>
+            <a class="forgot" href="#" onclick="return false;">忘记密码？</a>
+                    </div>
+          <div class="error" id="login-error"></div>
+          <button type="button" class="btn-primary" onclick="handleLogin()"><span>登录</span></button>
+          <div class="dev-skip" id="devSkip" hidden>
+            <div class="divider">或</div>
+            <button type="button" class="btn-ghost" onclick="devLogin()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21h18"/><path d="M5 21V8l7-4 7 4v13"/><path d="M9 21v-6h6v6"/></svg>
+              <span>开发者入口</span>
+            </button>
+          </div>
+          <p class="legal">登录即代表同意<a href="#" onclick="return false;">《用户协议》</a>和<a href="#" onclick="return false;">《隐私政策》</a></p>
+        </div>
+
+        <div class="form-panel" id="register-form">
+          <div class="field">
+            <label for="reg-username">用户名</label>
+            <div class="control">
+              <span class="lead" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 0v2"/><circle cx="12" cy="7" r="4"/></svg>
+                            </span>
+              <input id="reg-username" type="text" placeholder="3-20个字符" autocomplete="username" />
+                        </div>
+                    </div>
+          <div class="field">
+            <label for="reg-password">密码</label>
+            <div class="control">
+              <span class="lead" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                            </span>
+              <input id="reg-password" type="password" placeholder="至少6位" autocomplete="new-password" />
+              <button type="button" class="trail" onclick="togglePassword('reg-password')" aria-label="显示或隐藏密码">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+                        </div>
+                    </div>
+          <div class="field">
+            <label for="reg-password-confirm">确认密码</label>
+            <div class="control">
+              <span class="lead" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                        </span>
+              <input id="reg-password-confirm" type="password" placeholder="再次输入密码" autocomplete="new-password" />
+              <button type="button" class="trail" onclick="togglePassword('reg-password-confirm')" aria-label="显示或隐藏密码">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                    </button>
+                </div>
+            </div>
+          <div class="error" id="register-error"></div>
+          <button type="button" class="btn-primary" onclick="handleRegister()"><span>立即注册</span></button>
+          <p class="legal">注册即代表同意<a href="#" onclick="return false;">《用户协议》</a>和<a href="#" onclick="return false;">《隐私政策》</a></p>
+        </div>
+      </section>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+    <script>
+    const API_BASE = window.API_BASE || ((location.hostname === '127.0.0.1' || location.hostname === 'localhost') ? 'http://127.0.0.1:5000' : location.origin);
+
+    (function initLogoMotion() {
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const mark = document.getElementById('brand-mark');
+      const img = document.querySelector('.brand-mark-core img');
+      if (reduce || !mark || !img || typeof gsap === 'undefined') return;
+
+      gsap.set([mark, img], { transformOrigin: '50% 50%' });
+      gsap.set(mark, { scale: 0.86, opacity: 0 });
+
+      const enter = gsap.timeline({ delay: 0.04 });
+      enter
+        .to(mark, {
+          opacity: 1,
+          scale: 1,
+          duration: 1.15,
+          ease: 'power3.out'
+        })
+        .fromTo(img,
+          {
+            scale: 0.72,
+            rotation: -16,
+            filter: 'blur(12px) drop-shadow(0 0 0 rgba(16,200,212,0))'
+          },
+          {
+            scale: 1,
+            rotation: 0,
+            filter: 'blur(0px) drop-shadow(0 8px 18px rgba(11,47,83,0.16))',
+            duration: 1.25,
+            ease: 'expo.out'
+          },
+          0.05
+        )
+        .from('.logo-orbit, .logo-spark, .logo-node, .logo-halo', {
+          opacity: 0,
+          duration: 1,
+          stagger: 0.06,
+          ease: 'power2.out',
+          clearProps: 'opacity'
+        }, 0.2);
+
+      enter.eventCallback('onComplete', function () {
+        const breath = gsap.timeline({ repeat: -1, yoyo: true });
+        breath
+          .to(img, { scale: 1.1, duration: 2.8, ease: 'sine.inOut' }, 0)
+          .to(img, { rotation: 10, duration: 5.6, ease: 'sine.inOut' }, 0)
+          .to(img, {
+            filter: 'blur(0px) drop-shadow(0 0 22px rgba(16,200,212,0.62)) drop-shadow(0 12px 24px rgba(11,47,83,0.2))',
+            duration: 2.8,
+            ease: 'sine.inOut'
+          }, 0);
+      });
+    })();
+
+    (function initBrandTypewriter() {
+      const nameEl = document.getElementById('brand-name-typed');
+      const introEl = document.getElementById('brand-intro-typed');
+      const nameCaret = document.getElementById('brand-name-caret');
+      const introCaret = document.getElementById('brand-intro-caret');
+      const wordmark = document.getElementById('brand-wordmark');
+      if (!nameEl || !introEl) return;
+
+      const NAME = '执图破局';
+      const INTRO = '用图谱，让人才与机会精准相遇。';
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      if (wordmark) wordmark.classList.add('is-typing');
+
+      if (reduce) {
+        nameEl.textContent = NAME;
+        introEl.textContent = INTRO;
+        if (nameCaret) nameCaret.classList.add('is-done');
+        if (introCaret) introCaret.classList.add('is-done');
+        if (wordmark) wordmark.classList.remove('is-typing');
+        return;
+      }
+
+      function wait(ms) {
+        return new Promise(function (resolve) {
+          window.setTimeout(resolve, ms);
+        });
+      }
+
+      function setCaret(onIntro) {
+        if (nameCaret) nameCaret.classList.toggle('is-done', onIntro);
+        if (introCaret) introCaret.classList.toggle('is-done', !onIntro);
+      }
+
+      async function typeText(el, text, baseMs) {
+        el.textContent = '';
+        for (let i = 0; i < text.length; i += 1) {
+          el.textContent = text.slice(0, i + 1);
+          const ch = text.charAt(i);
+          let delay = baseMs;
+          if (/[，。、！？]/.test(ch)) delay = baseMs * 2.4;
+          else if (i === 0) delay = baseMs * 1.35;
+          else delay = baseMs * (0.88 + Math.random() * 0.28);
+          await wait(delay);
+        }
+      }
+
+      async function eraseText(el, baseMs) {
+        while (el.textContent.length) {
+          el.textContent = el.textContent.slice(0, -1);
+          await wait(baseMs * (0.85 + Math.random() * 0.25));
+        }
+      }
+
+      (async function loop() {
+        await wait(360);
+        for (;;) {
+          setCaret(false);
+          await typeText(nameEl, NAME, 118);
+          await wait(420);
+          setCaret(true);
+          await typeText(introEl, INTRO, 42);
+          await wait(2200);
+          await eraseText(introEl, 22);
+          setCaret(false);
+          await wait(160);
+          await eraseText(nameEl, 48);
+          await wait(520);
+        }
+      })();
+    })();
+
+    (function initFeatureBubbles() {
+      const slides = Array.from(document.querySelectorAll('#feature-slides .feature-slide'));
+      const dotsWrap = document.getElementById('feature-dots');
+      if (!slides.length || !dotsWrap) return;
+
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      let index = slides.findIndex(function (s) { return s.classList.contains('is-active'); });
+      if (index < 0) index = 0;
+      let timer = null;
+
+      slides.forEach(function (_, i) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.setAttribute('role', 'tab');
+        btn.setAttribute('aria-label', '特点 ' + (i + 1));
+        if (i === index) btn.classList.add('is-active');
+        btn.addEventListener('click', function () {
+          show(i, true);
+        });
+        dotsWrap.appendChild(btn);
+      });
+
+      function show(next, manual) {
+        if (next === index) return;
+        slides[index].classList.remove('is-active');
+        dotsWrap.children[index].classList.remove('is-active');
+        index = (next + slides.length) % slides.length;
+        slides[index].classList.add('is-active');
+        dotsWrap.children[index].classList.add('is-active');
+        if (manual) restart();
+      }
+
+      function tick() {
+        show(index + 1, false);
+      }
+
+      function restart() {
+        if (timer) window.clearInterval(timer);
+        if (!reduce) timer = window.setInterval(tick, 3400);
+      }
+
+      restart();
+    })();
+
+    document.querySelectorAll('.segment .tab').forEach((tab) => {
+      tab.addEventListener('click', () => {
+        const name = tab.dataset.tab;
+        document.querySelectorAll('.segment .tab').forEach((t) => {
+          t.classList.toggle('active', t === tab);
+          t.setAttribute('aria-selected', t === tab ? 'true' : 'false');
+        });
+        document.querySelectorAll('.form-panel').forEach((p) => {
+          p.classList.toggle('active', p.id === name + '-form');
+        });
+      });
+    });
+
+    function isLocalHost() {
+      const host = location.hostname;
+      return host === '127.0.0.1' || host === 'localhost';
+    }
+
+    (function revealDevSkip() {
+      const skip = document.getElementById('devSkip');
+      if (skip && isLocalHost()) skip.hidden = false;
+    })();
+
+    function togglePassword(id) {
+      const input = document.getElementById(id);
+      input.type = input.type === 'password' ? 'text' : 'password';
+    }
+
+        function devLogin() {
+      if (!isLocalHost()) return;
+            localStorage.setItem('zhitu_user', JSON.stringify({
+        username: 'developer', role: 'dev', loginTime: Date.now()
+            }));
+            window.location.href = 'pages/home.html';
+        }
+
+        async function handleLogin() {
+            const username = document.getElementById('login-username').value.trim();
+            const password = document.getElementById('login-password').value;
+            const errorEl = document.getElementById('login-error');
+            const btn = document.querySelector('#login-form .btn-primary');
+            errorEl.classList.remove('show');
+            if (!username || !password) {
+                errorEl.textContent = '请输入用户名和密码';
+                errorEl.classList.add('show');
+                return;
+            }
+      const original = btn.innerHTML;
+            btn.disabled = true;
+      btn.innerHTML = '<span class="spin"></span><span>登录中...</span>';
+            try {
+        const res = await fetch(API_BASE + '/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+        const result = await res.json();
+                if (result.code === 0) {
+                    localStorage.setItem('zhitu_user', JSON.stringify(result.data));
+          btn.innerHTML = '<span>登录成功</span>';
+          setTimeout(() => { window.location.href = 'pages/home.html'; }, 400);
+                } else {
+                    btn.disabled = false;
+          btn.innerHTML = original;
+                    errorEl.textContent = result.message || '登录失败';
+                    errorEl.classList.add('show');
+                }
+      } catch (e) {
+                btn.disabled = false;
+        btn.innerHTML = original;
+                errorEl.textContent = '网络错误，请稍后重试';
+                errorEl.classList.add('show');
+            }
+        }
+
+        async function handleRegister() {
+            const username = document.getElementById('reg-username').value.trim();
+            const password = document.getElementById('reg-password').value;
+      const confirm = document.getElementById('reg-password-confirm').value;
+            const errorEl = document.getElementById('register-error');
+            const btn = document.querySelector('#register-form .btn-primary');
+            errorEl.classList.remove('show');
+            if (!username || username.length < 3 || username.length > 20) {
+                errorEl.textContent = '用户名长度应为3-20个字符';
+                errorEl.classList.add('show');
+                return;
+            }
+            if (!password || password.length < 6) {
+                errorEl.textContent = '密码长度至少6位';
+                errorEl.classList.add('show');
+                return;
+            }
+      if (password !== confirm) {
+                errorEl.textContent = '两次密码输入不一致';
+                errorEl.classList.add('show');
+                return;
+            }
+      const original = btn.innerHTML;
+            btn.disabled = true;
+      btn.innerHTML = '<span class="spin"></span><span>注册中...</span>';
+            try {
+        const res = await fetch(API_BASE + '/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+        const result = await res.json();
+                if (result.code === 0) {
+          btn.innerHTML = '<span>注册成功</span>';
+                    setTimeout(() => {
+                        document.querySelector('[data-tab="login"]').click();
+                        document.getElementById('login-username').value = username;
+                        btn.disabled = false;
+            btn.innerHTML = original;
+          }, 700);
+                } else {
+                    btn.disabled = false;
+          btn.innerHTML = original;
+                    errorEl.textContent = result.message || '注册失败';
+                    errorEl.classList.add('show');
+                }
+      } catch (e) {
+                btn.disabled = false;
+        btn.innerHTML = original;
+                errorEl.textContent = '网络错误，请稍后重试';
+                errorEl.classList.add('show');
+            }
+        }
+
+        document.addEventListener('keypress', (e) => {
+      if (e.key !== 'Enter') return;
+      const active = document.querySelector('.form-panel.active');
+      if (active && active.id === 'login-form') handleLogin();
+      else handleRegister();
+    });
+    </script>
+</body>
+</html>

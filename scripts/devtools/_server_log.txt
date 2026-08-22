@@ -1,0 +1,8 @@
+INFO:     127.0.0.1:63429 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62281 - "GET /api/config-status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62281 - "GET /hybridaction/zybTrackerStatisticsAction?data=%7B%7D&__callback__=__cb__zybTrackerStatisticsAction__e9607223_7914_4602_9b21_3e9c06aefe08__0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:62281 - "GET /hybridaction/zybTrackerStatisticsAction?data=%7B%7D&__callback__=__cb__zybTrackerStatisticsAction__10c183ea_740d_4f55_9dba_e961b915b326__1 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:62281 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:50928 - "GET / HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:50928 - "GET /hybridaction/zybTrackerStatisticsAction?data=%7B%7D&__callback__=__cb__zybTrackerStatisticsAction__a0faca79_f949_46f6_8e3f_acada064f888__0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:50928 - "GET /hybridaction/zybTrackerStatisticsAction?data=%7B%7D&__callback__=__cb__zybTrackerStatisticsAction__22a0f84a_fdd5_48aa_a466_a8a7917255ff__1 HTTP/1.1" 404 Not Found

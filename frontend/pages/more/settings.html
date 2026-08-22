@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>执图破局 · 系统设置</title>
+  <link rel="stylesheet" href="../../css/tokens.css?v=48" />
+  <link rel="stylesheet" href="../../css/shell.css?v=48" />
+  <link rel="stylesheet" href="../../css/components.css?v=48" />
+  <link rel="stylesheet" href="../../css/legacy-views.css?v=48" />
+  
+</head>
+<body class="standalone-view" data-page="settings">
+  <div id="app-shell"></div>
+  <main class="page-main" id="page-main">
+<section class="view active" id="view-settings">
+<div class="page-header">
+<div class="page-title-block">
+<h1>系统设置</h1>
+<div class="subtitle">系统配置 · 模型管理 · 权限控制 · 运维监控</div>
+</div>
+<div class="page-actions">
+<button class="btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10"/></svg>恢复默认</button>
+<button class="btn btn-primary" id="settings-save"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/></svg>保存配置</button>
+</div>
+</div>
+<div class="settings-tabs" id="settings-tabs">
+<div class="setting-tab active" data-st="llm">大模型配置</div>
+<div class="setting-tab" data-st="graph">图谱配置</div>
+<div class="setting-tab" data-st="crawl">采集配置</div>
+<div class="setting-tab" data-st="user">用户权限</div>
+<div class="setting-tab" data-st="sys">系统监控</div>
+</div>
+<!-- LLM -->
+<div class="setting-pane active" data-pane="llm">
+<div class="card" style="margin-bottom:16px">
+<div class="card-header"><div class="card-title">大模型 (LLM) 配置</div><span class="tag tag-mint"><span class="live-dot"></span>已连接</span></div>
+<div class="card-body">
+<div class="form-row"><label>模型提供商</label><select class="form-input"><option>讯飞星火 (Spark) - X2</option><option>讯飞星火 (Spark) - 4.0 Turbo</option><option>OpenAI GPT-4</option><option>百度文心一言</option></select></div>
+<div class="form-row"><label>API Endpoint</label><input type="text" class="form-input" value="https://spark-api-open.xf-yun.com/v2"></div>
+<div class="form-row"><label>API Key</label><input type="password" class="form-input" value="********************************"></div>
+<div class="form-row"><label>模型版本</label><input type="text" class="form-input" value="x2-pro · 32K context"></div>
+<div class="form-row"><label>Temperature</label><input type="text" class="form-input" value="0.7"></div>
+<div class="form-row"><label>Max Tokens</label><input type="text" class="form-input" value="4096"></div>
+</div>
+</div>
+<div class="card">
+<div class="card-header"><div class="card-title">Embedding 配置</div></div>
+<div class="card-body">
+<div class="form-row"><label>向量模型</label><select class="form-input"><option>BGE-M3</option><option>bge-large-zh</option><option>text-embedding-3-large</option></select></div>
+<div class="form-row"><label>向量维度</label><input type="text" class="form-input" value="1024"></div>
+<div class="form-row"><label>检索TopK</label><input type="text" class="form-input" value="5"></div>
+<div class="form-row"><label>相似度阈值</label><input type="text" class="form-input" value="0.72"></div>
+</div>
+</div>
+</div>
+<!-- GRAPH -->
+<div class="setting-pane" data-pane="graph">
+<div class="card" style="margin-bottom:16px">
+<div class="card-header"><div class="card-title">图谱引擎配置</div><span class="tag tag-cyan">Neo4j · G6</span></div>
+<div class="card-body">
+<div class="form-row"><label>图数据库</label><select class="form-input"><option>Neo4j 5.x</option><option>NebulaGraph</option><option>Memgraph</option></select></div>
+<div class="form-row"><label>Bolt URI</label><input type="text" class="form-input" value="bolt://127.0.0.1:7687"></div>
+<div class="form-row"><label>数据库名</label><input type="text" class="form-input" value="tuzhupoju"></div>
+<div class="form-row"><label>最大节点缓存</label><input type="text" class="form-input" value="50000"></div>
+<div class="form-row"><label>默认布局</label><select class="form-input"><option>力导向 Force</option><option>径向 Radial</option><option>DAG</option><option>圆形 Circular</option></select></div>
+</div>
+</div>
+<div class="row cols-2">
+<div class="card"><div class="card-header"><div class="card-title">关系抽取</div></div><div class="card-body">
+<div class="setting-row" style="border:none;padding-top:0"><div class="setting-info"><div class="setting-label">自动关系推断</div><div class="setting-desc">基于 LLM 补全 REQUIRES / SIMILAR 边</div></div><div class="switch on"></div></div>
+<div class="setting-row"><div class="setting-info"><div class="setting-label">幻觉边过滤</div><div class="setting-desc">置信度低于阈值的边不入库</div></div><div class="switch on"></div></div>
+<div class="form-row"><label>边置信度阈值</label><input type="text" class="form-input" value="0.78"></div>
+</div></div>
+<div class="card"><div class="card-header"><div class="card-title">可视化</div></div><div class="card-body">
+<div class="setting-row" style="border:none;padding-top:0"><div class="setting-info"><div class="setting-label">节点呼吸动效</div><div class="setting-desc">Obsidian 风格持续微动</div></div><div class="switch on"></div></div>
+<div class="setting-row"><div class="setting-info"><div class="setting-label">实时指标面板</div><div class="setting-desc">密度 / 均度 / 社区 / FPS</div></div><div class="switch on"></div></div>
+<div class="form-row"><label>默认展示节点上限</label><input type="text" class="form-input" value="200"></div>
+</div></div>
+</div>
+</div>
+<!-- CRAWL -->
+<div class="setting-pane" data-pane="crawl">
+<div class="card" style="margin-bottom:16px">
+<div class="card-header"><div class="card-title">采集调度配置</div><span class="tag tag-amber">Scrapy + Playwright</span></div>
+<div class="card-body">
+<div class="form-row"><label>调度周期</label><select class="form-input"><option>每 2 小时</option><option>每 6 小时</option><option>每日凌晨</option><option>手动触发</option></select></div>
+<div class="form-row"><label>并发 Worker</label><input type="text" class="form-input" value="8"></div>
+<div class="form-row"><label>请求间隔 (ms)</label><input type="text" class="form-input" value="800"></div>
+<div class="form-row"><label>代理池地址</label><input type="text" class="form-input" value="http://proxy-pool:8080"></div>
+<div class="form-row"><label>失败重试次数</label><input type="text" class="form-input" value="3"></div>
+</div>
+</div>
+<div class="row cols-2">
+<div class="card"><div class="card-header"><div class="card-title">数据源开关</div></div><div class="card-body">
+<div class="setting-row" style="border:none;padding-top:0"><div class="setting-info"><div class="setting-label">拉勾网</div><div class="setting-desc">技术岗位权威源</div></div><div class="switch on"></div></div>
+<div class="setting-row"><div class="setting-info"><div class="setting-label">BOSS直聘</div><div class="setting-desc">Playwright 动态渲染</div></div><div class="switch on"></div></div>
+<div class="setting-row"><div class="setting-info"><div class="setting-label">智联招聘</div><div class="setting-desc">社招 / 校招覆盖</div></div><div class="switch on"></div></div>
+<div class="setting-row"><div class="setting-info"><div class="setting-label">脉脉</div><div class="setting-desc">中高端岗位与薪资</div></div><div class="switch"></div></div>
+</div></div>
+<div class="card"><div class="card-header"><div class="card-title">质量与清洗</div></div><div class="card-body">
+<div class="setting-row" style="border:none;padding-top:0"><div class="setting-info"><div class="setting-label">JD 去重</div><div class="setting-desc">基于标题+公司指纹</div></div><div class="switch on"></div></div>
+<div class="setting-row"><div class="setting-info"><div class="setting-label">字段完整性校验</div><div class="setting-desc">缺技能/薪资则标记低质</div></div><div class="switch on"></div></div>
+<div class="form-row"><label>最低质量分</label><input type="text" class="form-input" value="70"></div>
+</div></div>
+</div>
+</div>
+<!-- USER -->
+<div class="setting-pane" data-pane="user">
+<div class="card" style="margin-bottom:16px">
+<div class="card-header"><div class="card-title">角色与权限</div><span class="tag">RBAC</span></div>
+<div class="card-body">
+<table class="data-table">
+<thead><tr><th>角色</th><th>范围</th><th>图谱写</th><th>采集控制</th><th>系统配置</th><th>状态</th></tr></thead>
+<tbody>
+<tr><td>Tech Lead</td><td>全站</td><td>✓</td><td>✓</td><td>✓</td><td><span class="tag tag-mint">启用</span></td></tr>
+<tr><td>后端/AI</td><td>图谱 · 匹配 · 问答</td><td>✓</td><td>—</td><td>—</td><td><span class="tag tag-mint">启用</span></td></tr>
+<tr><td>数据工程师</td><td>采集 · 质量</td><td>—</td><td>✓</td><td>—</td><td><span class="tag tag-mint">启用</span></td></tr>
+<tr><td>前端工程师</td><td>只读演示</td><td>—</td><td>—</td><td>—</td><td><span class="tag tag-mint">启用</span></td></tr>
+<tr><td>访客</td><td>看板只读</td><td>—</td><td>—</td><td>—</td><td><span class="tag tag-amber">受限</span></td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="row cols-2">
+<div class="card"><div class="card-header"><div class="card-title">登录与安全</div></div><div class="card-body">
+<div class="setting-row" style="border:none;padding-top:0"><div class="setting-info"><div class="setting-label">双因素认证</div><div class="setting-desc">管理员强制开启</div></div><div class="switch on"></div></div>
+<div class="setting-row"><div class="setting-info"><div class="setting-label">会话超时锁定</div><div class="setting-desc">空闲 30 分钟自动登出</div></div><div class="switch on"></div></div>
+<div class="form-row"><label>默认角色</label><select class="form-input"><option>前端工程师</option><option>访客</option><option>数据工程师</option></select></div>
+</div></div>
+<div class="card"><div class="card-header"><div class="card-title">审计日志</div></div><div class="card-body">
+<div class="setting-row" style="border:none;padding-top:0"><div class="setting-info"><div class="setting-label">配置变更审计</div><div class="setting-desc">记录谁改了什么</div></div><div class="switch on"></div></div>
+<div class="setting-row"><div class="setting-info"><div class="setting-label">导出操作留痕</div><div class="setting-desc">图谱/报告导出可追溯</div></div><div class="switch on"></div></div>
+<div class="form-row"><label>日志保留天数</label><input type="text" class="form-input" value="90"></div>
+</div></div>
+</div>
+</div>
+<!-- SYS -->
+<div class="setting-pane" data-pane="sys">
+<div class="card" style="margin-bottom:16px">
+<div class="card-header"><div class="card-title">系统状态</div><span class="tag tag-mint"><span class="live-dot"></span>ALL OK</span></div>
+<div class="card-body" style="padding-top:8px">
+<div class="detail-stat-grid" id="sys-stats">
+<div class="detail-stat"><div class="detail-stat-label">CPU 使用率</div><div class="detail-stat-value" style="font-size:14px">42%</div></div>
+<div class="detail-stat"><div class="detail-stat-label">内存</div><div class="detail-stat-value" style="font-size:14px">68%</div></div>
+<div class="detail-stat"><div class="detail-stat-label">磁盘</div><div class="detail-stat-value" style="font-size:14px">54%</div></div>
+<div class="detail-stat"><div class="detail-stat-label">GPU</div><div class="detail-stat-value" style="font-size:14px">72%</div></div>
+</div>
+</div>
+</div>
+<div class="row cols-2">
+<div class="card"><div class="card-header"><div class="card-title">运维开关</div></div><div class="card-body">
+<div class="setting-row" style="border:none;padding-top:0"><div class="setting-info"><div class="setting-label">自动备份</div><div class="setting-desc">每日凌晨3点自动备份图谱数据</div></div><div class="switch on"></div></div>
+<div class="setting-row"><div class="setting-info"><div class="setting-label">告警通知</div><div class="setting-desc">异常情况发送邮件/钉钉通知</div></div><div class="switch on"></div></div>
+<div class="setting-row"><div class="setting-info"><div class="setting-label">调试模式</div><div class="setting-desc">生产环境建议关闭</div></div><div class="switch"></div></div>
+<div class="setting-row"><div class="setting-info"><div class="setting-label">性能监控</div><div class="setting-desc">实时采集API响应时间、错误率</div></div><div class="switch on"></div></div>
+</div></div>
+<div class="card"><div class="card-header"><div class="card-title">服务健康</div></div><div class="card-body">
+<div class="form-row"><label>API Gateway</label><input type="text" class="form-input" value="healthy · 12ms" readonly></div>
+<div class="form-row"><label>Neo4j</label><input type="text" class="form-input" value="healthy · 8ms" readonly></div>
+<div class="form-row"><label>向量库</label><input type="text" class="form-input" value="healthy · Milvus" readonly></div>
+<div class="form-row"><label>爬虫集群</label><input type="text" class="form-input" value="3/4 workers online" readonly></div>
+</div></div>
+</div>
+</section>
+  </main>
+  <script src="../../js/api.js"></script>
+  <script src="../../js/runtime-core.js"></script>
+  <script src="../../js/cinema-bg.js"></script>
+  <script src="../../js/cinema-music.js"></script>
+  <script src="../../js/shell.js"></script>
+  <script src="../../js/pages/settings.js"></script>
+  <script>
+    window.Shell && window.Shell.mount({ pageId: 'settings', title: '系统设置', subtitle: '平台与服务配置' });
+    window.initSettings && window.initSettings();
+  </script>
+</body>
+</html>

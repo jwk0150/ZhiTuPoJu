@@ -20,12 +20,27 @@ CREATE TABLE IF NOT EXISTS user_center.user_profiles (
     grade       VARCHAR(32),          -- 2024级 / 应届
     target_job  VARCHAR(256),
     bio         TEXT,
+<<<<<<< HEAD
+=======
+    phone       VARCHAR(32),
+    email       VARCHAR(128),
+    interview_data JSONB,
+>>>>>>> ebfe0503a88e347cada72195ca5a2fad8c551338
     avatar_url  VARCHAR(512),
     completion  SMALLINT DEFAULT 0,   -- 0-100 资料完整度百分比
     created_at  TIMESTAMP  DEFAULT NOW(),
     updated_at  TIMESTAMP  DEFAULT NOW()
 );
 
+<<<<<<< HEAD
+=======
+-- 兼容早期版本：模型已使用这些字段，旧数据库可能尚未补齐。
+ALTER TABLE user_center.user_profiles
+    ADD COLUMN IF NOT EXISTS phone VARCHAR(32),
+    ADD COLUMN IF NOT EXISTS email VARCHAR(128),
+    ADD COLUMN IF NOT EXISTS interview_data JSONB;
+
+>>>>>>> ebfe0503a88e347cada72195ca5a2fad8c551338
 -- 3. 简历表
 CREATE TABLE IF NOT EXISTS user_center.resumes (
     id          BIGSERIAL PRIMARY KEY,

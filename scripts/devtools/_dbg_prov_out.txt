@@ -1,0 +1,2 @@
+codes: {'province': 'н╢ж╙', 'province_code': 118, 'city_code': 330}
+prov industries до╡Щ: MISSING

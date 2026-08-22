@@ -4,6 +4,11 @@
 import sys
 from pathlib import Path
 
+<<<<<<< HEAD
+=======
+from sqlalchemy import text
+
+>>>>>>> ebfe0503a88e347cada72195ca5a2fad8c551338
 # 添加项目根目录到 Python 路径
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
@@ -30,9 +35,15 @@ def check_database():
 
     # 尝试连接数据库
     try:
+<<<<<<< HEAD
         from backend.db import get_session
         with get_session() as session:
             result = session.execute("SELECT version();")
+=======
+        from backend.db import SessionLocal
+        with SessionLocal() as session:
+            result = session.execute(text("SELECT version();"))
+>>>>>>> ebfe0503a88e347cada72195ca5a2fad8c551338
             version = result.scalar()
             print(f"✅ 数据库连接成功")
             print(f"   PostgreSQL Version: {version.split(',')[0]}")
@@ -44,6 +55,7 @@ def check_database():
 
 
 def check_tables():
+<<<<<<< HEAD
     """检查必需的表是否存在"""
     required_tables = [
         f"{config.TABLE_PREFIX}job_postings",
@@ -58,6 +70,27 @@ def check_tables():
                     f"SELECT COUNT(*) FROM {table};"
                 )
                 count = result.scalar()
+=======
+    """检查 API 所依赖的岗位表、聚合视图和用户中心表。"""
+    required_tables = [
+        "job_postings",
+        "job_posting_details",
+        "the_total_table",
+        "user_center.user_profiles",
+        "user_center.resumes",
+        "user_center.user_skills",
+        "user_center.career_reports",
+    ]
+
+    try:
+        from backend.db import SessionLocal
+        with SessionLocal() as session:
+            for table in required_tables:
+                if session.execute(text("SELECT to_regclass(:name)"), {"name": table}).scalar() is None:
+                    print(f"❌ 缺少 {table}")
+                    return False
+                count = session.execute(text(f"SELECT COUNT(*) FROM {table};")).scalar()
+>>>>>>> ebfe0503a88e347cada72195ca5a2fad8c551338
                 print(f"✅ 表 {table} 存在 ({count} 条记录)")
             return True
     except Exception as e:

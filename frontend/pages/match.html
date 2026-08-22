@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>执图破局 · 人岗匹配</title>
+  <link rel="stylesheet" href="../css/tokens.css?v=48" />
+  <link rel="stylesheet" href="../css/shell.css?v=48" />
+  <link rel="stylesheet" href="../css/components.css?v=48" />
+  <link rel="stylesheet" href="../css/legacy-views.css?v=48" />
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+</head>
+<body class="standalone-view" data-page="match">
+  <div id="app-shell"></div>
+  <main class="page-main" id="page-main">
+    <div class="hub-tabs" data-hub="match">
+      <button type="button" class="hub-tab active" data-hub-tab="diagnose">匹配诊断</button>
+      <button type="button" class="hub-tab" data-hub-tab="profile">我的档案</button>
+    </div>
+    <div class="hub-panel active" data-hub-panel="diagnose">
+<section class="view" id="view-match">
+
+<!-- ===== Stage 1: Entry Hall ===== -->
+<div class="match-hall" id="match-hall">
+<div class="career-shell">
+<div class="career-head">
+<div class="career-title">
+<h2>人岗匹配</h2>
+<p>从一份明确的简历版本开始，保留每次岗位推荐、修改和面试带来的变化。</p>
+</div>
+<div class="career-head-actions">
+<button class="career-btn" type="button" onclick="document.getElementById('resume-file-input').click()">上传新简历</button>
+</div>
+</div>
+
+<div class="career-stepper" id="career-stepper">
+<div class="career-step active" data-step="1" data-career-step="1">选择简历</div>
+<div class="career-step" data-step="2" data-career-step="2">匹配设置</div>
+<div class="career-step" data-step="3" data-career-step="3">智能分析</div>
+<div class="career-step" data-step="4" data-career-step="4">职业方案</div>
+</div>
+
+<div class="career-stage active" id="career-archive-stage">
+<div class="career-archive-layout">
+<aside class="career-panel">
+<div class="career-panel-head"><h3>简历档案</h3><span id="career-archive-count"></span></div>
+<div class="career-archive-list" id="career-archive-list"></div>
+<button class="career-new-archive" type="button" onclick="document.getElementById('resume-file-input').click()">上传并创建新档案</button>
+</aside>
+<main class="career-panel career-archive-main">
+<section class="career-version-column" id="career-version-column"></section>
+<aside class="career-detail-column" id="career-detail-column"></aside>
+</main>
+</div>
+</div>
+
+<div class="career-stage" id="career-intent-stage">
+<div class="career-intent-wrap">
+<div class="career-intent-top">
+<div class="career-selected-resume">
+<div class="career-file-icon" id="career-file-type">DOC</div>
+<div><h3 id="career-selected-name">已选择简历</h3><p id="career-selected-meta"></p></div>
+</div>
+<button class="career-btn ghost" type="button" onclick="window.showArchiveStage()">更换简历</button>
+</div>
+<div class="career-intent-body">
+<h3>选择匹配方式</h3>
+<p>先确定本次分析目标，系统完成诊断后才会展示学习、优化和面试等后续操作。</p>
+<div class="career-mode-grid">
+<button class="career-mode-option active" id="career-mode-b" type="button" onclick="window.chooseMatchMode('b')">
+<span class="career-mode-check"></span><h4>智能推荐岗位</h4><p>基于当前简历寻找最适合的岗位方向，并给出能力差距和发展建议。</p>
+</button>
+<button class="career-mode-option" id="career-mode-a" type="button" onclick="window.chooseMatchMode('a')">
+<span class="career-mode-check"></span><h4>分析指定岗位</h4><p>选择一个明确目标岗位，进行针对性的竞争力和岗位要求诊断。</p>
+</button>
+</div>
+<div class="career-target-panel" id="career-target-panel">
+<label for="mode-a-search">选择目标岗位</label>
+<div class="job-search-box">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+<input type="text" id="mode-a-search" placeholder="搜索岗位、公司或关键词" oninput="window.searchJobs('a')">
+</div>
+<div class="job-suggestions" id="mode-a-suggestions"></div>
+</div>
+<div class="career-intent-actions">
+<button class="career-btn ghost" type="button" onclick="window.showArchiveStage()">返回档案</button>
+<button class="career-btn primary" id="career-start-match" type="button" onclick="window.startSelectedResumeMatch()">开始岗位匹配</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="match-hall-bg"></div>
+<div class="match-hall-top">
+<div class="match-hall-header">
+<h2>人岗匹配诊断</h2>
+<p>选择使用场景，上传简历，AI智能体将为你完成深度分析 — 包括与"完美候选人"的竞争力对比评估</p>
+</div>
+<div class="match-hall-stats">
+<div class="match-hall-stat"><div class="val">6维</div><div class="lbl">诊断维度</div></div>
+<div class="match-hall-stat"><div class="val">10+</div><div class="lbl">可匹配岗位</div></div>
+<div class="match-hall-stat"><div class="val">AI</div><div class="lbl">DeepSeek驱动</div></div>
+<div class="match-hall-stat"><div class="val">对比</div><div class="lbl">竞争力分析</div></div>
+</div>
+</div>
+<div class="match-hall-body">
+<div class="match-hall-cards">
+<!-- Card A: Know target job -->
+<div class="match-mode-card" id="mode-card-a" onclick="window.flipModeCard('a')">
+<div class="card-front">
+<div class="match-mode-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>
+<h3>我知道目标岗位</h3>
+<p class="desc">有明确的职业方向，需要分析岗位要求、与"完美候选人"对比差距、获得竞争力评估和精准提升建议。</p>
+<div class="match-mode-features">
+<span class="match-mode-feature">岗位需求深度分析</span>
+<span class="match-mode-feature">竞争力对比评估</span>
+<span class="match-mode-feature">精准修改建议</span>
+</div>
+<div class="match-mode-output"><div class="output-title">📊 你将获得</div><div class="output-items">
+<div class="output-item"><span class="output-dot match"></span>岗位核心要求清单</div>
+<div class="output-item"><span class="output-dot match"></span>5维雷达匹配评分</div>
+<div class="output-item"><span class="output-dot match"></span>vs 完美候选人差距表</div>
+<div class="output-item"><span class="output-dot match"></span>优先级修改清单</div>
+<div class="output-item"><span class="output-dot match"></span>个性化学习时间线</div>
+</div></div>
+<div class="match-mode-hint"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="13 17 18 12 9 6"/></svg>点击选择此场景</div>
+</div>
+<div class="card-back">
+<div class="job-search-box">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+<input type="text" id="legacy-mode-a-search" placeholder="搜索目标岗位...">
+</div>
+<div class="job-suggestions" id="legacy-mode-a-suggestions"></div>
+<div class="upload-zone-new" id="mode-a-upload" onclick="event.stopPropagation();document.getElementById('mode-a-file-input').click()">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/></svg>
+<div class="upload-title">上传简历文件</div>
+<div class="upload-hint">PDF / DOC / DOCX / TXT · 最大 8MB</div>
+</div>
+<input type="file" id="mode-a-file-input" accept=".pdf,.doc,.docx,.txt" hidden onchange="window.handleFileSelect(event,'a')">
+<div class="back-btn" onclick="event.stopPropagation();window.unflipModeCard('a')"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="7 17 2 12 7 7"/><line x1="2" y1="12" x2="22" y2="12"/></svg>返回选择场景</div>
+</div>
+</div>
+<!-- Card B: Just resume -->
+<div class="match-mode-card mode-b" id="mode-card-b" onclick="window.flipModeCard('b')">
+<div class="card-front">
+<div class="match-mode-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+<h3>帮我推荐岗位</h3>
+<p class="desc">仅提供简历，AI智能分析你的背景与能力，为你推荐最适合的岗位方向并对比竞争力差距。</p>
+<div class="match-mode-features">
+<span class="match-mode-feature">智能岗位推荐</span>
+<span class="match-mode-feature">能力画像分析</span>
+<span class="match-mode-feature">发展路线规划</span>
+</div>
+<div class="match-mode-output"><div class="output-title">🎯 你将获得</div><div class="output-items">
+<div class="output-item"><span class="output-dot match"></span>TOP匹配岗位排名</div>
+<div class="output-item"><span class="output-dot match"></span>每个岗位的竞争力</div>
+<div class="output-item"><span class="output-dot match"></span>技能差距可视化</div>
+<div class="output-item"><span class="output-dot match"></span>短期提升建议</div>
+<div class="output-item"><span class="output-dot match"></span>长期发展方向</div>
+</div></div>
+<div class="match-mode-hint"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="13 17 18 12 9 6"/></svg>点击选择此场景</div>
+</div>
+<div class="card-back">
+<div style="text-align:center;margin-bottom:14px;font-size:14px;font-weight:600;color:var(--text-dark)">上传简历即可开始智能推荐</div>
+<div class="upload-zone-new" id="mode-b-upload" onclick="event.stopPropagation();document.getElementById('mode-b-file-input').click()">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/></svg>
+<div class="upload-title">拖拽或点击上传简历</div>
+<div class="upload-hint">PDF / DOC / DOCX / TXT · 最大 8MB</div>
+</div>
+<input type="file" id="mode-b-file-input" accept=".pdf,.doc,.docx,.txt" hidden onchange="window.handleFileSelect(event,'b')">
+<div class="back-btn" onclick="event.stopPropagation();window.unflipModeCard('b')"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="7 17 2 12 7 7"/><line x1="2" y1="12" x2="22" y2="12"/></svg>返回选择场景</div>
+</div>
+</div>
+</div>
+<div class="match-hall-sidebar">
+<div class="match-hot-jobs">
+<h4><span class="live-dot"></span>热门招聘岗位</h4>
+<div id="hall-hot-jobs"><div style="font-size:11px;color:var(--text-muted);text-align:center;padding:12px">加载中...</div></div>
+</div>
+<div class="match-tips-card">
+<h4>💡 诊断能力</h4>
+<p>支持与AI推演的<strong>完美候选人</strong>进行逐项对比，从技能覆盖、项目经验、教育背景等多维度展现竞争力差距。</p>
+</div>
+</div>
+</div>
+<div class="match-pipeline-bar">
+<div class="match-pipeline-step"><div class="step-orb">1</div><div class="step-text"><div class="step-title">简历解析</div><div class="step-desc">PDF/DOC → 结构化</div></div></div>
+<div class="match-pipeline-arrow">→</div>
+<div class="match-pipeline-step"><div class="step-orb">2</div><div class="step-text"><div class="step-title">人才画像</div><div class="step-desc">DeepSeek抽取技能</div></div></div>
+<div class="match-pipeline-arrow">→</div>
+<div class="match-pipeline-step"><div class="step-orb">3</div><div class="step-text"><div class="step-title">语义匹配</div><div class="step-desc">职位语义契合度</div></div></div>
+<div class="match-pipeline-arrow">→</div>
+<div class="match-pipeline-step"><div class="step-orb">4</div><div class="step-text"><div class="step-title">完美简历</div><div class="step-desc">AI推演理想画像</div></div></div>
+<div class="match-pipeline-arrow">→</div>
+<div class="match-pipeline-step"><div class="step-orb">5</div><div class="step-text"><div class="step-title">竞争力对比</div><div class="step-desc">5维度差距分析</div></div></div>
+<div class="match-pipeline-arrow">→</div>
+<div class="match-pipeline-step"><div class="step-orb">6</div><div class="step-text"><div class="step-title">学习路径</div><div class="step-desc">可执行改进计划</div></div></div>
+</div>
+<div class="match-history-bar" id="match-history"></div>
+</div>
+
+<!-- ===== Stage 2: Diagnosis Theater ===== -->
+<div class="match-theater" id="match-theater">
+<div class="match-theater-bg">
+<canvas class="match-theater-particles" id="theater-particles"></canvas>
+<div class="match-theater-glow"></div>
+</div>
+<div class="match-theater-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>
+<div class="match-theater-title" id="theater-title">诊断智能体运行中</div>
+<div class="match-theater-subtitle" id="theater-subtitle">DeepSeek · 语义分析 · 图谱推理</div>
+<div class="match-theater-log" id="theater-log"></div>
+<div class="match-theater-progress"><div class="match-theater-progress-bar" id="theater-progress"></div></div>
+</div>
+
+<!-- ===== Stage 3: Results Stage ===== -->
+<div class="match-stage" id="match-stage">
+<div class="match-stage-viewport" id="stage-viewport">
+
+<div class="career-result-context">
+<div class="career-result-resume"><strong id="career-result-resume-name">当前简历</strong><span id="career-result-resume-meta"></span></div>
+<div class="career-result-jobs" id="career-result-jobs"></div>
+<button class="career-btn career-result-switch" type="button" onclick="window.showArchiveStage(true)">切换简历</button>
+</div>
+
+<!-- Section: Score Bar -->
+<div class="result-section result-section-white"><div class="result-section-row score-bar" id="result-score-bar">
+<div class="score-bar-hero"><div class="score-bar-number" id="score-number">--</div><div class="score-bar-label">分</div></div>
+<div class="score-bar-job"><div class="score-bar-job-title" id="score-job"></div><div class="score-bar-job-meta" id="score-meta-line"></div></div>
+<div class="score-bar-stats"><div class="score-bar-stat highlight"><div class="val" id="mini-competitiveness">--</div><div class="lbl">竞争力</div></div><div class="score-bar-stat"><div class="val" id="mini-matched">--</div><div class="lbl">匹配</div></div><div class="score-bar-stat"><div class="val" id="mini-transfer">--</div><div class="lbl">迁移</div></div><div class="score-bar-stat"><div class="val" id="mini-gaps">--</div><div class="lbl">差距</div></div></div>
+</div></div>
+<div class="result-divider"></div>
+
+<!-- Section: Resume VS Perfect Resume (Core Visual) -->
+<div class="result-section result-section-white"><div class="result-section-row">
+<div class="result-section-title">你的简历 vs AI推演的完美候选人</div>
+<div class="resume-vs">
+<div class="resume-vs-col user"><div class="resume-vs-col-header"><h4>📄 你的简历</h4><span class="resume-vs-score-tag" id="vs-user-score">--</span></div><div class="resume-vs-info" id="vs-user-info"></div><div class="resume-vs-skills" id="vs-user-skills"></div><div class="resume-vs-projects" id="vs-user-summary"></div></div>
+<div class="resume-vs-col perfect"><div class="resume-vs-col-header"><h4>🏆 完美候选人 (AI推演)</h4><span class="resume-vs-score-tag">~96</span></div><div class="resume-vs-info" id="vs-perfect-info"></div><div class="resume-vs-skills" id="vs-perfect-skills"></div><div class="resume-vs-projects" id="vs-perfect-summary"></div></div>
+</div>
+</div></div>
+
+<!-- Section: Skill Detail Comparison Table -->
+<div class="result-section result-section-gray"><div class="result-section-row">
+<div class="result-section-title amber">技能逐项对比 · 差距溯源</div>
+<div style="overflow-x:auto"><table class="skill-table"><thead><tr><th>技能</th><th>岗位要求</th><th>你的水平</th><th>差距</th><th>重要性</th><th>提升建议</th></tr></thead><tbody id="skill-table-body"></tbody></table></div>
+</div></div>
+
+<!-- Section: Dimension Radar + Gap Analysis -->
+<div class="result-section result-section-white"><div class="result-section-row">
+<div class="result-section-title coral">五维雷达图 · 能力差距清单</div>
+<div class="radar-gap-row">
+<div class="card"><div class="card-header"><div class="card-title">匹配度雷达</div></div><div class="card-body" style="padding:6px"><div class="dimension-radar-box" id="match-dimension-chart"></div></div></div>
+<div class="card"><div class="card-header"><div class="card-title">差距详情（迁移准备度）</div></div><div class="card-body" style="padding:8px"><div class="gap-grid" id="gap-grid"></div></div></div>
+</div>
+</div></div>
+
+<!-- Section: Improvement Suggestions -->
+<div class="result-section result-section-gray"><div class="result-section-row">
+<div class="result-section-title success">针对性修改建议</div>
+<div class="suggestions-grid" id="suggestions-grid"></div>
+</div></div>
+
+<!-- Section: Learning Path -->
+<div class="result-section result-section-dark"><div class="result-section-row">
+<div class="result-section-title">个性化学习路径 <span id="learning-impact" style="font-size:11px;font-weight:400;opacity:.7;margin-left:6px"></span></div>
+<div class="learning-path-list" id="learning-path-list"></div>
+</div></div>
+
+<!-- Section: Actions -->
+<div class="result-section result-section-white"><div class="result-section-row">
+<div class="actions-row">
+<button class="actions-btn primary" onclick="window.showArchiveStage(true)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>返回简历档案</button>
+<button class="actions-btn" onclick="window.showCompetitivenessModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10m-6 10V4M6 20v-6"/></svg>竞争力详报</button>
+<button class="actions-btn" onclick="window.showJobAnalysis()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>岗位分析</button>
+<button class="actions-btn" onclick="window.showImprovementDrawer()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>修改清单</button>
+</div>
+</div></div>
+
+</div>
+</div>
+
+<!-- ===== Overlay: Job Analysis Drawer ===== -->
+<div class="match-drawer-overlay" id="job-drawer-overlay" onclick="window.closeJobAnalysis()"></div>
+<div class="match-drawer" id="job-analysis-drawer">
+<div class="match-drawer-header">
+<h3>岗位需求深度分析</h3>
+<button class="match-drawer-close" onclick="window.closeJobAnalysis()"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+</div>
+<div class="match-drawer-body" id="job-drawer-body"></div>
+</div>
+
+<!-- ===== Overlay: Improvement Suggestions Drawer ===== -->
+<div class="match-bottom-drawer" id="improvement-drawer">
+<div class="match-bottom-handle" id="improvement-handle"></div>
+<div class="match-bottom-header">
+<h3>简历修改建议</h3>
+<button class="match-drawer-close" onclick="window.closeImprovementDrawer()"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+</div>
+<div class="match-bottom-body" id="improvement-drawer-body"></div>
+</div>
+
+<!-- Hidden file input for drag-drop fallback -->
+<input type="file" id="resume-file-input" accept=".pdf,.doc,.docx,.txt" hidden></section>
+
+    </div>
+    <div class="hub-panel" data-hub-panel="profile">
+      <iframe class="profile-embed-frame" title="我的档案" src="profile-embed.html" loading="lazy"></iframe>
+    </div>
+  </main>
+<div class="modal-overlay" id="modal-overlay">
+<div class="modal" id="modal">
+<div class="modal-header"><div class="modal-title" id="modal-title">详情</div><button class="modal-close" onclick="closeModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+<div class="modal-body" id="modal-body"></div>
+<div class="modal-footer" id="modal-footer"><button class="btn" onclick="closeModal()">关闭</button></div>
+</div>
+</div>
+
+<div class="match-comp-modal" id="competitiveness-modal" onclick="if(event.target===this)window.closeCompetitivenessModal()">
+<div class="match-comp-container">
+<div class="match-comp-header">
+<h3>简历竞争力对比报告</h3>
+<button class="match-drawer-close" onclick="window.closeCompetitivenessModal()"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+</div>
+<div class="match-comp-body" id="comp-modal-body"></div>
+</div>
+</div>
+  <script src="../js/api.js"></script>
+  <script src="../js/runtime-core.js"></script>
+  <script src="../js/cinema-bg.js"></script>
+  <script src="../js/cinema-music.js"></script>
+  <script src="../js/shell.js"></script>
+  <script src="../js/pages/match.js"></script>
+  <script src="../js/pages/hub-tabs.js"></script>
+  <script>
+    window.Shell && window.Shell.mount({ pageId: 'match', title: '人岗匹配', subtitle: '诊断结果与职业档案' });
+    window.initHubTabs && window.initHubTabs({
+      root: '[data-hub=match]',
+      onChange: function (tab) {
+        if (tab === 'diagnose' && typeof window.initMatch === 'function') window.initMatch();
+      },
+      initial: (new URLSearchParams(location.search).get('tab') === 'profile') ? 'profile' : 'diagnose'
+    });
+  </script>
+</body>
+</html>

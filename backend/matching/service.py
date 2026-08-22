@@ -593,9 +593,180 @@ def build_gap_graph(profile: dict[str, Any], best_match: dict[str, Any]) -> dict
         source_id = "skill_" + re.sub(r"\W+", "_", skill.lower())
         edges.append({"source": source_id, "target": "target_job", "label": "直接匹配"})
     return {"nodes": nodes, "edges": edges}
+<<<<<<< HEAD
 
 
 def diagnose(filename: str, content: bytes, target_job_id: str | None = None) -> dict[str, Any]:
+=======
+def generate_perfect_resume(target_job: dict[str, Any], profile: dict[str, Any]) -> dict[str, Any]:
+    """AI-generated ideal resume profile for the target position as benchmark."""
+    system = """你是资深HR与岗位建模专家。基于目标岗位要求，推演该岗位"完美候选人"的画像，不得虚构具体人名。
+严格输出JSON对象：
+{"ideal_skills":[{"name":"","level":"精通|熟练|熟悉","why":"该技能为何关键"}],
+"ideal_summary":"不超过120字的完美个人简介",
+"ideal_experience_years":0,
+"ideal_education":"建议学历",
+"ideal_projects":["该岗位理想的3个相关项目或成果"],
+"key_differentiators":["完美候选人相比普通候选人的3个核心优势"],
+"market_benchmark":"该岗位市场顶薪/头部候选人画像概述（不超过60字）"}"""
+    job_text = json.dumps({
+        "title": target_job.get("title", ""),
+        "description": target_job.get("description", ""),
+        "required_skills": target_job.get("required_skills", []),
+        "preferred_skills": target_job.get("preferred_skills", []),
+        "company": target_job.get("company", ""),
+    }, ensure_ascii=False)
+    content, _meta = deepseek.chat_completions(
+        [{"role": "system", "content": system},
+         {"role": "user", "content": f"目标岗位：\n{job_text}\n\n候选人当前画像（仅供参考）：\n{json.dumps({'target_role': profile.get('target_role'), 'experience_years': profile.get('experience_years'), 'skills': [s.get('name') for s in profile.get('skills', [])]}, ensure_ascii=False)}"}],
+        temperature=0.2, timeout=45.0
+    )
+    parsed = _json_from_text(content) if content else {}
+    if not parsed or not parsed.get("ideal_skills"):
+        # Fallback heuristic
+        required = target_job.get("required_skills", [])
+        preferred = target_job.get("preferred_skills", [])
+        all_skills = required + preferred
+        return {
+            "ideal_skills": [{"name": s, "level": "熟练", "why": "岗位核心要求"} for s in all_skills[:10]],
+            "ideal_summary": f"具备{target_job.get('title', '该岗位')}所需的完整技能栈与项目经验，深耕领域多年",
+            "ideal_experience_years": max(1, int(float(profile.get("experience_years") or 0)) + 2),
+            "ideal_education": profile.get("education") or "本科及以上",
+            "ideal_projects": [f"{all_skills[0] if all_skills else '核心能力'}深度实践项目", "团队协作与交付经验", "技术方案设计与落地"],
+            "key_differentiators": ["技能覆盖全面", "项目经验深度匹配", "行业理解力强"],
+            "market_benchmark": f"{target_job.get('title', '')}领域头部候选人通常具备全栈技术能力与业务洞察力",
+            "source": "local-fallback",
+        }
+    parsed["source"] = "deepseek"
+    return parsed
+
+
+def compare_with_perfect(profile: dict[str, Any], perfect: dict[str, Any], target_job: dict[str, Any]) -> dict[str, Any]:
+    """Compare user resume against the AI-generated perfect resume benchmark."""
+    user_skills_raw = {canonical_skill(s.get("name", "")) for s in profile.get("skills", [])}
+    user_skills_raw.discard("")
+    ideal_skills_raw = {canonical_skill(s.get("name", "")) for s in perfect.get("ideal_skills", [])}
+    ideal_skills_raw.discard("")
+
+    matched_skills = user_skills_raw & ideal_skills_raw
+    missing_skills = ideal_skills_raw - user_skills_raw
+
+    # Dimension scores
+    skill_coverage = round(len(matched_skills) / max(1, len(ideal_skills_raw)) * 100, 1)
+    experience_gap = max(0, int(perfect.get("ideal_experience_years", 0)) - int(float(profile.get("experience_years") or 0)))
+    experience_score = max(10, 100 - experience_gap * 15)
+
+    # Compare summaries semantically via keyword overlap
+    user_text = (profile.get("summary") or "") + " " + " ".join(profile.get("projects") or [])
+    ideal_text = (perfect.get("ideal_summary") or "") + " "
+    if not user_text.strip():
+        summary_score = 30.0
+    else:
+        user_words = set(user_text.lower().split())
+        ideal_words = set(ideal_text.lower().split())
+        common = user_words & ideal_words
+        summary_score = round(min(95, 30 + len(common) / max(1, len(ideal_words)) * 65), 1)
+
+    education_match = 85.0 if profile.get("education") and profile.get("education") not in ("未识别", "") else 60.0
+
+    competitiveness = round(
+        skill_coverage * 0.45 + experience_score * 0.15 + summary_score * 0.20 + education_match * 0.10
+        + (10 if len(matched_skills) >= len(ideal_skills_raw) / 2 else 0), 1)
+
+    strengths = [s for s in matched_skills] if matched_skills else ["具备基础学习能力"]
+    weakness_list = [s for s in missing_skills] if missing_skills else ["建议强化岗位核心技能"]
+
+    skill_comparison = []
+    for ideal in perfect.get("ideal_skills", [])[:12]:
+        name = canonical_skill(ideal.get("name", ""))
+        if not name:
+            continue
+        user_level = "未掌握"
+        for us in profile.get("skills", []):
+            if canonical_skill(us.get("name", "")) == name:
+                user_level = us.get("level", "了解")
+                break
+        skill_comparison.append({
+            "skill": name,
+            "ideal_level": ideal.get("level", "熟练"),
+            "user_level": user_level,
+            "gap": "matched" if name in matched_skills else "missing",
+            "why_important": ideal.get("why", "岗位核心要求"),
+        })
+
+    # Improvement suggestions
+    suggestions = []
+    for skill in missing_skills[:5]:
+        suggestions.append({
+            "skill": skill,
+            "priority": "high" if len(missing_skills) <= 3 else "medium",
+            "action": f"通过系统学习和项目实践掌握{skill}",
+            "effort_weeks": 3 if len(missing_skills) > 3 else 2,
+        })
+    for i, skill in enumerate(matched_skills):
+        if i >= 3: break
+        suggestions.append({
+            "skill": skill,
+            "priority": "low",
+            "action": f"深化{skill}的实战应用，积累可量化的项目成果",
+            "effort_weeks": 1,
+        })
+
+    return {
+        "competitiveness": round(min(98, competitiveness), 1),
+        "dimension_scores": {
+            "skill_coverage": skill_coverage,
+            "experience_match": experience_score,
+            "summary_quality": summary_score,
+            "education_match": education_match,
+        },
+        "strengths": [s for i, s in enumerate(strengths) if i < 8],
+        "weaknesses": [w for i, w in enumerate(weakness_list) if i < 8],
+        "skill_comparison": skill_comparison[:15],
+        "improvement_suggestions": suggestions[:8],
+    }
+
+
+def analyze_job_requirement(target_job: dict[str, Any]) -> dict[str, Any]:
+    """Deep analysis of a job position's requirements."""
+    required = target_job.get("required_skills", [])
+    preferred = target_job.get("preferred_skills", [])
+    title = target_job.get("title", "")
+    description = target_job.get("description", "")
+
+    system = """你是资深职业规划顾问。基于岗位信息，输出结构化JSON：
+{"job_summary":"不超过80字的岗位概述",
+"core_requirements":[{"skill":"","importance":"必备|重要|加分","explanation":"不超过40字"}],
+"market_insight":"该岗位在当前就业市场的位置、竞争程度、薪资水平概述（不超过80字）",
+"preparation_advice":["入职准备的3-5条核心建议"],
+"interview_focus":["面试中可能被重点考察的3-5个方面"],
+"career_path":"该岗位未来3-5年的典型职业发展路径（不超过60字）"}"""
+    content, _meta = deepseek.chat_completions(
+        [{"role": "system", "content": system},
+         {"role": "user", "content": f"岗位名称：{title}\n岗位描述：{description[:2000]}\n必备技能：{json.dumps(required, ensure_ascii=False)}\n加分技能：{json.dumps(preferred, ensure_ascii=False)}"}],
+        temperature=0.15, timeout=35.0
+    )
+    parsed = _json_from_text(content) if content else {}
+    if not parsed:
+        return {
+            "job_summary": f"{title}岗位，核心要求{', '.join(required[:4])}等技能",
+            "core_requirements": [{"skill": s, "importance": "必备", "explanation": "岗位要求"} for s in required[:6]],
+            "market_insight": f"{title}岗位在就业市场中需求稳定，建议关注核心技能积累",
+            "preparation_advice": [f"掌握{required[0]}" if required else "夯实专业基础", "积累相关项目经验", "关注行业最新趋势"],
+            "interview_focus": ["技术能力深度", "项目经验验证", "问题解决能力", "团队协作", "学习潜力"],
+            "career_path": f"从{title}可向高级/资深方向发展，逐步拓展技术广度与管理能力",
+            "source": "local-fallback",
+        }
+    parsed["source"] = "deepseek"
+    # Ensure lists
+    for key in ("core_requirements", "preparation_advice", "interview_focus"):
+        if not isinstance(parsed.get(key), list):
+            parsed[key] = []
+    return parsed
+
+
+def diagnose(filename: str, content: bytes, target_job_id: str | None = None, mode: str = "b") -> dict[str, Any]:
+>>>>>>> ebfe0503a88e347cada72195ca5a2fad8c551338
     document = extract_document(filename, content)
     profile, parse_meta = parse_resume(document["text"], filename)
     reviews, review_meta = _semantic_review(profile, data.JOBS)
@@ -610,6 +781,32 @@ def diagnose(filename: str, content: bytes, target_job_id: str | None = None) ->
     model_name = review_meta.get("llm") or parse_meta.get("llm") or "none"
     errors = [error for error in (parse_meta.get("error"), review_meta.get("error")) if error]
 
+<<<<<<< HEAD
+=======
+    # New: Perfect Resume + Comparison + Job Analysis
+    perfect_resume: dict[str, Any] = {}
+    competitiveness: dict[str, Any] = {}
+    job_analysis: dict[str, Any] = {}
+    compare_error: str | None = None
+
+    try:
+        perfect_resume = generate_perfect_resume(selected["job"], profile)
+    except Exception as exc:
+        compare_error = f"完美简历生成失败: {exc}"
+
+    try:
+        if perfect_resume:
+            competitiveness = compare_with_perfect(profile, perfect_resume, selected["job"])
+    except Exception as exc:
+        compare_error = (compare_error or "") + f"; 对比分析失败: {exc}"
+
+    if mode == "a" and selected.get("job"):
+        try:
+            job_analysis = analyze_job_requirement(selected["job"])
+        except Exception as exc:
+            errors.append(f"岗位分析失败: {exc}")
+
+>>>>>>> ebfe0503a88e347cada72195ca5a2fad8c551338
     return {
         "profile": profile,
         "document": {key: value for key, value in document.items() if key != "text"},
@@ -617,11 +814,21 @@ def diagnose(filename: str, content: bytes, target_job_id: str | None = None) ->
         "selected_job_id": selected["job"]["id"],
         "gap_graph": gap_graph,
         "learning_path": learning_path,
+<<<<<<< HEAD
+=======
+        "perfect_resume": perfect_resume,
+        "competitiveness": competitiveness,
+        "job_analysis": job_analysis,
+>>>>>>> ebfe0503a88e347cada72195ca5a2fad8c551338
         "model": {
             "used": llm_used,
             "name": model_name,
             "mode": "deepseek-semantic" if llm_used else "local-fallback",
             "error": "；".join(errors)[:300] if errors else None,
+<<<<<<< HEAD
+=======
+            "compare_error": compare_error,
+>>>>>>> ebfe0503a88e347cada72195ca5a2fad8c551338
         },
         "trace": [
             {"key": "upload", "label": "文件校验", "status": "done"},
@@ -630,5 +837,10 @@ def diagnose(filename: str, content: bytes, target_job_id: str | None = None) ->
             {"key": "semantic", "label": "语义匹配", "status": "done" if reviews else "fallback"},
             {"key": "graph", "label": "图谱推理", "status": "done"},
             {"key": "plan", "label": "路径规划", "status": "done"},
+<<<<<<< HEAD
+=======
+            {"key": "perfect", "label": "完美简历", "status": "done" if perfect_resume else ("fallback" if compare_error else "pending")},
+            {"key": "compare", "label": "竞争力对比", "status": "done" if competitiveness else ("fallback" if compare_error else "pending")},
+>>>>>>> ebfe0503a88e347cada72195ca5a2fad8c551338
         ],
     }

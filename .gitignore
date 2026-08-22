@@ -35,3 +35,9 @@ crawler/exports/
 # 本地数据库导入脚本输出
 *.bak
 *_bak.sql
+<<<<<<< HEAD
+=======
+
+# 本地注册用户（含密码，禁止入库）
+backend/data/
+>>>>>>> ebfe0503a88e347cada72195ca5a2fad8c551338
