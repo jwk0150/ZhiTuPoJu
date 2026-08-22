@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>岗位大新闻 · 未来就业市场数字报纸</title>
+  <meta name="description" content="捕捉岗位变化，读懂就业趋势 —— 面向年轻人的岗位资讯中心。" />
+  <link rel="stylesheet" href="../../css/tokens.css?v=48" />
+  <link rel="stylesheet" href="../../css/shell.css?v=48" />
+  <link rel="stylesheet" href="../../css/components.css?v=48" />
+  <link rel="stylesheet" href="css/news.css" />
+</head>
+<body data-page="news">
+  <div id="app-shell"></div>
+  <main class="page-main" id="page-main">
+    <!-- 顶部导航 (已隐藏，使用主项目导航) -->
+    <header class="jn-nav" style="display: none;">
+      <div class="jn-nav-inner">
+        <a class="jn-brand" href="index.html">
+          <span class="jn-logo" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 6.5C4 5.1 5.1 4 6.5 4h11C18.9 4 20 5.1 20 6.5V19a1 1 0 0 1-1 1H6.5A2.5 2.5 0 0 1 4 17.5v-11Z"/>
+              <path d="M4 8.5h16"/>
+              <path d="M8 13h5M8 16h7"/>
+              <circle cx="17" cy="11.5" r="1.7" fill="currentColor" stroke="none"/>
+            </svg>
+          </span>
+          <span class="jn-brand-text">岗位大新闻<small>JOB BRIEF</small></span>
+        </a>
+
+        <nav class="jn-nav-links" aria-label="主导航">
+          <a href="index.html" class="is-active">首页</a>
+          <a href="#news">岗位资讯</a>
+          <a href="#careers">新职业</a>
+          <a href="#industries">行业趋势</a>
+        </nav>
+
+        <div class="jn-nav-actions">
+          <label class="jn-search" id="nav-search">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="search" id="search-input" placeholder="搜索岗位、职业、行业资讯……" aria-label="搜索" />
+          </label>
+          <button type="button" class="jn-icon-btn jn-search-toggle" id="search-toggle" aria-label="搜索">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          </button>
+          <button type="button" class="jn-icon-btn" id="notify-btn" aria-label="通知">
+            <span class="jn-dot" aria-hidden="true"></span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          </button>
+          <button type="button" class="jn-avatar" id="avatar-btn" aria-label="用户">访</button>
+        </div>
+      </div>
+
+      <div class="jn-mobile-search" id="mobile-search">
+        <label class="jn-search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input type="search" id="search-input-mobile" placeholder="搜索岗位、职业、行业资讯……" aria-label="搜索" />
+        </label>
+      </div>
+    </header>
+
+    <!-- Loading 骨架 -->
+    <div class="container" id="app-loading" aria-hidden="true">
+      <div style="height:220px;border-radius:22px;margin-top:26px" class="jn-skeleton"></div>
+      <div style="display:grid;grid-template-columns:1.65fr 1fr;gap:20px;margin-top:20px">
+        <div style="height:420px;border-radius:22px" class="jn-skeleton"></div>
+        <div style="height:420px;border-radius:18px" class="jn-skeleton"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:20px">
+        <div style="height:170px;border-radius:18px" class="jn-skeleton"></div>
+        <div style="height:170px;border-radius:18px" class="jn-skeleton"></div>
+        <div style="height:170px;border-radius:18px" class="jn-skeleton"></div>
+      </div>
+    </div>
+
+    <!-- 内容 -->
+    <div class="container" id="app" hidden>
+      <div id="hero"></div>
+
+      <section class="jn-section" id="headline" aria-label="今日头版"></section>
+      <section class="jn-section" id="hot" aria-label="热门岗位资讯"></section>
+      <section class="jn-section" id="careers" aria-label="新职业"></section>
+      <section class="jn-section" id="industries" aria-label="行业岗位变化"></section>
+      <section class="jn-section" id="news" aria-label="全部资讯"></section>
+    </div>
+
+    <!-- 页脚 -->
+    <footer class="jn-footer">
+      <div class="container jn-footer-inner">
+        <div class="jn-footer-brand">
+          <span class="jn-logo" aria-hidden="true" style="width:30px;height:30px">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 6.5C4 5.1 5.1 4 6.5 4h11C18.9 4 20 5.1 20 6.5V19a1 1 0 0 1-1 1H6.5A2.5 2.5 0 0 1 4 17.5v-11Z"/>
+              <path d="M4 8.5h16M8 13h5M8 16h7"/>
+              <circle cx="17" cy="11.5" r="1.7" fill="currentColor" stroke="none"/>
+            </svg>
+          </span>
+          岗位大新闻
+        </div>
+        <div class="jn-footer-note">
+          一份属于年轻人的「未来就业市场数字报纸」<span class="jn-dot">·</span> 内容与数据均为示例<span class="jn-dot">·</span> NEWS / 042
+        </div>
+      </div>
+    </footer>
+  </main>
+
+  <script src="../../js/api.js"></script>
+  <script src="../../js/cinema-bg.js"></script>
+  <script src="../../js/cinema-music.js"></script>
+  <script src="../../js/shell.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/home.js"></script>
+  <script>
+    window.Shell && window.Shell.mount({ pageId: 'news', title: '岗位大新闻', subtitle: '未来就业市场数字报纸' });
+  </script>
+</body>
+</html>
