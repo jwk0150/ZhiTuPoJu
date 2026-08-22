@@ -1,0 +1,160 @@
+::ffff:127.0.0.1 - - [22/Aug/2026 23:08:49] "GET /index.html HTTP/1.1" 200 -
+::1 - - [22/Aug/2026 23:09:12] "GET /index.html HTTP/1.1" 200 -
+::1 - - [22/Aug/2026 23:09:12] "GET /css/cinema.css?v=34 HTTP/1.1" 304 -
+::1 - - [22/Aug/2026 23:09:12] "GET /js/entry.js?v=34 HTTP/1.1" 304 -
+::1 - - [22/Aug/2026 23:09:12] "GET /js/project-cards.js?v=34 HTTP/1.1" 304 -
+::1 - - [22/Aug/2026 23:09:12] "GET /assets/brand/logo.png?v=14 HTTP/1.1" 304 -
+::1 - - [22/Aug/2026 23:09:13] "GET /assets/bg/scene1.mp4 HTTP/1.1" 200 -
+::1 - - [22/Aug/2026 23:09:16] "GET /assets/bg/transition_1_2.mp4 HTTP/1.1" 200 -
+::1 - - [22/Aug/2026 23:09:17] "GET /assets/bg/scene2.mp4 HTTP/1.1" 200 -
+::1 - - [22/Aug/2026 23:09:17] "GET /assets/bg/scene2_idle_loop.mp4 HTTP/1.1" 200 -
+::1 - - [22/Aug/2026 23:09:17] "GET /assets/bg/scene3.mp4 HTTP/1.1" 304 -
+--------------------------------------------------------------------------------
+::1 - - [22/Aug/2026 23:09:17] "GET /assets/bg/scene2.mp4 HTTP/1.1" 200 -
+
+::1 - - [22/Aug/2026 23:09:17] "GET /assets/bg/scene2_idle_loop.mp4 HTTP/1.1" 200 -
+Exception occurred during processing of request fromException occurred during processing of request from  ('::1', 62859, 0, 0)('::1', 62496, 0, 0)
+
+Traceback (most recent call last):
+Traceback (most recent call last):
+  File "C:\two2\self\lib\socketserver.py", line 683, in process_request_thread
+    self.finish_request(request, client_address)
+  File "C:\two2\self\lib\socketserver.py", line 683, in process_request_thread
+    self.finish_request(request, client_address)
+  File "C:\two2\self\lib\http\server.py", line 1304, in finish_request
+    self.RequestHandlerClass(request, client_address, self,
+  File "C:\two2\self\lib\http\server.py", line 1304, in finish_request
+    self.RequestHandlerClass(request, client_address, self,
+  File "C:\two2\self\lib\http\server.py", line 668, in __init__
+    super().__init__(*args, **kwargs)
+  File "C:\two2\self\lib\http\server.py", line 668, in __init__
+    super().__init__(*args, **kwargs)
+  File "C:\two2\self\lib\socketserver.py", line 747, in __init__
+    self.handle()
+  File "C:\two2\self\lib\socketserver.py", line 747, in __init__
+    self.handle()
+  File "C:\two2\self\lib\http\server.py", line 433, in handle
+    self.handle_one_request()
+  File "C:\two2\self\lib\http\server.py", line 433, in handle
+    self.handle_one_request()
+  File "C:\two2\self\lib\http\server.py", line 421, in handle_one_request
+    method()
+  File "C:\two2\self\lib\http\server.py", line 675, in do_GET
+    self.copyfile(f, self.wfile)
+  File "C:\two2\self\lib\http\server.py", line 875, in copyfile
+    shutil.copyfileobj(source, outputfile)
+  File "C:\two2\self\lib\http\server.py", line 421, in handle_one_request
+    method()
+  File "C:\two2\self\lib\http\server.py", line 675, in do_GET
+    self.copyfile(f, self.wfile)
+  File "C:\two2\self\lib\http\server.py", line 875, in copyfile
+    shutil.copyfileobj(source, outputfile)
+  File "C:\two2\self\lib\shutil.py", line 198, in copyfileobj
+    fdst_write(buf)
+  File "C:\two2\self\lib\socketserver.py", line 826, in write
+    self._sock.sendall(b)
+  File "C:\two2\self\lib\shutil.py", line 198, in copyfileobj
+    fdst_write(buf)
+  File "C:\two2\self\lib\socketserver.py", line 826, in write
+    self._sock.sendall(b)
+ConnectionAbortedError: [WinError 10053] 你的主机中的软件中止了一个已建立的连接。
+ConnectionAbortedError: [WinError 10053] 你的主机中的软件中止了一个已建立的连接。
+--------------------------------------------------------------------------------
+
+::1 - - [22/Aug/2026 23:09:19] code 404, message File not found
+::1 - - [22/Aug/2026 23:09:19] "GET /favicon.ico HTTP/1.1" 404 -
+::1 - - [22/Aug/2026 23:09:25] "GET /pages/home.html HTTP/1.1" 304 -
+::1 - - [22/Aug/2026 23:09:25] "GET /css/tokens.css HTTP/1.1" 304 -
+::1 - - [22/Aug/2026 23:09:25] "GET /css/shell.css HTTP/1.1" 304 -
+::1 - - [22/Aug/2026 23:09:25] "GET /css/components.css HTTP/1.1" 304 -
+::1 - - [22/Aug/2026 23:09:25] "GET /assets/brand/home-globe.png HTTP/1.1" 304 -
+::1 - - [22/Aug/2026 23:09:25] "GET /js/api.js HTTP/1.1" 304 -
+::1 - - [22/Aug/2026 23:09:25] "GET /js/cinema-bg.js HTTP/1.1" 304 -
+::1 - - [22/Aug/2026 23:09:25] "GET /js/cinema-music.js HTTP/1.1" 304 -
+::1 - - [22/Aug/2026 23:09:25] "GET /js/shell.js HTTP/1.1" 304 -
+::1 - - [22/Aug/2026 23:09:25] "GET /js/pages/home.js HTTP/1.1" 304 -
+::1 - - [22/Aug/2026 23:09:25] "GET /assets/brand/logo.png HTTP/1.1" 304 -
+::1 - - [22/Aug/2026 23:09:28] "GET /pages/insight.html?v=2 HTTP/1.1" 304 -
+::1 - - [22/Aug/2026 23:09:28] "GET /css/legacy-views.css HTTP/1.1" 304 -
+::1 - - [22/Aug/2026 23:09:28] "GET /css/page-polish.css HTTP/1.1" 304 -
+::1 - - [22/Aug/2026 23:09:28] "GET /trends-mock.js HTTP/1.1" 304 -
+::1 - - [22/Aug/2026 23:09:28] "GET /js/runtime-core.js HTTP/1.1" 304 -
+::1 - - [22/Aug/2026 23:09:28] "GET /js/pages/evolution.js?v=2026082106 HTTP/1.1" 304 -
+::1 - - [22/Aug/2026 23:09:28] "GET /js/pages/analysis.js?v=2026082106 HTTP/1.1" 304 -
+::1 - - [22/Aug/2026 23:09:28] "GET /js/pages/hub-tabs.js HTTP/1.1" 304 -
+::1 - - [22/Aug/2026 23:23:07] "GET /pages/insight.html?v=2&tab=evolution HTTP/1.1" 200 -
+::1 - - [22/Aug/2026 23:23:07] "GET /css/tokens.css HTTP/1.1" 200 -
+::1 - - [22/Aug/2026 23:23:07] "GET /css/shell.css HTTP/1.1" 200 -
+::1 - - [22/Aug/2026 23:23:07] "GET /css/components.css HTTP/1.1" 200 -
+::1 - - [22/Aug/2026 23:23:07] "GET /css/legacy-views.css HTTP/1.1" 200 -
+::1 - - [22/Aug/2026 23:23:07] "GET /css/page-polish.css HTTP/1.1" 200 -
+::1 - - [22/Aug/2026 23:23:07] "GET /trends-mock.js HTTP/1.1" 200 -
+::1 - - [22/Aug/2026 23:23:07] "GET /js/api.js HTTP/1.1" 200 -
+::1 - - [22/Aug/2026 23:23:07] "GET /js/runtime-core.js HTTP/1.1" 200 -
+::1 - - [22/Aug/2026 23:23:07] "GET /js/cinema-bg.js HTTP/1.1" 200 -
+::1 - - [22/Aug/2026 23:23:07] "GET /js/cinema-music.js HTTP/1.1" 200 -
+::1 - - [22/Aug/2026 23:23:07] "GET /js/shell.js HTTP/1.1" 200 -
+::1 - - [22/Aug/2026 23:23:07] "GET /js/pages/evolution.js?v=2026082201 HTTP/1.1" 200 -
+::1 - - [22/Aug/2026 23:23:07] "GET /js/pages/analysis.js?v=2026082201 HTTP/1.1" 200 -
+::1 - - [22/Aug/2026 23:23:07] "GET /js/pages/hub-tabs.js HTTP/1.1" 200 -
+::1 - - [22/Aug/2026 23:23:18] "GET /assets/brand/logo.png HTTP/1.1" 200 -
+::1 - - [22/Aug/2026 23:23:18] "GET /assets/bg/scene3.mp4 HTTP/1.1" 200 -
+::1 - - [22/Aug/2026 23:23:28] code 404, message File not found
+::1 - - [22/Aug/2026 23:23:28] "GET /favicon.ico HTTP/1.1" 404 -
+::1 - - [22/Aug/2026 23:44:15] "GET /pages/insight.html?v=2&tab=evolution HTTP/1.1" 200 -
+::1 - - [22/Aug/2026 23:44:15] "GET /css/tokens.css HTTP/1.1" 200 -
+::1 - - [22/Aug/2026 23:44:15] "GET /css/shell.css HTTP/1.1" 200 -
+::1 - - [22/Aug/2026 23:44:15] "GET /css/legacy-views.css HTTP/1.1" 200 -
+::1 - - [22/Aug/2026 23:44:15] "GET /css/components.css HTTP/1.1" 200 -
+::1 - - [22/Aug/2026 23:44:15] "GET /css/page-polish.css HTTP/1.1" 200 -
+::1 - - [22/Aug/2026 23:44:15] "GET /trends-mock.js HTTP/1.1" 200 -
+::1 - - [22/Aug/2026 23:44:15] "GET /js/api.js HTTP/1.1" 200 -
+::1 - - [22/Aug/2026 23:44:15] "GET /js/runtime-core.js HTTP/1.1" 200 -
+::1 - - [22/Aug/2026 23:44:15] "GET /js/cinema-bg.js HTTP/1.1" 200 -
+::1 - - [22/Aug/2026 23:44:15] "GET /js/cinema-music.js HTTP/1.1" 200 -
+::1 - - [22/Aug/2026 23:44:15] "GET /js/shell.js HTTP/1.1" 200 -
+::1 - - [22/Aug/2026 23:44:15] "GET /js/pages/evolution.js?v=2026082202 HTTP/1.1" 200 -
+::1 - - [22/Aug/2026 23:44:15] "GET /js/pages/analysis.js?v=2026082202 HTTP/1.1" 200 -
+::1 - - [22/Aug/2026 23:44:15] "GET /js/pages/hub-tabs.js HTTP/1.1" 200 -
+::1 - - [22/Aug/2026 23:44:21] "GET /assets/brand/logo.png HTTP/1.1" 200 -
+::1 - - [22/Aug/2026 23:44:22] "GET /assets/bg/scene3.mp4 HTTP/1.1" 200 -
+::1 - - [22/Aug/2026 23:44:29] code 404, message File not found
+::1 - - [22/Aug/2026 23:44:29] "GET /favicon.ico HTTP/1.1" 404 -
+::1 - - [22/Aug/2026 23:48:09] "GET /pages/insight.html?v=2&tab=evolution HTTP/1.1" 200 -
+::1 - - [22/Aug/2026 23:48:09] "GET /css/tokens.css HTTP/1.1" 200 -
+::1 - - [22/Aug/2026 23:48:09] "GET /css/shell.css HTTP/1.1" 200 -
+::1 - - [22/Aug/2026 23:48:09] "GET /css/legacy-views.css HTTP/1.1" 200 -
+::1 - - [22/Aug/2026 23:48:09] "GET /css/components.css HTTP/1.1" 200 -
+::1 - - [22/Aug/2026 23:48:09] "GET /css/page-polish.css HTTP/1.1" 200 -
+::1 - - [22/Aug/2026 23:48:09] "GET /trends-mock.js HTTP/1.1" 200 -
+::1 - - [22/Aug/2026 23:48:09] "GET /js/api.js HTTP/1.1" 200 -
+::1 - - [22/Aug/2026 23:48:09] "GET /js/runtime-core.js HTTP/1.1" 200 -
+::1 - - [22/Aug/2026 23:48:09] "GET /js/cinema-bg.js HTTP/1.1" 200 -
+::1 - - [22/Aug/2026 23:48:09] "GET /js/cinema-music.js HTTP/1.1" 200 -
+::1 - - [22/Aug/2026 23:48:09] "GET /js/shell.js HTTP/1.1" 200 -
+::1 - - [22/Aug/2026 23:48:09] "GET /js/pages/evolution.js?v=2026082203 HTTP/1.1" 200 -
+::1 - - [22/Aug/2026 23:48:09] "GET /js/pages/analysis.js?v=2026082203 HTTP/1.1" 200 -
+::1 - - [22/Aug/2026 23:48:09] "GET /js/pages/hub-tabs.js HTTP/1.1" 200 -
+::1 - - [22/Aug/2026 23:48:12] "GET /assets/brand/logo.png HTTP/1.1" 200 -
+::1 - - [22/Aug/2026 23:48:12] "GET /assets/bg/scene3.mp4 HTTP/1.1" 200 -
+::1 - - [22/Aug/2026 23:48:16] code 404, message File not found
+::1 - - [22/Aug/2026 23:48:16] "GET /favicon.ico HTTP/1.1" 404 -
+::1 - - [22/Aug/2026 23:49:07] "GET /pages/insight.html?v=2&tab=evolution HTTP/1.1" 200 -
+::1 - - [22/Aug/2026 23:49:07] "GET /css/tokens.css HTTP/1.1" 200 -
+::1 - - [22/Aug/2026 23:49:07] "GET /css/components.css HTTP/1.1" 200 -
+::1 - - [22/Aug/2026 23:49:07] "GET /css/shell.css HTTP/1.1" 200 -
+::1 - - [22/Aug/2026 23:49:07] "GET /css/legacy-views.css HTTP/1.1" 200 -
+::1 - - [22/Aug/2026 23:49:07] "GET /css/page-polish.css HTTP/1.1" 200 -
+::1 - - [22/Aug/2026 23:49:07] "GET /trends-mock.js HTTP/1.1" 200 -
+::1 - - [22/Aug/2026 23:49:07] "GET /js/api.js HTTP/1.1" 200 -
+::1 - - [22/Aug/2026 23:49:07] "GET /js/runtime-core.js HTTP/1.1" 200 -
+::1 - - [22/Aug/2026 23:49:07] "GET /js/cinema-bg.js HTTP/1.1" 200 -
+::1 - - [22/Aug/2026 23:49:07] "GET /js/cinema-music.js HTTP/1.1" 200 -
+::1 - - [22/Aug/2026 23:49:07] "GET /js/shell.js HTTP/1.1" 200 -
+::1 - - [22/Aug/2026 23:49:07] "GET /js/pages/evolution.js?v=2026082203 HTTP/1.1" 200 -
+::1 - - [22/Aug/2026 23:49:07] "GET /js/pages/analysis.js?v=2026082203 HTTP/1.1" 200 -
+::1 - - [22/Aug/2026 23:49:07] "GET /js/pages/hub-tabs.js HTTP/1.1" 200 -
+::1 - - [22/Aug/2026 23:49:10] "GET /assets/brand/logo.png HTTP/1.1" 200 -
+::1 - - [22/Aug/2026 23:49:10] "GET /assets/bg/scene3.mp4 HTTP/1.1" 200 -
+::1 - - [22/Aug/2026 23:49:13] code 404, message File not found
+::1 - - [22/Aug/2026 23:49:13] "GET /favicon.ico HTTP/1.1" 404 -

@@ -163,30 +163,29 @@
     <div class="card evo-insight-card">
       <div class="card-header"><div class="card-title"><i class="ico-spark"></i>核心洞察</div></div>
       <div class="card-body">
-        <ul class="evo-insight-list" id="evo-insight-list">
-          <!-- 由 JS 渲染 -->
-        </ul>
+        <div class="evo-insight-list" id="evo-insight-list">
+          <!-- 由 JS 渲染：现象 → 原因 → 趋势/结论 -->
+        </div>
       </div>
     </div>
     <div class="card evo-source-card">
       <div class="card-header">
         <div class="card-title"><i class="ico-db"></i>数据来源</div>
-        <a class="evo-view-all" href="#">查看全部 ▸</a>
+        <a class="evo-view-all" id="evo-source-expand" href="javascript:void(0)">展开全部 ▸</a>
       </div>
       <div class="card-body">
-        <div class="evo-source-sub">多源数据综合分析（6 个）</div>
-        <ul class="evo-source-list" id="evo-source-list">
+        <div class="evo-source-sub" id="evo-source-sub">多源数据综合分析</div>
+        <div class="evo-source-list" id="evo-source-list">
           <!-- 由 JS 渲染 -->
-        </ul>
+        </div>
       </div>
     </div>
     <div class="card evo-history-card">
       <div class="card-header">
         <div class="card-title"><i class="ico-history"></i>历史版本对比</div>
-        <a class="evo-view-all" href="#">查看全部 ▸</a>
       </div>
       <div class="card-body evo-history-body" id="evo-history-body">
-        <!-- 由 JS 渲染 -->
+        <!-- 由 JS 渲染：版本选择 + 版本头 + 演化关系 -->
       </div>
     </div>
   </div>
@@ -568,8 +567,8 @@
   <script src="../js/cinema-bg.js"></script>
   <script src="../js/cinema-music.js"></script>
   <script src="../js/shell.js"></script>
-  <script src="../js/pages/evolution.js?v=2026082106"></script>
-  <script src="../js/pages/analysis.js?v=2026082106"></script>
+  <script src="../js/pages/evolution.js?v=2026082301"></script>
+  <script src="../js/pages/analysis.js?v=2026082301"></script>
   <script src="../js/pages/hub-tabs.js"></script>
   <script>
     window.Shell && window.Shell.mount({ pageId: 'insight', title: '岗位洞察', subtitle: '能力演化与宏观趋势' });

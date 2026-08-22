@@ -1439,6 +1439,111 @@ body[data-page="insight"] #view-evolution .evo-bullet {
   margin-top: 8px;
   flex-shrink: 0;
 }
+
+/* ===== 核心洞察卡片（现象 → 原因 → 趋势/结论） ===== */
+body[data-page="insight"] #view-evolution .evo-insight-item {
+  position: relative;
+  padding: 12px 14px 13px;
+  border-radius: 12px;
+  background: linear-gradient(160deg, rgba(20, 32, 46, 0.55), rgba(12, 20, 32, 0.62));
+  border: 1px solid rgba(31, 200, 217, 0.18);
+  border-left: 3px solid rgba(31, 200, 217, 0.6);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22);
+}
+body[data-page="insight"] #view-evolution .evo-insight-item-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 9px;
+}
+body[data-page="insight"] #view-evolution .evo-insight-tag {
+  flex-shrink: 0;
+  padding: 2px 9px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #0c1422;
+  background: linear-gradient(120deg, #1fc8d9, #38e0c0);
+  letter-spacing: 0.3px;
+}
+body[data-page="insight"] #view-evolution .evo-insight-title {
+  font-size: 13.5px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: rgba(236, 248, 253, 0.96);
+}
+body[data-page="insight"] #view-evolution .evo-insight-flow {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+body[data-page="insight"] #view-evolution .evo-insight-step {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+body[data-page="insight"] #view-evolution .evo-insight-step-label {
+  flex-shrink: 0;
+  width: 64px;
+  text-align: center;
+  margin-top: 1px;
+  padding: 2px 0;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(186, 214, 230, 0.9);
+  background: rgba(31, 200, 217, 0.12);
+  border: 1px solid rgba(31, 200, 217, 0.22);
+}
+body[data-page="insight"] #view-evolution .evo-insight-step-conclusion .evo-insight-step-label {
+  color: #0c1422;
+  background: linear-gradient(120deg, #F0B429, #ffd76a);
+  border-color: transparent;
+}
+body[data-page="insight"] #view-evolution .evo-insight-step-text {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: rgba(214, 232, 242, 0.88);
+}
+body[data-page="insight"] #view-evolution .evo-insight-evidence {
+  margin-top: 10px;
+  padding-top: 9px;
+  border-top: 1px dashed rgba(31, 200, 217, 0.18);
+}
+body[data-page="insight"] #view-evolution .evo-insight-evidence-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(186, 214, 230, 0.7);
+  letter-spacing: 0.4px;
+}
+body[data-page="insight"] #view-evolution .evo-insight-evidence-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 7px;
+}
+body[data-page="insight"] #view-evolution .evo-insight-chip {
+  font-size: 11px;
+  padding: 3px 9px;
+  border-radius: 6px;
+  color: rgba(236, 248, 253, 0.9);
+  background: rgba(240, 180, 41, 0.12);
+  border: 1px solid rgba(240, 180, 41, 0.28);
+}
+body[data-page="insight"] #view-evolution .evo-insight-scope {
+  margin-top: 11px;
+  font-size: 11px;
+  color: rgba(150, 176, 192, 0.7);
+  text-align: right;
+  letter-spacing: 0.3px;
+}
+body[data-page="insight"] #view-evolution .evo-insight-empty {
+  font-size: 13px;
+  color: rgba(186, 214, 230, 0.6);
+  padding: 16px 4px;
+  text-align: center;
+}
 body[data-page="insight"] #view-evolution .ico-spark,
 body[data-page="insight"] #view-evolution .ico-db,
 body[data-page="insight"] #view-evolution .ico-history {
@@ -1503,6 +1608,329 @@ body[data-page="insight"] #view-evolution .evo-source-weight {
   background: rgba(240, 180, 41, 0.12);
   border-radius: 4px;
   white-space: nowrap;
+}
+/* 数据来源卡片（重构） */
+body[data-page="insight"] #view-evolution .evo-source-item {
+  cursor: pointer;
+}
+body[data-page="insight"] #view-evolution .evo-source-name-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+body[data-page="insight"] #view-evolution .evo-source-type {
+  flex-shrink: 0;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 1px 7px;
+  border-radius: 10px;
+  color: rgba(186, 214, 230, 0.9);
+  background: rgba(31, 200, 217, 0.12);
+  border: 1px solid rgba(31, 200, 217, 0.22);
+}
+body[data-page="insight"] #view-evolution .evo-source-meta {
+  font-size: 11px;
+  color: rgba(220, 232, 240, 0.55);
+  margin-top: 3px;
+  line-height: 1.4;
+}
+body[data-page="insight"] #view-evolution .evo-source-status {
+  flex-shrink: 0;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 10px;
+  white-space: nowrap;
+}
+body[data-page="insight"] #view-evolution .evo-source-status-ok {
+  color: #4ade80;
+  background: rgba(74, 222, 128, 0.12);
+  border: 1px solid rgba(74, 222, 128, 0.3);
+}
+body[data-page="insight"] #view-evolution .evo-source-status-exp {
+  color: #F0B429;
+  background: rgba(240, 180, 41, 0.12);
+  border: 1px solid rgba(240, 180, 41, 0.3);
+}
+body[data-page="insight"] #view-evolution .evo-source-status-err {
+  color: #f87171;
+  background: rgba(248, 113, 113, 0.12);
+  border: 1px solid rgba(248, 113, 113, 0.3);
+}
+body[data-page="insight"] #view-evolution .evo-source-more {
+  font-size: 11px;
+  color: rgba(150, 176, 192, 0.7);
+  text-align: center;
+  padding: 6px 0 2px;
+  letter-spacing: 0.3px;
+}
+/* 数据来源详情弹窗 */
+body[data-page="insight"] #view-evolution .evo-source-modal-box {
+  max-width: 520px;
+  max-height: 82vh;
+  overflow-y: auto;
+}
+body[data-page="insight"] #view-evolution .evo-source-modal-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+body[data-page="insight"] #view-evolution .evo-source-modal-name {
+  font-size: 17px;
+  font-weight: 700;
+  color: #eaf6fb;
+}
+body[data-page="insight"] #view-evolution .evo-source-modal-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+body[data-page="insight"] #view-evolution .evo-source-modal-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 9px 11px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+body[data-page="insight"] #view-evolution .evo-source-modal-cell .k {
+  font-size: 11px;
+  color: rgba(186, 214, 230, 0.65);
+}
+body[data-page="insight"] #view-evolution .evo-source-modal-cell .v {
+  font-size: 12.5px;
+  color: rgba(236, 248, 253, 0.92);
+  line-height: 1.45;
+}
+body[data-page="insight"] #view-evolution .evo-source-modal-section {
+  margin-bottom: 14px;
+}
+body[data-page="insight"] #view-evolution .evo-source-modal-section-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(31, 200, 217, 0.95);
+  margin-bottom: 8px;
+  padding-left: 9px;
+  border-left: 3px solid rgba(31, 200, 217, 0.6);
+}
+body[data-page="insight"] #view-evolution .evo-source-modal-detail {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: rgba(214, 232, 242, 0.86);
+}
+body[data-page="insight"] #view-evolution .evo-source-modal-links {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+body[data-page="insight"] #view-evolution .evo-source-link-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 11px;
+  border-radius: 8px;
+  background: linear-gradient(160deg, rgba(20, 32, 46, 0.5), rgba(12, 20, 32, 0.58));
+  border: 1px solid rgba(31, 200, 217, 0.18);
+  border-left: 3px solid rgba(240, 180, 41, 0.6);
+}
+body[data-page="insight"] #view-evolution .evo-source-link-tag {
+  flex-shrink: 0;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 1px 7px;
+  border-radius: 10px;
+  color: #0c1422;
+  background: linear-gradient(120deg, #1fc8d9, #38e0c0);
+}
+body[data-page="insight"] #view-evolution .evo-source-link-title {
+  font-size: 12.5px;
+  color: rgba(236, 248, 253, 0.92);
+  line-height: 1.4;
+}
+body[data-page="insight"] #view-evolution .evo-source-link-empty {
+  font-size: 12px;
+  color: rgba(186, 214, 230, 0.6);
+}
+
+/* ===== 历史版本对比（重构：能力结构演化） ===== */
+body[data-page="insight"] #view-evolution .evo-history-selectors {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+body[data-page="insight"] #view-evolution .evo-history-select {
+  flex: 1;
+  appearance: none;
+  -webkit-appearance: none;
+  padding: 8px 10px;
+  border-radius: 9px;
+  font-size: 12.5px;
+  color: #eaf6fb;
+  background: rgba(20, 32, 46, 0.7);
+  border: 1px solid rgba(31, 200, 217, 0.3);
+  cursor: pointer;
+  outline: none;
+}
+body[data-page="insight"] #view-evolution .evo-history-vs {
+  font-size: 18px;
+  color: #1fc8d9;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+body[data-page="insight"] #view-evolution .evo-history-head {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 12px;
+  align-items: stretch;
+  margin-bottom: 16px;
+}
+body[data-page="insight"] #view-evolution .evo-history-ver {
+  padding: 12px 13px;
+  border-radius: 11px;
+  background: linear-gradient(160deg, rgba(20, 32, 46, 0.55), rgba(12, 20, 32, 0.62));
+  border: 1px solid rgba(31, 200, 217, 0.18);
+}
+body[data-page="insight"] #view-evolution .evo-history-ver-b {
+  border-left: 3px solid rgba(31, 200, 217, 0.6);
+}
+body[data-page="insight"] #view-evolution .evo-history-ver-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: #eaf6fb;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+body[data-page="insight"] #view-evolution .evo-history-ver-tag {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 1px 7px;
+  border-radius: 10px;
+  color: #0c1422;
+  background: linear-gradient(120deg, #1fc8d9, #38e0c0);
+}
+body[data-page="insight"] #view-evolution .evo-history-ver-date {
+  font-size: 11px;
+  color: rgba(220, 232, 240, 0.55);
+  margin-top: 4px;
+}
+body[data-page="insight"] #view-evolution .evo-history-ver-count {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(240, 180, 41, 0.92);
+  margin-top: 7px;
+}
+body[data-page="insight"] #view-evolution .evo-history-ver-desc {
+  font-size: 11.5px;
+  color: rgba(214, 232, 242, 0.78);
+  margin-top: 5px;
+  line-height: 1.5;
+}
+body[data-page="insight"] #view-evolution .evo-history-direction {
+  align-self: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+body[data-page="insight"] #view-evolution .evo-history-dir-arrow {
+  font-size: 22px;
+  color: #1fc8d9;
+}
+body[data-page="insight"] #view-evolution .evo-history-dir-text {
+  font-size: 10px;
+  color: rgba(186, 214, 230, 0.7);
+  writing-mode: vertical-lr;
+  letter-spacing: 1px;
+}
+body[data-page="insight"] #view-evolution .evo-history-evo-title {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: rgba(31, 200, 217, 0.95);
+  margin-bottom: 10px;
+  padding-left: 9px;
+  border-left: 3px solid rgba(31, 200, 217, 0.6);
+}
+body[data-page="insight"] #view-evolution .evo-history-evo-sub {
+  font-size: 11px;
+  font-weight: 400;
+  color: rgba(150, 176, 192, 0.7);
+}
+body[data-page="insight"] #view-evolution .evo-history-evo-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+body[data-page="insight"] #view-evolution .evo-evo-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  cursor: pointer;
+  transition: all 0.18s;
+}
+body[data-page="insight"] #view-evolution .evo-evo-item:hover {
+  background: rgba(31, 200, 217, 0.1);
+  border-color: rgba(31, 200, 217, 0.35);
+  transform: translateY(-1px);
+}
+body[data-page="insight"] #view-evolution .evo-evo-tag {
+  flex-shrink: 0;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 10px;
+  white-space: nowrap;
+}
+body[data-page="insight"] #view-evolution .evo-evo-upgrade    { color: #1fc8d9; background: rgba(31,200,217,0.14); border: 1px solid rgba(31,200,217,0.35); }
+body[data-page="insight"] #view-evolution .evo-evo-strengthen { color: #4ade80; background: rgba(74,222,128,0.14); border: 1px solid rgba(74,222,128,0.35); }
+body[data-page="insight"] #view-evolution .evo-evo-weaken     { color: #f87171; background: rgba(248,113,113,0.14); border: 1px solid rgba(248,113,113,0.35); }
+body[data-page="insight"] #view-evolution .evo-evo-replace    { color: #F0B429; background: rgba(240,180,41,0.14); border: 1px solid rgba(240,180,41,0.35); }
+body[data-page="insight"] #view-evolution .evo-evo-new        { color: #38e0c0; background: rgba(56,224,192,0.14); border: 1px solid rgba(56,224,192,0.35); }
+body[data-page="insight"] #view-evolution .evo-evo-flow {
+  flex: 1;
+  min-width: 0;
+}
+body[data-page="insight"] #view-evolution .evo-evo-arrow-text {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: rgba(236, 248, 253, 0.94);
+  line-height: 1.35;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+body[data-page="insight"] #view-evolution .evo-evo-note {
+  font-size: 11px;
+  color: rgba(214, 232, 242, 0.7);
+  margin-top: 2px;
+  line-height: 1.4;
+}
+body[data-page="insight"] #view-evolution .evo-evo-right {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
+}
+body[data-page="insight"] #view-evolution .evo-evo-imp {
+  font-size: 11px;
+  color: rgba(240, 180, 41, 0.9);
+  letter-spacing: 1px;
+}
+body[data-page="insight"] #view-evolution .evo-evo-arrow.up   { color: #4ade80; }
+body[data-page="insight"] #view-evolution .evo-evo-arrow.down { color: #f87171; }
+body[data-page="insight"] #view-evolution .evo-evo-level {
+  font-size: 10px;
+  color: rgba(186, 214, 230, 0.75);
 }
 
 body[data-page="insight"] #view-evolution .evo-history-body {
@@ -1587,6 +2015,9 @@ body[data-page="insight"] #view-evolution .evo-history-btn:hover {
 @keyframes evoModalFade {
   from { opacity: 0; }
   to   { opacity: 1; }
+}
+.evo-modal-mask.open {
+  display: flex;
 }
 .evo-modal-box {
   position: relative;

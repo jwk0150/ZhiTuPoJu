@@ -1,6 +1,6 @@
 // ============== Evolution View ==============
-// build: 2026082106 — 三组卡片加表头（能力/类型/重要性/变化原因）
-console.log('[evolution.js] build=2026082106, add group table header');
+// build: 2026082301 — 历史版本对比重构：版本选择+能力结构演化关系
+console.log('[evolution.js] build=2026082301, history version compare refactor');
 let evolutionState = {currentJobId: 'Java开发工程师', timeOffset: 6};
 window.initEvolution = function() {
     // 确保 Store 准备就绪
@@ -125,25 +125,155 @@ window.initEvolution = function() {
                 { name: '传统单体应用开发',                       type: '开发模式', importance: 1, reason: '企业架构向微服务转型' }
             ]
         },
+        // 核心洞察：结构化，体现“现象 → 原因 → 趋势/结论”，并绑定时间节点用于联动
         insights: [
-            '本周期能力变化主要以平稳驱动，AI 工具采纳率显著上升',
-            '云原生与 AI 工程化能力成为 Java 后端岗位新基准',
-            '向量数据库与 RAG 相关技术需求进入快速扩张期',
-            '系统架构向高可用、可观测性演进',
-            '单体应用维护能力需求持续下降，建议关注架构升级路径'
+            {
+                id: 'ai-baseline',
+                tag: 'AI 协同',
+                title: 'AI 辅助开发正从“加分项”转变为“基础能力”',
+                phenomenon: '本期新增能力中，AI 辅助编程、Copilot、Cursor、代码生成相关技能集中出现，并在招聘要求中从“优先”下沉为“通用要求”。',
+                reason: '大模型编码工具在企业研发流程中加速落地，单位人效提升诉求驱动岗位对 AI 协同开发能力形成刚性预期。',
+                conclusion: '未来 1～2 年，AI 协同开发（含 Prompt 工程、代码审查辅助、单测生成）将成为 Java 工程师的基础门槛，而非差异化优势。',
+                evidence: ['技术社区内容同比增长 +85%', '企业招聘“AI 辅助”关键词渗透率 +18pp', '样本岗位中 6/10 已将 AI 工具写入 JD'],
+                nodes: ['2025-04', '2025-03']
+            },
+            {
+                id: 'cloud-native',
+                tag: '云原生',
+                title: '企业上云推动云原生与容器化能力持续提升',
+                phenomenon: '云原生应用、Kubernetes、Docker、Service Mesh 等能力在新增列表中权重居前，且从“高级”扩散至“核心”要求。',
+                reason: '政企与互联网客户全面上云，弹性、可观测、标准化的交付方式倒逼后端工程能力向云原生栈迁移。',
+                conclusion: '云原生能力（容器编排 + 服务网格 + 声明式运维）将长期作为 Java 后端的主线能力，且与微服务深度绑定。',
+                evidence: ['企业招聘“云原生”提及率 +22pp', 'Kubernetes 要求岗位同比 +34%', '行业报告将云原生列为年度 Top3 技术主线'],
+                nodes: ['2025-02', '2025-04']
+            },
+            {
+                id: 'distributed',
+                tag: '架构演进',
+                title: '岗位能力从单一 Java 栈向“分布式 + 云原生 + AI”协同扩展',
+                phenomenon: '微服务、分布式事务、消息一致性、可观测性等技术密集出现，传统单体 SSH/Struts 能力被标记为下降/移除。',
+                reason: '业务复杂度与系统规模上升，单技术栈已无法覆盖稳定性、弹性与智能化诉求，岗位要求向复合能力演进。',
+                conclusion: 'Java 工程师的能力边界正在外扩：内核仍是 Java，但价值高地转向分布式架构治理与跨栈协同。',
+                evidence: ['分布式相关技能新增 8 项', '传统 SSH 框架要求下降 -15%', '架构类关键词 JD 占比升至 47%'],
+                nodes: ['2024-12', '2025-04']
+            },
+            {
+                id: 'observability',
+                tag: '稳定性',
+                title: '可观测性与稳定性成为工程成熟度标志',
+                phenomenon: 'Prometheus、Grafana、OpenTelemetry、SLO/SLI 等能力要求稳步提升，并由高级要求扩散至通用要求。',
+                reason: '系统规模与复杂度上升，故障定位与韧性保障成为高频痛点，稳定性能力被纳入标准培养模块。',
+                conclusion: '可观测性将从“运维专属”转为“开发即职责”，SLO 思维成为后端工程师的通用素养。',
+                evidence: ['可观测性内容增长 +60%', '监控/追踪关键词 +12pp', '样本岗位 7/10 要求具备稳定性体系经验'],
+                nodes: ['2025-03']
+            },
+            {
+                id: 'legacy-decline',
+                tag: '技术更替',
+                title: '传统单体框架能力需求持续走弱',
+                phenomenon: 'SSH、Struts 等传统框架在删除/下降能力中集中出现，相关岗位要求明显收缩。',
+                reason: '新型云原生与前后端分离架构全面替代传统 MVC 单体，遗留技术栈维护场景收窄。',
+                conclusion: '建议减少对传统单体框架的投入，将学习预算转向微服务与云原生现代化栈。',
+                evidence: ['传统 SSH 框架要求下降 -15%', 'Struts 相关 JD 同比减少 28%', '新增能力中 0 项涉及传统单体框架'],
+                nodes: ['2025-04']
+            }
         ],
+        // 数据来源：结构化，体现可信链路（来源 → 数据 → 支撑的分析结论）
         sources: [
-            { name: '企业招聘数据',   weight: '40%', range: '2025-05-01 更新' },
-            { name: '行业报告',       weight: '25%', range: '2025-04-28 更新' },
-            { name: '技术社区',       weight: '15%', range: '2025-05-12 更新' },
-            { name: 'GitHub 趋势',    weight: '10%', range: '2025-05-10 更新' },
-            { name: '企业内部数据',   weight: '10%', range: '2025-05-15 更新' }
+            {
+                id: 'recruit',
+                name: '企业招聘数据',
+                type: '招聘 JD',
+                updatedAt: '2025-05-01 更新',
+                scale: '12,580 条有效 JD',
+                coverage: '近 30 天 · 一线及新一线城市 · Java 后端岗位',
+                contribution: '识别企业岗位能力需求变化，权重最高',
+                status: '正常',
+                links: ['ai-baseline', 'cloud-native', 'distributed'],
+                details: '采集自 51JOB、智联、BOSS 等公开招聘渠道，经清洗去重后保留有效 Java 后端 JD 12,580 条。主要用于识别“AI 辅助编程”“云原生”“微服务”等关键词的渗透率与增长趋势，直接支撑新增能力（如 Copilot、Kubernetes）的判定。'
+            },
+            {
+                id: 'internal',
+                name: '企业内部岗位数据',
+                type: '企业私有',
+                updatedAt: '2025-05-15 更新',
+                scale: '3,240 条岗位画像',
+                coverage: '合作企业研发岗 · 含职级与薪酬带宽',
+                contribution: '校准能力重要性权重，区分核心/辅助技能',
+                status: '正常',
+                links: ['distributed', 'observability'],
+                details: '来自合作企业的内部岗位画像与晋升标准，用于校准能力重要性分级（high/mid/low），并将“可观测性”“分布式事务”等标注为核心能力，避免仅依赖公开数据导致的偏差。'
+            },
+            {
+                id: 'report',
+                name: '行业研究报告',
+                type: '研究报告',
+                updatedAt: '2025-04-28 更新',
+                scale: '18 份年度/季度报告',
+                coverage: '2024Q4–2025Q2 · 云计算/AI/研发效能',
+                contribution: '提供宏观技术趋势背景与年度主线判断',
+                status: '正常',
+                links: ['cloud-native', 'ai-baseline'],
+                details: '汇总信通院、IDC、各大厂技术白皮书等 18 份报告，提取“云原生列为年度 Top3 技术主线”“AI 工程化加速”等结论，为趋势洞察提供行业级背景支撑。'
+            },
+            {
+                id: 'community',
+                name: '技术社区数据',
+                type: '技术社区',
+                updatedAt: '2025-05-12 更新',
+                scale: '46,300 条内容',
+                coverage: 'CSDN/掘金/InfoQ/Stack Overflow',
+                contribution: '捕捉新兴技术与工具的早期信号',
+                status: '正常',
+                links: ['ai-baseline', 'observability'],
+                details: '爬取主流技术社区近 90 天内容，统计技术关键词增长。AI 辅助编程相关内容同比增长 +85%，可观测性内容增长 +60%，是“AI 从加分项转为基础能力”洞察的关键早期信号来源。'
+            },
+            {
+                id: 'github',
+                name: 'GitHub 趋势',
+                type: '开源趋势',
+                updatedAt: '2025-05-10 更新',
+                scale: 'Top 2,000 仓库',
+                coverage: 'Java/云原生/AI 工具链仓库',
+                contribution: '验证工具链流行度与生态成熟度',
+                status: '正常',
+                links: ['cloud-native', 'ai-baseline'],
+                details: '跟踪 GitHub Trending 与 star 增速，Kubernetes、LangChain4j 等仓库持续高位，佐证云原生与 AI 协同开发能力的实际采用热度。'
+            },
+            {
+                id: 'trend',
+                name: '技术趋势预测',
+                type: 'AI 预测',
+                updatedAt: '2025-05-16 更新',
+                scale: '模型推理 1 次/日',
+                coverage: '基于上述 5 源融合推理',
+                contribution: '生成前瞻性演化预测与不确定性标注',
+                status: '实验',
+                links: ['legacy-decline', 'distributed'],
+                details: '由 DeepSeek 驱动的演化预测引擎，对上述多源数据进行融合推理，输出“传统单体框架走弱”“分布式+云原生+AI 协同”等前瞻性判断，并标注置信度，当前为实验性来源。'
+            }
         ],
-        history: [
-            { period: '2025-04-16 版本', text: '能力总数：84 项', btn: '版本对比' },
-            { period: '2025-03-16 版本', text: '能力总数：80 项', btn: '版本对比' },
-            { period: '2025-02-16 版本', text: '能力总数：76 项', btn: '版本对比' }
-        ]
+        // 历史版本对比：结构化，体现能力结构演化（而非简单增删改统计）
+        history: {
+            versions: [
+                { id: 'v35', label: 'V3.5', date: '2025-04-16', count: 84, tag: '当前版本', desc: '云原生与 AI 协同开发成为主线' },
+                { id: 'v30', label: 'V3.0', date: '2025-01-12', count: 80, tag: '上一版本', desc: '微服务与分布式能力稳定成形' },
+                { id: 'v25', label: 'V2.5', date: '2024-10-08', count: 76, tag: '更早版本', desc: '单体架构能力仍占较高比重' }
+            ],
+            // 版本间能力演化关系（A → B），突出结构变化与演化方向
+            evolution: [
+                { type: 'replace', from: '传统部署', to: '容器化部署', importanceFrom: 2, importanceTo: 3, levelFrom: '掌握', levelTo: '精通', note: 'Docker/Kubernetes 成为交付标配', reason: '企业上云推动部署方式全面容器化', sources: ['recruit','cloud-native'], event: '2025-02' },
+                { type: 'upgrade', from: 'Java 基础开发', to: '云原生开发', importanceFrom: 3, importanceTo: 3, levelFrom: '精通', levelTo: '精通', note: '能力重心向云原生栈外延', reason: '云原生与分布式成为价值高地', sources: ['report','internal'], event: '2025-02' },
+                { type: 'upgrade', from: '辅助开发', to: 'AI 协同开发', importanceFrom: 1, importanceTo: 3, levelFrom: '了解', levelTo: '掌握', note: 'AI 工具从加分项变基础能力', reason: '大模型编码工具落地，人效诉求驱动', sources: ['community','recruit'], event: '2025-04' },
+                { type: 'strengthen', from: '微服务架构', to: '微服务架构', importanceFrom: 2, importanceTo: 3, levelFrom: '掌握', levelTo: '精通', note: '重要性从“加分”升至“核心”', reason: '业务复杂度上升，架构治理价值突显', sources: ['internal','report'], event: '2024-12' },
+                { type: 'strengthen', from: '可观测性', to: '可观测性', importanceFrom: 1, importanceTo: 2, levelFrom: '了解', levelTo: '掌握', note: '稳定性能力下沉为通用要求', reason: '系统规模上升，韧性保障成标配', sources: ['community','recruit'], event: '2025-03' },
+                { type: 'weaken', from: 'SSH/Struts 单体', to: 'SSH/Struts 单体', importanceFrom: 2, importanceTo: 1, levelFrom: '掌握', levelTo: '了解', note: '传统框架能力要求收缩', reason: '云原生与前后端分离替代传统 MVC', sources: ['recruit','internal'], event: '2025-04' },
+                { type: 'new', from: '—', to: '向量数据库/RAG', importanceFrom: 0, importanceTo: 2, levelFrom: '—', levelTo: '掌握', note: 'AI 工程化新能力进入视野', reason: 'RAG 技术需求进入快速扩张期', sources: ['community','github'], event: '2025-04' },
+                { type: 'new', from: '—', to: 'Service Mesh', importanceFrom: 0, importanceTo: 2, levelFrom: '—', levelTo: '掌握', note: '服务网格成为微服务进阶能力', reason: '微服务规模化后治理复杂度上升', sources: ['github','report'], event: '2025-02' },
+                { type: 'strengthen', from: '分布式事务', to: '分布式事务', importanceFrom: 2, importanceTo: 3, levelFrom: '掌握', levelTo: '精通', note: '方案描述由抽象转具体', reason: '云原生落地加深，事务方案标准趋同', sources: ['internal','recruit'], event: '2025-04' },
+                { type: 'weaken', from: '手工运维', to: '声明式运维', importanceFrom: 2, importanceTo: 1, levelFrom: '掌握', levelTo: '了解', note: '手工运维被自动化替代', reason: 'IaC 与 GitOps 成为标准实践', sources: ['github','report'], event: '2025-02' }
+            ]
+        }
     };
     profile = Object.assign({}, DEMO, profile);
     // 如果 getEvolutionForJob 没返回 changes 等字段，用 DEMO 补
@@ -194,8 +324,21 @@ window.initEvolution = function() {
             const rangeForChart = (raw === 'all') ? 'all' : (parseInt(raw, 10) || 6);
             try { if (window.renderEvoTimelineChart) window.renderEvoTimelineChart(profile, rangeForChart); } catch(err) { console.warn(err); }
             try { if (window.renderEvoImportantChanges) window.renderEvoImportantChanges(profile, { range: raw }); } catch(err) { console.warn(err); }
+            // 核心洞察联动：随范围切换更新
+            try { if (window.renderEvoInsight) window.renderEvoInsight(profile, { range: raw }); } catch(err) { console.warn(err); }
         });
     });
+
+    // 数据来源：展开全部 / 收起 切换
+    const expandBtn = document.getElementById('evo-source-expand');
+    if (expandBtn && !expandBtn.dataset.bound) {
+        expandBtn.dataset.bound = '1';
+        expandBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const collapsed = expandBtn.dataset.collapsed !== '0';
+            if (window.renderEvoSource) window.renderEvoSource(profile, { collapsed: !collapsed });
+        });
+    }
 };
 window.renderEvolutionList = function() {
     const el = document.getElementById('evo-list');
@@ -380,6 +523,8 @@ window.renderEvoTimelineChart = function(profile, range) {
         if (params.componentType === 'markPoint' && params.data && params.data.eventData) {
             window.openEvoTimepointModal(params.data.eventData, params.data.eventData.skills || []);
             try { if (window.renderEvoImportantChanges) window.renderEvoImportantChanges(profile, { timeNode: params.data.eventData.time }); } catch(err) { console.warn(err); }
+            // 核心洞察联动：聚焦点击的时间节点
+            try { if (window.renderEvoInsight) window.renderEvoInsight(profile, { timeNode: params.data.eventData.time }); } catch(err) { console.warn(err); }
         }
     });
 
@@ -678,54 +823,325 @@ window.openEvoTrendDetailModal = function(h) {
 };
 
 // ===== 新布局：右侧栏（核心洞察 + 数据来源 + 历史版本对比） =====
-window.renderEvoSidePanels = function(profile) {
-    // 核心洞察
+window.renderEvoInsight = function(profile, opts) {
+    opts = opts || {};
     const ins = document.getElementById('evo-insight-list');
-    if (ins) {
-        const items = (profile && profile.insights) || [
-            '本周期能力变化主要以平稳驱动',
-            'AI 技术在开发流程中的深度应用',
-            '企业上云与云原生技术普及',
-            '系统架构向高可用、可观测性演进'
-        ];
-        ins.innerHTML = items.map(t => `<li><i class="evo-bullet"></i><span>${t}</span></li>`).join('');
+    if (!ins) return;
+    const all = (profile && profile.insights) || [];
+    if (!all.length) { ins.innerHTML = '<div class="evo-insight-empty">暂无洞察数据</div>'; return; }
+
+    // ===== 联动过滤 =====
+    let picked = all;
+    const timeNode = opts.timeNode; // 形如 '2025-04'
+    if (timeNode) {
+        const matched = all.filter(x => (x.nodes || []).indexOf(timeNode) > -1);
+        // 节点命中不足 2 条时回退全量，保证可读性
+        picked = matched.length >= 2 ? matched : all.slice(0, 3);
+    } else {
+        // 按时间范围决定条数：近3月更聚焦(2条)，其余 3~4 条
+        const range = parseInt(opts.range, 10);
+        const maxN = (range === 3) ? 2 : 4;
+        picked = all.slice(0, maxN);
     }
-    // 数据来源
-    const src = document.getElementById('evo-source-list');
-    if (src) {
-        const sources = (profile && profile.sources) || [
-            { name: '企业招聘数据', weight: '40%', range: '2025-05-01 更新' },
-            { name: '行业报告',     weight: '25%', range: '2025-04-28 更新' },
-            { name: '技术社区',     weight: '15%', range: '2025-05-12 更新' },
-            { name: 'GitHub 趋势',  weight: '10%', range: '2025-05-10 更新' },
-            { name: '企业内部数据', weight: '10%', range: '2025-05-15 更新' }
-        ];
-        src.innerHTML = sources.map(s => `
-            <li class="evo-source-item">
-                <div class="evo-source-dot"></div>
-                <div class="evo-source-info">
-                    <div class="evo-source-name">${s.name}</div>
-                    <div class="evo-source-range">${s.range}</div>
-                </div>
-                <div class="evo-source-weight">权重 ${s.weight}</div>
-            </li>
-        `).join('');
-    }
-    // 历史版本对比
-    const his = document.getElementById('evo-history-body');
-    if (his) {
-        const history = (profile && profile.history) || [
-            { period: '2025-04-16 版本', text: '能力总数：84 项', btn: '版本对比' },
-            { period: '2025-03-16 版本', text: '能力总数：80 项', btn: '版本对比' }
-        ];
-        his.innerHTML = history.map(h => `
-            <div class="evo-history-item">
-                <div class="evo-history-period">${h.period}</div>
-                <div class="evo-history-text">${h.text}</div>
-                <button class="evo-history-btn">${h.btn}</button>
+
+    // 节点联动时给卡片加高亮标记
+    const scopeLabel = timeNode
+        ? `聚焦节点 ${timeNode}`
+        : (opts.range === '3' ? '近 3 个月' : opts.range === '6' ? '近 6 个月' : opts.range === '12' ? '近 1 年' : '全部周期');
+
+    ins.innerHTML = picked.map(x => `
+        <div class="evo-insight-item" data-insight="${x.id}">
+            <div class="evo-insight-item-head">
+                <span class="evo-insight-tag">${x.tag || '洞察'}</span>
+                <span class="evo-insight-title">${x.title || ''}</span>
             </div>
-        `).join('');
+            <div class="evo-insight-flow">
+                <div class="evo-insight-step">
+                    <span class="evo-insight-step-label">现象</span>
+                    <p class="evo-insight-step-text">${x.phenomenon || ''}</p>
+                </div>
+                <div class="evo-insight-step">
+                    <span class="evo-insight-step-label">原因</span>
+                    <p class="evo-insight-step-text">${x.reason || ''}</p>
+                </div>
+                <div class="evo-insight-step evo-insight-step-conclusion">
+                    <span class="evo-insight-step-label">趋势 / 结论</span>
+                    <p class="evo-insight-step-text">${x.conclusion || ''}</p>
+                </div>
+            </div>
+            <div class="evo-insight-evidence">
+                <span class="evo-insight-evidence-label">数据支撑</span>
+                <div class="evo-insight-evidence-chips">
+                    ${(x.evidence || []).map(e => `<span class="evo-insight-chip">${e}</span>`).join('')}
+                </div>
+            </div>
+        </div>
+    `).join('') + `<div class="evo-insight-scope">当前范围：${scopeLabel}</div>`;
+};
+
+window.renderEvoSource = function(profile, opts) {
+    opts = opts || {};
+    const src = document.getElementById('evo-source-list');
+    const sub = document.getElementById('evo-source-sub');
+    const expandBtn = document.getElementById('evo-source-expand');
+    if (!src) return;
+    const all = (profile && profile.sources) || [];
+    if (!all.length) { src.innerHTML = '<div class="evo-insight-empty">暂无数据来源</div>'; return; }
+    if (sub) sub.textContent = `多源数据综合分析（共 ${all.length} 个来源）`;
+
+    // 默认只展示最核心的 3 个，其余折叠
+    const DEFAULT_N = 3;
+    const collapsed = opts.collapsed !== false; // 默认折叠
+    const shown = collapsed ? all.slice(0, DEFAULT_N) : all;
+    if (expandBtn) {
+        expandBtn.textContent = collapsed && all.length > DEFAULT_N ? '展开全部 ▸' : '收起 ▴';
+        expandBtn.dataset.collapsed = collapsed ? '1' : '0';
     }
+
+    const statusMap = { '正常': 'ok', '实验': 'exp', '异常': 'err' };
+    src.innerHTML = shown.map(s => `
+        <div class="evo-source-item" data-source="${s.id}">
+            <div class="evo-source-dot"></div>
+            <div class="evo-source-info">
+                <div class="evo-source-name-row">
+                    <span class="evo-source-name">${s.name}</span>
+                    <span class="evo-source-type">${s.type || ''}</span>
+                </div>
+                <div class="evo-source-meta">${s.scale || ''} · ${s.updatedAt || ''}</div>
+            </div>
+            <span class="evo-source-status evo-source-status-${(statusMap[s.status] || 'ok')}">${s.status || '正常'}</span>
+        </div>
+    `).join('') + (collapsed && all.length > DEFAULT_N
+        ? `<div class="evo-source-more" id="evo-source-more-hint">还有 ${all.length - DEFAULT_N} 个来源，点击右上角“展开全部”查看</div>`
+        : '');
+
+    // 点击来源 → 弹详情（含证据链）
+    src.querySelectorAll('.evo-source-item').forEach(el => {
+        if (el.dataset.bound) return;
+        el.dataset.bound = '1';
+        el.addEventListener('click', () => {
+            const s = all.find(x => x.id === el.dataset.source);
+            if (s) window.openEvoSourceModal(s, profile);
+        });
+    });
+};
+
+window.openEvoSourceModal = function(s, profile) {
+    const statusMap = { '正常': 'ok', '实验': 'exp', '异常': 'err' };
+    let modal = document.getElementById('evo-source-modal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'evo-source-modal';
+        modal.className = 'evo-modal-mask';
+        document.body.appendChild(modal);
+    }
+    // 构建支撑的洞察/变化链路
+    const insights = (profile && profile.insights) || [];
+    const linked = (s.links || []).map(id => insights.find(x => x.id === id)).filter(Boolean);
+    const linkHtml = linked.length ? linked.map(x => `
+        <div class="evo-source-link-item">
+            <span class="evo-source-link-tag">${x.tag || '洞察'}</span>
+            <span class="evo-source-link-title">${x.title || ''}</span>
+        </div>`).join('') : '<div class="evo-source-link-empty">该来源暂未直接关联核心洞察</div>';
+
+    modal.innerHTML = `
+        <div class="evo-modal-box evo-source-modal-box">
+            <button class="evo-modal-close" data-close="1">×</button>
+            <div class="evo-source-modal-head">
+                <div class="evo-source-modal-name">${s.name}</div>
+                <span class="evo-source-type">${s.type || ''}</span>
+                <span class="evo-source-status evo-source-status-${(statusMap[s.status] || 'ok')}">${s.status || '正常'}</span>
+            </div>
+            <div class="evo-source-modal-grid">
+                <div class="evo-source-modal-cell"><span class="k">数据规模</span><span class="v">${s.scale || '—'}</span></div>
+                <div class="evo-source-modal-cell"><span class="k">更新时间</span><span class="v">${s.updatedAt || '—'}</span></div>
+                <div class="evo-source-modal-cell"><span class="k">覆盖范围</span><span class="v">${s.coverage || '—'}</span></div>
+                <div class="evo-source-modal-cell"><span class="k">主要贡献</span><span class="v">${s.contribution || '—'}</span></div>
+            </div>
+            <div class="evo-source-modal-section">
+                <div class="evo-source-modal-section-title">数据说明</div>
+                <p class="evo-source-modal-detail">${s.details || ''}</p>
+            </div>
+            <div class="evo-source-modal-section">
+                <div class="evo-source-modal-section-title">数据来源 → 分析结论（证据链）</div>
+                <div class="evo-source-modal-links">${linkHtml}</div>
+            </div>
+        </div>`;
+    modal.style.display = 'flex';
+    modal.onclick = (e) => {
+        if (e.target === modal || e.target.dataset.close) modal.style.display = 'none';
+    };
+};
+
+window.renderEvoSidePanels = function(profile) {
+    // 核心洞察（默认按 6 个月范围渲染）
+    if (window.renderEvoInsight) window.renderEvoInsight(profile, { range: 6 });
+    // 数据来源
+    if (window.renderEvoSource) window.renderEvoSource(profile, {});
+    // 历史版本对比
+    if (window.renderEvoHistory) window.renderEvoHistory(profile, {});
+};
+
+// ===== 历史版本对比：突出能力结构演化方向 =====
+window.renderEvoHistory = function(profile, opts) {
+    opts = opts || {};
+    const his = document.getElementById('evo-history-body');
+    if (!his) return;
+    const data = (profile && profile.history) || { versions: [], evolution: [] };
+    const versions = data.versions || [];
+    const evolution = data.evolution || [];
+    if (!versions.length) { his.innerHTML = '<div class="evo-insight-empty">暂无版本数据</div>'; return; }
+
+    // 默认对比：当前版本 vs 上一版本
+    const defA = versions[versions.length - 1].id; // 最早
+    const defB = versions[0].id;                   // 当前
+    const selA = opts.versionA || defA;
+    const selB = opts.versionB || defB;
+    const va = versions.find(v => v.id === selA) || versions[0];
+    const vb = versions.find(v => v.id === selB) || versions[versions.length - 1];
+
+    // 版本选择下拉
+    const optHtml = (sel) => versions.map(v =>
+        `<option value="${v.id}" ${v.id === sel ? 'selected' : ''}>${v.label} · ${v.date}</option>`).join('');
+
+    // 演化关系：按类型加权排序（强化/新增/替代优先），默认展示前 8 条
+    const DEFAULT_N = 8;
+    const collapsed = opts.collapsed !== false;
+    const shown = collapsed ? evolution.slice(0, DEFAULT_N) : evolution;
+
+    const typeMeta = {
+        upgrade:    { label: '能力升级', cls: 'evo-evo-upgrade' },
+        strengthen: { label: '强化',     cls: 'evo-evo-strengthen' },
+        weaken:     { label: '弱化',     cls: 'evo-evo-weaken' },
+        replace:    { label: '替代',     cls: 'evo-evo-replace' },
+        new:        { label: '新增',     cls: 'evo-evo-new' }
+    };
+    const star = (n) => '★'.repeat(n) + '☆'.repeat(Math.max(0, 3 - n));
+
+    const evoItemsHtml = shown.map((e, i) => {
+        const m = typeMeta[e.type] || typeMeta.upgrade;
+        const arrow = e.type === 'new' ? '➜ 新增' : (e.from + ' → ' + e.to);
+        const impChange = (e.importanceTo - e.importanceFrom);
+        const impHtml = e.type === 'new'
+            ? `<span class="evo-evo-imp">${star(e.importanceTo)}</span>`
+            : `<span class="evo-evo-imp">${star(e.importanceFrom)} <span class="evo-evo-arrow ${impChange >= 0 ? 'up' : 'down'}">${impChange > 0 ? '▲' : impChange < 0 ? '▼' : '＝'}</span> ${star(e.importanceTo)}</span>`;
+        return `
+            <div class="evo-evo-item" data-evo-idx="${evolution.indexOf(e)}">
+                <span class="evo-evo-tag ${m.cls}">${m.label}</span>
+                <div class="evo-evo-flow">
+                    <div class="evo-evo-arrow-text">${arrow}</div>
+                    <div class="evo-evo-note">${e.note || ''}</div>
+                </div>
+                <div class="evo-evo-right">
+                    ${impHtml}
+                    <span class="evo-evo-level">${e.levelFrom} → ${e.levelTo}</span>
+                </div>
+            </div>`;
+    }).join('') + (collapsed && evolution.length > DEFAULT_N
+        ? `<div class="evo-source-more" id="evo-evo-more-hint">还有 ${evolution.length - DEFAULT_N} 项变化，点击右上角“查看全部”查看</div>`
+        : '');
+
+    his.innerHTML = `
+        <div class="evo-history-selectors">
+            <select class="evo-history-select" id="evo-history-a">${optHtml(selA)}</select>
+            <span class="evo-history-vs">→</span>
+            <select class="evo-history-select" id="evo-history-b">${optHtml(selB)}</select>
+        </div>
+        <div class="evo-history-head">
+            <div class="evo-history-ver evo-history-ver-a">
+                <div class="evo-history-ver-label">${va.label} <span class="evo-history-ver-tag">${va.tag || ''}</span></div>
+                <div class="evo-history-ver-date">${va.date}</div>
+                <div class="evo-history-ver-count">${va.count} 项能力</div>
+                <div class="evo-history-ver-desc">${va.desc || ''}</div>
+            </div>
+            <div class="evo-history-direction">
+                <div class="evo-history-dir-arrow">➜</div>
+                <div class="evo-history-dir-text">能力结构演化</div>
+            </div>
+            <div class="evo-history-ver evo-history-ver-b">
+                <div class="evo-history-ver-label">${vb.label} <span class="evo-history-ver-tag">${vb.tag || ''}</span></div>
+                <div class="evo-history-ver-date">${vb.date}</div>
+                <div class="evo-history-ver-count">${vb.count} 项能力</div>
+                <div class="evo-history-ver-desc">${vb.desc || ''}</div>
+            </div>
+        </div>
+        <div class="evo-history-evo-title">
+            能力变化关系 <span class="evo-history-evo-sub">（重点展示 ${shown.length} / ${evolution.length} 项）</span>
+        </div>
+        <div class="evo-history-evo-list" id="evo-history-evo-list">${evoItemsHtml}</div>
+        <a class="evo-view-all" id="evo-history-expand" href="javascript:void(0)">${collapsed && evolution.length > DEFAULT_N ? '查看全部 ▸' : '收起 ▴'}</a>
+    `;
+
+    // 版本选择联动
+    const selAEl = document.getElementById('evo-history-a');
+    const selBEl = document.getElementById('evo-history-b');
+    const onSel = () => window.renderEvoHistory(profile, { versionA: selAEl.value, versionB: selBEl.value, collapsed: true });
+    if (selAEl) selAEl.addEventListener('change', onSel);
+    if (selBEl) selBEl.addEventListener('change', onSel);
+
+    // 查看全部
+    const expandBtn = document.getElementById('evo-history-expand');
+    if (expandBtn && !expandBtn.dataset.bound) {
+        expandBtn.dataset.bound = '1';
+        expandBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.renderEvoHistory(profile, { versionA: selA, versionB: selB, collapsed: opts.collapsed === false });
+        });
+    }
+
+    // 点击演化项 → 详情 modal
+    his.querySelectorAll('.evo-evo-item').forEach(el => {
+        if (el.dataset.bound) return;
+        el.dataset.bound = '1';
+        el.addEventListener('click', () => {
+            const e = evolution[parseInt(el.dataset.evoIdx, 10)];
+            if (e) window.openEvoHistoryModal(e, profile);
+        });
+    });
+};
+
+window.openEvoHistoryModal = function(e, profile) {
+    const sources = (profile && profile.sources) || [];
+    const m = { upgrade:'能力升级', strengthen:'强化', weaken:'弱化', replace:'替代', new:'新增' }[e.type] || '变化';
+    const srcNames = (e.sources || []).map(id => (sources.find(s => s.id === id) || {}).name).filter(Boolean);
+    const srcHtml = srcNames.length ? srcNames.map(n => `<span class="evo-source-chip">${n}</span>`).join('') : '<span class="evo-source-link-empty">暂未关联具体来源</span>';
+    let modal = document.getElementById('evo-history-modal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'evo-history-modal';
+        modal.className = 'evo-modal-mask';
+        document.body.appendChild(modal);
+    }
+    modal.innerHTML = `
+        <div class="evo-modal-box evo-source-modal-box">
+            <button class="evo-modal-close" data-close="1">×</button>
+            <div class="evo-source-modal-head">
+                <span class="evo-source-link-tag">${m}</span>
+                <div class="evo-source-modal-name">${e.from === '—' ? e.to : e.from + ' → ' + e.to}</div>
+            </div>
+            <div class="evo-modal-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
+                <div class="evo-source-modal-cell"><span class="k">版本 A 状态</span><span class="v">${e.levelFrom} · ${'★'.repeat(e.importanceFrom)}${'☆'.repeat(Math.max(0,3-e.importanceFrom))}</span></div>
+                <div class="evo-source-modal-cell"><span class="k">版本 B 状态</span><span class="v">${e.levelTo} · ${'★'.repeat(e.importanceTo)}${'☆'.repeat(Math.max(0,3-e.importanceTo))}</span></div>
+            </div>
+            <div class="evo-source-modal-section">
+                <div class="evo-source-modal-section-title">变化说明</div>
+                <p class="evo-source-modal-detail">${e.note || ''}</p>
+            </div>
+            <div class="evo-source-modal-section">
+                <div class="evo-source-modal-section-title">变化原因</div>
+                <p class="evo-source-modal-detail">${e.reason || '综合多源数据识别的能力结构演化。'}</p>
+            </div>
+            <div class="evo-source-modal-section">
+                <div class="evo-source-modal-section-title">关联数据来源</div>
+                <div class="evo-source-modal-links">${srcHtml}</div>
+            </div>
+            <div class="evo-source-modal-section">
+                <div class="evo-source-modal-section-title">对应演化事件</div>
+                <p class="evo-source-modal-detail">${e.event ? (e.event + ' 重大能力结构演进') : '常规版本迭代'}</p>
+            </div>
+        </div>`;
+    modal.style.display = 'flex';
+    modal.onclick = (ev) => { if (ev.target === modal || ev.target.dataset.close) modal.style.display = 'none'; };
 };
 
 window.getEvolutionForJob = function(jobId) {
