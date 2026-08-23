@@ -38,19 +38,9 @@
 <div class="subtitle">基于时序图谱，识别技能新增、删除与修改，追踪岗位能力结构变化</div>
 </div>
 <div class="page-actions">
+  <span class="evo-job-name" id="evo-current-job">Java 开发工程师</span>
+  <span class="evo-job-badge">· 能力动态更新</span>
 </div>
-</div>
-<!-- ===== 能力动态更新（参考页风格：左主区+右栏） ===== -->
-<div class="evo-job-head">
-  <div class="evo-job-title">
-    <span class="evo-job-name" id="evo-current-job">Java 开发工程师</span>
-    <span class="evo-job-badge">· 能力动态更新</span>
-  </div>
-  <div class="evo-job-meta">
-    <span class="evo-job-dot"></span>
-    <span>最近分析：<strong id="evo-last-analysis">2025-05-16 10:30</strong></span>
-    <span class="evo-job-tag">最新分析</span>
-  </div>
 </div>
 <div class="evo-new-layout">
   <!-- 左主区 -->
@@ -144,14 +134,14 @@
           </div>
         </div>
         <!-- 重要性图例 -->
-        <div class="evo-importance-legend" id="evo-importance-legend" style="display:none;">
-          <span>重要性说明：</span>
-          <span class="star-line"><i class="evo-stars-mini">★★★★★</i> 非常重要</span>
-          <span class="star-line"><i class="evo-stars-mini">★★★★☆</i> 重要</span>
-          <span class="star-line"><i class="evo-stars-mini">★★★☆☆</i> 一般</span>
-          <span class="star-line"><i class="evo-stars-mini">★☆☆☆☆</i> 较低</span>
-          <span class="star-line"><i class="evo-stars-mini">☆☆☆☆☆</i> 不重要</span>
-        </div>
+      </div>
+      <div class="evo-importance-legend" id="evo-importance-legend" style="display:none;">
+        <span>重要性说明：</span>
+        <span class="star-line"><i class="evo-stars-mini">★★★★★</i> 非常重要</span>
+        <span class="star-line"><i class="evo-stars-mini">★★★★☆</i> 重要</span>
+        <span class="star-line"><i class="evo-stars-mini">★★★☆☆</i> 一般</span>
+        <span class="star-line"><i class="evo-stars-mini">★☆☆☆☆</i> 较低</span>
+        <span class="star-line"><i class="evo-stars-mini">☆☆☆☆☆</i> 不重要</span>
       </div>
     </div>
   </div>
@@ -177,21 +167,7 @@
         </div>
       </div>
     </div>
-    <div class="card evo-history-card">
-      <div class="card-header">
-        <div class="card-title"><i class="ico-history"></i>历史版本对比</div>
-      </div>
-      <div class="card-body evo-history-body" id="evo-history-body">
-        <!-- 由 JS 渲染：版本选择 + 版本头 + 演化关系 -->
-      </div>
-    </div>
   </div>
-</div>
-<div class="evo-jump-row">
-  <a class="btn evo-jump-btn" id="evo-jump-learning" href="learning-path.html">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-    学习路径建议
-  </a>
 </div>
 </section>
 
@@ -202,7 +178,7 @@
   <script src="../js/cinema-bg.js"></script>
   <script src="../js/cinema-music.js"></script>
   <script src="../js/shell.js"></script>
-  <script src="../js/pages/evolution.js?v=2026082306"></script>
+  <script src="../js/pages/evolution.js?v=2026082311"></script>
   <script>
     window.Shell && window.Shell.mount({ pageId: 'insight', title: '岗位洞察', subtitle: '能力动态演化' });
     // 页面加载后预渲染演化视图内容

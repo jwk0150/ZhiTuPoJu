@@ -14,13 +14,13 @@ window.initEvolution = function() {
 
     // 注入完整假数据（开发期 demo，未连后端 / 后端缺字段时使用）
     const DEMO = {
-        period: '2025-05',
-        prevPeriod: '2025-04',
+        period: '2026-08',
+        prevPeriod: '2026-07',
         timelineTotal:  [38, 41, 45, 47, 52, 58, 64],
         timelineNewly:  [ 0,  3,  2,  3,  5,  6,  6],
         timelineEvents: [
             {
-                time: '2024-12', count: 8, impact: 'mid',
+                time: '2026-03', count: 8, impact: 'mid',
                 title: '微服务架构的普及',
                 desc:  '随着微服务在企业中的广泛应用，相关架构能力需求显著上升',
                 skills: ['Spring Cloud', '服务治理', '熔断降级', 'API 网关', '配置中心', '链路追踪', '容器化', 'CI/CD'],
@@ -28,7 +28,7 @@ window.initEvolution = function() {
                 analysis: '微服务架构已成为 Java 后端岗位的标配能力，相关技术栈需求持续扩大'
             },
             {
-                time: '2025-02', count: 12, impact: 'high',
+                time: '2026-05', count: 12, impact: 'high',
                 title: '云原生技术要求提升',
                 desc:  '云原生技术与 Kubernetes 能力在岗位要求中权重提升',
                 skills: ['Kubernetes', 'Docker', 'Helm', 'Service Mesh', 'Serverless', 'GitOps', '可观测性', 'CKA', 'Operator', 'CRD', 'Tekton', 'Argo CD'],
@@ -36,7 +36,7 @@ window.initEvolution = function() {
                 analysis: '云原生能力将逐步替代传统部署能力，成为 Java 后端工程师的必备技能'
             },
             {
-                time: '2025-04', count: 9, impact: 'high',
+                time: '2026-07', count: 9, impact: 'high',
                 title: 'AI 工具应用增加',
                 desc:  'AI 辅助开发与 AIGC 工程化能力在岗位中显著出现',
                 skills: ['AI 辅助编程', 'Copilot', 'Cursor', 'Prompt Engineering', 'LLM 应用', 'RAG', '向量数据库', 'Agent', 'MCP'],
@@ -44,12 +44,12 @@ window.initEvolution = function() {
                 analysis: 'AI 工具的应用已从"加分项"转为"必选项"，相关工程化能力需求迅速扩大'
             }
         ],
-        timelineMonths: ['2024-11','2024-12','2025-01','2025-02','2025-03','2025-04','2025-05'],
+        timelineMonths: ['2026-02','2026-03','2026-04','2026-05','2026-06','2026-07','2026-08'],
         trendMax: 100,
         // 本期重点变化（按节点聚合的能力趋势，非逐条罗列）
         trendHighlights: [
             {
-                node: '2025-04', trend: 'AI 辅助开发能力增强', direction: 'up', magnitude: 92,
+                node: '2026-07', trend: 'AI 辅助开发能力增强', direction: 'up', magnitude: 92,
                 importance: 'high', confidence: 0.89,
                 desc: 'AI 辅助编程、Prompt 工程、LLM 应用等能力在岗位要求中快速涌现，成为新的能力分支。',
                 skills: ['AI 辅助编程', 'Copilot', 'Cursor', 'Prompt Engineering', 'LLM 应用', 'RAG', '向量数据库', 'Agent', 'MCP'],
@@ -59,7 +59,7 @@ window.initEvolution = function() {
                 analysis: 'AI 工具应用已从"加分项"转为"必选项"，相关工程化能力需求迅速扩大，建议在培养路径中前置。'
             },
             {
-                node: '2025-02', trend: '云原生应用能力提升', direction: 'up', magnitude: 85,
+                node: '2026-05', trend: '云原生应用能力提升', direction: 'up', magnitude: 85,
                 importance: 'high', confidence: 0.86,
                 desc: 'Kubernetes、容器化、Service Mesh 等云原生能力权重持续上升，逐步替代传统部署能力。',
                 skills: ['Kubernetes', 'Docker', 'Helm', 'Service Mesh', 'Serverless', 'GitOps', '可观测性', 'CKA', 'Operator', 'CRD'],
@@ -69,7 +69,7 @@ window.initEvolution = function() {
                 analysis: '云原生能力将逐步替代传统部署能力，成为 Java 后端工程师的必备技能。'
             },
             {
-                node: '2025-04', trend: '传统 SSH 框架需求下降', direction: 'down', magnitude: 70,
+                node: '2026-07', trend: '传统 SSH 框架需求下降', direction: 'down', magnitude: 70,
                 importance: 'mid', confidence: 0.82,
                 desc: 'Struts + Spring + Hibernate 等传统框架组合在岗位要求中明显减少，被 Spring Boot 等现代栈替代。',
                 skills: ['SSH 框架', 'Struts', '传统单体应用开发', 'XML 配置式开发'],
@@ -79,7 +79,7 @@ window.initEvolution = function() {
                 analysis: '传统框架维护能力需求持续下降，建议将学习资源向 Spring Boot / 响应式栈倾斜。'
             },
             {
-                node: '2024-12', trend: '微服务架构重要性提升', direction: 'up', magnitude: 78,
+                node: '2026-03', trend: '微服务架构重要性提升', direction: 'up', magnitude: 78,
                 importance: 'high', confidence: 0.84,
                 desc: '服务治理、熔断降级、链路追踪等微服务相关能力成为中高端岗位的核心要求。',
                 skills: ['Spring Cloud', '服务治理', '熔断降级', 'API 网关', '配置中心', '链路追踪', '容器化', 'CI/CD'],
@@ -89,7 +89,7 @@ window.initEvolution = function() {
                 analysis: '微服务架构已成为 Java 后端岗位的标配能力，相关技术栈需求持续扩大。'
             },
             {
-                node: '2025-03', trend: '可观测性与稳定性能力增强', direction: 'up', magnitude: 60,
+                node: '2026-06', trend: '可观测性与稳定性能力增强', direction: 'up', magnitude: 60,
                 importance: 'mid', confidence: 0.8,
                 desc: '日志、监控、链路追踪、混沌工程等稳定性保障能力在岗位要求中的权重稳步提升。',
                 skills: ['Prometheus', 'Grafana', 'OpenTelemetry', 'ELK', '混沌工程', 'SLO/SLI'],
@@ -99,7 +99,7 @@ window.initEvolution = function() {
                 analysis: '可观测性将成为后端工程师的基础能力，建议纳入标准培养模块。'
             },
             {
-                node: '2025-04', trend: '分布式事务能力演进', direction: 'stable', magnitude: 45,
+                node: '2026-07', trend: '分布式事务能力演进', direction: 'stable', magnitude: 45,
                 importance: 'high', confidence: 0.83,
                 desc: '分布式事务、幂等设计、最终一致性方案要求标准趋同，相关能力描述更加具体化。',
                 skills: [
@@ -130,37 +130,37 @@ window.initEvolution = function() {
                 { name: '传统单体应用开发',                       type: '开发模式', importance: 1, reason: '企业架构向微服务转型' }
             ]
         },
-        // 核心洞察：结构化，体现“现象 → 原因 → 趋势/结论”，并绑定时间节点用于联动
+        // 核心洞察：结构化，体现"现象 → 原因 → 趋势/结论"，并绑定时间节点用于联动
         insights: [
             {
                 id: 'ai-baseline',
                 tag: 'AI 协同',
-                title: 'AI 辅助开发正从“加分项”转变为“基础能力”',
-                phenomenon: '本期新增能力中，AI 辅助编程、Copilot、Cursor、代码生成相关技能集中出现，并在招聘要求中从“优先”下沉为“通用要求”。',
+                title: 'AI 辅助开发正从"加分项"转变为"基础能力"',
+                phenomenon: '本期新增能力中，AI 辅助编程、Copilot、Cursor、代码生成相关技能集中出现，并在招聘要求中从"优先"下沉为"通用要求"。',
                 reason: '大模型编码工具在企业研发流程中加速落地，单位人效提升诉求驱动岗位对 AI 协同开发能力形成刚性预期。',
                 conclusion: '未来 1～2 年，AI 协同开发（含 Prompt 工程、代码审查辅助、单测生成）将成为 Java 工程师的基础门槛，而非差异化优势。',
-                evidence: ['技术社区内容同比增长 +85%', '企业招聘“AI 辅助”关键词渗透率 +18pp', '样本岗位中 6/10 已将 AI 工具写入 JD'],
-                nodes: ['2025-04', '2025-03']
+                evidence: ['技术社区内容同比增长 +85%', '企业招聘"AI 辅助"关键词渗透率 +18pp', '样本岗位中 6/10 已将 AI 工具写入 JD'],
+                nodes: ['2026-07', '2026-06']
             },
             {
                 id: 'cloud-native',
                 tag: '云原生',
                 title: '企业上云推动云原生与容器化能力持续提升',
-                phenomenon: '云原生应用、Kubernetes、Docker、Service Mesh 等能力在新增列表中权重居前，且从“高级”扩散至“核心”要求。',
+                phenomenon: '云原生应用、Kubernetes、Docker、Service Mesh 等能力在新增列表中权重居前，且从"高级"扩散至"核心"要求。',
                 reason: '政企与互联网客户全面上云，弹性、可观测、标准化的交付方式倒逼后端工程能力向云原生栈迁移。',
                 conclusion: '云原生能力（容器编排 + 服务网格 + 声明式运维）将长期作为 Java 后端的主线能力，且与微服务深度绑定。',
-                evidence: ['企业招聘“云原生”提及率 +22pp', 'Kubernetes 要求岗位同比 +34%', '行业报告将云原生列为年度 Top3 技术主线'],
-                nodes: ['2025-02', '2025-04']
+                evidence: ['企业招聘"云原生"提及率 +22pp', 'Kubernetes 要求岗位同比 +34%', '行业报告将云原生列为年度 Top3 技术主线'],
+                nodes: ['2026-05', '2026-07']
             },
             {
                 id: 'distributed',
                 tag: '架构演进',
-                title: '岗位能力从单一 Java 栈向“分布式 + 云原生 + AI”协同扩展',
+                title: '岗位能力从单一 Java 栈向"分布式 + 云原生 + AI"协同扩展',
                 phenomenon: '微服务、分布式事务、消息一致性、可观测性等技术密集出现，传统单体 SSH/Struts 能力被标记为下降/移除。',
                 reason: '业务复杂度与系统规模上升，单技术栈已无法覆盖稳定性、弹性与智能化诉求，岗位要求向复合能力演进。',
                 conclusion: 'Java 工程师的能力边界正在外扩：内核仍是 Java，但价值高地转向分布式架构治理与跨栈协同。',
                 evidence: ['分布式相关技能新增 8 项', '传统 SSH 框架要求下降 -15%', '架构类关键词 JD 占比升至 47%'],
-                nodes: ['2024-12', '2025-04']
+                nodes: ['2026-03', '2026-07']
             },
             {
                 id: 'observability',
@@ -168,9 +168,9 @@ window.initEvolution = function() {
                 title: '可观测性与稳定性成为工程成熟度标志',
                 phenomenon: 'Prometheus、Grafana、OpenTelemetry、SLO/SLI 等能力要求稳步提升，并由高级要求扩散至通用要求。',
                 reason: '系统规模与复杂度上升，故障定位与韧性保障成为高频痛点，稳定性能力被纳入标准培养模块。',
-                conclusion: '可观测性将从“运维专属”转为“开发即职责”，SLO 思维成为后端工程师的通用素养。',
+                conclusion: '可观测性将从"运维专属"转为"开发即职责"，SLO 思维成为后端工程师的通用素养。',
                 evidence: ['可观测性内容增长 +60%', '监控/追踪关键词 +12pp', '样本岗位 7/10 要求具备稳定性体系经验'],
-                nodes: ['2025-03']
+                nodes: ['2026-06']
             },
             {
                 id: 'legacy-decline',
@@ -180,7 +180,7 @@ window.initEvolution = function() {
                 reason: '新型云原生与前后端分离架构全面替代传统 MVC 单体，遗留技术栈维护场景收窄。',
                 conclusion: '建议减少对传统单体框架的投入，将学习预算转向微服务与云原生现代化栈。',
                 evidence: ['传统 SSH 框架要求下降 -15%', 'Struts 相关 JD 同比减少 28%', '新增能力中 0 项涉及传统单体框架'],
-                nodes: ['2025-04']
+                nodes: ['2026-07']
             }
         ],
         // 数据来源：结构化，体现可信链路（来源 → 数据 → 支撑的分析结论）
@@ -189,55 +189,55 @@ window.initEvolution = function() {
                 id: 'recruit',
                 name: '企业招聘数据',
                 type: '招聘 JD',
-                updatedAt: '2025-05-01 更新',
+                updatedAt: '2026-08-01 更新',
                 scale: '12,580 条有效 JD',
                 coverage: '近 30 天 · 一线及新一线城市 · Java 后端岗位',
                 contribution: '识别企业岗位能力需求变化，权重最高',
                 status: '正常',
                 links: ['ai-baseline', 'cloud-native', 'distributed'],
-                details: '采集自 51JOB、智联、BOSS 等公开招聘渠道，经清洗去重后保留有效 Java 后端 JD 12,580 条。主要用于识别“AI 辅助编程”“云原生”“微服务”等关键词的渗透率与增长趋势，直接支撑新增能力（如 Copilot、Kubernetes）的判定。'
+                details: '采集自 51JOB、智联、BOSS 等公开招聘渠道，经清洗去重后保留有效 Java 后端 JD 12,580 条。主要用于识别"AI 辅助编程""云原生""微服务"等关键词的渗透率与增长趋势，直接支撑新增能力（如 Copilot、Kubernetes）的判定。'
             },
             {
                 id: 'internal',
                 name: '企业内部岗位数据',
                 type: '企业私有',
-                updatedAt: '2025-05-15 更新',
+                updatedAt: '2026-08-15 更新',
                 scale: '3,240 条岗位画像',
                 coverage: '合作企业研发岗 · 含职级与薪酬带宽',
                 contribution: '校准能力重要性权重，区分核心/辅助技能',
                 status: '正常',
                 links: ['distributed', 'observability'],
-                details: '来自合作企业的内部岗位画像与晋升标准，用于校准能力重要性分级（high/mid/low），并将“可观测性”“分布式事务”等标注为核心能力，避免仅依赖公开数据导致的偏差。'
+                details: '来自合作企业的内部岗位画像与晋升标准，用于校准能力重要性分级（high/mid/low），并将"可观测性""分布式事务"等标注为核心能力，避免仅依赖公开数据导致的偏差。'
             },
             {
                 id: 'report',
                 name: '行业研究报告',
                 type: '研究报告',
-                updatedAt: '2025-04-28 更新',
+                updatedAt: '2026-07-28 更新',
                 scale: '18 份年度/季度报告',
                 coverage: '2024Q4–2025Q2 · 云计算/AI/研发效能',
                 contribution: '提供宏观技术趋势背景与年度主线判断',
                 status: '正常',
                 links: ['cloud-native', 'ai-baseline'],
-                details: '汇总信通院、IDC、各大厂技术白皮书等 18 份报告，提取“云原生列为年度 Top3 技术主线”“AI 工程化加速”等结论，为趋势洞察提供行业级背景支撑。'
+                details: '汇总信通院、IDC、各大厂技术白皮书等 18 份报告，提取"云原生列为年度 Top3 技术主线""AI 工程化加速"等结论，为趋势洞察提供行业级背景支撑。'
             },
             {
                 id: 'community',
                 name: '技术社区数据',
                 type: '技术社区',
-                updatedAt: '2025-05-12 更新',
+                updatedAt: '2026-08-12 更新',
                 scale: '46,300 条内容',
                 coverage: 'CSDN/掘金/InfoQ/Stack Overflow',
                 contribution: '捕捉新兴技术与工具的早期信号',
                 status: '正常',
                 links: ['ai-baseline', 'observability'],
-                details: '爬取主流技术社区近 90 天内容，统计技术关键词增长。AI 辅助编程相关内容同比增长 +85%，可观测性内容增长 +60%，是“AI 从加分项转为基础能力”洞察的关键早期信号来源。'
+                details: '爬取主流技术社区近 90 天内容，统计技术关键词增长。AI 辅助编程相关内容同比增长 +85%，可观测性内容增长 +60%，是"AI 从加分项转为基础能力"洞察的关键早期信号来源。'
             },
             {
                 id: 'github',
                 name: 'GitHub 趋势',
                 type: '开源趋势',
-                updatedAt: '2025-05-10 更新',
+                updatedAt: '2026-08-10 更新',
                 scale: 'Top 2,000 仓库',
                 coverage: 'Java/云原生/AI 工具链仓库',
                 contribution: '验证工具链流行度与生态成熟度',
@@ -249,34 +249,34 @@ window.initEvolution = function() {
                 id: 'trend',
                 name: '技术趋势预测',
                 type: 'AI 预测',
-                updatedAt: '2025-05-16 更新',
+                updatedAt: '2026-08-16 更新',
                 scale: '模型推理 1 次/日',
                 coverage: '基于上述 5 源融合推理',
                 contribution: '生成前瞻性演化预测与不确定性标注',
                 status: '实验',
                 links: ['legacy-decline', 'distributed'],
-                details: '由 DeepSeek 驱动的演化预测引擎，对上述多源数据进行融合推理，输出“传统单体框架走弱”“分布式+云原生+AI 协同”等前瞻性判断，并标注置信度，当前为实验性来源。'
+                details: '由 DeepSeek 驱动的演化预测引擎，对上述多源数据进行融合推理，输出"传统单体框架走弱""分布式+云原生+AI 协同"等前瞻性判断，并标注置信度，当前为实验性来源。'
             }
         ],
         // 历史版本对比：结构化，体现能力结构演化（而非简单增删改统计）
         history: {
             versions: [
-                { id: 'v35', label: 'V3.5', date: '2025-04-16', count: 84, tag: '当前版本', desc: '云原生与 AI 协同开发成为主线' },
-                { id: 'v30', label: 'V3.0', date: '2025-01-12', count: 80, tag: '上一版本', desc: '微服务与分布式能力稳定成形' },
+                { id: 'v35', label: 'V3.5', date: '2026-07-16', count: 84, tag: '当前版本', desc: '云原生与 AI 协同开发成为主线' },
+                { id: 'v30', label: 'V3.0', date: '2026-04-12', count: 80, tag: '上一版本', desc: '微服务与分布式能力稳定成形' },
                 { id: 'v25', label: 'V2.5', date: '2024-10-08', count: 76, tag: '更早版本', desc: '单体架构能力仍占较高比重' }
             ],
             // 版本间能力演化关系（A → B），突出结构变化与演化方向
             evolution: [
-                { type: 'replace', from: '传统部署', to: '容器化部署', importanceFrom: 2, importanceTo: 3, levelFrom: '掌握', levelTo: '精通', note: 'Docker/Kubernetes 成为交付标配', reason: '企业上云推动部署方式全面容器化', sources: ['recruit','cloud-native'], event: '2025-02' },
-                { type: 'upgrade', from: 'Java 基础开发', to: '云原生开发', importanceFrom: 3, importanceTo: 3, levelFrom: '精通', levelTo: '精通', note: '能力重心向云原生栈外延', reason: '云原生与分布式成为价值高地', sources: ['report','internal'], event: '2025-02' },
-                { type: 'upgrade', from: '辅助开发', to: 'AI 协同开发', importanceFrom: 1, importanceTo: 3, levelFrom: '了解', levelTo: '掌握', note: 'AI 工具从加分项变基础能力', reason: '大模型编码工具落地，人效诉求驱动', sources: ['community','recruit'], event: '2025-04' },
-                { type: 'strengthen', from: '微服务架构', to: '微服务架构', importanceFrom: 2, importanceTo: 3, levelFrom: '掌握', levelTo: '精通', note: '重要性从“加分”升至“核心”', reason: '业务复杂度上升，架构治理价值突显', sources: ['internal','report'], event: '2024-12' },
-                { type: 'strengthen', from: '可观测性', to: '可观测性', importanceFrom: 1, importanceTo: 2, levelFrom: '了解', levelTo: '掌握', note: '稳定性能力下沉为通用要求', reason: '系统规模上升，韧性保障成标配', sources: ['community','recruit'], event: '2025-03' },
-                { type: 'weaken', from: 'SSH/Struts 单体', to: 'SSH/Struts 单体', importanceFrom: 2, importanceTo: 1, levelFrom: '掌握', levelTo: '了解', note: '传统框架能力要求收缩', reason: '云原生与前后端分离替代传统 MVC', sources: ['recruit','internal'], event: '2025-04' },
-                { type: 'new', from: '—', to: '向量数据库/RAG', importanceFrom: 0, importanceTo: 2, levelFrom: '—', levelTo: '掌握', note: 'AI 工程化新能力进入视野', reason: 'RAG 技术需求进入快速扩张期', sources: ['community','github'], event: '2025-04' },
-                { type: 'new', from: '—', to: 'Service Mesh', importanceFrom: 0, importanceTo: 2, levelFrom: '—', levelTo: '掌握', note: '服务网格成为微服务进阶能力', reason: '微服务规模化后治理复杂度上升', sources: ['github','report'], event: '2025-02' },
-                { type: 'strengthen', from: '分布式事务', to: '分布式事务', importanceFrom: 2, importanceTo: 3, levelFrom: '掌握', levelTo: '精通', note: '方案描述由抽象转具体', reason: '云原生落地加深，事务方案标准趋同', sources: ['internal','recruit'], event: '2025-04' },
-                { type: 'weaken', from: '手工运维', to: '声明式运维', importanceFrom: 2, importanceTo: 1, levelFrom: '掌握', levelTo: '了解', note: '手工运维被自动化替代', reason: 'IaC 与 GitOps 成为标准实践', sources: ['github','report'], event: '2025-02' }
+                { type: 'replace', from: '传统部署', to: '容器化部署', importanceFrom: 2, importanceTo: 3, levelFrom: '掌握', levelTo: '精通', note: 'Docker/Kubernetes 成为交付标配', reason: '企业上云推动部署方式全面容器化', sources: ['recruit','cloud-native'], event: '2026-05' },
+                { type: 'upgrade', from: 'Java 基础开发', to: '云原生开发', importanceFrom: 3, importanceTo: 3, levelFrom: '精通', levelTo: '精通', note: '能力重心向云原生栈外延', reason: '云原生与分布式成为价值高地', sources: ['report','internal'], event: '2026-05' },
+                { type: 'upgrade', from: '辅助开发', to: 'AI 协同开发', importanceFrom: 1, importanceTo: 3, levelFrom: '了解', levelTo: '掌握', note: 'AI 工具从加分项变基础能力', reason: '大模型编码工具落地，人效诉求驱动', sources: ['community','recruit'], event: '2026-07' },
+                { type: 'strengthen', from: '微服务架构', to: '微服务架构', importanceFrom: 2, importanceTo: 3, levelFrom: '掌握', levelTo: '精通', note: '重要性从"加分"升至"核心"', reason: '业务复杂度上升，架构治理价值突显', sources: ['internal','report'], event: '2026-03' },
+                { type: 'strengthen', from: '可观测性', to: '可观测性', importanceFrom: 1, importanceTo: 2, levelFrom: '了解', levelTo: '掌握', note: '稳定性能力下沉为通用要求', reason: '系统规模上升，韧性保障成标配', sources: ['community','recruit'], event: '2026-06' },
+                { type: 'weaken', from: 'SSH/Struts 单体', to: 'SSH/Struts 单体', importanceFrom: 2, importanceTo: 1, levelFrom: '掌握', levelTo: '了解', note: '传统框架能力要求收缩', reason: '云原生与前后端分离替代传统 MVC', sources: ['recruit','internal'], event: '2026-07' },
+                { type: 'new', from: '—', to: '向量数据库/RAG', importanceFrom: 0, importanceTo: 2, levelFrom: '—', levelTo: '掌握', note: 'AI 工程化新能力进入视野', reason: 'RAG 技术需求进入快速扩张期', sources: ['community','github'], event: '2026-07' },
+                { type: 'new', from: '—', to: 'Service Mesh', importanceFrom: 0, importanceTo: 2, levelFrom: '—', levelTo: '掌握', note: '服务网格成为微服务进阶能力', reason: '微服务规模化后治理复杂度上升', sources: ['github','report'], event: '2026-05' },
+                { type: 'strengthen', from: '分布式事务', to: '分布式事务', importanceFrom: 2, importanceTo: 3, levelFrom: '掌握', levelTo: '精通', note: '方案描述由抽象转具体', reason: '云原生落地加深，事务方案标准趋同', sources: ['internal','recruit'], event: '2026-07' },
+                { type: 'weaken', from: '手工运维', to: '声明式运维', importanceFrom: 2, importanceTo: 1, levelFrom: '掌握', levelTo: '了解', note: '手工运维被自动化替代', reason: 'IaC 与 GitOps 成为标准实践', sources: ['github','report'], event: '2026-05' }
             ]
         }
     };
@@ -308,11 +308,11 @@ window.initEvolution = function() {
     // 周期标题
     const periodEl = document.getElementById('evo-important-period');
     const prevPeriodEl = document.getElementById('evo-prev-period');
-    if (periodEl) periodEl.textContent = profile.period || '2025-05';
-    if (prevPeriodEl) prevPeriodEl.textContent = profile.prevPeriod || '2025-04';
+    if (periodEl) periodEl.textContent = profile.period || '2026-08';
+    if (prevPeriodEl) prevPeriodEl.textContent = profile.prevPeriod || '2026-07';
 
     // 渲染：时间轴 + 重要变化 + 右侧栏（防御性：每个独立 try-catch 避免一个失败连累全部）
-    const monthsAll = (profile && profile.timelineMonths) || ['2024-11','2024-12','2025-01','2025-02','2025-03','2025-04','2025-05'];
+    const monthsAll = (profile && profile.timelineMonths) || ['2026-02','2026-03','2026-04','2026-05','2026-06','2026-07','2026-08'];
     const period = profile.period || monthsAll[monthsAll.length - 1];
     const defaultPeriod = monthsAll[Math.max(0, monthsAll.length - 2)];   // 默认对比「上一月」
     try { if (window.renderEvoTimelineChart) window.renderEvoTimelineChart(profile, 'all'); } catch(e) { console.warn('renderEvoTimelineChart error', e); }
@@ -406,7 +406,7 @@ window.renderEvoTimelineChart = function(profile, range) {
 
     const totalAll = (profile && profile.timelineTotal) || [38, 41, 45, 47, 52, 58, 64];
     const newlyAll = (profile && profile.timelineNewly) || [ 0,  3,  2,  3,  5,  6,  6];
-    const monthsAll = ['2024-11','2024-12','2025-01','2025-02','2025-03','2025-04','2025-05'];
+    const monthsAll = ['2026-02','2026-03','2026-04','2026-05','2026-06','2026-07','2026-08'];
     // 按 range 取末尾 N 个月
     const n = Math.min(range, totalAll.length);
     const xs = monthsAll.slice(-n);
@@ -438,7 +438,7 @@ window.renderEvoTimelineChart = function(profile, range) {
     }
     const chart = window.echarts.init(dom);
     chart.setOption({
-        grid: { left: 50, right: 50, top: 90, bottom: 36 },
+        grid: { left: 40, right: 32, top: 34, bottom: 32 },
         tooltip: {
             trigger: 'axis',
             backgroundColor: 'rgba(15,25,40,0.92)',
@@ -653,7 +653,7 @@ window.renderEvoImportantChanges = function(profile, opts) {
         try {
             const range = opts.range == null ? 6 : opts.range;
             const compareMonth = opts.compareMonth || null;   // 对比基准月（用户选择）
-            const months = (profile && profile.timelineMonths) || ['2024-11','2024-12','2025-01','2025-02','2025-03','2025-04','2025-05'];
+            const months = (profile && profile.timelineMonths) || ['2026-02','2026-03','2026-04','2026-05','2026-06','2026-07','2026-08'];
             const all = (profile && profile.trendHighlights) || [];
             const period = profile.period || months[months.length - 1];
             const periodIdx = months.lastIndexOf(period);
@@ -727,7 +727,9 @@ window.renderEvoImportantChanges = function(profile, opts) {
             const renderGroup = (arr, containerId, countId) => {
                 const wrap = document.getElementById(containerId);
                 const cnt  = document.getElementById(countId);
-                if (cnt) cnt.textContent = arr.length + ' 项';
+                // 「项」按用户视角 = 实际行数（每个 skill 一行）；右侧「查看更多(N)」= 折叠行数
+                const allRows = buildRows(arr);
+                if (cnt) cnt.textContent = allRows.length + ' 项';
                 if (!wrap) return;
                 // 保留容器内已有的 .evo-table-header，仅清掉之前的行/toggle/empty
                 const headerHtml = wrap.querySelector('.evo-table-header')?.outerHTML || '';
@@ -736,7 +738,6 @@ window.renderEvoImportantChanges = function(profile, opts) {
                     wrap.insertAdjacentHTML('beforeend', `<div class="evo-group-empty">无</div>`);
                     return;
                 }
-                const allRows  = buildRows(arr);
                 const visible  = allRows.slice(0, DEFAULT_ROWS);
                 const hidden   = allRows.slice(DEFAULT_ROWS);
                 wrap.insertAdjacentHTML('beforeend', visible.join(''));
@@ -908,7 +909,7 @@ window.renderEvoInsight = function(profile, opts) {
 
     // ===== 联动过滤 =====
     let picked = all;
-    const timeNode = opts.timeNode; // 形如 '2025-04'
+    const timeNode = opts.timeNode; // 形如 '2026-07'
     if (timeNode) {
         const matched = all.filter(x => (x.nodes || []).indexOf(timeNode) > -1);
         // 节点命中不足 2 条时回退全量，保证可读性
@@ -988,7 +989,7 @@ window.renderEvoSource = function(profile, opts) {
             <span class="evo-source-status evo-source-status-${(statusMap[s.status] || 'ok')}">${s.status || '正常'}</span>
         </div>
     `).join('') + (collapsed && all.length > DEFAULT_N
-        ? `<div class="evo-source-more" id="evo-source-more-hint">还有 ${all.length - DEFAULT_N} 个来源，点击右上角“展开全部”查看</div>`
+        ? `<div class="evo-source-more" id="evo-source-more-hint">还有 ${all.length - DEFAULT_N} 个来源，点击右上角"展开全部"查看</div>`
         : '');
 
     // 点击来源 → 弹详情（含证据链）
@@ -1054,170 +1055,6 @@ window.renderEvoSidePanels = function(profile) {
     if (window.renderEvoInsight) window.renderEvoInsight(profile, { range: 6 });
     // 数据来源
     if (window.renderEvoSource) window.renderEvoSource(profile, {});
-    // 历史版本对比
-    if (window.renderEvoHistory) window.renderEvoHistory(profile, {});
-};
-
-// ===== 历史版本对比：突出能力结构演化方向 =====
-window.renderEvoHistory = function(profile, opts) {
-    opts = opts || {};
-    const his = document.getElementById('evo-history-body');
-    if (!his) return;
-    const data = (profile && profile.history) || { versions: [], evolution: [] };
-    const versions = data.versions || [];
-    const evolution = data.evolution || [];
-    if (!versions.length) { his.innerHTML = '<div class="evo-insight-empty">暂无版本数据</div>'; return; }
-
-    // 默认对比：当前版本 vs 上一版本
-    const defA = versions[versions.length - 1].id; // 最早
-    const defB = versions[0].id;                   // 当前
-    const selA = opts.versionA || defA;
-    const selB = opts.versionB || defB;
-    const va = versions.find(v => v.id === selA) || versions[0];
-    const vb = versions.find(v => v.id === selB) || versions[versions.length - 1];
-
-    // 版本选择下拉
-    const optHtml = (sel) => versions.map(v =>
-        `<option value="${v.id}" ${v.id === sel ? 'selected' : ''}>${v.label} · ${v.date}</option>`).join('');
-
-    // 演化关系：按类型加权排序（强化/新增/替代优先），默认展示前 8 条
-    const DEFAULT_N = 8;
-    const collapsed = opts.collapsed !== false;
-    const shown = collapsed ? evolution.slice(0, DEFAULT_N) : evolution;
-
-    const typeMeta = {
-        upgrade:    { label: '能力升级', cls: 'evo-evo-upgrade' },
-        strengthen: { label: '强化',     cls: 'evo-evo-strengthen' },
-        weaken:     { label: '弱化',     cls: 'evo-evo-weaken' },
-        replace:    { label: '替代',     cls: 'evo-evo-replace' },
-        new:        { label: '新增',     cls: 'evo-evo-new' }
-    };
-    const star = (n) => '★'.repeat(n) + '☆'.repeat(Math.max(0, 3 - n));
-
-    const evoItemsHtml = shown.map((e, i) => {
-        const m = typeMeta[e.type] || typeMeta.upgrade;
-        const arrow = e.type === 'new' ? '➜ 新增' : (e.from + ' → ' + e.to);
-        const impChange = (e.importanceTo - e.importanceFrom);
-        const impHtml = e.type === 'new'
-            ? `<span class="evo-evo-imp">${star(e.importanceTo)}</span>`
-            : `<span class="evo-evo-imp">${star(e.importanceFrom)} <span class="evo-evo-arrow ${impChange >= 0 ? 'up' : 'down'}">${impChange > 0 ? '▲' : impChange < 0 ? '▼' : '＝'}</span> ${star(e.importanceTo)}</span>`;
-        return `
-            <div class="evo-evo-item" data-evo-idx="${evolution.indexOf(e)}">
-                <span class="evo-evo-tag ${m.cls}">${m.label}</span>
-                <div class="evo-evo-flow">
-                    <div class="evo-evo-arrow-text">${arrow}</div>
-                    <div class="evo-evo-note">${e.note || ''}</div>
-                </div>
-                <div class="evo-evo-right">
-                    ${impHtml}
-                    <span class="evo-evo-level">${e.levelFrom} → ${e.levelTo}</span>
-                </div>
-            </div>`;
-    }).join('') + (collapsed && evolution.length > DEFAULT_N
-        ? `<div class="evo-source-more" id="evo-evo-more-hint">还有 ${evolution.length - DEFAULT_N} 项变化，点击右上角“查看全部”查看</div>`
-        : '');
-
-    his.innerHTML = `
-        <div class="evo-history-selectors">
-            <select class="evo-history-select" id="evo-history-a">${optHtml(selA)}</select>
-            <span class="evo-history-vs">→</span>
-            <select class="evo-history-select" id="evo-history-b">${optHtml(selB)}</select>
-        </div>
-        <div class="evo-history-head">
-            <div class="evo-history-ver evo-history-ver-a">
-                <div class="evo-history-ver-label">${va.label} <span class="evo-history-ver-tag">${va.tag || ''}</span></div>
-                <div class="evo-history-ver-date">${va.date}</div>
-                <div class="evo-history-ver-count">${va.count} 项能力</div>
-                <div class="evo-history-ver-desc">${va.desc || ''}</div>
-            </div>
-            <div class="evo-history-direction">
-                <div class="evo-history-dir-arrow">➜</div>
-                <div class="evo-history-dir-text">能力结构演化</div>
-            </div>
-            <div class="evo-history-ver evo-history-ver-b">
-                <div class="evo-history-ver-label">${vb.label} <span class="evo-history-ver-tag">${vb.tag || ''}</span></div>
-                <div class="evo-history-ver-date">${vb.date}</div>
-                <div class="evo-history-ver-count">${vb.count} 项能力</div>
-                <div class="evo-history-ver-desc">${vb.desc || ''}</div>
-            </div>
-        </div>
-        <div class="evo-history-evo-title">
-            能力变化关系 <span class="evo-history-evo-sub">（重点展示 ${shown.length} / ${evolution.length} 项）</span>
-        </div>
-        <div class="evo-history-evo-list" id="evo-history-evo-list">${evoItemsHtml}</div>
-        <a class="evo-view-all" id="evo-history-expand" href="javascript:void(0)">${collapsed && evolution.length > DEFAULT_N ? '查看全部 ▸' : '收起 ▴'}</a>
-    `;
-
-    // 版本选择联动
-    const selAEl = document.getElementById('evo-history-a');
-    const selBEl = document.getElementById('evo-history-b');
-    const onSel = () => window.renderEvoHistory(profile, { versionA: selAEl.value, versionB: selBEl.value, collapsed: true });
-    if (selAEl) selAEl.addEventListener('change', onSel);
-    if (selBEl) selBEl.addEventListener('change', onSel);
-
-    // 查看全部
-    const expandBtn = document.getElementById('evo-history-expand');
-    if (expandBtn && !expandBtn.dataset.bound) {
-        expandBtn.dataset.bound = '1';
-        expandBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            window.renderEvoHistory(profile, { versionA: selA, versionB: selB, collapsed: opts.collapsed === false });
-        });
-    }
-
-    // 点击演化项 → 详情 modal
-    his.querySelectorAll('.evo-evo-item').forEach(el => {
-        if (el.dataset.bound) return;
-        el.dataset.bound = '1';
-        el.addEventListener('click', () => {
-            const e = evolution[parseInt(el.dataset.evoIdx, 10)];
-            if (e) window.openEvoHistoryModal(e, profile);
-        });
-    });
-};
-
-window.openEvoHistoryModal = function(e, profile) {
-    const sources = (profile && profile.sources) || [];
-    const m = { upgrade:'能力升级', strengthen:'强化', weaken:'弱化', replace:'替代', new:'新增' }[e.type] || '变化';
-    const srcNames = (e.sources || []).map(id => (sources.find(s => s.id === id) || {}).name).filter(Boolean);
-    const srcHtml = srcNames.length ? srcNames.map(n => `<span class="evo-source-chip">${n}</span>`).join('') : '<span class="evo-source-link-empty">暂未关联具体来源</span>';
-    let modal = document.getElementById('evo-history-modal');
-    if (!modal) {
-        modal = document.createElement('div');
-        modal.id = 'evo-history-modal';
-        modal.className = 'evo-modal-mask';
-        document.body.appendChild(modal);
-    }
-    modal.innerHTML = `
-        <div class="evo-modal-box evo-source-modal-box">
-            <button class="evo-modal-close" data-close="1">×</button>
-            <div class="evo-source-modal-head">
-                <span class="evo-source-link-tag">${m}</span>
-                <div class="evo-source-modal-name">${e.from === '—' ? e.to : e.from + ' → ' + e.to}</div>
-            </div>
-            <div class="evo-modal-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
-                <div class="evo-source-modal-cell"><span class="k">版本 A 状态</span><span class="v">${e.levelFrom} · ${'★'.repeat(e.importanceFrom)}${'☆'.repeat(Math.max(0,3-e.importanceFrom))}</span></div>
-                <div class="evo-source-modal-cell"><span class="k">版本 B 状态</span><span class="v">${e.levelTo} · ${'★'.repeat(e.importanceTo)}${'☆'.repeat(Math.max(0,3-e.importanceTo))}</span></div>
-            </div>
-            <div class="evo-source-modal-section">
-                <div class="evo-source-modal-section-title">变化说明</div>
-                <p class="evo-source-modal-detail">${e.note || ''}</p>
-            </div>
-            <div class="evo-source-modal-section">
-                <div class="evo-source-modal-section-title">变化原因</div>
-                <p class="evo-source-modal-detail">${e.reason || '综合多源数据识别的能力结构演化。'}</p>
-            </div>
-            <div class="evo-source-modal-section">
-                <div class="evo-source-modal-section-title">关联数据来源</div>
-                <div class="evo-source-modal-links">${srcHtml}</div>
-            </div>
-            <div class="evo-source-modal-section">
-                <div class="evo-source-modal-section-title">对应演化事件</div>
-                <p class="evo-source-modal-detail">${e.event ? (e.event + ' 重大能力结构演进') : '常规版本迭代'}</p>
-            </div>
-        </div>`;
-    modal.style.display = 'flex';
-    modal.onclick = (ev) => { if (ev.target === modal || ev.target.dataset.close) modal.style.display = 'none'; };
 };
 
 window.getEvolutionForJob = function(jobId) {
@@ -1568,7 +1405,7 @@ window.initNewSkill = function() {
     if (!window.EVOLUTION_JOB_PROFILES || !Object.keys(window.EVOLUTION_JOB_PROFILES).length) {
         window.generateAllData();
     }
-    // 从 URL 读取 job / skill 参数（由演化页“详细变更清单”技能项跳转带入）
+    // 从 URL 读取 job / skill 参数（由演化页"详细变更清单"技能项跳转带入）
     try {
         const q = new URLSearchParams(window.location.search);
         const qJob = q.get('job');
