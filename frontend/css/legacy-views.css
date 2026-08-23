@@ -2122,7 +2122,7 @@ body.disc-lock .content{overflow-y:auto!important;padding:20px 24px 32px!importa
 /* Standalone page overrides */
 body.standalone-view { overflow: auto !important; }
 body.standalone-view .view { display: block !important; animation: none !important; }
-body.standalone-view .page-main { padding: 0 !important; }
+body.standalone-view .page-main { padding: 0; }
 body.standalone-view #page-main > .view { min-height: calc(100vh - var(--topbar-h, 60px)); }
 
 /* ============== Career archive matching flow ============== */

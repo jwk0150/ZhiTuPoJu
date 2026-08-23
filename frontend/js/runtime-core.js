@@ -104,7 +104,6 @@ window.switchView = window.switchView || function (viewId) {
   if (viewId === 'newSkill') { location.href = 'new-skill.html'; return; }
   // 演化 / 趋势统一使用带版本号的洞察页面，避免回到旧缓存
   if (viewId === 'evolution' || viewId === 'insight') { location.href = 'insight.html?v=2'; return; }
-  if (viewId === 'analysis') { location.href = 'insight.html?tab=trends&v=2'; return; }
   var map = { evolution: 'view-evolution' };
   var target = map[viewId] || ('view-' + viewId);
   document.querySelectorAll('#page-main section.view').forEach(function (v) {

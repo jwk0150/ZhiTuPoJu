@@ -102,7 +102,12 @@ window.initEvolution = function() {
                 node: '2025-04', trend: '分布式事务能力演进', direction: 'stable', magnitude: 45,
                 importance: 'high', confidence: 0.83,
                 desc: '分布式事务、幂等设计、最终一致性方案要求标准趋同，相关能力描述更加具体化。',
-                skills: ['Seata', 'TCC', '消息一致性', '幂等设计'],
+                skills: [
+                    { name: 'Seata',     before: '了解分布式事务概念，能描述 ACID / CAP 理论', after: '掌握 Seata 在订单/库存/账户等场景的应用，能选型 AT / TCC / Saga 模式' },
+                    { name: 'TCC',       before: '理解两阶段提交理论',                         after: '能基于 TCC 实现自定义事务框架，含 Try/Confirm/Cancel 幂等与悬挂处理' },
+                    { name: '消息一致性', before: '了解最终一致性概念',                         after: '能基于 RocketMQ / Kafka 实现可靠消息 + 本地消息表，处理重复消费与对账' },
+                    { name: '幂等设计',  before: '能识别重复请求场景',                         after: '掌握 Token / 唯一索引 / 状态机 / 分布式锁等幂等方案，能落地业务级幂等' }
+                ],
                 beforeAfter: '从"了解分布式事务"细化为"Seata / TCC / 消息一致性"具体方案与适用场景。',
                 reason: '企业云原生与微服务落地加深，事务方案标准趋同。',
                 dataEvidence: '企业招聘数据（40%）：具体方案关键词 +9pp；行业报告（25%）：分布式事务成熟度评估分 +0.6。',
@@ -307,9 +312,11 @@ window.initEvolution = function() {
     if (prevPeriodEl) prevPeriodEl.textContent = profile.prevPeriod || '2025-04';
 
     // 渲染：时间轴 + 重要变化 + 右侧栏（防御性：每个独立 try-catch 避免一个失败连累全部）
-    const defaultRange = 6;
-    try { if (window.renderEvoTimelineChart) window.renderEvoTimelineChart(profile, defaultRange); } catch(e) { console.warn('renderEvoTimelineChart error', e); }
-    try { if (window.renderEvoImportantChanges) window.renderEvoImportantChanges(profile, { range: defaultRange }); } catch(e) { console.warn('renderEvoImportantChanges error', e); }
+    const monthsAll = (profile && profile.timelineMonths) || ['2024-11','2024-12','2025-01','2025-02','2025-03','2025-04','2025-05'];
+    const period = profile.period || monthsAll[monthsAll.length - 1];
+    const defaultPeriod = monthsAll[Math.max(0, monthsAll.length - 2)];   // 默认对比「上一月」
+    try { if (window.renderEvoTimelineChart) window.renderEvoTimelineChart(profile, 'all'); } catch(e) { console.warn('renderEvoTimelineChart error', e); }
+    try { if (window.renderEvoImportantChanges) window.renderEvoImportantChanges(profile, { compareMonth: defaultPeriod }); } catch(e) { console.warn('renderEvoImportantChanges error', e); }
     try { if (window.renderEvoSidePanels) window.renderEvoSidePanels(profile); } catch(e) { console.warn('renderEvoSidePanels error', e); }
 
     // 时间范围切换（联动：时间轴 + 本期重点变化）
@@ -320,14 +327,41 @@ window.initEvolution = function() {
             e.stopPropagation();
             document.querySelectorAll('.range-pill').forEach(x => x.classList.remove('active'));
             p.classList.add('active');
-            const raw = p.dataset.range; // '6' | '3' | '12' | 'all'
+            const raw = p.dataset.range; // '3' | '6' | '12' | 'all'
             const rangeForChart = (raw === 'all') ? 'all' : (parseInt(raw, 10) || 6);
+            // 范围切换 → 对比基准月 =「当前月往前推 N 月」
+            const n = (raw === 'all') ? monthsAll.length : parseInt(raw, 10);
+            const cmp = monthsAll[Math.max(0, monthsAll.length - n)] || monthsAll[0];
+            const sel = document.getElementById('evo-compare-select');
+            if (sel) sel.value = cmp;
             try { if (window.renderEvoTimelineChart) window.renderEvoTimelineChart(profile, rangeForChart); } catch(err) { console.warn(err); }
-            try { if (window.renderEvoImportantChanges) window.renderEvoImportantChanges(profile, { range: raw }); } catch(err) { console.warn(err); }
+            try { if (window.renderEvoImportantChanges) window.renderEvoImportantChanges(profile, { compareMonth: cmp }); } catch(err) { console.warn(err); }
             // 核心洞察联动：随范围切换更新
             try { if (window.renderEvoInsight) window.renderEvoInsight(profile, { range: raw }); } catch(err) { console.warn(err); }
         });
     });
+
+    // 对比月份下拉：可选任意历史月份，切换后展示「对比月 → 当前月」之间的重点变化
+    const compareSel = document.getElementById('evo-compare-select');
+    if (compareSel) {
+        compareSel.innerHTML = monthsAll.map(m => `<option value="${m}">${m}</option>`).join('');
+        compareSel.value = defaultPeriod;
+        if (!compareSel.dataset.bound) {
+            compareSel.dataset.bound = '1';
+            compareSel.addEventListener('change', (e) => {
+                const m = e.target.value;
+                // 下拉切换 → 同步顶部范围 pill（找到与对比月对应的「最近 N 月」）
+                document.querySelectorAll('.range-pill').forEach(x => {
+                    const n = (x.dataset.range === 'all') ? monthsAll.length : parseInt(x.dataset.range, 10);
+                    const expected = monthsAll[Math.max(0, monthsAll.length - n)] || monthsAll[0];
+                    x.classList.toggle('active', expected === m);
+                });
+                try { if (window.renderEvoTimelineChart) window.renderEvoTimelineChart(profile, 'all'); } catch(err) { console.warn(err); }
+                try { if (window.renderEvoImportantChanges) window.renderEvoImportantChanges(profile, { compareMonth: m }); } catch(err) { console.warn(err); }
+                try { if (window.renderEvoInsight) window.renderEvoInsight(profile, { range: 'all' }); } catch(err) { console.warn(err); }
+            });
+        }
+    }
 
     // 数据来源：展开全部 / 收起 切换
     const expandBtn = document.getElementById('evo-source-expand');
@@ -462,49 +496,7 @@ window.renderEvoTimelineChart = function(profile, range) {
                         shadowBlur: 8
                     },
                     label: {
-                        show: true,
-                        position: 'top',
-                        distance: 12,
-                        formatter: function(params) {
-                            const e = (params.data && params.data.eventData) || {};
-                            // 多行 label：白底卡片
-                            const title = e.title || '';
-                            const desc  = e.desc  || '';
-                            const count = e.count != null ? e.count : '';
-                            return [
-                                `{count|${count} 项变化}`,
-                                `{title|${title}}`,
-                                `{desc|${desc}}`
-                            ].join('\n');
-                        },
-                        rich: {
-                            count: {
-                                color: '#1fc8d9',
-                                fontWeight: 700,
-                                fontSize: 12,
-                                padding: [0, 0, 2, 0],
-                                align: 'left'
-                            },
-                            title: {
-                                color: '#1a3a4a',
-                                fontWeight: 700,
-                                fontSize: 12,
-                                padding: [0, 0, 2, 0],
-                                align: 'left'
-                            },
-                            desc: {
-                                color: '#5a6c78',
-                                fontSize: 10,
-                                align: 'left'
-                            }
-                        },
-                        backgroundColor: '#fff',
-                        borderColor: 'rgba(31,200,217,0.4)',
-                        borderWidth: 1,
-                        borderRadius: 6,
-                        padding: [8, 10, 8, 10],
-                        shadowColor: 'rgba(0,0,0,0.18)',
-                        shadowBlur: 10
+                        show: false
                     },
                     data: markPointData
                 }
@@ -517,6 +509,56 @@ window.renderEvoTimelineChart = function(profile, range) {
             }
         ]
     });
+
+    // 鼠标悬停 markPoint → 显示白底浮层卡片
+    let floatingCard = dom.querySelector('.evo-timeline-floating-card');
+    if (!floatingCard) {
+        floatingCard = document.createElement('div');
+        floatingCard.className = 'evo-timeline-floating-card';
+        floatingCard.style.display = 'none';
+        dom.appendChild(floatingCard);
+    }
+    function hideFloating() { floatingCard.style.display = 'none'; }
+    chart.on('mouseover', function(params) {
+        if (params.componentType !== 'markPoint' || !params.data || !params.data.eventData) return;
+        const e = params.data.eventData;
+        const count = e.count != null ? e.count : '';
+        floatingCard.innerHTML = [
+            '<div class="evo-fc-count">' + count + ' 项变化</div>',
+            '<div class="evo-fc-title"></div>',
+            '<div class="evo-fc-desc"></div>'
+        ].join('');
+        floatingCard.querySelector('.evo-fc-title').textContent = e.title || '';
+        floatingCard.querySelector('.evo-fc-desc').textContent  = e.desc  || '';
+        // 转换为容器内像素坐标
+        let px = null, py = null;
+        try {
+            const dataIndex = (params.data && params.data.xAxis != null) ? params.data.xAxis : null;
+            const val = (params.data && params.data.yAxis != null) ? params.data.yAxis : null;
+            if (dataIndex != null) {
+                px = chart.convertToPixel({ xAxisIndex: 0 }, dataIndex);
+            }
+            if (val != null) {
+                py = chart.convertToPixel({ yAxisIndex: 0 }, val);
+            }
+        } catch (err) {}
+        // 回退：使用鼠标事件 offsetX/offsetY
+        if (px == null && params.event && params.event.offsetX != null) px = params.event.offsetX;
+        if (py == null && params.event && params.event.offsetY != null) py = params.event.offsetY;
+        if (px == null) px = dom.clientWidth / 2;
+        if (py == null) py = 30;
+        const cardW = floatingCard.offsetWidth || 180;
+        const cardH = floatingCard.offsetHeight || 60;
+        // 卡片居中显示在点上方
+        floatingCard.style.left = Math.max(4, Math.min(dom.clientWidth - cardW - 4, px - cardW / 2)) + 'px';
+        floatingCard.style.top  = Math.max(4, py - cardH - 12) + 'px';
+        floatingCard.style.display = 'block';
+    });
+    chart.on('mouseout', function(params) {
+        if (params.componentType === 'markPoint') hideFloating();
+    });
+    // 鼠标离开整个图表也收起
+    dom.addEventListener('mouseleave', hideFloating);
 
     // 点击 markPoint → 弹窗显示该时间点详情，并联动「本期重点变化」
     chart.on('click', function(params) {
@@ -610,13 +652,20 @@ window.renderEvoImportantChanges = function(profile, opts) {
     setTimeout(() => {
         try {
             const range = opts.range == null ? 6 : opts.range;
-            const timeNode = opts.timeNode || null;
+            const compareMonth = opts.compareMonth || null;   // 对比基准月（用户选择）
             const months = (profile && profile.timelineMonths) || ['2024-11','2024-12','2025-01','2025-02','2025-03','2025-04','2025-05'];
             const all = (profile && profile.trendHighlights) || [];
+            const period = profile.period || months[months.length - 1];
+            const periodIdx = months.lastIndexOf(period);
 
+            // 池筛选：优先「对比月视角」（对比月→当前月之间的差异），否则按时间范围
             let pool = all;
-            if (timeNode) {
-                pool = all.filter(h => h.node === timeNode);
+            if (compareMonth != null) {
+                const startIdx = months.indexOf(compareMonth);
+                pool = all.filter(h => {
+                    const i = months.indexOf(h.node);
+                    return i >= startIdx && i <= periodIdx;
+                });
             } else if (range !== 'all' && range !== 9999 && !isNaN(parseInt(range,10))) {
                 const n = Math.min(parseInt(range,10), months.length);
                 const recent = months.slice(-n);
@@ -630,12 +679,10 @@ window.renderEvoImportantChanges = function(profile, opts) {
                 return s(b) - s(a);
             });
 
-            // 周期标题
-            if (periodEl) periodEl.textContent = timeNode || profile.period || '2025-05';
-            if (prevEl) {
-                const idx = months.indexOf(timeNode || profile.period || '2025-05');
-                prevEl.textContent = idx > 0 ? months[idx-1] : (profile.prevPeriod || '2025-04');
-            }
+            // 周期标题：始终是「当前数据（period）」
+            if (periodEl) periodEl.textContent = period;
+            // 对比文本：显示用户选择的对比月（没有则用默认「上一月」）
+            if (prevEl) prevEl.textContent = compareMonth || profile.prevPeriod || months[Math.max(0, months.length - 2)];
 
             // 按方向分三组
             const groups = { add: [], mod: [], del: [] };
@@ -661,10 +708,11 @@ window.renderEvoImportantChanges = function(profile, opts) {
                 hs.forEach(h => {
                     const imp = impToStars[h.importance] || 3;
                     (h.skills || []).forEach((sk, i) => {
+                        const skName = (typeof sk === 'string') ? sk : (sk && sk.name) || '未命名';
                         const type = (h.skillTypes && h.skillTypes[i]) || (h.trend && h.trend.split(' ')[0]) || (h.importance === 'high' ? '核心技术' : '辅助技能');
                         rows.push(`
                           <div class="evo-table-row" data-trend='${JSON.stringify(h).replace(/'/g,"&#39;")}'>
-                            <div class="evo-table-cell col-name">${sk}</div>
+                            <div class="evo-table-cell col-name">${skName}</div>
                             <div class="evo-table-cell col-type"><span class="evo-type-pill">${type}</span></div>
                             <div class="evo-table-cell col-imp">${stars(imp)}</div>
                             <div class="evo-table-cell col-reason">${h.reason || h.desc || ''}</div>
@@ -776,7 +824,34 @@ window.openEvoTrendDetailModal = function(h) {
     const impLabel = { high: '高', mid: '中', low: '低' };
     const impScore = { high: 3, mid: 2, low: 1 };
     const dirCls = h.direction === 'up' ? 'dir-up' : (h.direction === 'down' ? 'dir-down' : 'dir-stable');
-    const skillsHtml = (h.skills || []).map(s => `<span class="evo-modal-skill">${s}</span>`).join('');
+    const skillName = (s) => (typeof s === 'string') ? s : (s && s.name) || '未命名';
+    const skillsHtml = (h.skills || []).map(s => `<span class="evo-modal-skill">${skillName(s)}</span>`).join('');
+    // 「修改明细」：仅在修改方向、且 skills 是带 before/after 的对象数组时渲染
+    const isModify = (h.direction === 'stable' || h.direction === 'mod');
+    const modifyRows = isModify ? (h.skills || []).filter(s => s && typeof s === 'object' && (s.before || s.after)) : [];
+    const modifySectionHtml = (isModify && modifyRows.length) ? `
+          <div class="evo-modal-section">
+            <div class="evo-modal-h">修改明细（原本要求 → 修改后要求）</div>
+            <div class="evo-modal-modify-list">
+              ${modifyRows.map(s => `
+                <div class="evo-modal-modify-item">
+                  <div class="evo-modal-modify-name">${skillName(s)}</div>
+                  <div class="evo-modal-modify-compare">
+                    <div class="evo-modal-modify-before">
+                      <div class="evo-modal-modify-tag">原本要求</div>
+                      <div class="evo-modal-modify-text">${s.before || '—'}</div>
+                    </div>
+                    <div class="evo-modal-modify-arrow">→</div>
+                    <div class="evo-modal-modify-after">
+                      <div class="evo-modal-modify-tag tag-after">修改后要求</div>
+                      <div class="evo-modal-modify-text">${s.after || '—'}</div>
+                    </div>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+    ` : '';
     modal.innerHTML = `
       <div class="evo-modal-box">
         <button class="evo-modal-close" aria-label="关闭">×</button>
@@ -798,6 +873,7 @@ window.openEvoTrendDetailModal = function(h) {
             <div class="evo-modal-h">变化前后对比</div>
             <div class="evo-modal-p">${h.beforeAfter || '该能力方向在岗位要求中的权重与出现频率发生变化。'}</div>
           </div>
+          ${modifySectionHtml}
           <div class="evo-modal-section">
             <div class="evo-modal-h">具体涉及的能力</div>
             <div class="evo-modal-skills">${skillsHtml || '<span style="color:rgba(220,232,240,0.5);">无</span>'}</div>
