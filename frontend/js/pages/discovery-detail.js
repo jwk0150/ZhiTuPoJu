@@ -1,9 +1,15 @@
-/* Discovery job detail — found teal board; forecast gold board */
+/* Discovery job detail — unified black-gold board */
 (function () {
   let trendChart = null;
+  let graphChart = null;
+  let graphSourceCache = [];
   let fcProbChart = null;
   let fcSupplyChart = null;
   let currentJob = null;
+  const dutyLanes = {
+    fc: { timer: null, expanded: false, slideIndex: 0, rowHeight: 32, visibleRows: 3, data: { duties: [], scores: [] } },
+    found: { timer: null, expanded: false, slideIndex: 0, rowHeight: 32, visibleRows: 3, data: { duties: [], scores: [] } }
+  };
 
   function esc(s) {
     return String(s == null ? '' : s)
@@ -25,43 +31,21 @@
     if (window.Utils && window.Utils.showToast) window.Utils.showToast(msg, tone || 'mint');
   }
 
-  const FAV_KEY = 'zhitu_disc_favs';
-
   function readFavs() {
-    try {
-      const raw = localStorage.getItem(FAV_KEY);
-      const list = raw ? JSON.parse(raw) : [];
-      return Array.isArray(list) ? list : [];
-    } catch (_) {
-      return [];
-    }
+    return window.DiscoveryFavs ? window.DiscoveryFavs.readFavs() : [];
   }
 
   function isFav(id) {
-    return readFavs().indexOf(String(id)) >= 0;
+    return window.DiscoveryFavs ? window.DiscoveryFavs.isFav(id) : false;
   }
 
-  function toggleFav(id) {
-    const key = String(id);
-    let list = readFavs();
-    const on = list.indexOf(key) >= 0;
-    list = on ? list.filter((x) => x !== key) : list.concat(key);
-    try {
-      localStorage.setItem(FAV_KEY, JSON.stringify(list));
-    } catch (_) {}
-    return !on;
+  function toggleFav(id, meta) {
+    if (window.DiscoveryFavs) return window.DiscoveryFavs.toggleFav(id, meta);
+    return false;
   }
 
   function syncFavButtons(job) {
-    const on = !!(job && job.id && isFav(job.id));
-    ['dd-found-fav', 'dd-fc-fav'].forEach((id) => {
-      const btn = document.getElementById(id);
-      if (!btn) return;
-      btn.classList.toggle('is-on', on);
-      const ico = btn.querySelector('.ico');
-      if (ico) ico.textContent = on ? '★' : '☆';
-      btn.setAttribute('aria-pressed', on ? 'true' : 'false');
-    });
+    if (window.DiscoveryFavs) window.DiscoveryFavs.syncFavButtons(job);
   }
 
   function fillVerdict(job) {
@@ -120,21 +104,33 @@
     }
   }
 
+  function findJobInMock(id) {
+    if (!id || !window.buildMockScanPayload) return null;
+    const mock = window.buildMockScanPayload();
+    const all = [...(mock.discoveries || []), ...(mock.forecasts || [])];
+    return all.find((j) => j.id === id) || null;
+  }
+
   function loadJob() {
     const id = qs('id');
     let job = null;
-    try {
-      const raw = sessionStorage.getItem('zhitu_disc_job');
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        if (!id || parsed.id === id) job = parsed;
-      }
-    } catch (_) {}
+
+    if (id) job = findJobInMock(id);
+
+    if (!job) {
+      try {
+        const raw = sessionStorage.getItem('zhitu_disc_job');
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (!id || parsed.id === id) job = parsed;
+        }
+      } catch (_) {}
+    }
 
     if (!job && window.buildMockScanPayload) {
       const mock = window.buildMockScanPayload();
       const all = [...(mock.discoveries || []), ...(mock.forecasts || [])];
-      job = all.find((j) => j.id === id) || all[0];
+      job = (id && all.find((j) => j.id === id)) || all[0];
     }
 
     if (!job) {
@@ -234,6 +230,20 @@
     const title = job.title || (isForecast ? '新兴岗位方向' : '新兴岗位');
     const basePos = job.definition || job.description || '';
 
+    const defaultFoundDuties = [
+      '负责 AI Agent 系统的整体架构设计与落地',
+      '设计 Agent 工作流、任务规划与工具调用逻辑',
+      '构建 RAG 检索增强与知识管理体系',
+      '评估与优化 Agent 性能、效果与安全性',
+      '推动 Agent 技术在业务场景中的应用落地',
+      '编写技术方案与接口文档',
+      '参与跨团队评审与上线验收',
+      '沉淀可复用 Agent 场景模板'
+    ];
+    const rawDuties = (job.duties || job.responsibilities || []).filter(Boolean);
+    const foundDuties =
+      !isForecast && rawDuties.length < 5 ? defaultFoundDuties : rawDuties.length ? rawDuties : defaultFoundDuties;
+
     const foundPortrait = {
       positioning:
         basePos ||
@@ -241,13 +251,7 @@
           '负责把复杂智能体系统从方案推进到可上线、可运维的工程形态，明确模块边界、工具链路与评测标准。',
       brief:
         '这是一个已经在真实招聘文本中稳定出现的岗位。它不是单纯的模型调用角色，而是要把规划、工具调用、知识检索与执行闭环串成可交付系统。',
-      duties: job.responsibilities || job.duties || [
-        '负责 AI Agent 系统的整体架构设计与落地',
-        '设计 Agent 工作流、任务规划与工具调用逻辑',
-        '构建 RAG 检索增强与知识管理体系',
-        '评估与优化 Agent 性能、效果与安全性',
-        '推动 Agent 技术在业务场景中的应用落地'
-      ],
+      duties: foundDuties,
       who: [
         '有后端或平台工程经验，能把服务边界画清楚',
         '接触过大模型应用或 RAG / 工具调用链路',
@@ -278,14 +282,16 @@
           ? basePos
           : title +
             '面向企业级 AI 编排：把多 Agent、工具链与治理要求收成可交付的架构岗位方向。',
-      brief:
-        '窗口期内更可能成型的岗位方向。请关注预计出现时间、能力演化来源，以及相对你简历报告的缺口。',
+      brief: '窗口期内更可能成型，关注出现时间、演化来源与简历缺口。',
       duties: job.responsibilities || job.duties || [
         '设计企业级 AI 编排架构与多 Agent 协作边界',
         '建立 LLMOps、评测与灰度发布机制',
         '制定安全治理、权限审计与成本配额策略',
         '打通业务系统集成与工具调用链路',
-        '推动试点编制走向常规岗位与交付标准'
+        '推动试点编制走向常规岗位与交付标准',
+        '编写架构规范与跨团队接口契约',
+        '主导试点复盘并沉淀岗位能力模型',
+        '对接合规与安全团队完成上线评审'
       ],
       who: [
         '已有相邻岗位经验，希望提前布局下一跳能力',
@@ -307,7 +313,9 @@
     };
 
     const portrait = isForecast ? forecastPortrait : foundPortrait;
-    const dutyScores = isForecast ? [91, 86, 82, 78, 74] : [92, 88, 85, 72, 68];
+    const dutyScores = portrait.duties.map((_, i) =>
+      isForecast ? Math.max(66, 91 - i * 3) : Math.max(62, 92 - i * 4)
+    );
 
     const fromRoles = job.from || job.evolution_from || [
       'AI Agent 架构师',
@@ -325,12 +333,24 @@
           score: 90 - i * 5,
           note: '演化来源'
         }))
-      : [
-          { name: '大模型工程师', score: 85, note: '模型能力底座' },
-          { name: 'RAG 工程师', score: 82, note: '知识检索链路' },
-          { name: '多模态开发工程师', score: 76, note: '多模态扩展' },
-          { name: '多智能体工程师', score: 79, note: '协作编排' }
-        ];
+      : fromRoles.map((name, i) => {
+          const notes = [
+            '模型与编排能力直接延续',
+            '检索与知识链路可迁移',
+            '平台架构经验可复用',
+            '多 Agent 协作背景',
+            '自动化流水线经验',
+            '产品化场景理解',
+            '分布式系统底座'
+          ];
+          const weight = Math.max(36, 96 - i * 8 - (i % 2) * 4);
+          return {
+            name,
+            score: weight,
+            note: notes[i % notes.length] || '常见跃迁来源',
+            count: Math.round(95 + weight * 3.8 - i * 12)
+          };
+        });
 
     const skillBoard = skillScores.map((s) => ({
       ...s,
@@ -417,13 +437,15 @@
         ratio:
           job.supply_ratio != null ? String(job.supply_ratio) : (growth / 45).toFixed(2)
       },
-      skillDev: [
-        { name: 'AI 编排', now: '中', m6: '高', m12: '极高', m24: '极高' },
-        { name: '多智能体协作', now: '中', m6: '高', m12: '高', m24: '极高' },
-        { name: 'LLMOps', now: '中', m6: '中', m12: '高', m24: '极高' },
-        { name: '安全治理', now: '低', m6: '中', m12: '高', m24: '高' },
-        { name: '企业集成', now: '中', m6: '高', m12: '高', m24: '极高' }
-      ],
+      skillDev: isForecast
+        ? [
+            { name: 'AI 工作流编排', now: '中', m6: '高', m12: '极高', m24: '极高' },
+            { name: '多智能体协同', now: '中', m6: '高', m12: '高', m24: '极高' },
+            { name: 'LLMOps', now: '中', m6: '中', m12: '高', m24: '极高' },
+            { name: '安全与治理', now: '低', m6: '中', m12: '高', m24: '高' },
+            { name: '企业系统集成', now: '中', m6: '高', m12: '高', m24: '极高' }
+          ]
+        : [],
       industries: [
         { name: '互联网', value: 32 },
         { name: '金融', value: 22 },
@@ -458,26 +480,52 @@
     const n = months;
     const heat = [];
     const demand = [];
+    const supplyIdx = [];
     const labels = [];
     const now = new Date();
     for (let i = n - 1; i >= 0; i--) {
       const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
       labels.push(d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0'));
       const t = (n - i) / n;
-      const base = 24 + t * 52 + Math.sin(i * 0.65) * 3.5;
-      heat.push(Math.round(base + (currentJob?.conf || 70) * 0.12));
-      demand.push(Math.round(base * 0.82 + 10 + Math.cos(i * 0.45) * 2.5));
+      const base = 18 + t * 48 + Math.sin(i * 0.75) * 4;
+      const h = Math.round(base + (currentJob?.conf || 70) * 0.1);
+      heat.push(h);
+      demand.push(Math.round(h * 0.78 + 8 + Math.cos(i * 0.5) * 3));
+      supplyIdx.push(Math.round(h * 0.52 + 8 + i * 2.2));
     }
-    return { labels, heat, demand };
+    const growthPct =
+      heat.length > 1 ? Math.round(((heat[heat.length - 1] - heat[0]) / Math.max(heat[0], 1)) * 100) : 0;
+    let peakIdx = 0;
+    let peakVal = heat[0] || 0;
+    heat.forEach((v, i) => {
+      if (v >= peakVal) {
+        peakVal = v;
+        peakIdx = i;
+      }
+    });
+    const pressure = heat.map((h, i) => Math.max(0, h - supplyIdx[i]));
+    const accelStart = Math.max(0, n - 3);
+    return {
+      labels,
+      heat,
+      demand,
+      supplyIdx,
+      growthPct,
+      peakIdx,
+      peakVal,
+      pressure,
+      accelStart
+    };
   }
 
   function chartTheme() {
-    const real = currentJob?.isForecast ? '#d4b07a' : '#2ec4b6';
-    return { real, demand: '#5b8fd9' };
+    return { real: '#d4b07a', demand: '#8a7355' };
   }
 
   /* ---------- Found unified board ---------- */
   function renderFoundBoard(job) {
+    clearDutyTimers();
+    disposeFcCharts();
     const found = document.getElementById('dd-found');
     const forecast = document.getElementById('dd-forecast-shell');
     if (found) found.hidden = false;
@@ -523,149 +571,447 @@
         )
         .join('');
     }
+    set('dd-found-brief', job.brief || job.positioning || '');
 
-    const salaryWrap = document.getElementById('dd-found-salary');
-    const peak = document.getElementById('dd-salary-peak');
-    if (salaryWrap) salaryWrap.hidden = false;
-    if (peak) peak.style.left = (job.salaryPeak || 70) + '%';
+    renderFoundSkills(job);
 
-    const skillsEl = document.getElementById('dd-found-skills');
-    if (skillsEl) {
-      skillsEl.innerHTML = job.skillScores
-        .map(
-          (s, i) =>
-            '<div class="dd-found-skill">' +
-            '<span class="idx">' +
-            (i + 1) +
-            '</span>' +
-            '<span class="name">' +
-            esc(s.name) +
-            '</span>' +
-            '<span class="bar"><b data-w="' +
-            s.score +
-            '"></b></span>' +
-            '<span class="pct">' +
-            s.score +
-            '%</span>' +
-            '</div>'
-        )
-        .join('');
-      requestAnimationFrame(() => {
-        skillsEl.querySelectorAll('b[data-w]').forEach((b) => {
-          b.style.width = b.getAttribute('data-w') + '%';
-        });
-      });
-    }
+    mountDuties('found', job);
+    bindDutiesOnce();
 
-    const dutiesEl = document.getElementById('dd-found-duties');
-    if (dutiesEl) {
-      dutiesEl.innerHTML = (job.duties || [])
-        .slice(0, 5)
-        .map((d, i) => {
-          const pct = (job.dutyScores && job.dutyScores[i]) || Math.max(60, 92 - i * 6);
-          return (
-            '<li><span class="num">' +
-            String(i + 1).padStart(2, '0') +
-            '</span><span class="txt">' +
-            esc(d) +
-            '</span><span class="pct">' +
-            pct +
-            '%</span></li>'
-          );
-        })
-        .join('');
-    }
-
-    const supplyEl = document.getElementById('dd-found-supply');
-    if (supplyEl && job.supply) {
-      supplyEl.innerHTML =
-        '<div class="dd-supply-item"><span class="lab">人才需求增长</span><strong class="is-up">↑ ' +
-        job.supply.demandGrowth +
-        '%</strong><em>近6个月</em></div>' +
-        '<div class="dd-supply-item"><span class="lab">人才供给增长</span><strong class="is-up">↑ ' +
-        job.supply.supplyGrowth +
-        '%</strong><em>近6个月</em></div>' +
-        '<div class="dd-supply-item"><span class="lab">供需比</span><strong>' +
-        job.supply.ratio +
-        '</strong><em>需求 / 供给</em></div>';
-    }
-    set('dd-found-supply-note', job.evidence?.future || '—');
+    renderFoundSupply(job);
 
     renderFoundTrend();
     renderFoundRadar();
     renderFoundGraph();
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        layoutFoundRow();
+        runFoundMotion();
+        startDutyCarousel('found');
+      });
+    });
+  }
+
+  function layoutFoundRow() {
+    const st = dutyLanes.found;
+    const prevRows = st.visibleRows;
+    const prevRowH = st.rowHeight;
+    syncDutyViewportHeight('found');
+    if (!st.expanded && (st.visibleRows !== prevRows || st.rowHeight !== prevRowH)) {
+      buildDutyCarousel('found');
+      st.slideIndex = 0;
+      applyDutySlide('found', false);
+    }
+    resizeFoundCharts();
+  }
+
+  function runFoundMotion() {
+    if (!window.gsap || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    try {
+      window.gsap.from('.dd-back-bubble', {
+        opacity: 0,
+        x: -14,
+        duration: 0.58,
+        ease: 'power2.out',
+        clearProps: 'opacity,transform'
+      });
+      window.gsap.from('.dd-found-hero, #dd-found-verdict, #dd-found-board .dd-panel', {
+        opacity: 0,
+        y: 16,
+        duration: 0.72,
+        stagger: 0.045,
+        ease: 'power3.out',
+        clearProps: 'opacity,transform'
+      });
+      const board = document.getElementById('dd-found-board');
+      if (board) {
+        const inner = board.querySelectorAll(
+          '.dd-fc-duty-item, .dd-ind-row, .dd-ladder-item, .dd-supply-gauge, .dd-supply-beam-track span, .dd-trend-badge'
+        );
+        if (inner.length) {
+          window.gsap.from(inner, {
+            opacity: 0,
+            x: -10,
+            duration: 0.48,
+            stagger: 0.03,
+            delay: 0.18,
+            ease: 'power2.out',
+            clearProps: 'opacity,transform'
+          });
+        }
+      }
+      animateSkillConstellation();
+      animateCmpLanes();
+      animateTrendChart();
+    } catch (_) {}
+  }
+
+  function animateCmpLanes() {
+    const bars = document.querySelectorAll('#dd-found-radar .dd-cmp-lane .bar.is-job[data-w]');
+    const indBars = document.querySelectorAll('#dd-found-radar .dd-cmp-lane .bar.is-ind[data-w]');
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || !window.gsap) {
+      bars.forEach((b) => {
+        b.style.width = b.getAttribute('data-w');
+      });
+      indBars.forEach((b) => {
+        b.style.width = b.getAttribute('data-w');
+      });
+      return;
+    }
+    indBars.forEach((b, i) => {
+      window.gsap.fromTo(
+        b,
+        { width: '0%' },
+        { width: b.getAttribute('data-w'), duration: 0.62, ease: 'power2.out', delay: 0.12 + i * 0.04 }
+      );
+    });
+    bars.forEach((b, i) => {
+      window.gsap.fromTo(
+        b,
+        { width: '0%' },
+        { width: b.getAttribute('data-w'), duration: 0.82, ease: 'power2.out', delay: 0.18 + i * 0.05 }
+      );
+    });
+  }
+
+  function graphSourceData() {
+    const related = (currentJob?.related || []).slice().sort((a, b) => b.score - a.score);
+    const total = related.reduce((s, r) => s + (Number(r.score) || 0), 0) || 1;
+    const items = related.map((r, i) => ({
+      name: r.name,
+      value: Math.round(((Number(r.score) || 0) / total) * 100),
+      note: r.note || '能力路径重叠',
+      count: r.count || Math.round(80 + (Number(r.score) || 0) * 2.5),
+      overlap: Number(r.score) || 0,
+      rank: i + 1
+    }));
+    const sum = items.reduce((s, x) => s + x.value, 0);
+    if (items.length && sum !== 100) items[items.length - 1].value += 100 - sum;
+    return items;
+  }
+
+  const GRAPH_PIE_COLORS = [
+    '#f5d478',
+    '#5cb8e8',
+    '#e8925a',
+    '#6ecf9a',
+    '#c49af5',
+    '#f07898',
+    '#8ab8f5'
+  ];
+
+  function dutyVisibleRows(lane) {
+    const st = dutyLanes[lane];
+    if (st.visibleRows) return st.visibleRows;
+    return 3;
+  }
+
+  function resizeFoundCharts() {
+    requestAnimationFrame(() => {
+      try {
+        applyGraphPieLayout();
+        trendChart && trendChart.resize();
+        graphChart && graphChart.resize();
+        applyGraphPieLayout();
+      } catch (_) {}
+    });
+  }
+
+  function animateTrendChart() {
+    /* 趋势图仅保留入场动画与 CSS 光效，不做持续数据浮动 */
   }
 
   function renderFoundTrend() {
     const el = document.getElementById('dd-found-trend');
     if (!el || !window.echarts) return;
-    const { labels, heat, demand } = seriesForRange(6);
-    const { real, demand: dem } = chartTheme();
+    const series = seriesForRange(6);
+    const badge = document.getElementById('dd-found-trend-badge');
+    if (badge) {
+      badge.textContent = '强劲 ↑' + series.growthPct + '%';
+      badge.classList.toggle('is-surge', series.growthPct >= 80);
+    }
+    const { labels, heat, demand } = series;
+    const lastIdx = heat.length - 1;
+    const yMaxL = Math.ceil(Math.max(...heat, 1) / 10) * 10 + 8;
+    const yMaxR = Math.ceil(Math.max(...demand, 1) / 10) * 10 + 8;
     if (!trendChart) trendChart = window.echarts.init(el);
     trendChart.setOption({
       backgroundColor: 'transparent',
+      animationDuration: 980,
+      animationEasing: 'elasticOut',
       tooltip: {
         trigger: 'axis',
-        backgroundColor: 'rgba(10,14,20,0.92)',
-        borderColor: 'rgba(255,255,255,0.1)',
-        textStyle: { color: '#e8f2f8', fontSize: 12 }
+        axisPointer: {
+          type: 'cross',
+          crossStyle: { color: 'rgba(212,176,122,0.35)' },
+          lineStyle: { type: 'dashed', color: 'rgba(255,255,255,0.12)' }
+        },
+        backgroundColor: 'rgba(10,14,20,0.94)',
+        borderColor: 'rgba(212,176,122,0.25)',
+        textStyle: { color: '#e8f2f8', fontSize: 11 },
+        formatter(params) {
+          if (!params || !params.length) return '';
+          const idx = params[0].dataIndex;
+          return (
+            labels[idx] +
+            '<br/><span style="color:#e8c988">● 发布量 ' +
+            heat[idx] +
+            '</span><br/><span style="color:#7ec8f0">● 搜索热度 ' +
+            demand[idx] +
+            '</span>'
+          );
+        }
       },
-      legend: {
-        data: ['发布量', '搜索趋势'],
-        textStyle: { color: 'rgba(232,242,248,0.55)', fontSize: 10 },
-        top: 0,
-        right: 0,
-        itemWidth: 10,
-        itemHeight: 6
-      },
-      grid: { left: 36, right: 12, top: 28, bottom: 22 },
+      legend: { show: false },
+      grid: { left: 34, right: 34, top: 10, bottom: 16 },
       xAxis: {
         type: 'category',
         data: labels,
-        boundaryGap: false,
-        axisLine: { lineStyle: { color: 'rgba(255,255,255,0.1)' } },
-        axisLabel: { color: 'rgba(232,242,248,0.38)', fontSize: 9 }
+        boundaryGap: true,
+        axisLine: { lineStyle: { color: 'rgba(212,176,122,0.22)' } },
+        axisLabel: {
+          color: 'rgba(232,242,248,0.58)',
+          fontSize: 10,
+          margin: 6,
+          formatter(v) {
+            return String(v).slice(5);
+          }
+        },
+        axisTick: { show: false }
       },
-      yAxis: {
-        type: 'value',
-        splitLine: { lineStyle: { color: 'rgba(255,255,255,0.05)' } },
-        axisLabel: { color: 'rgba(232,242,248,0.35)', fontSize: 9 }
-      },
+      yAxis: [
+        {
+          type: 'value',
+          position: 'left',
+          min: 0,
+          max: yMaxL,
+          splitNumber: 3,
+          splitLine: { lineStyle: { color: 'rgba(255,255,255,0.05)', type: 'dashed' } },
+          axisLabel: {
+            color: 'rgba(232,201,136,0.62)',
+            fontSize: 9,
+            margin: 6,
+            formatter: '{value}'
+          },
+          axisLine: { show: false },
+          axisTick: { show: false }
+        },
+        {
+          type: 'value',
+          position: 'right',
+          min: 0,
+          max: yMaxR,
+          splitNumber: 3,
+          splitLine: { show: false },
+          axisLabel: {
+            color: 'rgba(126,200,240,0.62)',
+            fontSize: 9,
+            margin: 6,
+            formatter: '{value}'
+          },
+          axisLine: { show: false },
+          axisTick: { show: false }
+        }
+      ],
       series: [
         {
           name: '发布量',
-          type: 'line',
+          type: 'bar',
+          yAxisIndex: 0,
           data: heat,
-          smooth: true,
-          symbol: 'circle',
-          symbolSize: 5,
-          lineStyle: { width: 2.2, color: real },
-          itemStyle: { color: real },
-          areaStyle: {
-            color: {
-              type: 'linear',
-              x: 0,
-              y: 0,
-              x2: 0,
-              y2: 1,
-              colorStops: [
-                { offset: 0, color: real + '40' },
-                { offset: 1, color: real + '00' }
-              ]
+          barWidth: '46%',
+          barCategoryGap: '28%',
+          animationDelay(idx) {
+            return idx * 85 + 280;
+          },
+          itemStyle: {
+            borderRadius: [6, 6, 2, 2],
+            borderWidth: 1,
+            borderColor: 'rgba(255,240,200,0.38)',
+            color(p) {
+              const isLast = p.dataIndex === lastIdx;
+              return {
+                type: 'linear',
+                x: 0,
+                y: 0,
+                x2: 0,
+                y2: 1,
+                colorStops: isLast
+                  ? [
+                      { offset: 0, color: '#fff8dc' },
+                      { offset: 0.45, color: '#f0d080' },
+                      { offset: 1, color: '#a87830' }
+                    ]
+                  : [
+                      { offset: 0, color: '#f5e0a8' },
+                      { offset: 0.55, color: '#d4a858' },
+                      { offset: 1, color: '#8a6530' }
+                    ]
+              };
+            },
+            shadowBlur: 0,
+            shadowColor: 'transparent',
+            shadowOffsetY: 0
+          },
+          emphasis: {
+            itemStyle: {
+              borderColor: 'rgba(255,248,220,0.9)',
+              shadowBlur: 8,
+              shadowColor: 'rgba(240,208,128,0.35)'
             }
-          }
+          },
+          z: 2
         },
         {
-          name: '搜索趋势',
+          name: '搜索热度',
           type: 'line',
+          yAxisIndex: 1,
           data: demand,
-          smooth: true,
+          smooth: 0.42,
+          animationDuration: 1100,
+          animationDelay: 420,
+          animationEasing: 'cubicOut',
           symbol: 'circle',
-          symbolSize: 5,
-          lineStyle: { width: 2, color: dem },
-          itemStyle: { color: dem }
+          symbolSize(_v, p) {
+            return p.dataIndex === lastIdx ? 8 : 0;
+          },
+          showSymbol: true,
+          lineStyle: {
+            width: 2.2,
+            color: '#7ec8f0'
+          },
+          itemStyle: {
+            color: '#0c1218',
+            borderColor: '#c8eeff',
+            borderWidth: 2
+          },
+          z: 4
         }
       ]
+    }, true);
+  }
+
+  function supplyVerdict(ratio) {
+    const r = Number(ratio);
+    if (r >= 2.5) return { label: '供不应求', tone: 'is-hot', hint: '需求增速显著高于人才供给，招聘竞争偏激烈。' };
+    if (r >= 1.6) return { label: '偏紧', tone: 'is-warm', hint: '需求仍在扩张，供给跟进略慢，需提前储备。' };
+    return { label: '相对均衡', tone: 'is-ok', hint: '供需节奏接近，可关注结构性缺口而非总量。' };
+  }
+
+  function renderFoundSupply(job) {
+    const el = document.getElementById('dd-found-supply');
+    if (!el || !job.supply) return;
+    const ratio = Number(job.supply.ratio) || 1;
+    const verdict = supplyVerdict(ratio);
+    const gaugePct = Math.min(100, Math.round((ratio / 3.2) * 100));
+    const dG = Number(job.supply.demandGrowth) || 0;
+    const sG = Number(job.supply.supplyGrowth) || 0;
+    const sum = Math.max(dG + sG, 1);
+    const dShare = Math.round((dG / sum) * 100);
+    const sShare = 100 - dShare;
+    const foot = job.evidence?.future
+      ? '<p class="dd-supply-foot">' + esc(job.evidence.future) + '</p>'
+      : '';
+    el.innerHTML =
+      '<div class="dd-supply-focus-inner">' +
+      '<div class="dd-supply-top">' +
+      '<div class="dd-supply-gauge is-compact is-live" style="--gauge:' +
+      gaugePct +
+      '%" aria-hidden="true">' +
+      '<div class="dd-supply-gauge-aura"></div>' +
+      '<div class="dd-supply-gauge-aura is-hot"></div>' +
+      '<div class="dd-supply-gauge-orbit"></div>' +
+      '<div class="dd-supply-gauge-orbit is-reverse"></div>' +
+      '<div class="dd-supply-gauge-ring"></div>' +
+      '<div class="dd-supply-gauge-sweep"></div>' +
+      '<div class="dd-supply-gauge-core">' +
+      '<strong class="dd-supply-gauge-num" data-val="' +
+      esc(String(job.supply.ratio)) +
+      '">0</strong>' +
+      '<span>供需比</span></div></div>' +
+      '<div class="dd-supply-state">' +
+      '<strong class="' +
+      verdict.tone +
+      '">' +
+      esc(verdict.label) +
+      '</strong>' +
+      '<span class="dd-supply-ratio">需求增速是供给的 ' +
+      (sG > 0 ? (dG / sG).toFixed(1) : '—') +
+      ' 倍</span></div></div>' +
+      '<div class="dd-supply-beam" aria-label="需求与供给增长对比">' +
+      '<div class="dd-supply-beam-labels">' +
+      '<span>需求 ↑' +
+      dG +
+      '%</span>' +
+      '<span>供给 ↑' +
+      sG +
+      '%</span></div>' +
+      '<div class="dd-supply-beam-track">' +
+      '<span class="is-demand" data-w="' +
+      dShare +
+      '"></span>' +
+      '<span class="is-supply" data-w="' +
+      sShare +
+      '"></span></div></div>' +
+      '<p class="dd-supply-read">' +
+      esc(verdict.hint) +
+      '</p>' +
+      foot +
+      '</div>';
+    animateSupplyBeam(el);
+    animateSupplyGauge(el);
+  }
+
+  function animateSupplyGauge(root) {
+    if (!root) return;
+    const num = root.querySelector('.dd-supply-gauge-num');
+    const gauge = root.querySelector('.dd-supply-gauge.is-live');
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (num) {
+      const target = parseFloat(num.getAttribute('data-val')) || 0;
+      if (reduced || !window.gsap) {
+        num.textContent = num.getAttribute('data-val');
+      } else {
+        const proxy = { v: 0 };
+        window.gsap.to(proxy, {
+          v: target,
+          duration: 1.1,
+          ease: 'power2.out',
+          delay: 0.15,
+          onUpdate: function () {
+            num.textContent = proxy.v.toFixed(2).replace(/\.?0+$/, '');
+          },
+          onComplete: function () {
+            num.textContent = num.getAttribute('data-val');
+          }
+        });
+      }
+    }
+    if (gauge && !reduced && window.gsap) {
+      window.gsap.fromTo(
+        gauge,
+        { scale: 0.88, opacity: 0.6 },
+        { scale: 1, opacity: 1, duration: 0.75, ease: 'back.out(1.4)', delay: 0.08 }
+      );
+    }
+  }
+
+  function animateSupplyBeam(root) {
+    if (!root) return;
+    const spans = root.querySelectorAll('.dd-supply-beam-track span[data-w]');
+    if (!spans.length) return;
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    spans.forEach((s, i) => {
+      const w = s.getAttribute('data-w') + '%';
+      if (reduced || !window.gsap) {
+        s.style.width = w;
+        return;
+      }
+      window.gsap.fromTo(
+        s,
+        { width: '0%' },
+        { width: w, duration: 0.85, ease: 'power2.out', delay: 0.2 + i * 0.06 }
+      );
     });
   }
 
@@ -675,65 +1021,272 @@
     const axes = currentJob.radarAxes || [];
     const job = currentJob.radarJob || [];
     const avg = currentJob.radarAvg || [];
-    el.innerHTML = axes
-      .map((name, i) => {
-        const j = job[i] || 0;
-        const a = avg[i] || 0;
-        const delta = j - a;
-        const tip =
-          delta >= 12 ? '差异化强' : delta >= 4 ? '略高于行业' : '接近行业';
+    if (!axes.length) {
+      el.innerHTML = '<p class="dd-ind-empty">暂无能力对照数据</p>';
+      return;
+    }
+    let leadCount = 0;
+    let deltaSum = 0;
+    let maxDelta = -999;
+    let maxDeltaName = '';
+    axes.forEach((name, i) => {
+      const d = (Number(job[i]) || 0) - (Number(avg[i]) || 0);
+      if (d > 0) leadCount++;
+      deltaSum += d;
+      if (d > maxDelta) {
+        maxDelta = d;
+        maxDeltaName = name;
+      }
+    });
+    const avgDelta = Math.round(deltaSum / axes.length);
+    const diffIdx = avgDelta >= 12 ? '高' : avgDelta >= 6 ? '中' : '低';
+    const diffCls = avgDelta >= 12 ? 'is-high' : avgDelta >= 6 ? 'is-mid' : 'is-low';
+    const maxLabel =
+      maxDeltaName.length > 9 ? maxDeltaName.slice(0, 8) + '…' : maxDeltaName;
+    const order = axes
+      .map((name, i) => ({
+        name,
+        job: Number(job[i]) || 0,
+        avg: Number(avg[i]) || 0,
+        delta: (Number(job[i]) || 0) - (Number(avg[i]) || 0)
+      }))
+      .sort((a, b) => b.delta - a.delta);
+    const lanes = order
+      .map((row, idx) => {
+        const deltaCls = row.delta >= 10 ? 'is-strong' : row.delta >= 4 ? 'is-mid' : 'is-flat';
+        const deltaTxt = row.delta > 0 ? '+' + row.delta : String(row.delta);
+        const leadCls = idx === 0 && row.delta >= 10 ? ' is-lead' : '';
         return (
-          '<div class="dd-cmp-row" role="listitem">' +
-          '<div class="dd-cmp-lab"><span>' +
-          esc(name) +
-          '</span><em>' +
-          tip +
-          '</em></div>' +
-          '<div class="dd-cmp-tracks">' +
-          '<div class="dd-cmp-track is-job" title="岗位 ' +
-          j +
-          '"><b style="width:' +
-          j +
-          '%"></b><span>' +
-          j +
-          '</span></div>' +
-          '<div class="dd-cmp-track is-avg" title="行业 ' +
-          a +
-          '"><b style="width:' +
-          a +
-          '%"></b><span>' +
-          a +
-          '</span></div>' +
-          '</div></div>'
+          '<div class="dd-cmp-lane' +
+          leadCls +
+          '" role="listitem">' +
+          '<span class="dd-cmp-lane-name" title="' +
+          esc(row.name) +
+          '">' +
+          esc(row.name) +
+          '</span>' +
+          '<div class="dd-cmp-lane-track" aria-hidden="true">' +
+          '<span class="dd-cmp-lane-grid"></span>' +
+          '<span class="bar is-ind" data-w="' +
+          row.avg +
+          '%"></span>' +
+          '<span class="bar is-job" data-w="' +
+          row.job +
+          '%"></span></div>' +
+          '<div class="dd-cmp-lane-meta">' +
+          '<span class="score is-ind"><em>业</em><b>' +
+          row.avg +
+          '</b></span>' +
+          '<span class="score is-job"><em>本</em><b>' +
+          row.job +
+          '</b></span>' +
+          '<span class="delta ' +
+          deltaCls +
+          '">' +
+          deltaTxt +
+          '</span></div></div>'
         );
       })
       .join('');
+    el.innerHTML =
+      '<div class="dd-ind-cmp">' +
+      '<div class="dd-ind-summary">' +
+      '<div class="dd-ind-kpi"><span>领先维度</span><strong>' +
+      leadCount +
+      '/' +
+      axes.length +
+      '</strong></div>' +
+      '<div class="dd-ind-kpi"><span>平均领先</span><strong class="is-gold">+' +
+      avgDelta +
+      '</strong></div>' +
+      '<div class="dd-ind-kpi"><span>最强差值</span><strong>' +
+      esc(maxLabel) +
+      ' +' +
+      maxDelta +
+      '</strong></div>' +
+      '<div class="dd-ind-kpi ' +
+      diffCls +
+      '"><span>差异化</span><strong>' +
+      diffIdx +
+      '</strong></div></div>' +
+      '<div class="dd-cmp-lanes-wrap" aria-label="蓝条行业均值，金条本岗位，按领先幅度排序">' +
+      '<div class="dd-cmp-lanes" role="list" data-count="' +
+      order.length +
+      '" style="--cmp-count:' +
+      order.length +
+      '">' +
+      lanes +
+      '</div></div></div>';
+    requestAnimationFrame(() => {
+      animateCmpLanes();
+      resizeFoundCharts();
+    });
+  }
+
+  function paintGraphDetail(item) {
+    const detailEl = document.getElementById('dd-found-graph-detail');
+    if (!detailEl || !item) return;
+    detailEl.classList.add('is-active');
+    detailEl.innerHTML =
+      '<div class="dd-graph-detail-inner">' +
+      '<p class="dd-graph-detail-note">' +
+      esc(item.note || '能力路径重叠') +
+      '</p>' +
+      '<p class="dd-graph-detail-stats">' +
+      '跃迁样本 <b>' +
+      item.count +
+      '</b> 人 · 能力重叠 <b>' +
+      item.overlap +
+      '</b> · 排名 <b>#' +
+      String(item.rank).padStart(2, '0') +
+      '</b></p></div>';
+  }
+
+  function selectGraphSlice(idx) {
+    const data = graphSourceCache;
+    if (!data[idx]) return;
+    highlightGraphSlice(idx);
+    paintGraphDetail(data[idx]);
+    const listEl = document.getElementById('dd-found-graph-legend');
+    if (listEl) {
+      listEl.querySelectorAll('.dd-graph-leg-item').forEach((btn, i) => {
+        btn.classList.toggle('is-active', i === idx);
+      });
+    }
+  }
+
+  function renderGraphLegend(data) {
+    const listEl = document.getElementById('dd-found-graph-legend');
+    if (!listEl) return;
+    listEl.style.setProperty('--graph-count', String(data.length || 1));
+    listEl.innerHTML = data
+      .map(
+        (d, i) =>
+          '<li><button type="button" class="dd-graph-leg-item' +
+          (i === 0 ? ' is-active' : '') +
+          '" data-idx="' +
+          i +
+          '">' +
+          '<i class="sw" style="background:' +
+          GRAPH_PIE_COLORS[i % GRAPH_PIE_COLORS.length] +
+          '"></i>' +
+          '<span class="name">' +
+          esc(d.name) +
+          '</span>' +
+          '<span class="pct">' +
+          d.value +
+          '%</span></button></li>'
+      )
+      .join('');
+    if (!listEl.dataset.bound) {
+      listEl.dataset.bound = '1';
+      listEl.addEventListener('mouseover', (e) => {
+        const btn = e.target.closest('.dd-graph-leg-item');
+        if (!btn) return;
+        selectGraphSlice(+btn.dataset.idx);
+      });
+    }
+  }
+
+  function graphPieLayout() {
+    const el = document.getElementById('dd-found-graph');
+    if (!el) return { center: [54, 54], radius: 46 };
+    const w = el.clientWidth || 108;
+    const h = el.clientHeight || 108;
+    const pad = 3;
+    const maxR = Math.max(36, Math.min(w - pad * 2, h - pad * 2) / 2);
+    return { center: [w / 2, h / 2], radius: maxR };
+  }
+
+  function applyGraphPieLayout() {
+    const el = document.getElementById('dd-found-graph');
+    const host = el && el.closest('.dd-graph-pie-host');
+    if (host && el) {
+      const size = Math.floor(Math.min(host.clientWidth - 10, host.clientHeight - 10, 152));
+      if (size >= 88) {
+        el.style.width = size + 'px';
+        el.style.height = size + 'px';
+      }
+    }
+    if (!graphChart) return;
+    graphChart.resize();
+    const layout = graphPieLayout();
+    graphChart.setOption({
+      series: [{ center: layout.center, radius: layout.radius }]
+    });
+  }
+
+  function highlightGraphSlice(idx) {
+    if (!graphChart) return;
+    graphChart.dispatchAction({ type: 'downplay', seriesIndex: 0 });
+    graphChart.dispatchAction({ type: 'highlight', seriesIndex: 0, dataIndex: idx });
+  }
+
+  function bindGraphChartEvents() {
+    if (!graphChart) return;
+    graphChart.off('mouseover');
+    graphChart.on('mouseover', (p) => {
+      if (p.seriesType !== 'pie') return;
+      selectGraphSlice(p.dataIndex);
+    });
   }
 
   function renderFoundGraph() {
     const el = document.getElementById('dd-found-graph');
-    if (!el || !currentJob) return;
-    const related = (currentJob.related || []).slice().sort((a, b) => b.score - a.score);
-    el.innerHTML = related
-      .map(
-        (r, i) =>
-          '<button type="button" class="dd-ladder-item" role="listitem">' +
-          '<span class="rk">' +
-          String(i + 1).padStart(2, '0') +
-          '</span>' +
-          '<span class="body"><strong>' +
-          esc(r.name) +
-          '</strong><em>' +
-          esc(r.note || '能力重叠') +
-          '</em></span>' +
-          '<span class="meter"><b style="width:' +
-          r.score +
-          '%"></b></span>' +
-          '<span class="sc">' +
-          r.score +
-          '%</span></button>'
-      )
-      .join('');
+    const detailEl = document.getElementById('dd-found-graph-detail');
+    const listEl = document.getElementById('dd-found-graph-legend');
+    if (!el || !window.echarts || !currentJob) return;
+    const data = graphSourceData();
+    graphSourceCache = data;
+    if (!data.length) {
+      el.innerHTML = '<p class="dd-graph-empty">暂无来源路径数据</p>';
+      if (listEl) listEl.innerHTML = '';
+      if (detailEl) {
+        detailEl.classList.remove('is-active');
+        detailEl.innerHTML = '<p class="dd-graph-detail-hint">暂无来源数据</p>';
+      }
+      return;
+    }
+    renderGraphLegend(data);
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!graphChart) graphChart = window.echarts.init(el);
+    const layout = graphPieLayout();
+    graphChart.setOption({
+      backgroundColor: 'transparent',
+      color: GRAPH_PIE_COLORS,
+      animationDuration: reduced ? 0 : 680,
+      animationEasing: 'cubicOut',
+      tooltip: { show: false },
+      legend: { show: false },
+      series: [
+        {
+          name: '来源占比',
+          type: 'pie',
+          center: layout.center,
+          radius: layout.radius,
+          padAngle: 2,
+          itemStyle: {
+            borderRadius: 3,
+            borderColor: 'rgba(6,10,16,0.95)',
+            borderWidth: 2
+          },
+          label: { show: false },
+          labelLine: { show: false },
+          emphasis: {
+            scale: true,
+            scaleSize: 4,
+            itemStyle: {
+              shadowBlur: 12,
+              shadowColor: 'rgba(212,176,122,0.38)'
+            }
+          },
+          data: data
+        }
+      ]
+    }, true);
+    bindGraphChartEvents();
+    selectGraphSlice(0);
+    resizeFoundCharts();
   }
 
   /* ---------- Forecast unified gold board ---------- */
@@ -744,7 +1297,412 @@
     return 'is-low';
   }
 
+  function dutyEls(lane) {
+    const p = lane === 'fc' ? 'dd-fc' : 'dd-found';
+    return {
+      shell: document.getElementById(p + '-duties-shell'),
+      viewport: document.getElementById(p + '-duties-viewport'),
+      track: document.getElementById(p + '-duties'),
+      toggle: document.getElementById(p + '-duties-toggle')
+    };
+  }
+
+  function clearDutyTimers() {
+    ['fc', 'found'].forEach((lane) => {
+      const st = dutyLanes[lane];
+      if (st.timer) {
+        clearInterval(st.timer);
+        st.timer = null;
+      }
+    });
+  }
+
+  function dutyScore(lane, i) {
+    const d = dutyLanes[lane].data;
+    return d.scores[i] != null ? d.scores[i] : Math.max(62, 91 - i * 3);
+  }
+
+  function dutyItemHtml(lane, d, rankIndex) {
+    return (
+      '<li class="dd-fc-duty-item">' +
+      '<span class="num">' +
+      String(rankIndex + 1).padStart(2, '0') +
+      '</span>' +
+      '<span class="txt">' +
+      esc(d) +
+      '</span>' +
+      '<span class="pct">' +
+      dutyScore(lane, rankIndex) +
+      '%</span></li>'
+    );
+  }
+
+  function resetDutyTrackMotion(lane) {
+    const { track } = dutyEls(lane);
+    if (track && window.gsap) window.gsap.killTweensOf(track);
+    if (track) {
+      track.style.transform = '';
+      if (window.gsap) window.gsap.set(track, { y: 0 });
+    }
+  }
+
+  function syncDutyViewportHeight(lane) {
+    const { viewport, shell } = dutyEls(lane);
+    const st = dutyLanes[lane];
+    if (!viewport) return;
+    const gap = 4;
+    st.rowHeight = 28 + gap;
+    if (st.expanded) {
+      viewport.style.removeProperty('height');
+      viewport.style.maxHeight = 'min(176px, 30vh)';
+    } else if ((lane === 'found' || lane === 'fc') && shell) {
+      const { toggle } = dutyEls(lane);
+      const toggleH =
+        toggle && !toggle.hidden && !st.expanded
+          ? Math.max(16, toggle.offsetHeight) + 4
+          : 0;
+      if (lane === 'fc') {
+        viewport.style.removeProperty('height');
+        viewport.style.removeProperty('max-height');
+        viewport.style.flex = '1 1 0';
+        void shell.offsetHeight;
+      }
+      const avail = Math.max(
+        92,
+        lane === 'fc' ? viewport.clientHeight || shell.clientHeight - toggleH : shell.clientHeight - toggleH
+      );
+      const minRow = lane === 'fc' ? 30 : 28;
+      const maxVis = lane === 'fc' ? 5 : 3;
+      const vis = Math.max(3, Math.min(maxVis, Math.floor((avail + gap) / (minRow + gap))));
+      st.visibleRows = vis;
+      const rowH = Math.max(minRow, Math.floor((avail - gap * (vis - 1)) / vis));
+      st.rowHeight = rowH + gap;
+      shell.style.setProperty('--dd-duty-row-h', rowH + 'px');
+      if (lane !== 'fc') {
+        const exactH = rowH * vis + gap * (vis - 1);
+        viewport.style.height = exactH + 'px';
+        viewport.style.maxHeight = exactH + 'px';
+      }
+      const track = viewport.querySelector('.dd-fc-duties-track');
+      if (track) {
+        track.querySelectorAll('.dd-fc-duty-item').forEach((el) => {
+          el.style.setProperty('height', rowH + 'px', 'important');
+          el.style.setProperty('min-height', rowH + 'px', 'important');
+          el.style.setProperty('max-height', rowH + 'px', 'important');
+        });
+      }
+    } else {
+      viewport.style.height = '92px';
+      viewport.style.maxHeight = '92px';
+      st.visibleRows = 3;
+    }
+  }
+
+  function layoutFcRow() {
+    const st = dutyLanes.fc;
+    const prevRows = st.visibleRows;
+    const prevRowH = st.rowHeight;
+    syncDutyViewportHeight('fc');
+    if (!st.expanded && (st.visibleRows !== prevRows || st.rowHeight !== prevRowH)) {
+      buildDutyCarousel('fc');
+      st.slideIndex = 0;
+      applyDutySlide('fc', false);
+    }
+    resizeFcCharts();
+  }
+
+  function applyDutySlide(lane, animate) {
+    const st = dutyLanes[lane];
+    const { track } = dutyEls(lane);
+    if (!track || st.expanded) return;
+    const n = st.data.duties.length;
+    if (n <= dutyVisibleRows(lane)) return;
+    const y = -st.slideIndex * st.rowHeight;
+    if (animate && window.gsap) {
+      window.gsap.to(track, {
+        y: y,
+        duration: 0.62,
+        ease: 'power2.inOut',
+        onComplete: () => {
+          if (st.slideIndex >= n) {
+            st.slideIndex = 0;
+            window.gsap.set(track, { y: 0 });
+          }
+        }
+      });
+    } else if (window.gsap) {
+      window.gsap.set(track, { y: y });
+    } else {
+      track.style.transform = 'translate3d(0,' + y + 'px,0)';
+    }
+  }
+
+  function buildDutyCarousel(lane) {
+    const st = dutyLanes[lane];
+    const { track, viewport } = dutyEls(lane);
+    if (!track) return;
+    resetDutyTrackMotion(lane);
+    const n = st.data.duties.length;
+    const vis = dutyVisibleRows(lane);
+    const main = st.data.duties.map((d, i) => dutyItemHtml(lane, d, i)).join('');
+    const clone =
+      n > vis
+        ? st.data.duties
+            .slice(0, vis)
+            .map((d, i) => dutyItemHtml(lane, d, i))
+            .join('')
+        : '';
+    track.innerHTML = main + clone;
+    st.slideIndex = 0;
+    if (viewport) {
+      viewport.style.height = '';
+      viewport.style.maxHeight = '';
+    }
+    requestAnimationFrame(() => {
+      syncDutyViewportHeight(lane);
+      const { track } = dutyEls(lane);
+      const first = track && track.querySelector('.dd-fc-duty-item');
+      if (first && !st.expanded) {
+        const gap = 4;
+        st.rowHeight = Math.max(st.rowHeight, first.offsetHeight + gap);
+      }
+      applyDutySlide(lane, false);
+    });
+  }
+
+  function buildDutyExpanded(lane) {
+    const st = dutyLanes[lane];
+    const { track } = dutyEls(lane);
+    if (!track) return;
+    resetDutyTrackMotion(lane);
+    track.innerHTML = st.data.duties.map((d, i) => dutyItemHtml(lane, d, i)).join('');
+    requestAnimationFrame(() => syncDutyViewportHeight(lane));
+  }
+
+  function slideDutyOnce(lane) {
+    const st = dutyLanes[lane];
+    if (st.expanded || st.data.duties.length <= dutyVisibleRows(lane)) return;
+    st.slideIndex += 1;
+    applyDutySlide(lane, true);
+  }
+
+  function renderDutyView(lane) {
+    const st = dutyLanes[lane];
+    if (st.expanded) buildDutyExpanded(lane);
+    else buildDutyCarousel(lane);
+  }
+
+  function syncDutyUi(lane) {
+    const st = dutyLanes[lane];
+    const { shell, toggle } = dutyEls(lane);
+    const n = st.data.duties.length;
+    if (shell) shell.classList.toggle('is-expanded', st.expanded);
+    if (toggle) {
+      toggle.hidden = n <= dutyVisibleRows(lane);
+      toggle.textContent = st.expanded ? '收起' : '查看全部';
+    }
+  }
+
+  function startDutyCarousel(lane) {
+    const st = dutyLanes[lane];
+    if (st.timer) {
+      clearInterval(st.timer);
+      st.timer = null;
+    }
+    if (st.expanded || st.data.duties.length <= dutyVisibleRows(lane)) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    st.timer = setInterval(() => slideDutyOnce(lane), 3000);
+  }
+
+  function setDutyExpanded(lane, on) {
+    const st = dutyLanes[lane];
+    st.expanded = !!on;
+    if (st.expanded && st.timer) {
+      clearInterval(st.timer);
+      st.timer = null;
+    }
+    syncDutyUi(lane);
+    renderDutyView(lane);
+    if (!st.expanded) startDutyCarousel(lane);
+  }
+
+  function mountDuties(lane, job) {
+    const duties = (job.duties || []).filter(Boolean);
+    const scores = duties.map((_, i) =>
+      job.dutyScores && job.dutyScores[i] != null
+        ? job.dutyScores[i]
+        : Math.max(62, 91 - i * 3)
+    );
+    const st = dutyLanes[lane];
+    st.data = { duties, scores };
+    st.slideIndex = 0;
+    st.expanded = false;
+    syncDutyUi(lane);
+    renderDutyView(lane);
+  }
+
+  function bindDutiesOnce() {
+    ['fc', 'found'].forEach((lane) => {
+      const { toggle } = dutyEls(lane);
+      if (!toggle || toggle._dutyBound) return;
+      toggle._dutyBound = true;
+      toggle.addEventListener('click', () => {
+        const st = dutyLanes[lane];
+        setDutyExpanded(lane, !st.expanded);
+      });
+    });
+  }
+
+  function skillHeatTier(score) {
+    const n = Number(score) || 0;
+    if (n >= 85) return 'is-hot';
+    if (n >= 72) return 'is-warm';
+    return 'is-cool';
+  }
+
+  function renderFoundSkills(job) {
+    renderSkillConstellation('dd-found-skills', job);
+  }
+
+  function renderSkillConstellation(rootId, job) {
+    const skillsEl = document.getElementById(rootId);
+    if (!skillsEl || !job) return;
+    const list = (job.skillScores || []).slice();
+    if (!list.length) {
+      skillsEl.innerHTML = '<p class="dd-skill-empty">暂无核心能力数据</p>';
+      return;
+    }
+    const rows = Math.max(1, Math.ceil(list.length / 2));
+    const items = list
+      .map((s, i) => {
+        const rank = i + 1;
+        const tier = skillHeatTier(s.score);
+        return (
+          '<li class="dd-skill-item ' +
+          tier +
+          '" role="listitem" title="' +
+          esc(s.name) +
+          ' · 需求热度 ' +
+          s.score +
+          '%">' +
+          '<div class="dd-skill-head">' +
+          '<em>' +
+          String(rank).padStart(2, '0') +
+          '</em>' +
+          '<span class="nm">' +
+          esc(s.name) +
+          '</span>' +
+          '<b data-heat="' +
+          s.score +
+          '">0</b>' +
+          '</div>' +
+          '<div class="dd-skill-track" aria-hidden="true">' +
+          '<span class="dd-skill-fill" data-w="' +
+          s.score +
+          '%"></span>' +
+          '</div></li>'
+        );
+      })
+      .join('');
+    skillsEl.innerHTML =
+      '<div class="dd-skill-ambient" aria-hidden="true">' +
+      '<span class="dd-skill-orb is-gold"></span>' +
+      '<span class="dd-skill-floor"></span></div>' +
+      '<ul class="dd-skill-list" role="list" data-count="' +
+      list.length +
+      '" style="--skill-rows:' +
+      rows +
+      '">' +
+      items +
+      '</ul>';
+  }
+
+  function animateSkillConstellation(rootId) {
+    const root = document.getElementById(rootId || 'dd-found-skills');
+    if (!root) return;
+    const items = root.querySelectorAll('.dd-skill-item');
+    const scores = root.querySelectorAll('.dd-skill-item b[data-heat]');
+    const fills = root.querySelectorAll('.dd-skill-item .dd-skill-fill[data-w]');
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (reduced || !window.gsap) {
+      scores.forEach((el) => {
+        el.textContent = String(el.getAttribute('data-heat') || 0);
+      });
+      fills.forEach((f) => {
+        f.style.width = f.getAttribute('data-w') || '0%';
+      });
+      return;
+    }
+
+    scores.forEach((el) => {
+      el.textContent = '0';
+    });
+    fills.forEach((f) => {
+      f.style.width = '0%';
+    });
+
+    window.gsap.from(items, {
+      opacity: 0,
+      y: 14,
+      x: -10,
+      duration: 0.62,
+      stagger: 0.045,
+      delay: 0.38,
+      ease: 'power3.out',
+      clearProps: 'opacity,transform'
+    });
+
+    scores.forEach((el, i) => {
+      const target = Number(el.getAttribute('data-heat')) || 0;
+      const proxy = { v: 0 };
+      window.gsap.to(proxy, {
+        v: target,
+        duration: 0.92,
+        ease: 'power2.out',
+        delay: 0.46 + i * 0.042,
+        onUpdate() {
+          el.textContent = String(Math.round(proxy.v));
+        }
+      });
+    });
+
+    fills.forEach((f, i) => {
+      const w = f.getAttribute('data-w') || '0%';
+      window.gsap.fromTo(
+        f,
+        { width: '0%' },
+        {
+          width: w,
+          duration: 1.05,
+          ease: 'power2.out',
+          delay: 0.5 + i * 0.042
+        }
+      );
+    });
+  }
+
+  function animateSkillBars(root) {
+    if (!root) return;
+    const bars = root.querySelectorAll('b[data-w]');
+    if (!bars.length) return;
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    bars.forEach((b, i) => {
+      const w = b.getAttribute('data-w') + '%';
+      if (reduced || !window.gsap) {
+        b.style.width = w;
+        return;
+      }
+      window.gsap.fromTo(
+        b,
+        { width: '0%' },
+        { width: w, duration: 0.72, ease: 'power2.out', delay: 0.04 * i }
+      );
+    });
+  }
+
   function renderForecast(job) {
+    clearDutyTimers();
     const found = document.getElementById('dd-found');
     const forecast = document.getElementById('dd-forecast-shell');
     if (found) found.hidden = true;
@@ -796,88 +1754,68 @@
         )
         .join('');
     }
-    const peak = document.getElementById('dd-fc-salary-peak');
-    if (peak) peak.style.left = (job.salaryPeak || 62) + '%';
+    set('dd-fc-brief', job.brief || job.positioning || '');
 
-    const skillsEl = document.getElementById('dd-fc-skills');
-    if (skillsEl) {
-      skillsEl.innerHTML = job.skillScores
-        .map(
-          (s, i) =>
-            '<div class="dd-found-skill dd-fc-skill">' +
-            '<span class="idx">' +
-            (i + 1) +
-            '</span>' +
-            '<span class="name">' +
-            esc(s.name) +
-            '</span>' +
-            '<span class="bar"><b data-w="' +
-            s.score +
-            '"></b></span>' +
-            '<span class="pct">' +
-            s.score +
-            '%</span></div>'
-        )
-        .join('');
-      requestAnimationFrame(() => {
-        skillsEl.querySelectorAll('b[data-w]').forEach((b) => {
-          b.style.width = b.getAttribute('data-w') + '%';
-        });
-      });
-    }
+    renderSkillConstellation('dd-fc-skills', job);
 
-    const dutiesEl = document.getElementById('dd-fc-duties');
-    if (dutiesEl) {
-      dutiesEl.innerHTML = (job.duties || [])
-        .slice(0, 5)
-        .map((d, i) => {
-          const pct = (job.dutyScores && job.dutyScores[i]) || Math.max(70, 91 - i * 5);
-          return (
-            '<li><span class="num">' +
-            String(i + 1).padStart(2, '0') +
-            '</span><span class="txt">' +
-            esc(d) +
-            '</span><span class="pct">' +
-            pct +
-            '%</span></li>'
-          );
-        })
-        .join('');
-    }
-
-    const tbody = document.getElementById('dd-fc-dev-body');
-    if (tbody) {
-      tbody.innerHTML = (job.skillDev || [])
-        .map(
-          (r) =>
-            '<tr><td>' +
-            esc(r.name) +
-            '</td>' +
-            ['now', 'm6', 'm12', 'm24']
-              .map(
-                (k) =>
-                  '<td><span class="dd-fc-lv ' +
-                  levelTone(r[k]) +
-                  '">' +
-                  esc(r[k]) +
-                  '</span></td>'
-              )
-              .join('') +
-            '</tr>'
-        )
-        .join('');
-    }
+    mountDuties('fc', job);
+    bindDutiesOnce();
+    startDutyCarousel('fc');
 
     set('dd-fc-risk-lead', job.riskLead || '—');
     const riskList = document.getElementById('dd-fc-risk-list');
     if (riskList) {
-      riskList.innerHTML = (job.risks || []).map((r) => '<li>' + esc(r) + '</li>').join('');
+      const risks = job.risks || [];
+      const tags = ['观测', '政策', '路径', '窗口'];
+      riskList.className = 'dd-fc-risk-cards';
+      riskList.innerHTML = risks
+        .map((r, i) => {
+          const sev = i === 0 ? 'is-watch' : i === 1 ? 'is-policy' : 'is-path';
+          return (
+            '<li class="dd-fc-risk-card ' +
+            sev +
+            '">' +
+            '<span class="dd-fc-risk-tag">' +
+            esc(tags[i] || '风险') +
+            '</span>' +
+            '<p>' +
+            esc(r) +
+            '</p></li>'
+          );
+        })
+        .join('');
     }
 
     renderFcSankey();
     renderFcProb();
     renderFcIndustry();
     renderFcSupply();
+    requestAnimationFrame(() => {
+      layoutFcRow();
+      setTimeout(layoutFcRow, 80);
+    });
+  }
+
+  function disposeFcCharts() {
+    try {
+      if (fcProbChart) {
+        fcProbChart.dispose();
+        fcProbChart = null;
+      }
+      if (fcSupplyChart) {
+        fcSupplyChart.dispose();
+        fcSupplyChart = null;
+      }
+    } catch (_) {}
+  }
+
+  function resizeFcCharts() {
+    requestAnimationFrame(() => {
+      try {
+        fcProbChart && fcProbChart.resize();
+        fcSupplyChart && fcSupplyChart.resize();
+      } catch (_) {}
+    });
   }
 
   function renderFcSankey() {
@@ -913,132 +1851,290 @@
       null,
       list.map((d) => d.value).concat([1])
     );
-    el.innerHTML = list
-      .map(
-        (d, i) =>
-          '<div class="dd-share-row" role="listitem">' +
-          '<span class="n">' +
-          esc(d.name) +
-          '</span>' +
-          '<span class="bar"><b style="width:' +
-          Math.round((d.value / max) * 100) +
-          '%"></b></span>' +
-          '<span class="v">' +
-          d.value +
-          '%</span>' +
-          (i === 0 ? '<span class="tag">优先</span>' : '<span class="tag is-muted"></span>') +
-          '</div>'
-      )
-      .join('');
+    const top = list[0];
+    const cover = list.slice(0, 3).reduce((s, d) => s + d.value, 0);
+    el.innerHTML =
+      '<div class="dd-fc-ind-summary">' +
+      '<div class="dd-fc-ind-kpi"><span>主落地</span><strong>' +
+      esc(top ? top.name : '—') +
+      '</strong></div>' +
+      '<div class="dd-fc-ind-kpi"><span>前三覆盖</span><strong class="is-gold">' +
+      cover +
+      '%</strong></div></div>' +
+      '<ul class="dd-share-grid is-fc-ind" role="list" style="--share-rows:' +
+      Math.max(1, Math.ceil(list.length / 2)) +
+      '">' +
+      list
+        .map((d, i) => {
+          const pct = Math.round((d.value / max) * 100);
+          return (
+            '<li class="dd-share-card' +
+            (i === 0 ? ' is-lead' : '') +
+            '" role="listitem">' +
+            '<div class="dd-share-card-head">' +
+            '<em>' +
+            String(i + 1).padStart(2, '0') +
+            '</em>' +
+            '<span class="n">' +
+            esc(d.name) +
+            '</span>' +
+            '<b>' +
+            d.value +
+            '%</b></div>' +
+            '<div class="dd-skill-track" aria-hidden="true">' +
+            '<span class="dd-skill-fill" style="width:' +
+            pct +
+            '%"></span></div></li>'
+          );
+        })
+        .join('') +
+      '</ul>';
   }
 
   function renderFcProb() {
     const el = document.getElementById('dd-fc-prob-chart');
     if (!el || !window.echarts) return;
-    const gold = '#d4b07a';
     const labels = ['3月', '6月', '9月', '12月', '18月', '24月'];
     const data = [18, 32, 48, 66, 84, 96];
+    const lastIdx = data.length - 1;
+    const badge = document.getElementById('dd-fc-prob-badge');
+    if (badge) {
+      badge.textContent = '窗口抬升 ↑' + (data[lastIdx] - data[0]) + '%';
+      badge.classList.add('is-surge');
+    }
     if (!fcProbChart) fcProbChart = window.echarts.init(el);
     fcProbChart.setOption({
       backgroundColor: 'transparent',
-      grid: { left: 34, right: 10, top: 16, bottom: 22 },
-      tooltip: { trigger: 'axis' },
+      animationDuration: 980,
+      animationEasing: 'cubicOut',
+      grid: { left: 34, right: 12, top: 12, bottom: 18 },
+      tooltip: {
+        trigger: 'axis',
+        axisPointer: {
+          type: 'line',
+          lineStyle: { type: 'dashed', color: 'rgba(255,255,255,0.12)' }
+        },
+        backgroundColor: 'rgba(10,14,20,0.94)',
+        borderColor: 'rgba(212,176,122,0.25)',
+        textStyle: { color: '#e8f2f8', fontSize: 11 },
+        formatter(params) {
+          if (!params || !params.length) return '';
+          const idx = params[0].dataIndex;
+          return (
+            labels[idx] +
+            '<br/><span style="color:#e8c988">● 出现概率 ' +
+            data[idx] +
+            '%</span>'
+          );
+        }
+      },
       xAxis: {
         type: 'category',
         data: labels,
-        axisLabel: { color: 'rgba(232,242,248,0.38)', fontSize: 9 },
-        axisLine: { lineStyle: { color: 'rgba(255,255,255,0.1)' } }
+        boundaryGap: true,
+        axisLabel: { color: 'rgba(232,242,248,0.55)', fontSize: 10 },
+        axisLine: { lineStyle: { color: 'rgba(212,176,122,0.22)' } },
+        axisTick: { show: false }
       },
       yAxis: {
         type: 'value',
         max: 100,
+        splitNumber: 3,
         axisLabel: {
-          color: 'rgba(232,242,248,0.35)',
+          color: 'rgba(232,201,136,0.58)',
           fontSize: 9,
           formatter: '{value}%'
         },
-        splitLine: { lineStyle: { color: 'rgba(255,255,255,0.05)' } }
+        splitLine: { lineStyle: { color: 'rgba(255,255,255,0.05)', type: 'dashed' } },
+        axisLine: { show: false },
+        axisTick: { show: false }
       },
       series: [
         {
-          type: 'line',
+          name: '出现概率',
+          type: 'bar',
           data,
-          smooth: true,
-          symbol: 'circle',
-          symbolSize: 5,
-          lineStyle: { width: 2.2, color: gold },
-          itemStyle: { color: gold },
-          areaStyle: {
-            color: {
-              type: 'linear',
-              x: 0,
-              y: 0,
-              x2: 0,
-              y2: 1,
-              colorStops: [
-                { offset: 0, color: gold + '44' },
-                { offset: 1, color: gold + '00' }
-              ]
+          barWidth: '48%',
+          barCategoryGap: '28%',
+          animationDelay(idx) {
+            return idx * 70 + 220;
+          },
+          itemStyle: {
+            borderRadius: [5, 5, 2, 2],
+            borderWidth: 1,
+            borderColor: 'rgba(255,240,200,0.32)',
+            color(p) {
+              const isLast = p.dataIndex === lastIdx;
+              return {
+                type: 'linear',
+                x: 0,
+                y: 0,
+                x2: 0,
+                y2: 1,
+                colorStops: isLast
+                  ? [
+                      { offset: 0, color: '#fff8dc' },
+                      { offset: 0.45, color: '#f0d080' },
+                      { offset: 1, color: '#a87830' }
+                    ]
+                  : [
+                      { offset: 0, color: 'rgba(232,201,136,0.88)' },
+                      { offset: 1, color: 'rgba(168,120,48,0.55)' }
+                    ]
+              };
             }
           }
+        },
+        {
+          name: '抬升轨迹',
+          type: 'line',
+          data,
+          smooth: 0.35,
+          symbol: 'circle',
+          symbolSize(_v, p) {
+            return p.dataIndex === lastIdx ? 7 : 0;
+          },
+          showSymbol: true,
+          lineStyle: { width: 2, color: '#7ec8f0' },
+          itemStyle: {
+            color: '#0c1218',
+            borderColor: '#9ad8f5',
+            borderWidth: 2
+          },
+          z: 5
         }
       ]
-    });
+    }, true);
+    resizeFcCharts();
   }
 
   function renderFcSupply() {
     const el = document.getElementById('dd-fc-supply-chart');
     if (!el || !window.echarts) return;
-    const gold = '#d4b07a';
-    const blue = '#6ba3d4';
     const labels = ['0', '6', '12', '18', '24', '30', '36月'];
     const demand = [22, 34, 48, 62, 78, 90, 100];
     const supply = [20, 26, 32, 38, 44, 50, 56];
+    const lastIdx = demand.length - 1;
+    const gap = demand[lastIdx] - supply[lastIdx];
     if (!fcSupplyChart) fcSupplyChart = window.echarts.init(el);
     fcSupplyChart.setOption({
       backgroundColor: 'transparent',
-      legend: {
-        data: ['需求预测', '供给预测'],
-        textStyle: { color: 'rgba(232,242,248,0.5)', fontSize: 10 },
-        top: 0,
-        right: 0,
-        itemWidth: 10,
-        itemHeight: 6
+      animationDuration: 980,
+      animationEasing: 'cubicOut',
+      legend: { show: false },
+      grid: { left: 32, right: 12, top: 14, bottom: 18 },
+      tooltip: {
+        trigger: 'axis',
+        axisPointer: {
+          type: 'line',
+          lineStyle: { type: 'dashed', color: 'rgba(255,255,255,0.12)' }
+        },
+        backgroundColor: 'rgba(10,14,20,0.94)',
+        borderColor: 'rgba(212,176,122,0.25)',
+        textStyle: { color: '#e8f2f8', fontSize: 11 },
+        formatter(params) {
+          if (!params || !params.length) return '';
+          const idx = params[0].dataIndex;
+          return (
+            labels[idx] +
+            '<br/><span style="color:#e8c988">● 需求预测 ' +
+            demand[idx] +
+            '</span><br/><span style="color:#7ec8f0">● 供给预测 ' +
+            supply[idx] +
+            '</span><br/><span style="color:#f0a35a">△ 缺口 ' +
+            (demand[idx] - supply[idx]) +
+            '</span>'
+          );
+        }
       },
-      grid: { left: 32, right: 10, top: 28, bottom: 22 },
-      tooltip: { trigger: 'axis' },
       xAxis: {
         type: 'category',
         data: labels,
-        axisLabel: { color: 'rgba(232,242,248,0.38)', fontSize: 9 },
-        axisLine: { lineStyle: { color: 'rgba(255,255,255,0.1)' } }
+        boundaryGap: true,
+        axisLabel: { color: 'rgba(232,242,248,0.55)', fontSize: 10 },
+        axisLine: { lineStyle: { color: 'rgba(212,176,122,0.22)' } },
+        axisTick: { show: false }
       },
       yAxis: {
         type: 'value',
-        axisLabel: { color: 'rgba(232,242,248,0.35)', fontSize: 9 },
-        splitLine: { lineStyle: { color: 'rgba(255,255,255,0.05)' } }
+        splitNumber: 3,
+        axisLabel: { color: 'rgba(232,201,136,0.58)', fontSize: 9 },
+        splitLine: { lineStyle: { color: 'rgba(255,255,255,0.05)', type: 'dashed' } },
+        axisLine: { show: false },
+        axisTick: { show: false }
       },
       series: [
         {
           name: '需求预测',
-          type: 'line',
+          type: 'bar',
           data: demand,
-          smooth: true,
-          symbolSize: 4,
-          lineStyle: { width: 2.2, color: gold },
-          itemStyle: { color: gold }
+          barWidth: '42%',
+          barCategoryGap: '30%',
+          animationDelay(idx) {
+            return idx * 60 + 180;
+          },
+          itemStyle: {
+            borderRadius: [5, 5, 2, 2],
+            borderWidth: 1,
+            borderColor: 'rgba(255,240,200,0.28)',
+            color(p) {
+              const isLast = p.dataIndex === lastIdx;
+              return {
+                type: 'linear',
+                x: 0,
+                y: 0,
+                x2: 0,
+                y2: 1,
+                colorStops: isLast
+                  ? [
+                      { offset: 0, color: '#fff8dc' },
+                      { offset: 0.5, color: '#e8c988' },
+                      { offset: 1, color: '#9a7028' }
+                    ]
+                  : [
+                      { offset: 0, color: 'rgba(232,201,136,0.78)' },
+                      { offset: 1, color: 'rgba(154,112,40,0.48)' }
+                    ]
+              };
+            }
+          }
         },
         {
           name: '供给预测',
           type: 'line',
           data: supply,
-          smooth: true,
-          symbolSize: 4,
-          lineStyle: { width: 2, color: blue },
-          itemStyle: { color: blue }
+          smooth: 0.35,
+          symbol: 'circle',
+          symbolSize: 5,
+          showSymbol: true,
+          lineStyle: { width: 2.2, color: '#7ec8f0' },
+          itemStyle: {
+            color: '#0c1218',
+            borderColor: '#9ad8f5',
+            borderWidth: 1.5
+          },
+          markPoint: {
+            symbol: 'circle',
+            symbolSize: 1,
+            label: {
+              show: true,
+              formatter: '缺口 ' + gap,
+              color: '#f0a35a',
+              fontSize: 10,
+              fontWeight: 700,
+              backgroundColor: 'rgba(10,14,20,0.82)',
+              borderColor: 'rgba(240,163,90,0.35)',
+              borderWidth: 1,
+              borderRadius: 4,
+              padding: [3, 6]
+            },
+            data: [{ coord: [labels[lastIdx], demand[lastIdx]], name: 'gap' }]
+          },
+          z: 5
         }
       ]
-    });
+    }, true);
+    resizeFcCharts();
   }
 
   function getResumeReport() {
@@ -1174,85 +2270,82 @@
 
     if (job.isForecast) renderForecast(job);
     else renderFoundBoard(job);
+    window.DiscoveryFavs &&
+      window.DiscoveryFavs.initBar({ activeId: job.id });
+    if (job.isForecast) requestAnimationFrame(() => runDetailMotion(true));
+    else requestAnimationFrame(() => runFoundMotion());
+  }
+
+  function runDetailMotion(isForecast) {
+    if (!window.gsap || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    try {
+      window.gsap.from('.dd-back-bubble', {
+        opacity: 0,
+        x: -14,
+        duration: 0.58,
+        ease: 'power2.out',
+        clearProps: 'opacity,transform'
+      });
+      const boardSel = isForecast ? '#dd-fc-board' : '#dd-found-board';
+      const board = document.querySelector(boardSel);
+      const panelSel = isForecast
+        ? '.dd-fc-hero, .dd-verdict--fc, #dd-fc-board .dd-fc-panel'
+        : '.dd-found-hero, #dd-found-verdict, #dd-found-board .dd-panel';
+      window.gsap.from(panelSel, {
+        opacity: 0,
+        y: 16,
+        duration: 0.72,
+        stagger: 0.045,
+        ease: 'power3.out',
+        clearProps: 'opacity,transform'
+      });
+      if (board) {
+        const inner = board.querySelectorAll(
+          '.dd-fc-duty-item, .dd-cmp-row, .dd-rel-step, .dd-share-card, .dd-share-row, .dd-supply-item, .dd-flow-pill'
+        );
+        if (inner.length) {
+          window.gsap.from(inner, {
+            opacity: 0,
+            x: -10,
+            duration: 0.48,
+            stagger: 0.035,
+            delay: 0.22,
+            ease: 'power2.out',
+            clearProps: 'opacity,transform'
+          });
+        }
+      }
+      if (isForecast) animateSkillConstellation('dd-fc-skills');
+    } catch (_) {}
   }
 
   window.initDiscoveryDetail = function () {
-    if (!window.buildMockScanPayload) {
-      window.buildMockScanPayload = function () {
-        return {
-          discoveries: [
-            {
-              id: 'disc_mock_1',
-              title: 'AI Agent 架构师',
-              category: '人工智能',
-              confidence: 88,
-              city: '北京',
-              level: '中高级',
-              requiredSkills: [
-                'LLM 应用与工程化',
-                'Agent 设计与开发',
-                'RAG 体系构建',
-                'Prompt Engineering',
-                '工具调用 (Tool Use)'
-              ],
-              definition:
-                '负责设计与规划基于大模型的 Agent 系统架构，打通工具调用、知识检索与多模型协同，支撑企业级智能应用落地。',
-              responsibilities: [
-                '负责 AI Agent 系统的整体架构设计与落地',
-                '设计 Agent 工作流、任务规划与工具调用逻辑',
-                '构建 RAG 检索增强与知识管理体系',
-                '评估与优化 Agent 性能、效果与安全性',
-                '推动 Agent 技术在业务场景中的应用落地'
-              ],
-              source: '多源招聘库',
-              sample_count: 2356
-            }
-          ],
-          forecasts: [
-            {
-              id: 'forecast_1',
-              title: '企业级 AI 编排架构师',
-              is_forecast: true,
-              status: 'forecast',
-              category: '人工智能',
-              confidence: 82,
-              eta: '2025-Q3 – 2026-Q1',
-              from: [
-                'AI Agent 架构师',
-                '大模型工程师',
-                '平台架构师',
-                'RAG 工程师',
-                '自动化工程师',
-                '智能体产品经理',
-                '后端架构师'
-              ],
-              salary: '35-60K · 16薪',
-              definition:
-                '面向企业级 AI 编排：把多 Agent、工具链与治理要求收成可交付的架构岗位方向。'
-            }
-          ]
-        };
-      };
-    }
-
-    if (qs('lane') === 'forecast' || (qs('id') || '').indexOf('forecast') === 0) {
+    const urlId = qs('id');
+    if (urlId && window.buildMockScanPayload) {
       try {
-        const raw = sessionStorage.getItem('zhitu_disc_job');
-        const parsed = raw ? JSON.parse(raw) : null;
-        if (!parsed || !(parsed.is_forecast || parsed.status === 'forecast')) {
-          const fc = window.buildMockScanPayload().forecasts[0];
-          sessionStorage.setItem('zhitu_disc_job', JSON.stringify(fc));
+        const match = findJobInMock(urlId);
+        if (match) {
+          sessionStorage.setItem('zhitu_disc_job', JSON.stringify(match));
+          sessionStorage.setItem(
+            'zhitu_disc_lane',
+            match.is_forecast || match.status === 'forecast' ? 'forecast' : 'found'
+          );
         }
       } catch (_) {}
     }
 
     render(loadJob());
+    bindDutiesOnce();
 
     document.getElementById('dd-found-fav')?.addEventListener('click', () => {
       if (!currentJob?.id) return;
-      const on = toggleFav(currentJob.id);
+      const on = toggleFav(currentJob.id, {
+        title: currentJob.title,
+        lane: currentJob.isForecast ? 'forecast' : 'found',
+        conf: currentJob.conf || currentJob.confidence || 0
+      });
       syncFavButtons(currentJob);
-      toast(on ? '已收藏，可在本机稍后回看' : '已取消收藏');
+      toast(on ? '已收藏，可在顶部收藏栏回看' : '已取消收藏');
     });
     document.getElementById('dd-found-compare')?.addEventListener('click', openResumeCompare);
     document.getElementById('dd-found-report')?.addEventListener('click', () => {
@@ -1261,9 +2354,13 @@
 
     document.getElementById('dd-fc-fav')?.addEventListener('click', () => {
       if (!currentJob?.id) return;
-      const on = toggleFav(currentJob.id);
+      const on = toggleFav(currentJob.id, {
+        title: currentJob.title,
+        lane: 'forecast',
+        conf: currentJob.conf || currentJob.confidence || 0
+      });
       syncFavButtons(currentJob);
-      toast(on ? '已收藏，可在本机稍后回看' : '已取消收藏', 'amber');
+      toast(on ? '已收藏，可在顶部收藏栏回看' : '已取消收藏', 'amber');
     });
     document.getElementById('dd-fc-compare')?.addEventListener('click', openResumeCompare);
     document.getElementById('dd-fc-report')?.addEventListener('click', () => {
@@ -1278,24 +2375,15 @@
 
     window.addEventListener('resize', () => {
       trendChart && trendChart.resize();
+      graphChart && graphChart.resize();
       fcProbChart && fcProbChart.resize();
       fcSupplyChart && fcSupplyChart.resize();
+      if (currentJob && !currentJob.isForecast) layoutFoundRow();
+      if (currentJob && currentJob.isForecast) layoutFcRow();
     });
 
-    if (window.gsap && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      try {
-        const sel = currentJob?.isForecast
-          ? '.dd-fc-crumb, .dd-fc-hero, .dd-verdict--fc, .dd-fc-board .dd-panel'
-          : '.dd-found-crumb, .dd-found-hero, .dd-verdict:not(.dd-verdict--fc), .dd-found-board .dd-panel';
-        gsap.from(sel, {
-          opacity: 0,
-          y: 14,
-          duration: 0.75,
-          stagger: 0.05,
-          ease: 'power3.out',
-          clearProps: 'opacity,transform'
-        });
-      } catch (_) {}
-    }
+    window.addEventListener('discovery-favs-changed', () => {
+      if (currentJob) syncFavButtons(currentJob);
+    });
   };
 })();

@@ -1,9 +1,9 @@
 /* 新岗位发现 · 首页（情报浏览）—— 克制企业级双色语义 */
 
 #view-discovery.disc-home {
-  --dh-real: #3d9b94;
-  --dh-real-soft: rgba(61, 155, 148, 0.12);
-  --dh-real-line: rgba(61, 155, 148, 0.45);
+  --dh-real: #d4b07a;
+  --dh-real-soft: rgba(212, 176, 122, 0.12);
+  --dh-real-line: rgba(212, 176, 122, 0.45);
   --dh-pred: #c4a574;
   --dh-pred-soft: rgba(196, 165, 116, 0.12);
   --dh-pred-line: rgba(196, 165, 116, 0.45);
@@ -11,9 +11,9 @@
   --dh-ink-2: rgba(255, 255, 255, 0.05);
   --dh-line: rgba(255, 255, 255, 0.08);
   --dh-line-soft: rgba(255, 255, 255, 0.05);
-  --proto-blue: #3d9b94 !important;
-  --proto-blue-deep: #2a7a74 !important;
-  --proto-blue-soft: rgba(61, 155, 148, 0.12) !important;
+  --proto-blue: #d4b07a !important;
+  --proto-blue-deep: #b8925c !important;
+  --proto-blue-soft: rgba(212, 176, 122, 0.12) !important;
   max-width: 1440px;
   margin: 0 auto;
   padding-bottom: 28px;
@@ -95,7 +95,7 @@
 }
 
 .dh-daily:hover {
-  border-color: rgba(61, 155, 148, 0.4);
+  border-color: rgba(212, 176, 122, 0.4);
   color: var(--text-dark);
   background: var(--dh-ink);
 }
@@ -193,7 +193,7 @@
   font-variant-numeric: tabular-nums;
 }
 
-.dh-panel.is-real .dh-metric-val { color: #7ec8c2; }
+.dh-panel.is-real .dh-metric-val { color: #e8c988; }
 .dh-panel.is-pred .dh-metric-val { color: #d4b98a; }
 .dh-metric-val.is-up { font-size: 18px; }
 
@@ -322,8 +322,8 @@
 }
 
 .dh-switch .dh-tab.is-real.is-active {
-  color: #042f2e;
-  background: linear-gradient(135deg, #5eead4, #2dd4bf);
+  color: #1a1408;
+  background: linear-gradient(135deg, rgba(236, 201, 132, 0.95), #c4a574);
 }
 
 .dh-switch .dh-tab.is-pred.is-active {
@@ -353,7 +353,7 @@
 
 .dh-panel.is-real.is-active {
   border-color: var(--dh-real-line);
-  background: rgba(61, 155, 148, 0.08);
+  background: rgba(212, 176, 122, 0.08);
 }
 
 .dh-panel.is-pred.is-active {
@@ -464,7 +464,7 @@
 
 .dh-tag.is-real {
   color: var(--dh-real);
-  border-color: rgba(61, 155, 148, 0.35);
+  border-color: rgba(212, 176, 122, 0.35);
   background: var(--dh-real-soft);
 }
 
@@ -546,7 +546,7 @@
 .dh-card.is-real .dh-trend .heat { color: var(--dh-real); }
 .dh-card.is-forecast .dh-trend .heat { color: var(--dh-pred); }
 
-.dh-trend .up { color: #7ec8c2; }
+.dh-trend .up { color: #d4b98a; }
 .dh-card.is-forecast .dh-trend .up { color: #d4b98a; }
 
 .dh-mini-spark {

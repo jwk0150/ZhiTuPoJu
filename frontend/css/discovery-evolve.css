@@ -1,9 +1,9 @@
-/* 岗位演化图谱 · 发现链路第三段 —— 继承详情页 teal/gold 体系 */
+/* 岗位演化图谱 · 发现链路第三段 —— 黑金统一体系 */
 
 #view-discovery-evolve.de-page {
-  --de-real: #2ec4b6;
-  --de-real-soft: rgba(46, 196, 182, 0.12);
-  --de-real-line: rgba(46, 196, 182, 0.48);
+  --de-real: #d4b07a;
+  --de-real-soft: rgba(212, 176, 122, 0.14);
+  --de-real-line: rgba(212, 176, 122, 0.45);
   --de-pred: #d4b07a;
   --de-pred-soft: rgba(212, 176, 122, 0.14);
   --de-pred-line: rgba(212, 176, 122, 0.45);
@@ -34,8 +34,8 @@
 }
 
 @keyframes deBreathe {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(46, 196, 182, 0), 0 0 24px rgba(46, 196, 182, 0.18); }
-  50% { box-shadow: 0 0 0 4px rgba(46, 196, 182, 0.08), 0 0 32px rgba(46, 196, 182, 0.28); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(212, 176, 122, 0), 0 0 24px rgba(212, 176, 122, 0.18); }
+  50% { box-shadow: 0 0 0 4px rgba(212, 176, 122, 0.08), 0 0 32px rgba(212, 176, 122, 0.28); }
 }
 
 html:has(body.de-cockpit-page),
@@ -91,11 +91,11 @@ body.de-cockpit-page .page-main--cockpit {
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.04em;
-  color: #2ec4b6;
+  color: #d4b07a;
   padding: 3px 8px;
   border-radius: 999px;
-  border: 1px solid rgba(46, 196, 182, 0.35);
-  background: rgba(46, 196, 182, 0.1);
+  border: 1px solid rgba(212, 176, 122, 0.35);
+  background: rgba(212, 176, 122, 0.1);
 }
 
 /* Hero */
@@ -141,8 +141,8 @@ body.de-cockpit-page .page-main--cockpit {
   font-weight: 700;
   letter-spacing: 0.04em;
   color: #042f2c;
-  background: linear-gradient(135deg, #5eead4, #2ec4b6);
-  box-shadow: 0 0 18px rgba(46, 196, 182, 0.25);
+  background: linear-gradient(135deg, #ecc984, #d4b07a);
+  box-shadow: 0 0 18px rgba(212, 176, 122, 0.25);
 }
 
 .de-tag.sm {
@@ -209,8 +209,8 @@ body.de-cockpit-page .page-main--cockpit {
 }
 
 .de-back:hover {
-  background: rgba(46, 196, 182, 0.2);
-  box-shadow: 0 0 0 1px rgba(46, 196, 182, 0.15);
+  background: rgba(212, 176, 122, 0.2);
+  box-shadow: 0 0 0 1px rgba(212, 176, 122, 0.15);
 }
 
 .de-btn {
@@ -281,7 +281,7 @@ body.de-cockpit-page .page-main--cockpit {
 
 .de-views button.is-active {
   color: #042f2c;
-  background: linear-gradient(135deg, #5eead4, #2ec4b6);
+  background: linear-gradient(135deg, #ecc984, #d4b07a);
 }
 
 .de-views button:disabled {
@@ -334,7 +334,7 @@ body.de-cockpit-page .page-main--cockpit {
 }
 
 .lg-hist i { background: var(--de-hist); }
-.lg-real i { background: var(--de-real); box-shadow: 0 0 8px rgba(46, 196, 182, 0.5); }
+.lg-real i { background: var(--de-real); box-shadow: 0 0 8px rgba(212, 176, 122, 0.5); }
 .lg-pred i { background: var(--de-pred); }
 .lg-solid i {
   width: 16px;
@@ -387,7 +387,7 @@ body.de-cockpit-page .page-main--cockpit {
   border-radius: var(--de-radius);
   border: 1px solid var(--de-line);
   background:
-    radial-gradient(ellipse 60% 50% at 50% 48%, rgba(46, 196, 182, 0.05), transparent 70%),
+    radial-gradient(ellipse 60% 50% at 50% 48%, rgba(212, 176, 122, 0.05), transparent 70%),
     var(--de-surface);
   overflow: hidden;
   display: flex;
@@ -489,7 +489,7 @@ body.de-cockpit-page .page-main--cockpit {
 
 .de-node.is-real {
   border-color: var(--de-real-line);
-  background: linear-gradient(180deg, rgba(46, 196, 182, 0.1), rgba(10, 14, 20, 0.92));
+  background: linear-gradient(180deg, rgba(212, 176, 122, 0.1), rgba(10, 14, 20, 0.92));
 }
 
 .de-node.is-pred {
@@ -505,7 +505,7 @@ body.de-cockpit-page .page-main--cockpit {
   border-width: 1.5px;
   border-color: var(--de-real);
   background:
-    linear-gradient(160deg, rgba(46, 196, 182, 0.16), transparent 55%),
+    linear-gradient(160deg, rgba(212, 176, 122, 0.16), transparent 55%),
     rgba(10, 14, 20, 0.95);
   animation: deBreathe 5.5s ease-in-out infinite;
   z-index: 6;
@@ -516,8 +516,8 @@ body.de-cockpit-page .page-main--cockpit {
   min-width: 0;
   padding: 5px 10px;
   border-radius: 999px;
-  border-color: rgba(46, 196, 182, 0.35);
-  background: rgba(46, 196, 182, 0.1);
+  border-color: rgba(212, 176, 122, 0.35);
+  background: rgba(212, 176, 122, 0.1);
   box-shadow: none;
 }
 
@@ -611,7 +611,7 @@ body.de-cockpit-page .page-main--cockpit {
 
 .de-node.is-active:not(.is-center) {
   outline: 1px solid var(--de-real-line);
-  box-shadow: 0 0 0 3px rgba(46, 196, 182, 0.12);
+  box-shadow: 0 0 0 3px rgba(212, 176, 122, 0.12);
 }
 
 .de-edge-label {
@@ -637,7 +637,7 @@ body.de-cockpit-page .page-main--cockpit {
   border-radius: var(--de-radius);
   border: 1px solid var(--de-real-line);
   background:
-    linear-gradient(145deg, rgba(46, 196, 182, 0.1), transparent 50%),
+    linear-gradient(145deg, rgba(212, 176, 122, 0.1), transparent 50%),
     var(--de-surface);
 }
 
@@ -789,7 +789,7 @@ body.de-cockpit-page .page-main--cockpit {
 
 .de-path li.is-now::before {
   background: var(--de-real);
-  box-shadow: 0 0 8px rgba(46, 196, 182, 0.45);
+  box-shadow: 0 0 8px rgba(212, 176, 122, 0.45);
 }
 
 .de-path .when {
@@ -917,7 +917,7 @@ body.de-cockpit-page .page-main--cockpit {
   display: block;
   height: 100%;
   border-radius: 99px;
-  background: linear-gradient(90deg, #1a9e92, #5eead4);
+  background: linear-gradient(90deg, #b8925c, #ecc984);
 }
 
 .de-delta-row .up {

@@ -1,0 +1,144 @@
+/* Shared mock payload for discovery list + detail pages */
+window.buildMockScanPayload = function () {
+  const now = new Date().toISOString();
+  const mkDisc = (i, title, cat, conf, skills, city) => ({
+    id: 'disc_mock_' + i,
+    title,
+    category: cat,
+    level: '中高级',
+    confidence: conf,
+    growth_rate: 20 + i * 3,
+    status: 'pending',
+    discovered_at: now,
+    core_skills: skills,
+    preferred_skills: [],
+    definition: '基于本地招聘库聚类启发式生成，未经 LLM 增强。',
+    typical_scenarios: ['企业内场景', '技术中台', '数字化转型'],
+    evidence_sources: [],
+    responsibilities: ['参与需求分析与方案设计', '完成核心功能开发', '配合测试与上线运维'],
+    trend: [],
+    quality: {
+      evidence_count: 3 + i,
+      source_count: 2 + i,
+      city_count: 1 + i,
+      freshness_score: 70 + i
+    },
+    source: 'Mock数据源',
+    city,
+    salary: '20-40K',
+    requiredSkills: skills,
+    description: '基于本地招聘库聚类启发式生成。',
+    discoveredAt: now,
+    reasoning: 'Mock 路径：标题新颖度+技能组合熵+跨行业溢出 = 综合置信度 ' + conf + '%'
+  });
+  const discoveries = [
+    mkDisc(1, 'AI Agent 架构师', '人工智能', 88, ['LangChain', 'Function Calling', 'RAG', 'Python'], '北京'),
+    mkDisc(2, '大模型微调工程师', '人工智能', 84, ['LoRA', 'QLoRA', 'PyTorch', 'SFT'], '上海'),
+    mkDisc(3, 'RAG 知识工程师', '人工智能', 80, ['向量数据库', 'Embedding', '检索增强'], '深圳'),
+    mkDisc(4, '多模态算法工程师', '人工智能', 78, ['CLIP', 'Diffusion', '多模态'], '杭州'),
+    mkDisc(5, 'Prompt 工程师', '人工智能', 72, ['Prompt设计', 'LLM', '评测'], '成都'),
+    mkDisc(6, 'AI Infra 工程师', '人工智能', 70, ['Triton', 'CUDA', 'AI编译器'], '北京'),
+    mkDisc(7, 'AIGC 内容工程师', '人工智能', 68, ['Stable Diffusion', '生成式', 'PyTorch'], '广州'),
+    mkDisc(8, 'LLM 应用开发工程师', '人工智能', 66, ['LangChain', 'API', 'Agent'], '远程')
+  ];
+  const mkFc = (i, title, cat, conf, eta, skills) => ({
+    id: 'forecast_mock_' + i,
+    title,
+    category: cat,
+    confidence: conf,
+    eta_months: eta,
+    drivers: ['趋势外推', '技能信号累积'],
+    skills,
+    definition: 'Mock 预测岗位，基于新兴技能时序外推。',
+    status: 'forecast',
+    source: '趋势预测模型(Mock)',
+    city: '全国',
+    salary: '面议(新兴岗位)',
+    level: '专家',
+    requiredSkills: skills,
+    description: 'Mock 预测岗位。',
+    discoveredAt: now,
+    is_forecast: true
+  });
+  const forecasts = [
+    mkFc(1, '具身智能工程师', '人工智能', 74, 12, ['ROS2', '强化学习', 'SLAM']),
+    mkFc(2, 'AI安全对齐工程师', '安全', 78, 9, ['RLHF', '红队测试', '对齐']),
+    mkFc(3, '端侧AI部署工程师', '人工智能', 80, 6, ['ONNX', 'TensorRT', '量化']),
+    mkFc(4, '合成数据工程师', '数据科学', 75, 8, ['GAN', 'LLM', '数据增强']),
+    mkFc(5, 'AI芯片软件栈工程师', '人工智能', 70, 15, ['Triton', 'MLIR', 'TVM']),
+    mkFc(6, 'AI研发效能工程师', '运维测试', 73, 10, ['AI Coding', 'CI/CD', 'DORA'])
+  ];
+  const chain = [
+    {
+      step: 1,
+      title: '🌐 多源数据接入',
+      detail: 'Mock：连接本地 PostgreSQL 招聘库，抽取最近 5000 条 IT 岗位记录。',
+      status: 'done',
+      metrics: '数据规模: 5000 条 | 覆盖 320 家企业',
+      elapsed_ms: 420
+    },
+    {
+      step: 2,
+      title: '🧠 语义消歧与实体归一化',
+      detail: 'Mock：标题字符级归一化，构建 N-gram 特征向量，识别语义聚类。',
+      status: 'done',
+      metrics: '聚类压缩比: 6.2x | 技能词典: 480 词',
+      elapsed_ms: 510
+    },
+    {
+      step: 3,
+      title: '📈 多维度新兴度评分',
+      detail: 'Mock：三维度加权(标题0.5+技能0.3+溢出0.2)，扫描语义簇。',
+      status: 'done',
+      metrics: '新兴候选 8 | 传统 IT 12 | 总簇 24',
+      elapsed_ms: 600
+    },
+    {
+      step: 4,
+      title: '📝 岗位定义生成与职责推理',
+      detail: 'Mock：基于真实 JD 摘要生成岗位定义、核心职责与典型场景。',
+      status: 'done',
+      metrics: '输出 8 个岗位定义',
+      elapsed_ms: 520
+    },
+    {
+      step: 5,
+      title: '🔮 时序趋势外推',
+      detail: 'Mock：指数平滑+线性回归外推 6-18 个月技能需求变化。',
+      status: 'done',
+      metrics: '预测跨度: 6-18 个月 | 置信区间: 65%-80%',
+      elapsed_ms: 610
+    },
+    {
+      step: 6,
+      title: '🛡️ 幻觉检测与质量审计',
+      detail: 'Mock：交叉校验证据来源，检测定义-技能一致性，标记低证据项目。',
+      status: 'done',
+      metrics: '审计通过 8 | 弱证据 2',
+      elapsed_ms: 330
+    }
+  ];
+  return {
+    reasoning_chain: chain,
+    discoveries,
+    forecasts,
+    summary:
+      'Mock 扫描完毕：5000 条 → 24 簇 → 8 个发现 + 6 个预测。推理引擎: DiscoveryAgent (Mock)。',
+    stats: {
+      total_scanned: 5000,
+      title_clusters: 24,
+      discoveries: 8,
+      forecasts: 6,
+      total_elapsed_ms: 2990,
+      avg_confidence: 75.5
+    },
+    model: {
+      engine: 'DiscoveryAgent v2.0 (Mock)',
+      backed_by: '启发式(Mock)',
+      llm: 'none',
+      llm_enriched: 0,
+      llm_error: null,
+      knowledge_base: 'PostgreSQL mock'
+    }
+  };
+};

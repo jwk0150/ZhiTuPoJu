@@ -8,7 +8,8 @@
   <link rel="stylesheet" href="../css/shell.css?v=50" />
   <link rel="stylesheet" href="../css/components.css?v=50" />
   <link rel="stylesheet" href="../css/page-polish.css?v=50" />
-  <link rel="stylesheet" href="../css/discovery-detail.css?v=18" />
+  <link rel="stylesheet" href="../css/discovery-favs.css?v=1" />
+  <link rel="stylesheet" href="../css/discovery-detail.css?v=85" />
   <link rel="stylesheet" href="../css/discovery-evolve.css?v=4" />
   <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
@@ -18,16 +19,24 @@
   <main class="page-main page-main--cockpit" id="page-main">
     <section class="view active dd-page dd-page--cockpit dd-page--unified" id="view-discovery-detail">
 
+      <aside class="dd-fav-bar enter" style="--d:.01s" id="dd-fav-bar" aria-label="收藏栏">
+        <div class="dd-fav-bar-head">
+          <span class="dd-fav-bar-title">收藏栏</span>
+          <span class="dd-fav-bar-count">0</span>
+        </div>
+        <div class="dd-fav-bar-track" id="dd-fav-bar-track"></div>
+      </aside>
+
       <!-- ========== 真实发现：整页统一看板 ========== -->
       <div class="dd-found" id="dd-found" hidden>
         <nav class="dd-found-crumb enter" style="--d:.02s" aria-label="面包屑">
-          <a href="discovery.html" id="dd-found-back">← 返回岗位列表</a>
+          <a href="discovery.html" class="dd-back-bubble" id="dd-found-back">← 返回岗位列表</a>
         </nav>
 
-        <header class="dd-found-hero enter" style="--d:.06s">
-          <div class="dd-found-hero-left">
-            <div class="dd-found-title-row">
-              <span class="dd-found-mark" aria-hidden="true">
+        <header class="dd-fc-hero dd-found-hero enter" style="--d:.06s">
+          <div class="dd-fc-hero-left">
+            <div class="dd-fc-title-row">
+              <span class="dd-fc-mark" aria-hidden="true">
                 <svg viewBox="0 0 40 40" width="40" height="40">
                   <circle cx="20" cy="20" r="18" fill="none" stroke="currentColor" stroke-width="1.4" opacity=".55"/>
                   <path d="M12 22c2.2-6 5.2-9 8-9s5.8 3 8 9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
@@ -36,29 +45,29 @@
                   <path d="M14 26h12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" opacity=".7"/>
                 </svg>
               </span>
-              <div class="dd-found-title-block">
-                <span class="dd-found-tag">真实发现岗位</span>
-                <h1 class="dd-found-title" id="dd-found-title">岗位详情</h1>
+              <div class="dd-fc-title-block">
+                <span class="dd-fc-tag">真实发现岗位</span>
+                <h1 class="dd-fc-title" id="dd-found-title">岗位详情</h1>
               </div>
-              <div class="dd-found-heat" title="热度指数">
+              <div class="dd-fc-conf dd-found-heat" title="热度指数">
                 <span class="lab">热度指数</span>
                 <strong id="dd-found-heat">—</strong>
               </div>
             </div>
-            <div class="dd-found-meta" id="dd-found-meta"></div>
+            <div class="dd-fc-meta" id="dd-found-meta"></div>
           </div>
-          <div class="dd-found-hero-actions">
-            <button type="button" class="dd-found-btn is-primary" id="dd-found-compare" title="与自己的简历报告对比">
+          <div class="dd-fc-hero-actions">
+            <button type="button" class="dd-fc-btn is-primary" id="dd-found-compare" title="与自己的简历报告对比">
               <span class="ico" aria-hidden="true">⊞</span>对比简历报告
             </button>
-            <button type="button" class="dd-found-btn" id="dd-found-fav"><span class="ico" aria-hidden="true">☆</span>收藏</button>
-            <button type="button" class="dd-found-btn is-ghost" id="dd-found-report">
+            <button type="button" class="dd-fc-btn" id="dd-found-fav"><span class="ico" aria-hidden="true">☆</span>收藏</button>
+            <button type="button" class="dd-fc-btn is-ghost" id="dd-found-report">
               <span class="ico" aria-hidden="true">↓</span>下载报告
             </button>
           </div>
         </header>
 
-        <aside class="dd-verdict enter" style="--d:.09s" id="dd-found-verdict" aria-label="阅读结论">
+        <aside class="dd-verdict dd-verdict--fc enter" style="--d:.09s" id="dd-found-verdict" aria-label="阅读结论">
           <div class="dd-verdict-main">
             <span class="dd-verdict-kicker" id="dd-found-verdict-kicker">判断</span>
             <p class="dd-verdict-text" id="dd-found-verdict-text">—</p>
@@ -67,80 +76,77 @@
           <div class="dd-verdict-trust" id="dd-found-trust"></div>
         </aside>
 
-        <div class="dd-found-board enter" style="--d:.12s" id="dd-found-board">
-          <!-- 左：基本信息 -->
-          <section class="dd-panel dd-panel-basics" aria-labelledby="dd-basics-h">
-            <header class="dd-panel-head">
-              <h2 id="dd-basics-h">岗位基本信息</h2>
-            </header>
-            <dl class="dd-found-kv" id="dd-found-basics"></dl>
-            <div class="dd-salary" id="dd-found-salary" hidden>
-              <div class="dd-salary-bar" role="img" aria-label="薪资分布示意">
-                <span class="dd-salary-fill" id="dd-salary-fill"></span>
-                <span class="dd-salary-peak" id="dd-salary-peak"></span>
-              </div>
-              <div class="dd-salary-scale"><span>偏低</span><span>中位</span><span>偏高</span></div>
+        <div class="dd-fc-board dd-found-board enter" style="--d:.12s" id="dd-found-board">
+          <section class="dd-panel dd-fc-panel dd-fc-basics" aria-labelledby="dd-basics-h">
+            <header class="dd-panel-head"><h2 id="dd-basics-h">岗位基本信息</h2></header>
+            <div class="dd-found-basics-body">
+              <dl class="dd-found-kv" id="dd-found-basics"></dl>
+              <p class="dd-found-brief" id="dd-found-brief"></p>
             </div>
           </section>
 
-          <!-- 中：能力 TOP10 -->
-          <section class="dd-panel dd-panel-skills" aria-labelledby="dd-skills-h">
-            <header class="dd-panel-head">
-              <h2 id="dd-skills-h">核心能力需求 TOP 10</h2>
-            </header>
-            <p class="dd-read">读法：从高到低看；先补前三项，通常就能覆盖大部分 JD。</p>
-            <div class="dd-found-skills" id="dd-found-skills"></div>
-          </section>
-
-          <!-- 右上：能力对比（替代难读雷达） -->
-          <section class="dd-panel dd-panel-radar" aria-labelledby="dd-radar-h">
-            <header class="dd-panel-head">
-              <h2 id="dd-radar-h">能力对照</h2>
-            </header>
-            <p class="dd-read">读法：青色条是该岗位要求，灰条是行业平均。拉开越大，越是差异化能力。</p>
-            <div class="dd-cmp" id="dd-found-radar" role="list" aria-label="能力对照"></div>
-          </section>
-
-          <!-- 右中：典型职责 -->
-          <section class="dd-panel dd-panel-duties" aria-labelledby="dd-duties-h">
+          <section class="dd-panel dd-fc-panel dd-fc-skills" aria-labelledby="dd-skills-h">
             <header class="dd-panel-head dd-panel-head-split">
-              <h2 id="dd-duties-h">典型职责 (Top 5)</h2>
-              <span class="dd-panel-hint">出现概率</span>
+              <h2 id="dd-skills-h">核心能力 TOP 10</h2>
+              <span class="dd-panel-hint">热度分层</span>
             </header>
-            <p class="dd-read">读法：概率越高，招聘文本里越常写到这件事。</p>
-            <ol class="dd-found-duties" id="dd-found-duties"></ol>
+            <div class="dd-skill-constellation" id="dd-found-skills" role="list" aria-label="核心能力热度分层"></div>
           </section>
 
-          <!-- 左下：趋势 -->
-          <section class="dd-panel dd-panel-trend" aria-labelledby="dd-trend-h">
-            <header class="dd-panel-head">
-              <h2 id="dd-trend-h">岗位需求趋势</h2>
-            </header>
-            <p class="dd-read">读法：看曲线是否持续抬升；两条线同向上，说明热度不是偶发。</p>
-            <div class="dd-found-trend" id="dd-found-trend" role="img" aria-label="岗位需求趋势"></div>
-            <p class="dd-chart-note" id="dd-found-trend-note">近半年发布量与搜索热度同步抬升</p>
+          <section class="dd-panel dd-fc-panel dd-fc-duties dd-found-duties-panel" aria-labelledby="dd-duties-h">
+            <header class="dd-panel-head"><h2 id="dd-duties-h">典型职责</h2></header>
+            <div class="dd-fc-duties-shell" id="dd-found-duties-shell">
+              <div class="dd-fc-duties-viewport" id="dd-found-duties-viewport">
+                <ol class="dd-fc-duties-track" id="dd-found-duties"></ol>
+              </div>
+              <button type="button" class="dd-fc-duties-toggle" id="dd-found-duties-toggle" hidden>查看全部</button>
+            </div>
           </section>
 
-          <!-- 中下：相关岗位（替代关系网） -->
-          <section class="dd-panel dd-panel-graph" aria-labelledby="dd-graph-h">
-            <header class="dd-panel-head">
-              <h2 id="dd-graph-h">从哪些岗位走过来</h2>
+          <section class="dd-panel dd-fc-panel dd-panel-cmp" aria-labelledby="dd-radar-h">
+            <header class="dd-panel-head dd-panel-head-split">
+              <h2 id="dd-radar-h">能力对照</h2>
+              <span class="dd-panel-hint">本岗位 vs 行业</span>
             </header>
-            <p class="dd-read">读法：关联越高，能力重叠越多，越适合作为转岗起点。</p>
-            <div class="dd-rel-ladder" id="dd-found-graph" role="list"></div>
+            <div class="dd-ind-cmp-wrap" id="dd-found-radar" role="region" aria-label="能力对照：本岗位与行业均值"></div>
           </section>
 
-          <!-- 右下：供需 -->
-          <section class="dd-panel dd-panel-supply" aria-labelledby="dd-supply-h">
+          <section class="dd-panel dd-fc-panel dd-panel-graph" aria-labelledby="dd-graph-h">
+            <header class="dd-panel-head"><h2 id="dd-graph-h">从哪些岗位走过来</h2></header>
+            <div class="dd-graph-chart-wrap">
+              <div class="dd-graph-pie-host">
+                <div class="dd-found-graph" id="dd-found-graph" role="img" aria-label="来源岗位占比分布"></div>
+              </div>
+              <div class="dd-graph-right">
+                <ul class="dd-graph-legend" id="dd-found-graph-legend" aria-label="来源岗位列表"></ul>
+                <div class="dd-graph-detail" id="dd-found-graph-detail" aria-live="polite">
+                  <p class="dd-graph-detail-hint">悬停扇区或列表项查看说明</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="dd-panel dd-fc-panel dd-panel-trend" aria-labelledby="dd-trend-h">
+            <header class="dd-panel-head dd-panel-head-split dd-trend-head">
+              <div class="dd-trend-head-main">
+                <h2 id="dd-trend-h">岗位需求趋势</h2>
+                <div class="dd-trend-legend" aria-hidden="true">
+                  <span class="leg is-bar"><i></i>发布量</span>
+                  <span class="leg is-line"><i></i>搜索热度</span>
+                </div>
+              </div>
+              <span class="dd-trend-badge" id="dd-found-trend-badge"></span>
+            </header>
+            <div class="dd-trend-chart-wrap">
+              <div class="dd-found-trend" id="dd-found-trend" role="img" aria-label="岗位需求趋势"></div>
+            </div>
+          </section>
+
+          <section class="dd-panel dd-fc-panel dd-panel-supply" aria-labelledby="dd-supply-h">
             <header class="dd-panel-head">
               <h2 id="dd-supply-h">人才供需情况</h2>
             </header>
-            <p class="dd-read">读法：供需比 &gt; 1 表示需求快于供给，人才更紧俏。</p>
-            <div class="dd-supply-stats" id="dd-found-supply"></div>
-            <div class="dd-supply-note">
-              <span class="kicker">观察结论</span>
-              <p id="dd-found-supply-note">—</p>
-            </div>
+            <div class="dd-supply-focus" id="dd-found-supply"></div>
           </section>
         </div>
       </div>
@@ -148,7 +154,7 @@
       <!-- ========== 未来预测：整页统一看板（金色） ========== -->
       <div class="dd-fc" id="dd-forecast-shell" hidden>
         <nav class="dd-fc-crumb enter" style="--d:.02s" aria-label="面包屑">
-          <a href="discovery.html">← 返回预测岗位列表</a>
+          <a href="discovery.html" class="dd-back-bubble">← 返回预测岗位列表</a>
         </nav>
 
         <header class="dd-fc-hero enter" style="--d:.06s">
@@ -194,80 +200,80 @@
         <div class="dd-fc-board enter" style="--d:.12s" id="dd-fc-board">
           <section class="dd-panel dd-fc-panel dd-fc-basics" aria-labelledby="dd-fc-basics-h">
             <header class="dd-panel-head"><h2 id="dd-fc-basics-h">预测岗位基本信息</h2></header>
-            <dl class="dd-found-kv dd-fc-kv" id="dd-fc-basics"></dl>
-            <div class="dd-salary dd-fc-salary">
-              <div class="dd-salary-bar dd-fc-salary-bar" role="img" aria-label="预测薪资区间">
-                <span class="dd-salary-peak" id="dd-fc-salary-peak"></span>
-              </div>
-              <div class="dd-salary-scale"><span>20K</span><span>50K</span><span>80K</span></div>
+            <div class="dd-found-basics-body">
+              <dl class="dd-found-kv dd-fc-kv" id="dd-fc-basics"></dl>
+              <p class="dd-found-brief" id="dd-fc-brief"></p>
             </div>
           </section>
 
           <section class="dd-panel dd-fc-panel dd-fc-skills" aria-labelledby="dd-fc-skills-h">
-            <header class="dd-panel-head"><h2 id="dd-fc-skills-h">预测核心能力需求 TOP 10</h2></header>
-            <p class="dd-read">读法：金色越长，窗口内成型后越可能写进 JD。</p>
-            <div class="dd-found-skills dd-fc-skills-list" id="dd-fc-skills"></div>
+            <header class="dd-panel-head dd-panel-head-split">
+              <h2 id="dd-fc-skills-h">核心能力 TOP 10</h2>
+              <span class="dd-panel-hint">热度分层</span>
+            </header>
+            <div class="dd-skill-constellation" id="dd-fc-skills" role="list" aria-label="核心能力热度分层"></div>
           </section>
 
           <section class="dd-panel dd-fc-panel dd-fc-duties" aria-labelledby="dd-fc-duties-h">
-            <header class="dd-panel-head dd-panel-head-split">
-              <h2 id="dd-fc-duties-h">预测职责 (Top 5)</h2>
-              <span class="dd-panel-hint">发现概率</span>
+            <header class="dd-panel-head">
+              <h2 id="dd-fc-duties-h">预测职责</h2>
             </header>
-            <p class="dd-read">读法：这些是推演出的职责雏形，不是已大规模招聘的原文。</p>
-            <ol class="dd-found-duties dd-fc-duties-list" id="dd-fc-duties"></ol>
+            <div class="dd-fc-duties-shell" id="dd-fc-duties-shell">
+              <div class="dd-fc-duties-viewport" id="dd-fc-duties-viewport">
+                <ol class="dd-fc-duties-track" id="dd-fc-duties"></ol>
+              </div>
+              <button type="button" class="dd-fc-duties-toggle" id="dd-fc-duties-toggle" hidden>查看全部</button>
+            </div>
           </section>
 
           <section class="dd-panel dd-fc-panel dd-fc-evolve" id="dd-fc-evolve-panel" aria-labelledby="dd-fc-evolve-h">
             <header class="dd-panel-head"><h2 id="dd-fc-evolve-h">能力怎么长出来的</h2></header>
-            <p class="dd-read">读法：从左到右——已有岗位提供能力 → 能力交汇 → 汇成预测岗位。</p>
             <div class="dd-flow" id="dd-fc-sankey" aria-label="能力演化三栏"></div>
           </section>
 
-          <section class="dd-panel dd-fc-panel dd-fc-prob" aria-labelledby="dd-fc-prob-h">
-            <header class="dd-panel-head"><h2 id="dd-fc-prob-h">出现概率趋势</h2></header>
-            <p class="dd-read">读法：曲线抬升表示「越来越像会成型」；靠近 100% 仍不等于已招聘。</p>
-            <div class="dd-fc-chart" id="dd-fc-prob-chart" role="img" aria-label="出现概率趋势"></div>
-            <p class="dd-chart-note">24 个月内成型概率由低到高抬升</p>
-          </section>
-
-          <section class="dd-panel dd-fc-panel dd-fc-dev" aria-labelledby="dd-fc-dev-h">
-            <header class="dd-panel-head"><h2 id="dd-fc-dev-h">关键能力发展预测</h2></header>
-            <p class="dd-read">读法：颜色越深，该能力在未来越可能变成硬门槛。</p>
-            <div class="dd-fc-table-wrap">
-              <table class="dd-fc-table" id="dd-fc-dev-table">
-                <thead>
-                  <tr>
-                    <th>能力维度</th>
-                    <th>当前</th>
-                    <th>6月</th>
-                    <th>12月</th>
-                    <th>24月</th>
-                  </tr>
-                </thead>
-                <tbody id="dd-fc-dev-body"></tbody>
-              </table>
+          <section class="dd-panel dd-fc-panel dd-fc-prob dd-panel-trend" aria-labelledby="dd-fc-prob-h">
+            <header class="dd-panel-head dd-panel-head-split dd-trend-head">
+              <div class="dd-trend-head-main">
+                <h2 id="dd-fc-prob-h">出现概率趋势</h2>
+                <div class="dd-trend-legend" aria-hidden="true">
+                  <span class="leg is-bar"><i></i>出现概率</span>
+                  <span class="leg is-line"><i></i>抬升轨迹</span>
+                </div>
+              </div>
+              <span class="dd-trend-badge is-surge" id="dd-fc-prob-badge">窗口抬升</span>
+            </header>
+            <div class="dd-trend-chart-wrap">
+              <div class="dd-fc-chart" id="dd-fc-prob-chart" role="img" aria-label="出现概率趋势"></div>
             </div>
           </section>
 
           <section class="dd-panel dd-fc-panel dd-fc-industry" aria-labelledby="dd-fc-ind-h">
-            <header class="dd-panel-head"><h2 id="dd-fc-ind-h">需求可能落在哪</h2></header>
-            <p class="dd-read">读法：条越长，该行业越可能先出现编制；不必平均用力。</p>
+            <header class="dd-panel-head dd-panel-head-split">
+              <h2 id="dd-fc-ind-h">需求可能落在哪</h2>
+              <span class="dd-panel-hint">行业占比</span>
+            </header>
             <div class="dd-share" id="dd-fc-industry-chart" role="list"></div>
           </section>
 
-          <section class="dd-panel dd-fc-panel dd-fc-supply" aria-labelledby="dd-fc-sup-h">
-            <header class="dd-panel-head"><h2 id="dd-fc-sup-h">预测供需趋势</h2></header>
-            <p class="dd-read">读法：金线（需求）若持续高于蓝线（供给），窗口内更可能缺人。</p>
-            <div class="dd-fc-chart" id="dd-fc-supply-chart" role="img" aria-label="供需趋势"></div>
+          <section class="dd-panel dd-fc-panel dd-fc-supply dd-panel-trend" aria-labelledby="dd-fc-sup-h">
+            <header class="dd-panel-head dd-panel-head-split dd-trend-head">
+              <div class="dd-trend-head-main">
+                <h2 id="dd-fc-sup-h">预测供需趋势</h2>
+                <div class="dd-trend-legend" aria-hidden="true">
+                  <span class="leg is-bar"><i></i>需求预测</span>
+                  <span class="leg is-line"><i></i>供给预测</span>
+                </div>
+              </div>
+            </header>
+            <div class="dd-trend-chart-wrap">
+              <div class="dd-fc-chart" id="dd-fc-supply-chart" role="img" aria-label="供需趋势"></div>
+            </div>
           </section>
 
           <section class="dd-panel dd-fc-panel dd-fc-risk" aria-labelledby="dd-fc-risk-h">
             <header class="dd-panel-head"><h2 id="dd-fc-risk-h">不确定性说明</h2></header>
-            <p class="dd-read">读法：预测会变；把这些当成风险清单，而不是否定结论。</p>
             <p class="dd-fc-risk-lead" id="dd-fc-risk-lead">—</p>
             <ul class="dd-fc-risk-list" id="dd-fc-risk-list"></ul>
-            <div class="dd-fc-orb" aria-hidden="true"></div>
           </section>
         </div>
       </div>
@@ -299,7 +305,9 @@
   <script src="../js/cinema-bg.js"></script>
   <script src="../js/cinema-music.js"></script>
   <script src="../js/shell.js"></script>
-  <script src="../js/pages/discovery-detail.js?v=22"></script>
+  <script src="../js/discovery-mock.js?v=1"></script>
+  <script src="../js/discovery-favs.js?v=1"></script>
+  <script src="../js/pages/discovery-detail.js?v=84"></script>
   <script>
     window.Shell && window.Shell.mount({ pageId: 'discovery', title: '岗位详情', subtitle: '新岗位发现' });
     window.initDiscoveryDetail && window.initDiscoveryDetail();
