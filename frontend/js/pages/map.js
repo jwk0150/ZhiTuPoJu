@@ -12,7 +12,7 @@ talentMapState = {
     jobGraphInstance: null,
     currentLayer: 'map', // 'map' | 'province' | 'graph'
     geoJSON: null,
-    defaultView: { zoom: 1.42, center: [105.5, 36.5] },
+    defaultView: { zoom: 1.6, center: [105.5, 36.5] },
     breathTimer: null,
     mapMode: 'overview', // 'overview' = hover 悬停显示 | 'province' = 详情常驻
     isEnteringProvince: false,
@@ -70,21 +70,209 @@ var PROVINCE_CODE = {
     '新疆':'650000','香港':'810000','澳门':'820000','台湾':'710000',
 };
 
-// 地图基础 regions（label 调整 + 港澳显式样式）
-var REGIONS_BASE = [
-    { name: '甘肃', label: { position: [104.5, 37.2] } },
-    { name: '上海', label: { position: [121.48, 31.23] } },
-    { name: '北京', label: { position: [116.40, 39.93] } },
-    { name: '天津', label: { position: [117.20, 39.13] } },
-    { name: '香港特别行政区', itemStyle: { borderColor: 'rgba(0,212,255,.55)', borderWidth: 2, areaColor: '#0b2036' } },
-    { name: '澳门特别行政区', itemStyle: { borderColor: 'rgba(0,212,255,.55)', borderWidth: 2, areaColor: '#0b2036' } }
+// ============== 地图配色与镜头定位（通用机制） ==============
+// 自然系分类色板（低饱和、高级感，适合彩色数据地图）
+var TALENT_MAP_PALETTE = [
+    '#6FA9A4', // 湖水青绿
+    '#7FB59A', // 鼠尾草绿
+    '#8FA8CE', // 雾蓝
+    '#C2B07C', // 香槟沙金
+    '#A8C686', // 浅草绿
+    '#6E9FB8', // 天青蓝
+    '#D4A373', // 暖陶橙
+    '#8FB8A8', // 薄荷灰绿
+    '#C98E6B', // 珊瑚暖褐
+    '#9FB3D1', // 蓝灰
+    '#B5C76F', // 橄榄绿
+    '#7BA8C9'  // 湖蓝
 ];
 
-// 系列层港澳高亮样式（覆盖 visualMap 暗色，确保小面积区域可见）
-var REGIONS_FOR_SERIES = [
-    { name: '香港特别行政区', itemStyle: { areaColor: '#0f3460', borderColor: 'rgba(0,212,255,.7)', borderWidth: 2.5 } },
-    { name: '澳门特别行政区', itemStyle: { areaColor: '#0f3460', borderColor: 'rgba(0,212,255,.7)', borderWidth: 2.5 } }
+// 颜色提亮工具：保持区域自身色相不变，仅向白色混合指定比例（用于 Hover 提亮，绝不覆盖为统一色）
+function talentLightenColor(hex, percent) {
+    var m = /^#?([0-9a-fA-F]{6})$/.exec(String(hex || ''));
+    if (!m) return hex;
+    var n = parseInt(m[1], 16);
+    var r = (n >> 16) & 255, g = (n >> 8) & 255, b = n & 255;
+    var p = (typeof percent === 'number') ? percent : 0.35;
+    r = Math.round(r + (255 - r) * p);
+    g = Math.round(g + (255 - g) * p);
+    b = Math.round(b + (255 - b) * p);
+    return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+}
+// 区域 Hover 强调样式：仅"提亮自身颜色 + 金色描边 + 轻微发光"，不使用统一覆盖色
+// （emphasis 中不出现固定 areaColor，是保证各区域彩色在 Hover 后不被冲掉的关键）
+function talentRegionEmphasis(baseColor) {
+    return {
+        itemStyle: {
+            areaColor: talentLightenColor(baseColor, 0.38),
+            borderColor: '#C9A227',
+            borderWidth: 2,
+            shadowBlur: 14,
+            shadowColor: 'rgba(201,162,39,.5)'
+        },
+        label: { color: '#5C3D06', fontWeight: 'bold' }
+    };
+}
+
+// 省级行政区地理顺序（用于轮询取色，保证相邻省份颜色差异明显）
+// 名称与 ECharts map data 全称一致（"北京市" / "广东省" / "内蒙古自治区" 等）
+var TALENT_PROVINCE_ORDER = [
+    '北京市','天津市','河北省','山西省','内蒙古自治区','辽宁省','吉林省','黑龙江省',
+    '上海市','江苏省','浙江省','安徽省','福建省','江西省','山东省',
+    '河南省','湖北省','湖南省','广东省','广西壮族自治区','海南省',
+    '重庆市','四川省','贵州省','云南省','西藏自治区',
+    '陕西省','甘肃省','青海省','宁夏回族自治区','新疆维吾尔自治区',
+    '台湾省','香港特别行政区','澳门特别行政区'
 ];
+
+// 构建全国地图彩色 regions（label 调整 + 港澳显式样式 + 每省分类色）
+function talentBuildProvinceRegions() {
+    var regions = [];
+    TALENT_PROVINCE_ORDER.forEach(function(name, i) {
+        var isGanga = name === '香港特别行政区' || name === '澳门特别行政区';
+        var areaColor = isGanga ? '#E4C96A' : TALENT_MAP_PALETTE[i % TALENT_MAP_PALETTE.length];
+        var r = {
+            name: name,
+            itemStyle: {
+                areaColor: areaColor,
+                borderColor: 'rgba(186,152,84,.5)',
+                borderWidth: 1
+            },
+            // Hover 高亮：基于本省自身颜色的提亮色（与市级地图逻辑完全一致）
+            emphasis: talentRegionEmphasis(areaColor)
+        };
+        // 小区域/长条形省份：调整 label 位置避免遮挡
+        if (name === '甘肃省') r.label = { position: [104.5, 37.2] };
+        if (name === '上海市') r.label = { position: [121.48, 31.23] };
+        if (name === '北京市') r.label = { position: [116.40, 39.93] };
+        if (name === '天津市') r.label = { position: [117.20, 39.13] };
+        regions.push(r);
+    });
+    return regions;
+}
+
+// 地图基础 regions（彩色）
+var REGIONS_BASE = talentBuildProvinceRegions();
+
+// 系列层港澳高亮样式（覆盖透明系列层，确保小面积区域可见）
+var REGIONS_FOR_SERIES = [
+    { name: '香港特别行政区', itemStyle: { areaColor: '#E9C25A', borderColor: 'rgba(184,134,11,.75)', borderWidth: 2.5 } },
+    { name: '澳门特别行政区', itemStyle: { areaColor: '#E9C25A', borderColor: 'rgba(184,134,11,.75)', borderWidth: 2.5 } }
+];
+
+// —— 全国地图金色数据流装饰（silent 纯视觉，不参与点击/Hover 交互）——
+var GOLD_FLOW_LINES = [
+    { coords: [[116.40, 39.93], [121.47, 31.23]] }, // 北京→上海
+    { coords: [[116.40, 39.93], [113.26, 23.13]] }, // 北京→广州
+    { coords: [[121.47, 31.23], [114.06, 22.54]] }, // 上海→深圳
+    { coords: [[104.07, 30.57], [108.95, 34.27]] }, // 成都→西安
+    { coords: [[114.30, 30.59], [120.15, 30.28]] }  // 武汉→杭州
+];
+var GOLD_FLOW_DOTS = [
+    [116.40, 39.93], [121.47, 31.23], [113.26, 23.13], [114.06, 22.54],
+    [104.07, 30.57], [108.95, 34.27], [114.30, 30.59], [120.15, 30.28]
+];
+// 生成金色装饰 series；empty=true 时清空数据（市级视图不需要装饰）
+function talentGoldDecorSeries(empty) {
+    var e = !!empty;
+    return [
+        {
+            name: 'gold-flow-lines', type: 'lines', coordinateSystem: 'geo',
+            zlevel: 2, silent: true,
+            effect: { show: !e, period: 5, trailLength: 0.16, symbol: 'circle', symbolSize: 3, color: '#E8C878' },
+            lineStyle: { color: 'rgba(222,190,120,.38)', width: 1, curveness: 0.25, opacity: 0.45 },
+            data: e ? [] : GOLD_FLOW_LINES
+        },
+        {
+            name: 'gold-flow-dots', type: 'effectScatter', coordinateSystem: 'geo',
+            zlevel: 3, silent: true,
+            symbolSize: 4,
+            rippleEffect: { period: 4, scale: 2.4, brushType: 'stroke', color: '#E8C878' },
+            label: { show: false },
+            itemStyle: { color: '#E8C878', shadowBlur: 8, shadowColor: 'rgba(232,200,120,.7)' },
+            data: e ? [] : GOLD_FLOW_DOTS
+        }
+    ];
+}
+
+// —— 通用镜头定位：省份 → 市级区域 → 主要城市区域中心 → 自动合理 Zoom ——
+// 依据市级 GeoJSON 计算"主要城市区域"（排除零星岛屿）的外接范围中心与相对放大倍数
+function talentRingSignedArea(ring) {
+    var a = 0, n = ring.length;
+    for (var i = 0; i < n - 1; i++) a += ring[i][0] * ring[i+1][1] - ring[i+1][0] * ring[i][1];
+    return a / 2;
+}
+function talentFeatureArea(feature) {
+    var g = feature.geometry, total = 0, minX = 1e9, minY = 1e9, maxX = -1e9, maxY = -1e9;
+    if (!g) return null;
+    var polys = g.type === 'Polygon' ? [g.coordinates] : (g.type === 'MultiPolygon' ? g.coordinates : []);
+    polys.forEach(function(poly) {
+        var polyArea = 0;
+        poly.forEach(function(ring, ri) {
+            var ra = Math.abs(talentRingSignedArea(ring));
+            polyArea += ri === 0 ? ra : -ra;
+            ring.forEach(function(pt) {
+                if (pt[0] < minX) minX = pt[0]; if (pt[0] > maxX) maxX = pt[0];
+                if (pt[1] < minY) minY = pt[1]; if (pt[1] > maxY) maxY = pt[1];
+            });
+        });
+        total += Math.max(0, polyArea);
+    });
+    if (minX > maxX) return null;
+    return { area: total, minX: minX, minY: minY, maxX: maxX, maxY: maxY };
+}
+function talentComputeCityView(geoJson) {
+    if (!geoJson || !geoJson.features || !geoJson.features.length) return null;
+    var items = [], totalArea = 0;
+    geoJson.features.forEach(function(f) {
+        var m = talentFeatureArea(f);
+        if (!m) return;
+        totalArea += m.area;
+        items.push({ name: (f.properties && f.properties.name) || '', area: m.area, minX: m.minX, minY: m.minY, maxX: m.maxX, maxY: m.maxY });
+    });
+    if (!items.length) return null;
+    // —— 通用机制：基于"质心距离中位数"聚类识别主要城市区域 ——
+    // 解决海南/广东/福建/辽宁/浙江/台湾等岛链省份中，
+    // 远海小岛（如三沙/南澳/嵊泗/长海等）矩形面积大、远离本岛，
+    // 用面积阈值会误把它们当主体；改用"质心到中位数中心"距离筛离群点
+    var centers = items.map(function(it) { return { cx: (it.minX + it.maxX) / 2, cy: (it.minY + it.maxY) / 2 }; });
+    var cxs = centers.map(function(c) { return c.cx; }).sort(function(a, b) { return a - b; });
+    var cys = centers.map(function(c) { return c.cy; }).sort(function(a, b) { return a - b; });
+    var medX = cxs[Math.floor(cxs.length / 2)];
+    var medY = cys[Math.floor(cys.length / 2)];
+    var dists = centers.map(function(c) { return Math.hypot(c.cx - medX, c.cy - medY); }).sort(function(a, b) { return a - b; });
+    var medDist = dists[Math.floor(dists.length / 2)] || 0;
+    // 阈值：中位数距离的 3 倍 + 0.5° 经度最小保护；离群点（远海大块飞地）将被排除
+    var threshold = medDist * 3 + 0.5;
+    var main = items.filter(function(it, i) {
+        return Math.hypot(centers[i].cx - medX, centers[i].cy - medY) <= threshold;
+    });
+    // 保护：若阈值过严导致 < 50% feature 被保留，退而保留距离中位数最近的前 75%（至少 5 个）
+    if (main.length < Math.max(5, items.length * 0.5)) {
+        var indexed = items.map(function(it, i) { return { it: it, d: Math.hypot(centers[i].cx - medX, centers[i].cy - medY) }; });
+        indexed.sort(function(a, b) { return a.d - b.d; });
+        var keepN = Math.max(5, Math.floor(items.length * 0.75));
+        main = indexed.slice(0, keepN).map(function(x) { return x.it; });
+    }
+    // 计算主要区域 bbox
+    var minX = 1e9, minY = 1e9, maxX = -1e9, maxY = -1e9;
+    main.forEach(function(it) {
+        if (it.minX < minX) minX = it.minX; if (it.minY < minY) minY = it.minY;
+        if (it.maxX > maxX) maxX = it.maxX; if (it.maxY > maxY) maxY = it.maxY;
+    });
+    // 全量 bbox（ECharts zoom=1 默认 fit 的基准）
+    var fMinX = 1e9, fMinY = 1e9, fMaxX = -1e9, fMaxY = -1e9;
+    items.forEach(function(it) {
+        if (it.minX < fMinX) fMinX = it.minX; if (it.minY < fMinY) fMinY = it.minY;
+        if (it.maxX > fMaxX) fMaxX = it.maxX; if (it.maxY > fMaxY) fMaxY = it.maxY;
+    });
+    var fw = Math.max(1e-9, fMaxX - fMinX), fh = Math.max(1e-9, fMaxY - fMinY);
+    var tw = Math.max(1e-9, maxX - minX), th = Math.max(1e-9, maxY - minY);
+    // ECharts zoom=1 默认按全量 bbox fit，因此 zoom 取"主要区域相对全量的放大倍数"，并保留呼吸边距
+    var zoom = Math.min(fw / tw, fh / th);
+    zoom = Math.max(1.05, Math.min(zoom * 0.76, 5.5));
+    return { center: [(minX + maxX) / 2, (minY + maxY) / 2], zoom: zoom };
+}
 
 // API 基础路径
 const API_BASE = (window.API_BASE || ((location.hostname === '127.0.0.1' || location.hostname === 'localhost') ? 'http://127.0.0.1:5000' : location.origin)) + '/api';
@@ -459,6 +647,9 @@ window.talentClearTechDetail = function() {
 // ============== 层级切换 ==============
 window.talentShowLayer = function(layer) {
     talentMapState.currentLayer = layer;
+    // 背板切换：地图层直接融入页面背景（无透明背板），岗位分析/技术脑图层保留透明背板
+    var canvasEl = document.getElementById('talent-map-canvas');
+    if (canvasEl) canvasEl.classList.toggle('canvas-panel', layer !== 'map');
     // 离开图谱层时清除技能详情状态并恢复右侧面板，防止状态残留
     if (layer !== 'graph') {
         window.talentClearTechDetail();
@@ -468,9 +659,16 @@ window.talentShowLayer = function(layer) {
         var el = document.getElementById('talent-layer-' + l);
         if (el) el.style.display = l === layer ? '' : 'none';
     });
-    // 返回按钮
+    // 统一返回操作区（地图左上角）：各返回按钮按当前层显隐
     var backBtn = document.getElementById('talent-back-btn');
-    if (backBtn) backBtn.style.display = (layer === 'map' && talentMapState.selectedProvince) || layer !== 'map' ? '' : 'none';
+    var provBackBtn = document.getElementById('talent-province-back-btn');
+    var graphBackBtn = document.getElementById('talent-graph-back-btn');
+    var detailBackBtn = document.getElementById('talent-detail-back-btn');
+    var showMapBack = layer === 'map' && talentMapState.selectedProvince;
+    if (backBtn) backBtn.style.display = showMapBack || layer !== 'map' ? '' : 'none';
+    if (provBackBtn) provBackBtn.style.display = layer === 'province' ? '' : 'none';
+    if (graphBackBtn) graphBackBtn.style.display = layer === 'graph' ? '' : 'none';
+    if (detailBackBtn) detailBackBtn.style.display = showMapBack ? '' : 'none';
     // 右侧面板
     var emptyPanel = document.getElementById('talent-detail-empty');
     var hoverPanel = document.getElementById('talent-detail-hover');
@@ -485,6 +683,9 @@ window.talentShowLayer = function(layer) {
             provPanel.style.display = 'block';
         } else { provPanel.style.display = 'none'; }
     }
+    // 岗位 Hover 详情面板：仅在岗位分析层显示，离开时清除（进入其他页面正常清除状态）
+    var jobDetailPanel = document.getElementById('talent-detail-job');
+    if (jobDetailPanel && layer !== 'province') jobDetailPanel.style.display = 'none';
     // 港澳放大框显隐
     var zoomBox = document.getElementById('ganga-zoom-box');
     var guideSvg = document.getElementById('ganga-guide-svg');
@@ -692,17 +893,19 @@ window.talentApplyProvinceHighlight = function(province) {
     var allNames = talentMapState.allProvinces.map(function(p) { return toGeo(p.name); });
     var regions = allNames
         .filter(function(n) { return n !== geoName; })
-        .map(function(n) { return { name: n, itemStyle: { areaColor: 'rgba(10,22,40,.55)', borderColor: 'rgba(0,212,255,.06)' }, label: { color: 'rgba(255,255,255,.25)' } }; });
+        .map(function(n) { return { name: n, itemStyle: { areaColor: 'rgba(250,240,210,.45)', borderColor: 'rgba(212,175,55,.15)' }, label: { color: 'rgba(70,52,10,.6)' } }; });
     regions.push({
-        name: geoName, label: { show: true, fontSize: 13, color: '#00d4ff', fontWeight: 'bold' },
-        itemStyle: { borderColor: '#00d4ff', borderWidth: 3, shadowBlur: 28, shadowColor: 'rgba(0,212,255,.6)', areaColor: '#0f3460' }
+        name: geoName, label: { show: true, fontSize: 13, color: '#5C3D06', fontWeight: 'bold' },
+        itemStyle: { borderColor: '#D9A92E', borderWidth: 3, shadowBlur: 28, shadowColor: 'rgba(212,175,55,.55)', areaColor: '#F5DEA0' }
     });
     chart.setOption({ geo: { regions: regions } });
     // 呼吸动画
     if (talentMapState.breathTimer) clearInterval(talentMapState.breathTimer);
     var breathOn = false;
     talentMapState.breathTimer = setInterval(function() {
-        if (!talentMapState.selectedProvince || talentMapState.currentLayer !== 'map') { clearInterval(talentMapState.breathTimer); talentMapState.breathTimer = null; return; }
+        // 仅在全国地图视角呼吸；市级下钻(mapLevel==='province')时绝不 setOption，
+        // 否则部分 regions 合并会冲掉所有城市的独立颜色（首次进入颜色消失 Bug 的根源）
+        if (!talentMapState.selectedProvince || talentMapState.currentLayer !== 'map' || talentMapState.mapLevel !== 'country') { clearInterval(talentMapState.breathTimer); talentMapState.breathTimer = null; return; }
         breathOn = !breathOn;
         chart.setOption({ geo: { regions: [{ name: geoName, itemStyle: { shadowBlur: breathOn ? 32 : 18 } }] } });
     }, 1800);
@@ -722,8 +925,10 @@ window.talentUnfocusProvince = function() {
     // 切换回中国地图 GeoJSON
     chart.setOption({ geo: { map: 'china' } });
     chart.setOption({ series: [{ map: 'china' }] });
-    var curZoom = 1.42, curCx = 105.5, curCy = 36.5;
-    try { var opt = chart.getOption(); if (opt.geo && opt.geo[0]) { curZoom = opt.geo[0].zoom || 1.42; curCx = (opt.geo[0].center && opt.geo[0].center[0]) || 105.5; curCy = (opt.geo[0].center && opt.geo[0].center[1]) || 36.5; } } catch(e){}
+    // 恢复全国金色数据流装饰；series[0] 用空对象占住主地图索引，防止覆盖
+    chart.setOption({ series: [{}].concat(talentGoldDecorSeries(false)) });
+    var curZoom = dv.zoom, curCx = dv.center[0], curCy = dv.center[1];
+    try { var opt = chart.getOption(); if (opt.geo && opt.geo[0]) { curZoom = opt.geo[0].zoom || dv.zoom; curCx = (opt.geo[0].center && opt.geo[0].center[0]) || dv.center[0]; curCy = (opt.geo[0].center && opt.geo[0].center[1]) || dv.center[1]; } } catch(e){}
     var dur = 600, start = null;
     function step(ts) {
         if (!start) start = ts;
@@ -733,7 +938,7 @@ window.talentUnfocusProvince = function() {
         var cx = curCx + (dv.center[0] - curCx) * e;
         var cy = curCy + (dv.center[1] - curCy) * e;
         chart.setOption({ geo: { zoom: z, center: [cx, cy], regions: REGIONS_BASE } });
-        if (t >= 1) { chart.setOption({ geo: { zoom: dv.zoom, center: dv.center, regions: REGIONS_BASE, itemStyle: { areaColor: '#0d2137', borderColor: 'rgba(0,212,255,.3)' }, label: { color: 'rgba(255,255,255,.65)', fontWeight: 'normal' } } }); }
+        if (t >= 1) { chart.setOption({ geo: { zoom: dv.zoom, center: dv.center, regions: REGIONS_BASE, itemStyle: { areaColor: TALENT_MAP_PALETTE[0], borderColor: 'rgba(186,152,84,.5)' }, label: { color: 'rgba(30,52,44,.88)', fontWeight: 'normal' } } }); }
         if (t < 1) requestAnimationFrame(step);
     }
     requestAnimationFrame(step);
@@ -771,12 +976,35 @@ window.talentRenderCityMap = function(provinceName) {
     var geoName = provinceName + '-cities';
     talentMapState.mapLevel = 'province';
     talentMapState.currentProvinceName = provinceName;
+    // 关键修复：进入市级地图立即停止省份呼吸动画定时器。
+    // 该定时器的 setOption({geo:{regions:[{name:'省名',...}]}}) 会在市级视图触发重渲染，
+    // 导致所有城市的独立颜色被全局默认色覆盖（首次进入后颜色消失 Bug 的根源）
+    if (talentMapState.breathTimer) { clearInterval(talentMapState.breathTimer); talentMapState.breathTimer = null; }
 
-    // 市级地图缩放：稍微缩小，确保所有城市完整显示
-    var mapZoom = 0.95;
-    var cityCenter = undefined;
-    if (provinceName === '北京市' || provinceName === '上海市' || provinceName === '天津市' || provinceName === '重庆市') {
-        mapZoom = 1.15;
+    // 市级地图镜头：通用机制自动计算"主要城市区域"的中心与合理 Zoom
+    // （依据市级 GeoJSON 排除零星岛屿，避免周边岛屿拉大视野压缩主体城市，海南/广东/福建/辽宁等自动适用）
+    var cityView = talentComputeCityView(talentMapState.cityGeoJSON);
+    var mapZoom = cityView ? cityView.zoom : 0.95;
+    var cityCenter = cityView ? cityView.center : undefined;
+
+    // 城市板块分类色 regions（依据 GeoJSON 区域名轮询自然色板）
+    // 每个城市始终保留自己独立的颜色；Hover 仅使用"自身颜色提亮 + 金色描边"的 emphasis
+    var cityRegions = [];
+    if (talentMapState.cityGeoJSON && talentMapState.cityGeoJSON.features) {
+        talentMapState.cityGeoJSON.features.forEach(function(f, fi) {
+            var nm = f.properties && f.properties.name;
+            if (!nm) return;
+            var areaColor = TALENT_MAP_PALETTE[fi % TALENT_MAP_PALETTE.length];
+            cityRegions.push({
+                name: nm,
+                itemStyle: {
+                    areaColor: areaColor,
+                    borderColor: 'rgba(186,152,84,.5)',
+                    borderWidth: 1
+                },
+                emphasis: talentRegionEmphasis(areaColor)
+            });
+        });
     }
 
     var chart = talentMapState.mapChart;
@@ -793,19 +1021,29 @@ window.talentRenderCityMap = function(provinceName) {
             map: geoName,
             roam: true,
             zoom: mapZoom,
-            center: undefined,
-            label: { show: true, color: 'rgba(255,255,255,.65)', fontSize: 10, distance: 0 },
-            itemStyle: { areaColor: '#0d2137', borderColor: 'rgba(0,212,255,.3)', borderWidth: 1 },
+            center: cityCenter,
+            label: { show: true, color: 'rgba(30,52,44,.9)', fontSize: 10, distance: 0 },
+            itemStyle: { areaColor: TALENT_MAP_PALETTE[0], borderColor: 'rgba(186,152,84,.5)', borderWidth: 1 },
             emphasis: {
-                itemStyle: { areaColor: '#0a3a4a', borderColor: '#00d4ff', borderWidth: 2, shadowBlur: 12, shadowColor: 'rgba(0,212,255,.5)' },
-                label: { color: '#fff', fontSize: 12 }
+                // 不设置 areaColor：Hover 时填充色始终由各城市自身 regions 样式决定，避免整图变成同一种颜色
+                itemStyle: { borderColor: '#C9A227', borderWidth: 2, shadowBlur: 14, shadowColor: 'rgba(201,162,39,.45)' },
+                label: { color: '#5C3D06', fontSize: 12 }
             },
-            regions: []
+            regions: cityRegions
         },
         series: [{
             type: 'map', map: geoName, geoIndex: 0,
-            data: mapData
-        }]
+            data: mapData,
+            itemStyle: {
+                areaColor: 'rgba(0,0,0,0)',
+                borderColor: 'rgba(186,152,84,.5)',
+                borderWidth: 1
+            },
+            emphasis: {
+                // 不设置 areaColor：透明交互层 Hover 时只加金色描边/发光，不冲掉下层城市本色
+                itemStyle: { borderColor: '#C9A227', borderWidth: 2, shadowBlur: 12, shadowColor: 'rgba(201,162,39,.35)' }
+            }
+        }].concat(talentGoldDecorSeries(true))
     });
 
     // 更新 mousemove 事件（市级地图：悬停城市 → 右侧城市预览，不隐藏省级分析面板）
@@ -819,6 +1057,11 @@ window.talentRenderCityMap = function(provinceName) {
                 talentMapState.hoveredCity = city;
                 // 地图高亮联动：城市边框发光（echarts map 自带 emphasis，这里主动触发一次保证联动反馈）
                 if (talentMapState.hoveredCityName !== params.name) {
+                    // 关键：切换悬停城市前，先恢复上一个城市的常态（downplay），
+                    // 防止手动 highlight 状态残留导致多个城市停留在同一种强调色上
+                    if (talentMapState.hoveredCityName) {
+                        try { chart.dispatchAction({ type: 'downplay', name: talentMapState.hoveredCityName }); } catch (e) {}
+                    }
                     try { chart.dispatchAction({ type: 'highlight', name: params.name }); } catch (e) {}
                 }
                 talentMapState.hoveredCityName = params.name;
@@ -846,6 +1089,10 @@ window.talentRenderCityMap = function(provinceName) {
     chart.off('mouseout');
     chart.on('mouseout', function() {
         if (talentMapState.selectedCity) return;
+        // 鼠标移出地图：恢复最后一个悬停城市的常态，确保所有城市回到各自原始颜色
+        if (talentMapState.hoveredCityName) {
+            try { chart.dispatchAction({ type: 'downplay', name: talentMapState.hoveredCityName }); } catch (e) {}
+        }
         talentMapState.hoveredCity = null;
         talentMapState.hoveredCityName = null;
         // 省级面板保持可见，仅隐藏悬浮提示
@@ -1269,38 +1516,29 @@ window.renderChinaMap = async function() {
     const option = {
         tooltip: {
             trigger: 'item',
-            backgroundColor: 'rgba(10,14,39,.95)',
-            borderWidth: 0,
-            textStyle: { color: '#fff', fontSize: 12 },
+            backgroundColor: 'rgba(255,255,255,.95)',
+            borderColor: 'rgba(212,175,55,.35)',
+            borderWidth: 1,
+            textStyle: { color: '#2A2110', fontSize: 12 },
             formatter: function(params) {
                 const short = toShort(params.name);
                 const p = talentMapState.allProvinces.find(x => x.name === short);
                 if (!p) return params.name + '<br/>--';
-                return '<div style="font-weight:700;color:#00d4ff;margin-bottom:4px">' + p.name + '</div>'
+                return '<div style="font-weight:700;color:#8F6B0E;margin-bottom:4px">' + p.name + '</div>'
                     + '岗位数量：<b>' + (p.jobCount || 0).toLocaleString() + '</b><br/>'
                     + '热门指数：<b>' + (p.hotIndex || '--') + '</b><br/>'
-                    + '增长率：<b style="color:' + ((p.growthRate || 0) >= 0 ? '#4ade80' : '#f87171') + '">'
+                    + '增长率：<b style="color:' + ((p.growthRate || 0) >= 0 ? '#8F6B0E' : '#f87171') + '">'
                     + (p.growthRate >= 0 ? '↑' : '↓') + Math.abs(p.growthRate || 0) + '%</b><br/>'
                     + '点击查看详情';
             }
         },
-        visualMap: {
-            min: 0,
-            max: Math.max(...data.map(d => d.value), 1),
-            left: 12,
-            bottom: 20,
-            text: ['高', '低'],
-            textStyle: { color: '#fff', fontSize: 10 },
-            inRange: { color: ['#0d2137', '#0f3460', '#1a5276', '#2e86c1', '#00d4ff'] },
-            calculable: true
-        },
         geo: {
             map: 'china',
             roam: false,
-            zoom: 1.42,
+            zoom: talentMapState.defaultView.zoom,
             center: [105.5, 36.5],
-            layoutCenter: ['50%', '50%'],
-            layoutSize: '88%',
+            layoutCenter: ['54%', '50%'],
+            layoutSize: '80%',
             top: 0,
             left: 0,
             right: 0,
@@ -1308,7 +1546,7 @@ window.renderChinaMap = async function() {
             label: {
                 show: true,
                 fontSize: 9,
-                color: 'rgba(255,255,255,.65)',
+                color: 'rgba(30,52,44,.88)',
                 fontFamily: 'DM Sans, Noto Sans SC',
                 formatter: function(params) {
                     var hidden = ['香港','澳门','香港特别行政区','澳门特别行政区','Hong Kong','Macau'];
@@ -1318,17 +1556,18 @@ window.renderChinaMap = async function() {
             regions: REGIONS_BASE,
             emphasis: {
                 label: {
-                    show: true, fontSize: 13, color: '#00d4ff',
+                    show: true, fontSize: 13, color: '#5C3D06',
                     formatter: function(params) {
                         var hidden = ['香港','澳门','香港特别行政区','澳门特别行政区','Hong Kong','Macau'];
                         return hidden.indexOf(params.name) >= 0 ? '' : params.name;
                     }
                 },
-                itemStyle: { areaColor: 'rgba(0,212,255,.35)', borderColor: '#00d4ff', borderWidth: 2, shadowBlur: 20, shadowColor: 'rgba(0,212,255,.5)' }
+                // 不设置 areaColor：填充色始终由各区域自身 itemStyle/emphasis 决定，避免 Hover 后颜色被统一覆盖
+                itemStyle: { borderColor: '#C9A227', borderWidth: 2, shadowBlur: 22, shadowColor: 'rgba(201,162,39,.5)' }
             },
             itemStyle: {
-                areaColor: '#0d2137',
-                borderColor: 'rgba(0,212,255,.3)',
+                areaColor: TALENT_MAP_PALETTE[0],
+                borderColor: 'rgba(186,152,84,.5)',
                 borderWidth: 1
             }
         },
@@ -1342,13 +1581,22 @@ window.renderChinaMap = async function() {
             bottom: 0,
             data: data,
             regions: REGIONS_FOR_SERIES,
+            itemStyle: {
+                areaColor: 'rgba(0,0,0,0)',
+                borderColor: 'rgba(186,152,84,.5)',
+                borderWidth: 1
+            },
+            emphasis: {
+                // 不设置 areaColor：透明交互层 Hover 时只加金色描边/发光，不冲掉下层区域本色
+                itemStyle: { borderColor: '#C9A227', borderWidth: 2, shadowBlur: 16, shadowColor: 'rgba(201,162,39,.4)' }
+            },
             label: {
                 formatter: function(params) {
                     var hidden = ['香港','澳门','香港特别行政区','澳门特别行政区','Hong Kong','Macau'];
                     return hidden.indexOf(params.name) >= 0 ? '' : params.name;
                 }
             }
-        }]
+        }].concat(talentGoldDecorSeries(false))
     };
 
     if (talentMapState.geoJSON) {
@@ -1419,12 +1667,12 @@ function talentShowHover(p) {
     const growth = p.growthRate || 0;
     const gEl = document.getElementById('talent-hover-growth');
     gEl.textContent = (growth >= 0 ? '↑' : '↓') + Math.abs(growth) + '%';
-    gEl.style.color = growth >= 0 ? '#4ade80' : '#f87171';
+    gEl.style.color = growth >= 0 ? '#8F6B0E' : '#f87171';
     document.getElementById('talent-hover-salary').textContent = talentFormatSalary(p.avgSalary);
     const badge = document.getElementById('talent-hover-badge');
     badge.textContent = (p.hotIndex >= 80 ? '热门' : p.hotIndex >= 60 ? '活跃' : '增长中');
-    badge.style.background = p.hotIndex >= 80 ? 'rgba(244,63,94,.15)' : p.hotIndex >= 60 ? 'rgba(245,158,11,.15)' : 'rgba(13,148,136,.15)';
-    badge.style.color = p.hotIndex >= 80 ? '#f43f5e' : p.hotIndex >= 60 ? '#f59e0b' : '#0d9488';
+    badge.style.background = p.hotIndex >= 80 ? 'rgba(244,63,94,.15)' : p.hotIndex >= 60 ? 'rgba(245,158,11,.18)' : 'rgba(212,175,55,.18)';
+    badge.style.color = p.hotIndex >= 80 ? '#f43f5e' : p.hotIndex >= 60 ? '#b45309' : '#8F6B0E';
 }
 window.talentShowHover = talentShowHover;
 
@@ -1490,7 +1738,7 @@ window.renderProvinceDetail = async function(province) {
     if (grid) {
         grid.innerHTML = '<div class="detail-stat"><div class="detail-stat-label">岗位数量</div><div class="detail-stat-value">' + (province.jobCount || 0).toLocaleString() + '</div></div>'
             + '<div class="detail-stat"><div class="detail-stat-label">热门指数</div><div class="detail-stat-value">' + (province.hotIndex || '--') + '</div></div>'
-            + '<div class="detail-stat"><div class="detail-stat-label">增长率</div><div class="detail-stat-value" style="color:' + ((province.growthRate||0)>=0?'#4ade80':'#f87171') + '">' + ((province.growthRate||0)>=0?'\u2191':'\u2193') + Math.abs(province.growthRate||0) + '%</div></div>'
+            + '<div class="detail-stat"><div class="detail-stat-label">增长率</div><div class="detail-stat-value" style="color:' + ((province.growthRate||0)>=0?'#8F6B0E':'#f87171') + '">' + ((province.growthRate||0)>=0?'\u2191':'\u2193') + Math.abs(province.growthRate||0) + '%</div></div>'
             + '<div class="detail-stat"><div class="detail-stat-label">平均薪资</div><div class="detail-stat-value">' + talentFormatSalary(province.avgSalary) + '</div></div>';
     }
 
@@ -1509,7 +1757,7 @@ window.renderProvinceDetail = async function(province) {
             grid.innerHTML = '<div class="detail-stat"><div class="detail-stat-label">岗位数量</div><div class="detail-stat-value">' + (detail.totalJobs || 0).toLocaleString() + '</div></div>'
                 + '<div class="detail-stat"><div class="detail-stat-label">平均薪资</div><div class="detail-stat-value">' + talentFormatSalary(detail.avgSalary || province.avgSalary) + '</div></div>'
                 + '<div class="detail-stat"><div class="detail-stat-label">热门岗位</div><div class="detail-stat-value" style="font-size:13px">' + (detail.topJobs ? detail.topJobs.length : 0) + ' 个</div></div>'
-                + '<div class="detail-stat"><div class="detail-stat-label">增长率</div><div class="detail-stat-value" style="color:' + ((province.growthRate||0)>=0?'#4ade80':'#f87171') + '">' + ((province.growthRate||0)>=0?'\u2191':'\u2193') + Math.abs(province.growthRate||0) + '%</div></div>';
+                + '<div class="detail-stat"><div class="detail-stat-label">增长率</div><div class="detail-stat-value" style="color:' + ((province.growthRate||0)>=0?'#8F6B0E':'#f87171') + '">' + ((province.growthRate||0)>=0?'\u2191':'\u2193') + Math.abs(province.growthRate||0) + '%</div></div>';
         }
 
         // 保存详情数据供岗位分析使用
@@ -1532,8 +1780,8 @@ window.renderProvinceDetail = async function(province) {
             yAxis: { type: 'value', axisLabel: { color: '#475569', fontSize: 9 }, splitLine: { lineStyle: { color: '#f1f3f9' } } },
             series: [{
                 type: 'line', smooth: true, symbol: 'circle', symbolSize: 4,
-                lineStyle: { width: 2, color: '#00d4ff' }, itemStyle: { color: '#00d4ff' },
-                areaStyle: { color: { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: 'rgba(0,212,255,.35)' }, { offset: 1, color: 'rgba(0,212,255,0)' }] } },
+                lineStyle: { width: 2, color: '#D9A92E' }, itemStyle: { color: '#D9A92E' },
+                areaStyle: { color: { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: 'rgba(217,169,46,.4)' }, { offset: 1, color: 'rgba(217,169,46,0)' }] } },
                 data: trendData
             }]
         });
@@ -1607,15 +1855,66 @@ window.renderProvinceJobList = async function(province, selectedCity) {
         var salaryText = j.avgSalary ? talentFormatSalary(j.avgSalary) : '--';
         var skills = (j.skills && j.skills.length) ? j.skills : [];
         var skillsHtml = skills.map(function(s) { return '<span class="talent-job-skill">' + s + '</span>'; }).join('');
+        var categoryHtml = (j.category || j.level) ? '<span class="talent-job-category">' + (j.category || j.level) + '</span>' : '';
+        // 横向信息流布局：岗位名称 → 薪资 → 热度 → 岗位类别 → 技术标签 → TOP排名 → 岗位数量 → 操作按钮
         jobsHTML += '<div class="talent-job-card" data-idx="' + i + '" onclick="window.talentSelectJob(' + i + ')">'
-            + '<div class="talent-job-card-header"><span class="talent-job-name">' + (j.name || '') + '</span><span class="talent-job-count">' + (j.count || 0).toLocaleString() + ' 个岗位</span></div>'
-            + '<div class="talent-job-meta"><span>💰 ' + salaryText + '</span><span style="margin-left:12px;font-size:11px;color:rgba(255,255,255,.4)">热度 ' + (j.hot || 0) + '</span></div>'
-            + '<div class="talent-job-skills">' + skillsHtml + '</div>'
-            + '<div class="talent-job-card-footer"><span style="font-size:11px;color:rgba(255,255,255,.4)">TOP ' + (i+1) + '</span><button class="talent-job-btn" onclick="event.stopPropagation();window.talentSelectJob(' + i + ');window.talentMapEnterGraph()">进入知识图谱 →</button></div>'
+            + '<span class="talent-job-name">' + (j.name || '') + '</span>'
+            + '<span class="talent-job-salary">💰 ' + salaryText + '</span>'
+            + '<span class="talent-job-hot">🔥 热度 ' + (j.hot || 0) + '</span>'
+            + categoryHtml
+            + '<span class="talent-job-skills">' + skillsHtml + '</span>'
+            + '<span class="talent-job-top">TOP ' + (i+1) + '</span>'
+            + '<span class="talent-job-count">' + (j.count || 0).toLocaleString() + ' 个岗位</span>'
+            + '<button class="talent-job-btn" onclick="event.stopPropagation();window.talentSelectJob(' + i + ');window.talentMapEnterGraph()">进入知识图谱 →</button>'
             + '</div>';
     });
     var jobsEl = document.getElementById('talent-province-jobs');
     if (jobsEl) jobsEl.innerHTML = jobsHTML;
+
+    // 岗位卡片 Hover 联动（事件委托，只绑定一次）：
+    // 鼠标悬停某张岗位卡片 → 右侧立即显示该岗位详情；移出后保持最后一个岗位信息，避免频繁闪烁
+    var jobsBox = document.getElementById('talent-province-jobs');
+    if (jobsBox && !jobsBox.__jobHoverBound) {
+        jobsBox.__jobHoverBound = true;
+        jobsBox.addEventListener('mouseover', function(e) {
+            if (talentMapState.currentLayer !== 'province') return;
+            var card = e.target && e.target.closest ? e.target.closest('.talent-job-card') : null;
+            if (!card) return;
+            var idx = parseInt(card.getAttribute('data-idx'), 10);
+            var job = (talentMapState.provinceJobs || [])[idx];
+            if (job) window.talentShowJobDetail(job);
+        });
+    }
+};
+
+// 渲染岗位详情到右侧面板（仅使用现有数据字段：name/count/avgSalary/hot/category/skills）
+window.talentShowJobDetail = function(job) {
+    if (!job) return;
+    var panel = document.getElementById('talent-detail-job');
+    if (!panel) return;
+    var emptyPanel = document.getElementById('talent-detail-empty');
+    var hoverPanel = document.getElementById('talent-detail-hover');
+    var provPanel = document.getElementById('talent-detail-province');
+    if (emptyPanel) emptyPanel.style.display = 'none';
+    if (hoverPanel) hoverPanel.style.display = 'none';
+    if (provPanel) provPanel.style.display = 'none';
+    panel.style.display = 'block';
+
+    var salaryText = job.avgSalary ? talentFormatSalary(job.avgSalary) : '--';
+    var skills = (job.skills && job.skills.length) ? job.skills : [];
+    var skillsHtml = skills.map(function(s) { return '<span class="skill-matched">' + s + '</span>'; }).join('');
+    panel.innerHTML = '<div class="detail-content">'
+        + '<div class="talent-job-detail-name">' + (job.name || '') + '</div>'
+        + '<div class="talent-job-detail-sub">岗位详细信息 · 悬停左侧岗位卡片切换查看</div>'
+        + '<div class="detail-stat-grid">'
+        + '<div class="detail-stat"><div class="detail-stat-label">岗位数量</div><div class="detail-stat-value">' + (job.count || 0).toLocaleString() + '</div></div>'
+        + '<div class="detail-stat"><div class="detail-stat-label">平均薪资</div><div class="detail-stat-value">' + salaryText + '</div></div>'
+        + '<div class="detail-stat"><div class="detail-stat-label">热度</div><div class="detail-stat-value">' + (job.hot || 0) + '</div></div>'
+        + '<div class="detail-stat"><div class="detail-stat-label">岗位类别</div><div class="detail-stat-value" style="font-size:13px">' + (job.category || job.level || '--') + '</div></div>'
+        + '</div>'
+        + '<div class="detail-section-title">核心技术</div>'
+        + '<div class="talent-job-detail-skills">' + (skillsHtml || '<div style="color:var(--text-muted);font-size:12px">暂无数据</div>') + '</div>'
+        + '</div>';
 };
 
 // 从右侧面板进入省份岗位分析（带镜头飞入动画）
@@ -1710,7 +2009,7 @@ window.talentSelectJob = function(idx) {
     }
     // 高亮选中的卡片
     document.querySelectorAll('#talent-province-jobs .talent-job-card').forEach((card, i) => {
-        card.style.borderColor = i === idx ? '#00d4ff' : 'rgba(255,255,255,.1)';
+        card.style.borderColor = i === idx ? '#F0C75C' : 'rgba(255,255,255,.1)';
     });
 };
 
@@ -1724,7 +2023,7 @@ function talentShowProvinceDetailPanel(province, job) {
     if (grid) {
         grid.innerHTML = '<div class="detail-stat"><div class="detail-stat-label">岗位数量</div><div class="detail-stat-value">' + (province.jobCount || 0).toLocaleString() + '</div></div>'
             + '<div class="detail-stat"><div class="detail-stat-label">热门指数</div><div class="detail-stat-value">' + (province.hotIndex || '--') + '</div></div>'
-            + '<div class="detail-stat"><div class="detail-stat-label">增长率</div><div class="detail-stat-value" style="color:' + ((province.growthRate||0)>=0?'#4ade80':'#f87171') + '">' + ((province.growthRate||0)>=0?'↑':'↓') + Math.abs(province.growthRate||0) + '%</div></div>'
+            + '<div class="detail-stat"><div class="detail-stat-label">增长率</div><div class="detail-stat-value" style="color:' + ((province.growthRate||0)>=0?'#8F6B0E':'#f87171') + '">' + ((province.growthRate||0)>=0?'↑':'↓') + Math.abs(province.growthRate||0) + '%</div></div>'
             + '<div class="detail-stat"><div class="detail-stat-label">平均薪资</div><div class="detail-stat-value">' + talentFormatSalary(province.avgSalary) + '</div></div>';
     }
     const topEl = document.getElementById('talent-prov-top-jobs');
@@ -1925,13 +2224,187 @@ function _genTechFallbackGraph(cityName, jobName) {
 }
 
 
-window.renderCityTechGraph = async function(cityName, jobName) {
+// ==================================================================
+// 技术栈视图专用布局：中心岗位 + 固定分类扇区 + 分类下技术卡片
+// 结构：中心 → 一级技术分类（环状固定扇区）→ 二级技术节点（扇区内由内向外逐层排布）
+// 特点：分类区域固定、技术卡片统一尺寸、层内按弧长自动分配、层间固定行距，
+//       全程不依赖自由力导向，节点数量多时自动扩大布局半径，保证不重叠
+// ==================================================================
+function _layoutStackView(groupNodes, centerX, centerY, w, h) {
+    var n = groupNodes.length;
+    if (!n) return;
+
+    // ============ 横向分区布局（不再强制圆形，左右展开） ============
+    // 空间分配：左分类列 —— 中心岗位 —— 右分类列。
+    // 盒子宽度按分类内容自适应（大分类 3 列卡片、中分类 2 列、小分类 1 列），
+    // 行内并排、行高取 max，尽量压低总高，让 fitView 缩放接近 1:1、字号清晰。
+    var cardH = 32;          // 技术卡片高
+    var cardGapX = 12;       // 卡片水平间距
+    var cardGapY = 8;        // 卡片垂直间距
+    var catPadX = 14;        // 分类盒左右内边距
+    var catPadY = 10;        // 分类盒上下内边距
+    var catTitleH = 32;      // 分类标题条高
+    var rowGap = 24;         // 分类行间距
+    var colGap = 24;         // 行内盒子间距
+    var centerZoneW = 150;   // 中心节点区域横向宽度（含两侧连线空隙）
+    var sidePad = 20;        // 画布左右边距
+
+    // 1) 卡片宽度：长名称自适应加宽（字号 15px 时保证名称完整、文字不溢出）
+    groupNodes.forEach(function(g) {
+        g.techs.forEach(function(t) {
+            t.cardW = Math.max(118, Math.ceil(t.name.length * 8.5 + 34));
+        });
+    });
+
+    // 2) 左右分组：大分类（≥8 技术）左右交替保证两侧均衡，其余按技术数量贪心均衡
+    var lefts = [], rights = [];
+    groupNodes.slice()
+        .sort(function(a, b) { return b.techs.length - a.techs.length; })
+        .forEach(function(g, i) {
+            if (g.techs.length >= 8) {
+                if (i % 2 === 0) { lefts.push(g); g.side = 'L'; }
+                else { rights.push(g); g.side = 'R'; }
+            }
+        });
+    var remain = groupNodes.filter(function(g) { return !g.side; })
+        .sort(function(a, b) { return b.techs.length - a.techs.length; });
+    var lCount = lefts.reduce(function(s, g) { return s + g.techs.length; }, 0);
+    var rCount = rights.reduce(function(s, g) { return s + g.techs.length; }, 0);
+    remain.forEach(function(g) {
+        if (lCount <= rCount) { lefts.push(g); g.side = 'L'; lCount += g.techs.length; }
+        else { rights.push(g); g.side = 'R'; rCount += g.techs.length; }
+    });
+    // 兜底：某侧为空则强制交替平分
+    if (!lefts.length || !rights.length) {
+        var allMix = lefts.concat(rights);
+        lefts = []; rights = [];
+        allMix.forEach(function(g, i) {
+            g.side = (i % 2 === 0) ? 'L' : 'R';
+            (g.side === 'L' ? lefts : rights).push(g);
+        });
+    }
+    var sideW = Math.max(180, (w - centerZoneW - sidePad * 2) / 2);
+
+    // 3) 分类盒布局：盒宽按内容自适应 + 行内并排 + 行高取 max
+    function layoutSide(list, sw) {
+        list.forEach(function(cat) {
+            var m = cat.techs.length;
+            var maxW = 0;
+            cat.techs.forEach(function(t) { if (t.cardW > maxW) maxW = t.cardW; });
+            var cols = m >= 8 ? 3 : (m >= 4 ? 2 : 1);
+            var needW = cols * maxW + (cols - 1) * cardGapX + catPadX * 2;
+            var boxW = Math.min(sw, needW);
+            while (cols > 1 && cols * maxW + (cols - 1) * cardGapX + catPadX * 2 > boxW + 1e-6) cols--;
+            var rowsN = Math.max(1, Math.ceil(m / cols));
+            cat._cols = cols;
+            cat._rowsN = rowsN;
+            cat.boxW = boxW;
+            cat.boxH = catTitleH + rowsN * (cardH + cardGapY) + catPadY * 2 - cardGapY;
+        });
+        // 行内并排贪心（每行盒子总宽 ≤ 侧区宽）
+        var rows = [], cur = [], curW = 0;
+        list.forEach(function(cat) {
+            if (cur.length && curW + colGap + cat.boxW > sw + 0.5) {
+                rows.push(cur); cur = [cat]; curW = cat.boxW;
+            } else {
+                cur.push(cat); curW += (cur.length ? colGap : 0) + cat.boxW;
+            }
+        });
+        if (cur.length) rows.push(cur);
+        var rowHs = [], rowWs = [];
+        rows.forEach(function(row) {
+            var mh = 0, mw = 0;
+            row.forEach(function(c) {
+                if (c.boxH > mh) mh = c.boxH;
+                mw += c.boxW;
+            });
+            mw += (row.length - 1) * colGap;
+            rowHs.push(mh);
+            rowWs.push(mw);
+        });
+        var totalH = rowHs.reduce(function(s, v) { return s + v; }, 0) + (rows.length - 1) * rowGap;
+        return { rows: rows, rowHs: rowHs, totalH: totalH, totalW: Math.max.apply(null, rowWs) || 0 };
+    }
+    var L = layoutSide(lefts, sideW);
+    var R = layoutSide(rights, sideW);
+    var totalH = Math.max(L.totalH, R.totalH);
+
+    // 4) 放置：左列顶左、右列顶右，中心节点位于正中；两列垂直居中于容器中线
+    var leftY0 = centerY - L.totalH / 2;
+    var rightY0 = centerY - R.totalH / 2;
+    var leftX = sidePad;
+    var rightX = w - sidePad - R.totalW;
+
+    function placeSide(list, res, x0, y0) {
+        var idx = 0, rowY = y0;
+        for (var r = 0; r < res.rows.length; r++) {
+            var row = res.rows[r];
+            var rowH = res.rowHs[r];
+            var bx = x0;
+            row.forEach(function(cat) {
+                var bW = cat.boxW;
+                var bH = cat.boxH;
+                var by = rowY + (rowH - bH) / 2;
+                // 盒内卡片：固定列数逐行填充，行内居中
+                var yy = catPadY + catTitleH;
+                for (var rowIdx = 0; rowIdx < cat._rowsN; rowIdx++) {
+                    var rowStart = rowIdx * cat._cols;
+                    var rowEnd = Math.min(cat._cols, cat.techs.length - rowStart);
+                    var rowW = 0;
+                    for (var k = 0; k < rowEnd; k++) {
+                        rowW += cat.techs[rowStart + k].cardW + (k > 0 ? cardGapX : 0);
+                    }
+                    var xx = (bW - rowW) / 2;
+                    for (var k = 0; k < rowEnd; k++) {
+                        var t = cat.techs[rowStart + k];
+                        t.cardX = xx;
+                        t.cardY = yy;
+                        xx += t.cardW + cardGapX;
+                    }
+                    yy += cardH + cardGapY;
+                }
+                // 分类盒位置（背景框 + 标题条）
+                cat.boxX = bx;
+                cat.boxY = by;
+                cat.boxW = bW;
+                cat.boxH = bH;
+                cat.catTitleH = catTitleH;
+                cat.calcX = bx + bW / 2;      // 标题条中心
+                cat.calcY = by + catTitleH / 2;
+                // 技术卡片全局坐标
+                cat.techs.forEach(function(t) {
+                    t.calcX = bx + t.cardX + t.cardW / 2;
+                    t.calcY = by + t.cardY + cardH / 2;
+                });
+                bx += bW + colGap;
+            });
+            rowY += rowH + rowGap;
+        }
+    }
+    placeSide(lefts, L, leftX, leftY0);
+    placeSide(rights, R, rightX, rightY0);
+
+    // 清理临时字段
+    groupNodes.forEach(function(g) { delete g._cols; delete g._rowsN; });
+}
+
+// 岗位技术图谱三视图：'overview' = 岗位技术图谱（中心=岗位，二级=技术）
+//                   'stack'   = 技术栈（中心=岗位，二级=技术分类，三级=技术）
+//                   'level'   = 级别（中心=岗位，二级=岗位级别，三级=技术）
+// 三个视图共用同一套岗位级真实数据（/api/map/job-tech-graph/），切换不重复请求、不刷新页面
+window.renderCityTechGraph = async function(cityName, jobName, keepMode, viewMode) {
     var container = document.getElementById('talent-graph-container');
     if (!container) return;
     if (container.clientWidth < 10 || container.clientHeight < 10) {
-        setTimeout(function() { window.renderCityTechGraph(cityName, jobName); }, 150);
+        setTimeout(function() { window.renderCityTechGraph(cityName, jobName, keepMode, viewMode); }, 150);
         return;
     }
+    // 记录当前图谱上下文（供视图切换复用）
+    techDetailState.graphCity = cityName;
+    techDetailState.graphJob = jobName || null;
+    if (!keepMode) techDetailState.graphView = 'overview'; // 每次进入默认显示岗位技术图谱
+    var view = viewMode || techDetailState.graphView || 'overview';
+    techDetailState.graphView = view;
     // 销毁旧实例
     if (talentMapState.jobGraphInstance) {
         try { talentMapState.jobGraphInstance.destroy(); } catch(e) {}
@@ -1941,31 +2414,40 @@ window.renderCityTechGraph = async function(cityName, jobName) {
         container.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#fff;font-size:14px">G6图谱库加载中，请稍后重试...</div>';
         return;
     }
-    container.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:rgba(255,255,255,.5);font-size:13px">正在生成' + cityName + '技术知识图谱...</div>';
 
-    document.getElementById('talent-graph-city-label').textContent = cityName;
+    // 标签文案：进入图谱后聚焦当前岗位（不再展示城市级）
+    var labelText = jobName || cityName;
+    var cityLabelEl = document.getElementById('talent-graph-city-label');
+    if (cityLabelEl) cityLabelEl.textContent = labelText + ' · ' + ({ overview: '岗位技术图谱', stack: '技术栈', level: '级别' }[view] || '岗位技术图谱');
     techDetailState.currentCity = cityName;
     // 保存用于图谱的岗位名
     techDetailState.graphJobName = jobName || cityName;
 
-    // 调用后端API获取城市技术图谱
-    var graphData = null;
-    try {
-        var apiUrl = API_BASE + '/map/city-tech-graph/' + encodeURIComponent(cityName);
-        if (jobName) apiUrl += '?job_title=' + encodeURIComponent(jobName);
-        var res = await fetch(apiUrl);
-        var json = await res.json();
-        graphData = (json.data || json);
-    } catch(e) {
-        console.warn('[TechGraph] API失败', e);
+    // 获取图谱数据：优先使用缓存（视图切换平滑无闪烁），否则请求后端岗位级API
+    if (!techDetailState.graphDataCache) techDetailState.graphDataCache = {};
+    var cacheKey = 'job|' + (jobName || '') + '|' + view;
+    var graphData = techDetailState.graphDataCache[cacheKey];
+    if (!graphData) {
+        container.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:rgba(255,255,255,.5);font-size:13px">正在生成' + labelText + '技术知识图谱...</div>';
+        try {
+            var apiUrl = API_BASE + '/map/job-tech-graph/?job_title=' + encodeURIComponent(jobName || cityName);
+            var res = await fetch(apiUrl);
+            var json = await res.json();
+            graphData = (json.data || json);
+            techDetailState.graphDataCache[cacheKey] = graphData;
+        } catch(e) {
+            console.warn('[TechGraph] API失败', e);
+        }
     }
 
+    // 兜底：岗位级真实数据不足时使用岗位级兜底（不再使用城市级数据）
     if (!graphData || !graphData.categories || !graphData.categories.length) {
-        console.warn('[TechGraph] 真实数据不足，使用AI兜底数据');
-        graphData = _genTechFallbackGraph(cityName, jobName);
+        console.warn('[TechGraph] 真实数据不足，使用岗位级兜底数据');
+        graphData = _genTechFallbackGraph(cityName, jobName || cityName);
+        techDetailState.graphDataCache[cacheKey] = graphData;
     }
 
-    // 使用API返回的centerJob，或传入的jobName
+    // 中心节点文案：始终为当前岗位名称
     var centerJob = graphData.centerJob || jobName || cityName;
 
     container.innerHTML = '';
@@ -1974,186 +2456,415 @@ window.renderCityTechGraph = async function(cityName, jobName) {
     var centerX = w / 2;
     var centerY = h / 2;
 
-    // ========== 构建节点和边（中心岗位 + 直接连接所有技术） ==========
+    // ========== 构建节点和边 ==========
+    // overview：中心岗位 + 直接连接所有技术（单层级）
+    // stack  ：中心岗位 + 技术分类（二级） + 技术（三级）
+    // level  ：中心岗位 + 岗位级别（二级） + 技术（三级）
     var nodes = [];
     var edges = [];
     var nodeIdCounter = 0;
     var TECH_CATEGORY_COLORS_MAP = TECH_CATEGORY_COLORS || {};
 
-    // 收集所有技术节点（扁平化，去掉类别中间节点）
+    // 待布局的技术节点（overview 直接挂中心，stack/level 挂二级节点）
     var allTechNodes = [];
-    graphData.categories.forEach(function(cat) {
-        (cat.technologies || []).forEach(function(tech) {
-            var catColor = TECH_CATEGORY_COLORS_MAP[cat.name] || '#6366F1';
-            allTechNodes.push({
-                name: tech.name,
-                size: tech.size || 24,
-                frequency: tech.frequency || 1,
-                ratio: tech.ratio || 0.5,
-                catColor: catColor,
-                catName: cat.name
+
+    // overview：扁平化所有类别技术，直接连中心
+    if (view === 'overview') {
+        graphData.categories.forEach(function(cat) {
+            (cat.technologies || []).forEach(function(tech) {
+                var catColor = TECH_CATEGORY_COLORS_MAP[cat.name] || '#6366F1';
+                allTechNodes.push({
+                    name: tech.name,
+                    size: tech.size || 24,
+                    frequency: tech.frequency || 1,
+                    ratio: tech.ratio || 0.5,
+                    catColor: catColor,
+                    catName: cat.name,
+                    parentId: 'center'
+                });
             });
         });
-    });
-
-    // 如果技术节点过少，追加通用技术
-    if (allTechNodes.length < 8) {
-        var extraTechs = ['Git', 'Linux', 'Docker', 'MySQL', 'Redis', 'Python', 'Java', 'JavaScript', 'Vue'];
-        for (var ei = 0; ei < extraTechs.length && allTechNodes.length < 15; ei++) {
-            var alreadyExists = allTechNodes.some(function(t) { return t.name === extraTechs[ei]; });
-            if (!alreadyExists) {
-                allTechNodes.push({ name: extraTechs[ei], size: 20, frequency: 3, ratio: 0.4, catColor: '#6366F1', catName: '通用技术' });
-            }
-        }
-    }
-
-    // ========== 径向布局算法（类似 Reagraph No-Overlap） ==========
-    var maxFreq = 0;
-    allTechNodes.forEach(function(t) { if (t.frequency > maxFreq) maxFreq = t.frequency; });
-
-    // 按频率降序排列（大的更靠近中心）
-    allTechNodes.sort(function(a, b) { return b.frequency - a.frequency; });
-
-    var totalTechs = allTechNodes.length;
-    // 计算环数：12个以内用2环，以上用3环
-    var rings = [];
-    if (totalTechs <= 10) {
-        rings = [totalTechs];
-    } else if (totalTechs <= 20) {
-        var inner = Math.ceil(totalTechs * 0.4);
-        rings = [inner, totalTechs - inner];
-    } else {
-        var r1 = Math.ceil(totalTechs * 0.33);
-        var r2 = Math.ceil(totalTechs * 0.33);
-        rings = [r1, r2, totalTechs - r1 - r2];
-    }
-
-    // 可用半径范围
-    var maxRadius = Math.min(w, h) * 0.42;
-    var minRadius = Math.min(w, h) * 0.16;
-
-    var ringRadii = [];
-    if (rings.length === 1) {
-        ringRadii = [maxRadius * 0.55];
-    } else if (rings.length === 2) {
-        ringRadii = [maxRadius * 0.42, maxRadius * 0.78];
-    } else {
-        ringRadii = [maxRadius * 0.3, maxRadius * 0.58, maxRadius * 0.82];
-    }
-
-    // 预计算位置
-    var idx = 0;
-    for (var ringIdx = 0; ringIdx < rings.length; ringIdx++) {
-        var countInRing = rings[ringIdx];
-        if (countInRing <= 0) continue;
-        var ringRadius = ringRadii[ringIdx];
-        var angleOffset = (ringIdx % 2 === 1) ? Math.PI / countInRing : 0; // 交错环
-
-        for (var i = 0; i < countInRing && idx < totalTechs; i++) {
-            var tech = allTechNodes[idx];
-            var angle = angleOffset + (2 * Math.PI * i) / countInRing;
-            tech.calcX = centerX + ringRadius * Math.cos(angle);
-            tech.calcY = centerY + ringRadius * Math.sin(angle);
-            idx++;
-        }
-    }
-
-    // 重叠消除（碰撞检测 + 推力）
-    for (var iter = 0; iter < 8; iter++) {
-        for (var i = 0; i < totalTechs; i++) {
-            for (var j = i + 1; j < totalTechs; j++) {
-                var a = allTechNodes[i];
-                var b = allTechNodes[j];
-                var dx = b.calcX - a.calcX;
-                var dy = b.calcY - a.calcY;
-                var dist = Math.sqrt(dx * dx + dy * dy);
-                var minD = (a.size + b.size) * 0.48;
-                if (dist < minD && dist > 0.001) {
-                    var force = (minD - dist) / dist * 0.4;
-                    var fx = dx * force;
-                    var fy = dy * force;
-                    a.calcX -= fx;
-                    a.calcY -= fy;
-                    b.calcX += fx;
-                    b.calcY += fy;
+        // 如果技术节点过少，追加通用技术
+        if (allTechNodes.length < 8) {
+            var extraTechs = ['Git', 'Linux', 'Docker', 'MySQL', 'Redis', 'Python', 'Java', 'JavaScript', 'Vue'];
+            for (var ei = 0; ei < extraTechs.length && allTechNodes.length < 15; ei++) {
+                var alreadyExists = allTechNodes.some(function(t) { return t.name === extraTechs[ei]; });
+                if (!alreadyExists) {
+                    allTechNodes.push({ name: extraTechs[ei], size: 20, frequency: 3, ratio: 0.4, catColor: '#6366F1', catName: '通用技术', parentId: 'center' });
                 }
             }
         }
-        // 将节点拉回各自的环半径附近（只约束径向距离，保持角度）
-        for (var i = 0; i < totalTechs; i++) {
-            var t = allTechNodes[i];
-            var ddx = t.calcX - centerX;
-            var ddy = t.calcY - centerY;
-            var currR = Math.sqrt(ddx * ddx + ddy * ddy);
-            if (currR < 0.01) {
-                t.calcX = centerX + 1;
-                t.calcY = centerY + 1;
-                currR = 1;
+    }
+
+    // stack / level：构建二级中间节点 + 三级技术节点
+    var groupNodes = []; // 二级节点（分类 / 级别）
+    if (view === 'stack') {
+        graphData.categories.forEach(function(cat) {
+            if (!cat.technologies || !cat.technologies.length) return;
+            var gId = 'grp-' + nodeIdCounter++;
+            var techs = cat.technologies.map(function(tech) {
+                var catColor = TECH_CATEGORY_COLORS_MAP[cat.name] || '#6366F1';
+                allTechNodes.push({
+                    name: tech.name, size: tech.size || 24, frequency: tech.frequency || 1,
+                    ratio: tech.ratio || 0.5, catColor: catColor, catName: cat.name, parentId: gId
+                });
+                return allTechNodes[allTechNodes.length - 1];
+            });
+            groupNodes.push({
+                id: gId, name: cat.name, size: 40, type: 'category',
+                catColor: TECH_CATEGORY_COLORS_MAP[cat.name] || '#6366F1', catName: cat.name,
+                techs: techs, childCount: techs.length
+            });
+        });
+    } else if (view === 'level') {
+        (graphData.levels || []).forEach(function(lv) {
+            if (!lv.technologies || !lv.technologies.length) return;
+            var gId = 'grp-' + nodeIdCounter++;
+            var lvColor = ({ '初级': '#4ADE80', '中级': '#FBBF24', '高级': '#F472B6' })[lv.name] || '#60A5FA';
+            var techs = lv.technologies.map(function(tech) {
+                allTechNodes.push({
+                    name: tech.name, size: tech.size || 24, frequency: tech.frequency || 1,
+                    ratio: tech.ratio || 0.5, catColor: lvColor, catName: lv.name, parentId: gId
+                });
+                return allTechNodes[allTechNodes.length - 1];
+            });
+            groupNodes.push({
+                id: gId, name: lv.name, size: 42, type: 'level',
+                catColor: lvColor, catName: lv.name, levelName: lv.name,
+                techs: techs, childCount: techs.length
+            });
+        });
+    }
+
+    // ========== 布局 ==========
+    var maxRadius = Math.min(w, h) * 0.42;
+    var minRadius = Math.min(w, h) * 0.16;
+
+    if (view === 'overview') {
+        // ---------- 径向布局（单层级，技术直接挂中心） ----------
+        var maxFreq = 0;
+        allTechNodes.forEach(function(t) { if (t.frequency > maxFreq) maxFreq = t.frequency; });
+        allTechNodes.sort(function(a, b) { return b.frequency - a.frequency; });
+        var totalTechs = allTechNodes.length;
+        var rings = [];
+        if (totalTechs <= 10) {
+            rings = [totalTechs];
+        } else if (totalTechs <= 20) {
+            var inner = Math.ceil(totalTechs * 0.4);
+            rings = [inner, totalTechs - inner];
+        } else {
+            var r1 = Math.ceil(totalTechs * 0.33);
+            var r2 = Math.ceil(totalTechs * 0.33);
+            rings = [r1, r2, totalTechs - r1 - r2];
+        }
+        var ringRadii = [];
+        if (rings.length === 1) {
+            ringRadii = [maxRadius * 0.55];
+        } else if (rings.length === 2) {
+            ringRadii = [maxRadius * 0.42, maxRadius * 0.78];
+        } else {
+            ringRadii = [maxRadius * 0.3, maxRadius * 0.58, maxRadius * 0.82];
+        }
+        var idx = 0;
+        for (var ringIdx = 0; ringIdx < rings.length; ringIdx++) {
+            var countInRing = rings[ringIdx];
+            if (countInRing <= 0) continue;
+            var ringRadius = ringRadii[ringIdx];
+            var angleOffset = (ringIdx % 2 === 1) ? Math.PI / countInRing : 0;
+            for (var i = 0; i < countInRing && idx < totalTechs; i++) {
+                var tech = allTechNodes[idx];
+                var angle = angleOffset + (2 * Math.PI * i) / countInRing;
+                tech.calcX = centerX + ringRadius * Math.cos(angle);
+                tech.calcY = centerY + ringRadius * Math.sin(angle);
+                idx++;
             }
-            var rdx = ddx / currR;
-            var rdy = ddy / currR;
-            // 目标半径：在 range 内保持当前角度
-            var targetR = Math.max(minRadius, Math.min(maxRadius * 1.05, currR));
-            t.calcX = centerX + rdx * (currR * 0.7 + targetR * 0.3);
-            t.calcY = centerY + rdy * (currR * 0.7 + targetR * 0.3);
+        }
+        // 重叠消除
+        for (var iter = 0; iter < 8; iter++) {
+            for (var i = 0; i < totalTechs; i++) {
+                for (var j = i + 1; j < totalTechs; j++) {
+                    var a = allTechNodes[i], b = allTechNodes[j];
+                    var dx = b.calcX - a.calcX, dy = b.calcY - a.calcY;
+                    var dist = Math.sqrt(dx * dx + dy * dy);
+                    var minD = (a.size + b.size) * 0.48;
+                    if (dist < minD && dist > 0.001) {
+                        var force = (minD - dist) / dist * 0.4;
+                        a.calcX -= dx * force; a.calcY -= dy * force;
+                        b.calcX += dx * force; b.calcY += dy * force;
+                    }
+                }
+            }
+            for (var i = 0; i < totalTechs; i++) {
+                var t = allTechNodes[i];
+                var ddx = t.calcX - centerX, ddy = t.calcY - centerY;
+                var currR = Math.sqrt(ddx * ddx + ddy * ddy);
+                if (currR < 0.01) { t.calcX = centerX + 1; t.calcY = centerY + 1; currR = 1; }
+                var targetR = Math.max(minRadius, Math.min(maxRadius * 1.05, currR));
+                t.calcX = centerX + (ddx / currR) * (currR * 0.7 + targetR * 0.3);
+                t.calcY = centerY + (ddy / currR) * (currR * 0.7 + targetR * 0.3);
+            }
+        }
+    } else if (view === 'stack') {
+        // ---------- 技术栈：中心 + 固定分类扇区 + 分类下技术卡片（结构化布局，无自由力导向） ----------
+        _layoutStackView(groupNodes, centerX, centerY, w, h);
+    } else {
+        // ---------- 级别（level）：二级放射 + 三级围绕 ----------
+        var groupCount = groupNodes.length;
+        var groupRadius = Math.min(w, h) * 0.30;
+        // 二级节点围绕中心放射
+        groupNodes.forEach(function(g, gi) {
+            var gAngle = (2 * Math.PI * gi) / groupCount - Math.PI / 2;
+            g.calcX = centerX + groupRadius * Math.cos(gAngle);
+            g.calcY = centerY + groupRadius * Math.sin(gAngle);
+        });
+        // 三级技术节点围绕各自二级节点放射
+        groupNodes.forEach(function(g) {
+            var gc = g.techs.length;
+            g.childRing = Math.min(w, h) * 0.16 + g.childCount * 2;
+            g.techs.forEach(function(tech, ti) {
+                var tAngle = (2 * Math.PI * ti) / Math.max(gc, 1) + (g.id.length % 7) * 0.3;
+                tech.calcX = g.calcX + g.childRing * Math.cos(tAngle);
+                tech.calcY = g.calcY + g.childRing * Math.sin(tAngle);
+            });
+        });
+        // 三级节点重叠消除（仅同组内部）
+        for (var iter = 0; iter < 6; iter++) {
+            groupNodes.forEach(function(g) {
+                for (var i = 0; i < g.techs.length; i++) {
+                    for (var j = i + 1; j < g.techs.length; j++) {
+                        var a = g.techs[i], b = g.techs[j];
+                        var dx = b.calcX - a.calcX, dy = b.calcY - a.calcY;
+                        var dist = Math.sqrt(dx * dx + dy * dy);
+                        var minD = (a.size + b.size) * 0.5;
+                        if (dist < minD && dist > 0.001) {
+                            var force = (minD - dist) / dist * 0.5;
+                            a.calcX -= dx * force; a.calcY -= dy * force;
+                            b.calcX += dx * force; b.calcY += dy * force;
+                        }
+                    }
+                }
+                // 把三级节点拉回二级节点附近
+                g.techs.forEach(function(tech) {
+                    var ddx = tech.calcX - g.calcX, ddy = tech.calcY - g.calcY;
+                    var r = Math.sqrt(ddx * ddx + ddy * ddy) || 1;
+                    var target = g.childRing;
+                    tech.calcX = g.calcX + (ddx / r) * (r * 0.6 + target * 0.4);
+                    tech.calcY = g.calcY + (ddy / r) * (r * 0.6 + target * 0.4);
+                });
+            });
+        }
+        // 二级节点重叠消除（组间）
+        for (var iter2 = 0; iter2 < 5; iter2++) {
+            for (var i = 0; i < groupNodes.length; i++) {
+                for (var j = i + 1; j < groupNodes.length; j++) {
+                    var a = groupNodes[i], b = groupNodes[j];
+                    var dx = b.calcX - a.calcX, dy = b.calcY - a.calcY;
+                    var dist = Math.sqrt(dx * dx + dy * dy);
+                    var minD = (a.size + b.size) * 0.8 + 40;
+                    if (dist < minD && dist > 0.001) {
+                        var force = (minD - dist) / dist * 0.5;
+                        a.calcX -= dx * force; a.calcY -= dy * force;
+                        b.calcX += dx * force; b.calcY += dy * force;
+                    }
+                }
+            }
+            groupNodes.forEach(function(g) {
+                var ddx = g.calcX - centerX, ddy = g.calcY - centerY;
+                var r = Math.sqrt(ddx * ddx + ddy * ddy) || 1;
+                g.calcX = centerX + (ddx / r) * (r * 0.6 + groupRadius * 0.4);
+                g.calcY = centerY + (ddy / r) * (r * 0.6 + groupRadius * 0.4);
+            });
         }
     }
 
-    // 中心节点
+    // 中心节点：增强科技感（双层光环 + 强发光 + 双行标题）
+    var isStackView = view === 'stack';
+    nodes.push({
+        id: 'center-halo',
+        label: '',
+        type: 'decor',
+        x: centerX,
+        y: centerY,
+        size: isStackView ? 132 : 88,
+        baseSize: isStackView ? 132 : 88,
+        style: {
+            fill: 'rgba(255,255,255,0)',
+            stroke: 'rgba(212,175,55,.28)',
+            lineWidth: 1.6,
+            lineDash: [6, 5],
+            shadowColor: 'rgba(212,175,55,.5)',
+            shadowBlur: 18
+        }
+    });
+    var centerStyle = {
+        fill: 'l(0) 0:#D9A92E 1:#F0C75C',
+        stroke: '#A87B1E',
+        lineWidth: 4,
+        shadowColor: 'rgba(212,175,55,.8)',
+        shadowBlur: 32
+    };
     nodes.push({
         id: 'center',
-        label: centerJob,
+        label: isStackView ? (centerJob + '\n技术栈总览') : centerJob,
         type: 'center',
         x: centerX,
         y: centerY,
-        size: 55,
-        style: {
-            fill: 'l(0) 0:#0D9488 1:#14B8A6',
-            stroke: '#0D9488',
-            lineWidth: 4,
-            shadowColor: 'rgba(13,148,136,.5)',
-            shadowBlur: 20
-        },
+        size: isStackView ? 78 : 68,
+        baseSize: isStackView ? 78 : 68,
+        style: centerStyle,
+        baseStyle: centerStyle,
         labelCfg: {
             position: 'center',
-            style: { fill: '#fff', fontSize: 13, fontWeight: 700, fontFamily: 'var(--font-sans),sans-serif', textAlign: 'center' }
+            style: { fill: '#fff', fontSize: isStackView ? 14 : 13, fontWeight: 700, fontFamily: 'var(--font-sans),sans-serif', textAlign: 'center', lineHeight: 22 }
         }
     });
 
-    // 技术节点
+    // 二级中间节点（技术栈=分类卡片区域：半透明背景盒 + 顶部标题条；级别=岗位级别圆点）
+    groupNodes.forEach(function(g) {
+        var isCatCard = view === 'stack';
+        if (isCatCard && g.boxW && g.boxH) {
+            // 分类区域背景盒（深色半透明科技风，置于最底层，Hover 不影响）
+            nodes.push({
+                id: g.id + '-box',
+                label: '',
+                type: 'rect',
+                boxNode: true,
+                x: g.boxX + g.boxW / 2,
+                y: g.boxY + g.boxH / 2,
+                size: [g.boxW, g.boxH],
+                style: {
+                    fill: 'rgba(8,16,28,.42)',
+                    stroke: g.catColor,
+                    lineWidth: 1.4,
+                    radius: 14,
+                    shadowColor: 'rgba(212,175,55,.16)',
+                    shadowBlur: 14
+                }
+            });
+        }
+        var catSize = isCatCard ? [g.boxW || g.catW || 140, g.catTitleH || g.catH || 38] : g.size;
+        var catStyle = {
+            fill: isCatCard ? ('l(0) 0:' + g.catColor + ' 1:rgba(26,24,20,.82)') : g.catColor,
+            stroke: isCatCard ? 'rgba(255,235,180,.75)' : 'rgba(255,235,180,.6)',
+            lineWidth: isCatCard ? 2.5 : 2.5,
+            radius: isCatCard ? 12 : 0,
+            shadowColor: 'rgba(212,175,55,.5)',
+            shadowBlur: isCatCard ? 14 : 14
+        };
+        nodes.push({
+            id: g.id,
+            label: isCatCard ? ('◆ ' + g.name) : g.name,
+            type: isCatCard ? 'rect' : g.type,
+            x: g.calcX,
+            y: g.calcY,
+            size: catSize,
+            baseSize: Array.isArray(catSize) ? catSize.slice() : catSize,
+            catColor: g.catColor,
+            catName: g.catName,
+            style: catStyle,
+            baseStyle: catStyle,
+            labelCfg: {
+                position: 'center',
+                style: { fill: '#fff', fontSize: isCatCard ? 17 : 12, fontWeight: 700, fontFamily: 'var(--font-sans),sans-serif', textShadowColor: 'rgba(0,0,0,.4)', textShadowBlur: 3 }
+            }
+        });
+        // 中心 → 分类连线（技术栈视图稍粗、更亮，形成主骨架）
+        edges.push({
+            id: 'edge-center-' + g.id,
+            source: 'center',
+            target: g.id,
+            type: 'line',
+            style: isCatCard
+                ? { stroke: 'rgba(240,199,92,.55)', lineWidth: 2, lineDash: [6, 4], endArrow: false }
+                : { stroke: 'rgba(212,175,55,.32)', lineWidth: 1.4, lineDash: [4, 3], endArrow: false }
+        });
+    });
+
+    // 技术节点（技术栈视图 = 统一尺寸圆角科技卡片，名称居中显示；其他视图 = 圆点）
     allTechNodes.forEach(function(tech, i) {
         var techId = 'tech-' + i;
         var nodeFill = tech.catColor;
+        var techSize, techBase;
+        if (view === 'stack') {
+            // 卡片统一高度，宽度按名称长度自动适配（长名称加宽、不影响间距防重叠）
+            techSize = [tech.cardW || 112, 38];
+            techBase = techSize.slice();
+        } else {
+            techSize = tech.size;
+            techBase = tech.size;
+        }
+        var techStyle = {
+            fill: view === 'stack' ? ('l(0) 0:' + nodeFill + ' 1:rgba(20,18,15,.85)') : nodeFill,
+            stroke: 'rgba(255,235,180,.6)',
+            lineWidth: view === 'stack' ? 1.6 : 2,
+            radius: view === 'stack' ? 11 : 0,
+            shadowColor: 'rgba(212,175,55,.3)',
+            shadowBlur: view === 'stack' ? 9 : 8
+        };
         nodes.push({
             id: techId,
             label: tech.name,
-            type: 'technology',
+            type: view === 'stack' ? 'rect' : 'technology',
+            isTech: true,
             x: tech.calcX,
             y: tech.calcY,
-            size: tech.size,
+            size: techSize,
+            baseSize: techBase,
             frequency: tech.frequency,
             ratio: tech.ratio,
             catColor: tech.catColor,
-            style: {
-                fill: nodeFill,
-                stroke: 'rgba(255,255,255,.45)',
-                lineWidth: 2,
-                shadowColor: 'rgba(0,0,0,.2)',
-                shadowBlur: 6
-            },
+            style: techStyle,
+            baseStyle: techStyle,
             labelCfg: {
-                position: 'bottom',
-                offset: 3,
-                style: { fill: '#fff', fontSize: 10, fontWeight: 500, fontFamily: 'var(--font-sans),sans-serif' }
+                position: view === 'stack' ? 'center' : 'bottom',
+                offset: view === 'stack' ? 0 : 3,
+                style: { fill: '#fff', fontSize: view === 'stack' ? 15 : 10, fontWeight: view === 'stack' ? 600 : 500, fontFamily: 'var(--font-sans),sans-serif', textShadowColor: 'rgba(0,0,0,.55)', textShadowBlur: 4 }
             }
         });
-        // 边：中心 → 每个技术节点
+        // 边：overview 直接连中心；stack/level 连所属二级节点
         edges.push({
-            source: 'center',
+            id: 'edge-parent-' + techId,
+            source: tech.parentId || 'center',
             target: techId,
-            style: { stroke: 'rgba(255,255,255,.18)', lineWidth: 1, lineDash: [4, 3], endArrow: false }
+            type: 'line',
+            style: view === 'stack'
+                ? { stroke: 'rgba(212,175,55,.4)', lineWidth: 1.1, lineDash: [3, 3], endArrow: false }
+                : { stroke: 'rgba(212,175,55,.3)', lineWidth: 1, lineDash: [4, 3], endArrow: false }
         });
     });
+
+    // ========== 技术节点之间的关联边（同类别自动关联，真实数据驱动，控制数量防杂乱） ==========
+    // 技术栈视图为规整卡片布局，技术间曲线会穿插卡片，故不生成技术间关联边
+    if (view !== 'stack') {
+    // 同一技术类别内的节点互相连接（形成技术簇），且频率接近的节点优先关联
+    var catGroups = {};
+    allTechNodes.forEach(function(t, i) {
+        if (!catGroups[t.catName]) catGroups[t.catName] = [];
+        catGroups[t.catName].push({ idx: i, freq: t.frequency });
+    });
+    var linkEdgeId = 0;
+    Object.keys(catGroups).forEach(function(cat) {
+        var group = catGroups[cat];
+        if (!group || group.length < 2) return;
+        // 按频率降序，优先高频节点关联
+        group.sort(function(a, b) { return b.freq - a.freq; });
+        // 每类最多建立 3 条关联（取频率最高的前 4 个节点两两相连）
+        var maxLink = Math.min(group.length - 1, 3);
+        for (var li = 0; li < maxLink; li++) {
+            var src = group[li].idx;
+            var tgt = group[li + 1].idx;
+            if (src === tgt) continue;
+            var bendDir = (li % 2 === 0) ? 1 : -1;
+            edges.push({
+                id: 'link-' + (linkEdgeId++),
+                source: 'tech-' + src,
+                target: 'tech-' + tgt,
+                type: 'quadratic',
+                style: { stroke: 'rgba(255,214,102,.35)', lineWidth: 1.2, curveOffset: 22 * bendDir, curvePosition: 0.5, endArrow: false }
+            });
+        }
+    });
+    }
 
     try {
         talentMapState.jobGraphInstance = new G6.Graph({
@@ -2173,46 +2884,151 @@ window.renderCityTechGraph = async function(cityName, jobName) {
                 }
             },
             defaultEdge: {
-                type: 'line',
-                style: { stroke: 'rgba(255,255,255,.15)', lineWidth: 1, lineDash: [5, 4], endArrow: false }
+                type: 'cubic',
+                style: { stroke: 'rgba(255,214,102,.25)', lineWidth: 1, endArrow: false }
+            },
+            nodeStateStyles: {
+                // active 显式指定深色半透明背景，防止 Hover 后背景变白导致文字看不清
+                active: {
+                    fill: 'rgba(16,36,52,.96)',
+                    lineWidth: 3,
+                    stroke: '#FFD666',
+                    shadowColor: 'rgba(255,214,102,.9)',
+                    shadowBlur: 24
+                },
+                linked: {
+                    lineWidth: 2,
+                    stroke: 'rgba(255,214,102,.75)',
+                    shadowColor: 'rgba(255,214,102,.4)',
+                    shadowBlur: 12
+                },
+                inactive: { opacity: 0.12 }
+            },
+            edgeStateStyles: {
+                active: { stroke: '#FFD666', lineWidth: 2, opacity: 1, shadowColor: 'rgba(255,214,102,.8)', shadowBlur: 10 },
+                linked: { stroke: 'rgba(255,214,102,.6)', lineWidth: 1.4, opacity: 0.85 },
+                inactive: { opacity: 0.06 }
             }
         });
 
         talentMapState.jobGraphInstance.data({ nodes: nodes, edges: edges });
         talentMapState.jobGraphInstance.render();
 
-        // fitView 确保所有节点可见
+        // fitView 确保所有节点可见（padding 收紧，横向布局下缩放更接近 1:1，字号更清晰）
         setTimeout(function() {
             if (talentMapState.jobGraphInstance && talentMapState.jobGraphInstance.fitView) {
-                talentMapState.jobGraphInstance.fitView(35);
+                talentMapState.jobGraphInstance.fitView(28);
             }
         }, 500);
 
         // 技术节点点击 → 右侧技术详情
         talentMapState.jobGraphInstance.on('node:click', function(evt) {
             var model = evt.item && evt.item.getModel ? evt.item.getModel() : null;
-            if (!model || model.type !== 'technology') return;
+            if (!model || !model.isTech) return;
             window.renderTechDetail(model.label || model.id, model.frequency, model.ratio);
         });
 
         // 鼠标悬浮tooltip
         var tooltipEl = document.createElement('div');
         tooltipEl.className = 'tech-node-tooltip';
-        tooltipEl.style.cssText = 'display:none;position:absolute;z-index:1000;background:rgba(0,0,0,.85);color:#fff;padding:6px 12px;border-radius:6px;font-size:12px;pointer-events:none;white-space:nowrap;border:1px solid rgba(45,212,191,.3);backdrop-filter:blur(8px);';
+        tooltipEl.style.cssText = 'display:none;position:absolute;z-index:1000;background:rgba(10,14,34,.95);color:#fff;padding:9px 15px;border-radius:10px;font-size:12px;pointer-events:none;white-space:nowrap;border:1px solid rgba(212,175,55,.45);box-shadow:0 6px 22px rgba(0,0,0,.5),0 0 16px rgba(212,175,55,.22);backdrop-filter:blur(8px);';
         container.appendChild(tooltipEl);
+
+        // 节点悬停联动高亮：当前节点高亮放大、关联节点/曲线高亮、非关联节点与曲线弱化
+        function highlightGraph(model) {
+            var graph = talentMapState.jobGraphInstance;
+            if (!graph || !model) return;
+            // 收集直接关联的节点与边
+            var linkedNodeIds = {};
+            var linkedEdgeIds = {};
+            graph.getEdges().forEach(function(edge) {
+                var em = edge.getModel();
+                if (em.source === model.id || em.target === model.id) {
+                    linkedEdgeIds[em.id] = true;
+                    if (em.source !== model.id) linkedNodeIds[em.source] = true;
+                    if (em.target !== model.id) linkedNodeIds[em.target] = true;
+                }
+            });
+            // 节点状态
+            graph.getNodes().forEach(function(node) {
+                var nm = node.getModel();
+                if (nm.type === 'decor' || nm.boxNode) return; // 装饰光环/背景盒不参与高亮弱化
+                graph.clearItemStates(node, ['active', 'linked', 'inactive']);
+                if (nm.id === model.id) {
+                    if (nm.type !== 'center') graph.setItemState(node, 'active', true);
+                    // 当前节点放大 + Hover 样式（深色半透明背景 + 金色发光边框，杜绝纯白背景）
+                    if (nm.baseSize) {
+                        var bz = nm.baseSize;
+                        var hoverStyle = (nm.type === 'center')
+                            ? { lineWidth: 4, shadowColor: 'rgba(212,175,55,.9)', shadowBlur: 36 }
+                            : { fill: 'rgba(16,36,52,.96)', stroke: '#FFD666', lineWidth: 3, shadowColor: 'rgba(255,214,102,.9)', shadowBlur: 24 };
+                        graph.updateItem(node, { size: Array.isArray(bz) ? [bz[0] * 1.18, bz[1] * 1.18] : bz * 1.35, style: hoverStyle });
+                    }
+                } else if (linkedNodeIds[nm.id]) {
+                    graph.setItemState(node, 'linked', true);
+                } else {
+                    graph.setItemState(node, 'inactive', true);
+                }
+            });
+            // 边状态
+            graph.getEdges().forEach(function(edge) {
+                var em = edge.getModel();
+                graph.clearItemStates(edge, ['active', 'linked', 'inactive']);
+                if (linkedEdgeIds[em.id]) {
+                    graph.setItemState(edge, 'active', true);
+                } else {
+                    graph.setItemState(edge, 'inactive', true);
+                }
+            });
+        }
+        function resetHighlight() {
+            var graph = talentMapState.jobGraphInstance;
+            if (!graph) return;
+            graph.getNodes().forEach(function(node) {
+                var nm = node.getModel && node.getModel();
+                if (!nm || nm.type === 'decor' || nm.boxNode) return;
+                graph.clearItemStates(node, ['active', 'linked', 'inactive']);
+                // 恢复原始尺寸与样式（避免动画/深色背景残留；卡片为数组尺寸需逐维比较）
+                var patch = {};
+                if (nm.baseSize) {
+                    var bz = nm.baseSize;
+                    var changed = Array.isArray(bz)
+                        ? (nm.size && (Math.abs(nm.size[0] - bz[0]) > 0.5 || Math.abs(nm.size[1] - bz[1]) > 0.5))
+                        : Math.abs(nm.size - bz) > 0.5;
+                    if (changed) patch.size = bz;
+                }
+                if (nm.baseStyle && nm.style &&
+                    (nm.style.fill !== nm.baseStyle.fill || nm.style.lineWidth !== nm.baseStyle.lineWidth || (nm.style.stroke || '') !== (nm.baseStyle.stroke || ''))) {
+                    patch.style = nm.baseStyle;
+                }
+                if (patch.size || patch.style) graph.updateItem(node, patch);
+            });
+            graph.getEdges().forEach(function(edge) {
+                graph.clearItemStates(edge, ['active', 'linked', 'inactive']);
+            });
+        }
 
         talentMapState.jobGraphInstance.on('node:mouseenter', function(evt) {
             var model = evt.item && evt.item.getModel ? evt.item.getModel() : null;
-            if (!model || model.type === 'center') { tooltipEl.style.display = 'none'; return; }
+            if (!model || model.type === 'decor' || model.boxNode) { resetHighlight(); return; }
+            highlightGraph(model);
+            if (model.type === 'center') { tooltipEl.style.display = 'none'; return; }
             tooltipEl.style.display = 'block';
-            if (model.type === 'technology') {
-                tooltipEl.innerHTML = '<b>' + model.label + '</b><br><span style="font-size:10px;color:rgba(255,255,255,.55)">需求频率: ' + (model.frequency || 0) + ' | 点击查看详情</span>';
+            if (model.isTech) {
+                // 深色科技风 Tooltip：标题较大、信息适中、不遮挡节点
+                var starN = Math.max(1, Math.min(5, Math.round((model.ratio || 0) * 5)));
+                var stars = '★'.repeat(starN) + '☆'.repeat(5 - starN);
+                tooltipEl.innerHTML = '<div style="font-size:14px;font-weight:700;color:#FFE9B0;line-height:1.5">' + model.label + '</div>'
+                    + '<div style="font-size:11px;color:rgba(255,214,102,.72);margin-top:3px">需求频率: ' + (model.frequency || 0)
+                    + ' · 技术热度 ' + stars + '</div>'
+                    + '<div style="font-size:10px;color:rgba(255,255,255,.45);margin-top:2px">点击查看详情</div>';
             } else {
-                tooltipEl.innerHTML = '<b>' + (model.label || model.id) + '</b>';
+                tooltipEl.innerHTML = '<div style="font-size:13px;font-weight:600;color:#FFE9B0">' + (model.label || model.id) + '</div>';
             }
         });
         talentMapState.jobGraphInstance.on('node:mouseleave', function() {
             tooltipEl.style.display = 'none';
+            resetHighlight();
         });
         talentMapState.jobGraphInstance.on('node:mousemove', function(evt) {
             tooltipEl.style.left = (evt.canvasX + 14) + 'px';
@@ -2222,7 +3038,7 @@ window.renderCityTechGraph = async function(cityName, jobName) {
         // 触摸设备支持
         talentMapState.jobGraphInstance.on('node:touchstart', function(evt) {
             var model = evt.item && evt.item.getModel ? evt.item.getModel() : null;
-            if (!model || model.type !== 'technology') return;
+            if (!model || !model.isTech) return;
             window.renderTechDetail(model.label || model.id, model.frequency, model.ratio);
         });
 
@@ -2230,6 +3046,40 @@ window.renderCityTechGraph = async function(cityName, jobName) {
         console.warn('[TechGraph] G6渲染失败', e);
         container.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:rgba(255,255,255,.35);font-size:13px">图谱渲染失败，请重试</div>';
     }
+};
+
+// 同步图谱切换气泡的显隐与选中态（进入岗位技术图谱后显示三个视图切换）
+function talentSyncGraphToggle() {
+    var toggle = document.getElementById('talent-graph-mode-toggle');
+    if (!toggle) return;
+    toggle.style.display = 'flex';
+    var views = ['overview', 'stack', 'level'];
+    views.forEach(function(v) {
+        var btn = document.getElementById('talent-graph-view-' + v);
+        if (btn) btn.classList.toggle('active', (techDetailState.graphView || 'overview') === v);
+    });
+}
+
+// 切换岗位技术图谱三视图（overview 岗位技术图谱 / stack 技术栈 / level 级别）：
+// 不刷新页面、不跳转路由，仅淡出容器 → 按新视图重绘图谱 → 淡入，保持页面整体布局不变
+window.talentSetJobGraphView = function(view) {
+    if (view !== 'overview' && view !== 'stack' && view !== 'level') return;
+    if ((techDetailState.graphView || 'overview') === view) return;
+    techDetailState.graphView = view;
+    talentSyncGraphToggle();
+    var container = document.getElementById('talent-graph-container');
+    if (!container) return;
+    container.classList.add('graph-fading');
+    setTimeout(async function() {
+        try {
+            await window.renderCityTechGraph(techDetailState.graphCity, techDetailState.graphJob, true, view);
+        } catch (e) {
+            console.error('[TechGraph] 视图切换渲染失败', e);
+        } finally {
+            // 无论渲染成功与否，都必须移除淡出态，避免图谱永久透明/白屏
+            requestAnimationFrame(function() { container.classList.remove('graph-fading'); });
+        }
+    }, 240);
 };
 
 // 渲染技术详情到右侧岗位分析面板（复用 #talent-detail-province）
@@ -2271,7 +3121,7 @@ window.renderTechDetail = async function(techName, frequency, ratio) {
         panel.innerHTML = '<div class="detail-content"><div class="tech-detail-header"><span class="tech-detail-name">' + techName + '</span></div>'
             + '<div class="tech-detail-section"><div class="tech-detail-section-title">技术简介</div><div class="tech-detail-text">' + _generateTechIntro(techName) + '</div></div>'
             + '<div class="tech-detail-section"><div class="tech-detail-section-title">应用场景</div><div class="tech-detail-text">' + _generateTechScenario(techName) + '</div></div>'
-            + '<button class="graph-btn" style="margin-top:16px;width:100%;justify-content:center;border-color:rgba(45,212,191,.3);color:rgba(45,212,191,.9)" onclick="window.talentRestoreProvincePanel()">← 返回岗位分析</button></div>';
+            + '<button class="graph-btn" style="margin-top:16px;width:100%;justify-content:center;border-color:rgba(212,175,55,.4);color:rgba(184,134,11,.95)" onclick="window.talentRestoreProvincePanel()">← 返回岗位分析</button></div>';
         return;
     }
     
@@ -2281,7 +3131,7 @@ window.renderTechDetail = async function(techName, frequency, ratio) {
     for (var i = 0; i < 5; i++) hotStars += '<span class="tech-detail-hot-star" style="color:' + (i < hl ? '#F59E0B' : 'rgba(0,0,0,.15)') + '">★</span>';
     
     var html = '<div class="detail-content">';
-    html += '<button class="graph-btn" style="margin-bottom:12px;font-size:11px;border-color:rgba(13,148,136,.3);color:#0d9488" onclick="window.talentRestoreProvincePanel()">← 返回岗位分析</button>';
+    html += '<button class="graph-btn" style="margin-bottom:12px;font-size:11px;border-color:rgba(212,175,55,.35);color:#8F6B0E" onclick="window.talentRestoreProvincePanel()">← 返回岗位分析</button>';
     // 头部
     html += '<div class="tech-detail-header"><span class="tech-detail-name" style="color:var(--text-dark)">' + techName + '</span><div class="tech-detail-hot">' + hotStars + '</div></div>';
     
@@ -2441,9 +3291,12 @@ window.talentMapEnterGraph = function(jobNameOverride) {
 
     window.talentShowLayer('graph');
 
+    // 同步图谱切换气泡（进入岗位技术图谱后显示三视图切换，默认选中岗位技术图谱）
+    talentSyncGraphToggle();
+
     // 设置右侧面板显示提示
     if (provPanel) {
-        provPanel.innerHTML = '<div class="detail-content" style="padding:20px"><div class="detail-empty"><svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="1.5" width="64" height="64"><circle cx="40" cy="40" r="30"/><path d="M40 20v20l14 7"/><circle cx="40" cy="40" r="6" fill="currentColor"/></svg><p style="color:var(--text-dark);font-weight:600;margin:16px 0 4px">' + jobName + ' · 岗位能力图谱</p><p style="color:var(--text-muted);font-size:12px;line-height:1.6">展示' + cityName + ' · ' + jobName + '的<br>核心技术需求分布<br><br>点击脑图技术节点<br>查看详细分析</p></div></div>';
+        provPanel.innerHTML = '<div class="detail-content" style="padding:20px"><div class="detail-empty"><svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="1.5" width="64" height="64"><circle cx="40" cy="40" r="30"/><path d="M40 20v20l14 7"/><circle cx="40" cy="40" r="6" fill="currentColor"/></svg><p style="color:var(--text-dark);font-weight:600;margin:16px 0 4px">' + jobName + ' · 岗位能力图谱</p><p style="color:var(--text-muted);font-size:12px;line-height:1.6">展示' + jobName + '的<br>核心技术需求分布<br><br>点击脑图技术节点<br>查看详细分析</p></div></div>';
         provPanel.style.display = 'block';
     }
 
@@ -2469,16 +3322,11 @@ window.talentGraphBack = function() {
 
 // 兼容旧版
 window.renderJobGraph = function(job) {
-    // 旧版入口：如果传入了job，取city名进入新版脑图
     var cityName = talentMapState.selectedCity ? talentMapState.selectedCity.name :
                    talentMapState.currentProvinceName;
-    if (job && job.name) {
-        // 尝试从job名称推断城市
-    }
-    if (cityName) {
-        window.renderCityTechGraph(cityName);
-    } else if (job && job.name) {
-        window.renderCityTechGraph(job.name);
+    var jobName = (job && job.name) ? job.name : cityName;
+    if (cityName || jobName) {
+        window.renderCityTechGraph(cityName, jobName);
     }
 };
 
@@ -2522,4 +3370,492 @@ window.talentGraphFullscreen = function() {
             if (c && c.clientWidth > 10) talentMapState.jobGraphInstance.changeSize(c.clientWidth, c.clientHeight);
         }
     }, 200);
+};
+
+/* ============================================================
+ * 我的能力 —— 用户个人能力采集 + 能力管理 + 个人能力图谱
+ * 数据来源：/api/ability/catalog（系统真实技术目录，与岗位技术图谱同源）
+ *          /api/ability/{username}（用户能力保存/读取）
+ * 关系：User -> UserAbility -> TechAbility（统一技术体系）
+ * ============================================================ */
+window.talentAbilityState = {
+    open: false,        // 弹窗是否打开
+    user: null,         // 当前登录用户 {username, role}
+    catalog: null,      // 技术目录 {categories:[{name, technologies:[{id,name,frequency}]}]}
+    saved: [],          // 已保存能力 [{id,name,category,frequency}]
+    filled: false,      // 是否已填写过问卷
+    selected: {},       // 问卷已选 {id:true}
+    mode: 'loading',    // loading | survey | graph | error | empty
+    editing: false,     // 是否编辑模式
+    graph: null,        // G6 实例（个人能力图谱）
+    categoryMap: {}     // 技术 id -> 分类名
+};
+
+function talentAbilityGetUser() {
+    try { return JSON.parse(localStorage.getItem('zhitu_user') || 'null'); }
+    catch (e) { return null; }
+}
+
+window.talentOpenAbility = function() {
+    var modal = document.getElementById('ability-modal');
+    if (!modal) {
+        // 弹窗 DOM 尚未就绪：短暂重试，避免“点击无反应”
+        setTimeout(window.talentOpenAbility, 120);
+        return;
+    }
+    var user = talentAbilityGetUser();
+    if (!user || !user.username) {
+        var msg = '请先登录后再使用「我的能力」';
+        if (window.showToast) window.showToast(msg, 'amber');
+        else alert(msg);
+        setTimeout(function() { window.location.href = '../index.html'; }, 900);
+        return;
+    }
+    var st = window.talentAbilityState;
+    st.user = user;
+    st.open = true;
+    st.selected = {};
+    st.editing = false;
+    st.saved = [];
+    st.filled = false;
+    modal.style.display = 'flex';
+    var title = document.getElementById('ability-modal-title-text');
+    if (title) title.textContent = '我的能力';
+    talentAbilityRenderLoading('正在加载技术能力数据…');
+    talentAbilityLoad();
+};
+
+async function talentAbilityLoad() {
+    var st = window.talentAbilityState;
+    if (!st.user) return;
+    try {
+        var catRes = await window.apiFetch('/api/ability/catalog');
+        var userRes = await window.apiFetch('/api/ability/' + encodeURIComponent(st.user.username));
+        if (!catRes || catRes.code !== 0) throw new Error((catRes && catRes.message) || '技术目录加载失败');
+        if (!userRes || userRes.code !== 0) throw new Error((userRes && userRes.message) || '能力数据加载失败');
+        st.catalog = catRes.data;
+        st.saved = (userRes.data && userRes.data.abilities) || [];
+        st.filled = !!(userRes.data && userRes.data.filled);
+        st.categoryMap = {};
+        (st.catalog.categories || []).forEach(function(cat) {
+            (cat.technologies || []).forEach(function(t) { st.categoryMap[t.id] = cat.name; });
+        });
+        if (st.filled && st.saved.length) {
+            talentAbilityRenderGraph();
+        } else if (st.filled && !st.saved.length) {
+            talentAbilityRenderEmpty();
+        } else {
+            talentAbilityRenderSurvey(false);
+        }
+    } catch (e) {
+        console.error('[ability] load failed:', e);
+        talentAbilityRenderError('能力数据加载失败<br>请稍后重试');
+    }
+}
+
+function talentAbilityRenderLoading(text) {
+    var st = window.talentAbilityState;
+    st.mode = 'loading';
+    var body = document.getElementById('ability-modal-body');
+    if (!body) return;
+    body.innerHTML = '<div class="ability-state ability-loading">' +
+        '<div class="ability-loading-ring"></div>' +
+        '<div class="ability-state-text">' + (text || '加载中…') + '</div></div>';
+}
+
+function talentAbilityRenderError(text) {
+    var st = window.talentAbilityState;
+    st.mode = 'error';
+    var body = document.getElementById('ability-modal-body');
+    if (!body) return;
+    body.innerHTML = '<div class="ability-state ability-error">' +
+        '<div class="ability-state-icon">⚠</div>' +
+        '<div class="ability-state-title">' + text + '</div>' +
+        '<button class="btn btn-primary" onclick="window.talentAbilityRetry()">重试</button></div>';
+}
+
+function talentAbilityRenderEmpty() {
+    var st = window.talentAbilityState;
+    st.mode = 'empty';
+    var body = document.getElementById('ability-modal-body');
+    if (!body) return;
+    var title = document.getElementById('ability-modal-title-text');
+    if (title) title.textContent = '我的能力';
+    body.innerHTML = '<div class="ability-state ability-empty">' +
+        '<div class="ability-empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M12 2a7 7 0 0 1 4 12.7V17a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2v-2.3A7 7 0 0 1 12 2z"/><path d="M9 21h6M12 9v4"/></svg></div>' +
+        '<div class="ability-state-title">还没有建立你的能力图谱</div>' +
+        '<div class="ability-state-text">选择你掌握的技术能力<br>开始构建属于你的能力地图</div>' +
+        '<button class="btn btn-primary" onclick="window.talentAbilityStartSelect()">开始选择能力</button>' +
+        '</div>';
+}
+
+window.talentAbilityStartSelect = function() {
+    var st = window.talentAbilityState;
+    st.selected = {};
+    talentAbilityRenderSurvey(false);
+};
+
+window.talentAbilityRetry = function() {
+    talentAbilityRenderLoading('正在重新加载…');
+    talentAbilityLoad();
+};
+
+/* ---------------- 能力问卷（多选） ---------------- */
+function talentAbilityRenderSurvey(editing) {
+    var st = window.talentAbilityState;
+    st.mode = 'survey';
+    st.editing = !!editing;
+    if (!editing) st.selected = {};
+    var body = document.getElementById('ability-modal-body');
+    if (!body) return;
+    var title = document.getElementById('ability-modal-title-text');
+    if (title) title.textContent = editing ? '我的能力 · 编辑能力' : '我的能力 · 能力问卷';
+    var html = [];
+    html.push('<div class="ability-survey">');
+    html.push('<div class="ability-survey-head">');
+    html.push('<div class="ability-survey-tip">' + (editing ? '编辑你掌握的技术能力' : '请选择你掌握的技术能力') +
+        '<div class="ability-survey-sub">点击增加 · 再次点击取消 · 能力数据与系统技术体系一致</div></div>');
+    html.push('<div class="ability-survey-count">已选择 <b id="ability-count-num">0</b> 项能力</div>');
+    html.push('</div>');
+    html.push('<div class="ability-survey-body" id="ability-survey-body">');
+    (st.catalog.categories || []).forEach(function(cat) {
+        var color = TECH_CATEGORY_COLORS[cat.name] || '#8B8B9E';
+        html.push('<div class="ability-cat-block" style="--cat-color:' + color + '">');
+        html.push('<div class="ability-cat-title">' + cat.name + '</div>');
+        html.push('<div class="ability-cat-techs">');
+        (cat.technologies || []).forEach(function(t) {
+            html.push('<div class="ability-tech-chip" data-id="' + t.id + '" onclick="window.talentAbilityToggle(' + t.id + ')">' + t.name + '</div>');
+        });
+        html.push('</div>');
+        html.push('</div>');
+    });
+    html.push('</div>');
+    html.push('<div class="ability-survey-foot">');
+    html.push('<button class="btn ability-reset-btn" title="清空当前所有选择" onclick="window.talentAbilityAskReset()">重置</button>');
+    html.push('<button class="btn" onclick="window.talentAbilityCancelSurvey()">取消</button>');
+    html.push('<button class="btn btn-primary ability-confirm-btn" onclick="window.talentAbilitySubmit()">' + (editing ? '确认修改' : '确认生成我的能力图谱') + '</button>');
+    html.push('</div>');
+    html.push('<div class="ability-reset-confirm" id="ability-reset-confirm">');
+    html.push('<div class="ability-reset-confirm-box">');
+    html.push('<div class="ability-reset-confirm-title">确定要重置所有已选择的能力吗？</div>');
+    html.push('<div class="ability-reset-confirm-text">重置后当前选择将全部清空<br>你可以重新选择能力</div>');
+    html.push('<div class="ability-reset-confirm-btns">');
+    html.push('<button class="btn" onclick="window.talentAbilityCancelReset()">取消</button>');
+    html.push('<button class="btn ability-reset-confirm-ok" onclick="window.talentAbilityDoReset()">确定重置</button>');
+    html.push('</div>');
+    html.push('</div>');
+    html.push('</div>');
+    html.push('</div>');
+    body.innerHTML = html.join('');
+    Object.keys(st.selected).forEach(function(id) { abilityApplyChipSelected(id); });
+    talentAbilityUpdateCount();
+}
+
+function abilityApplyChipSelected(id) {
+    var chips = document.querySelectorAll('.ability-tech-chip[data-id="' + id + '"]');
+    for (var i = 0; i < chips.length; i++) {
+        chips[i].classList.toggle('selected', !!window.talentAbilityState.selected[id]);
+    }
+}
+
+function talentAbilityUpdateCount() {
+    var n = Object.keys(window.talentAbilityState.selected).length;
+    var el = document.getElementById('ability-count-num');
+    if (el) el.textContent = n;
+}
+
+window.talentAbilityToggle = function(id) {
+    var st = window.talentAbilityState;
+    if (!id) return;
+    if (st.selected[id]) delete st.selected[id];
+    else st.selected[id] = true;
+    abilityApplyChipSelected(id);
+    talentAbilityUpdateCount();
+};
+
+/* 重置问卷选择：仅清空当前页面选中状态，不触碰已保存数据与数据库 */
+window.talentAbilityAskReset = function() {
+    var st = window.talentAbilityState;
+    if (Object.keys(st.selected).length === 0) {
+        if (window.showToast) window.showToast('当前没有已选择的能力', 'amber');
+        return;
+    }
+    var layer = document.getElementById('ability-reset-confirm');
+    if (layer) layer.classList.add('show');
+};
+
+window.talentAbilityCancelReset = function() {
+    var layer = document.getElementById('ability-reset-confirm');
+    if (layer) layer.classList.remove('show');
+};
+
+window.talentAbilityDoReset = function() {
+    var st = window.talentAbilityState;
+    st.selected = {};
+    var chips = document.querySelectorAll('.ability-tech-chip.selected');
+    for (var i = 0; i < chips.length; i++) chips[i].classList.remove('selected');
+    talentAbilityUpdateCount();
+    window.talentAbilityCancelReset();
+    if (window.showToast) window.showToast('已重置全部选择', 'amber');
+};
+
+window.talentAbilitySubmit = async function() {
+    var st = window.talentAbilityState;
+    var ids = Object.keys(st.selected).map(Number).filter(function(v) { return !isNaN(v) && v > 0; });
+    if (!ids.length) {
+        window.showToast && window.showToast('请至少选择一项能力', 'amber');
+        return;
+    }
+    var btn = document.querySelector('.ability-confirm-btn');
+    if (btn) { btn.disabled = true; btn.textContent = '保存中…'; }
+    try {
+        var res = await window.apiFetch('/api/ability/' + encodeURIComponent(st.user.username), {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ abilityIds: ids })
+        });
+        if (!res || res.code !== 0) throw new Error((res && res.message) || '保存失败');
+        st.saved = (res.data && res.data.abilities) || [];
+        st.filled = !!(res.data && res.data.filled);
+        window.showToast && window.showToast('能力图谱已更新', '');
+        talentAbilityRenderGraph();
+    } catch (e) {
+        console.error('[ability] save failed:', e);
+        window.showToast && window.showToast('能力更新失败，请稍后重试', 'amber');
+        if (btn) { btn.disabled = false; btn.textContent = window.talentAbilityState.editing ? '确认修改' : '确认生成我的能力图谱'; }
+    }
+};
+
+window.talentAbilityCancelSurvey = function() {
+    var st = window.talentAbilityState;
+    if (st.editing) {
+        // 取消编辑：放弃本次修改，恢复进入编辑前的状态
+        st.selected = {};
+        talentAbilityRenderGraph();
+    } else {
+        talentAbilityClose();
+    }
+};
+
+window.talentAbilityEdit = function() {
+    var st = window.talentAbilityState;
+    st.selected = {};
+    (st.saved || []).forEach(function(a) { st.selected[a.id] = true; });
+    talentAbilityRenderSurvey(true);
+};
+
+/* ---------------- 个人能力图谱（G6，样式复用岗位技术图谱） ---------------- */
+function talentAbilityRenderGraph() {
+    var st = window.talentAbilityState;
+    st.mode = 'graph';
+    st.editing = false;
+    var body = document.getElementById('ability-modal-body');
+    if (!body) return;
+    var title = document.getElementById('ability-modal-title-text');
+    if (title) title.textContent = '我的能力 · 个人能力图谱';
+    var displayName = (st.user && (st.user.name || st.user.username)) || '我';
+    var html = [];
+    html.push('<div class="ability-graph-page">');
+    html.push('<div class="ability-graph-bar">');
+    html.push('<div class="ability-graph-title">' + displayName + ' · 能力图谱</div>');
+    html.push('<div class="ability-graph-actions">');
+    html.push('<button class="graph-btn" title="适应窗口" onclick="window.talentAbilityGraphFit()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></button>');
+    html.push('<button class="btn btn-primary" onclick="window.talentAbilityEdit()">编辑能力</button>');
+    html.push('</div></div>');
+    html.push('<div class="ability-graph-wrap" id="ability-graph-container"></div>');
+    html.push('<div class="ability-graph-foot"><div class="ability-graph-summary" id="ability-graph-summary"></div><div class="graph-legend" id="ability-graph-legend"></div></div>');
+    html.push('</div>');
+    body.innerHTML = html.join('');
+    // 等弹窗布局完成后量取容器尺寸
+    setTimeout(function() { talentAbilityBuildGraph(); }, 80);
+}
+
+function talentAbilityBuildGraph() {
+    var st = window.talentAbilityState;
+    var container = document.getElementById('ability-graph-container');
+    if (!container) return;
+    var w = container.clientWidth, h = container.clientHeight;
+    if (w < 60 || h < 60) { setTimeout(talentAbilityBuildGraph, 120); return; }
+    if (st.graph) { try { st.graph.destroy(); } catch(e) {} st.graph = null; }
+
+    var saved = st.saved || [];
+    if (!saved.length) { talentAbilityRenderEmpty(); return; }
+
+    // 1) 构造分类组（与岗位技术图谱同分类色）
+    var groups = [];
+    saved.forEach(function(a) {
+        var catName = a.category || st.categoryMap[a.id] || '核心技能';
+        var g = null;
+        for (var i = 0; i < groups.length; i++) {
+            if (groups[i].name === catName) { g = groups[i]; break; }
+        }
+        if (!g) {
+            g = { name: catName, catName: catName, catColor: TECH_CATEGORY_COLORS[catName] || '#8B8B9E', id: 'ab-cat-' + groups.length, techs: [] };
+            groups.push(g);
+        }
+        g.techs.push({ name: a.name, id: a.id, frequency: a.frequency });
+    });
+
+    // 2) 复用岗位图谱防重叠布局（横向展开 / 盒宽自适应 / 行内并排）
+    try { _layoutStackView(groups, w / 2, h / 2, w, h); }
+    catch (e) { console.error('[ability] layout:', e); }
+
+    // 3) 构建节点/边（样式与岗位技术图谱 stack 视图一致）
+    var nodes = [], edges = [];
+    var centerId = 'ab-center';
+    nodes.push({ id: 'ab-center-halo', label: '', type: 'decor', x: w / 2, y: h / 2, size: 132, baseSize: 132, style: { fill: 'rgba(255,255,255,0)', stroke: 'rgba(212,175,55,.28)', lineWidth: 1.6, lineDash: [6, 5], shadowColor: 'rgba(212,175,55,.5)', shadowBlur: 18 } });
+    var centerStyle = { fill: 'l(0) 0:#D9A92E 1:#F0C75C', stroke: '#A87B1E', lineWidth: 4, shadowColor: 'rgba(212,175,55,.8)', shadowBlur: 32 };
+    nodes.push({ id: centerId, label: '我的能力', type: 'center', x: w / 2, y: h / 2, size: 78, baseSize: 78, style: centerStyle, baseStyle: centerStyle, labelCfg: { position: 'center', style: { fill: '#fff', fontSize: 14, fontWeight: 700, fontFamily: 'var(--font-sans),sans-serif', textAlign: 'center', lineHeight: 22 } } });
+
+    groups.forEach(function(g) {
+        // 分类背景盒
+        if (g.boxW && g.boxH) {
+            nodes.push({ id: g.id + '-box', label: '', type: 'rect', boxNode: true, x: g.boxX + g.boxW / 2, y: g.boxY + g.boxH / 2, size: [g.boxW, g.boxH], style: { fill: 'rgba(8,16,28,.42)', stroke: g.catColor, lineWidth: 1.4, radius: 14, shadowColor: 'rgba(212,175,55,.16)', shadowBlur: 14 } });
+        }
+        // 分类标题条
+        var catSize = [g.boxW || 140, g.catTitleH || 38];
+        var catStyle = { fill: 'l(0) 0:' + g.catColor + ' 1:rgba(26,24,20,.82)', stroke: 'rgba(255,235,180,.75)', lineWidth: 2.5, radius: 12, shadowColor: 'rgba(212,175,55,.5)', shadowBlur: 14 };
+        nodes.push({ id: g.id, label: '◆ ' + g.name, type: 'rect', x: g.calcX, y: g.calcY, size: catSize, baseSize: catSize.slice(), catColor: g.catColor, catName: g.catName, style: catStyle, baseStyle: catStyle, labelCfg: { position: 'center', style: { fill: '#fff', fontSize: 17, fontWeight: 700, fontFamily: 'var(--font-sans),sans-serif', textShadowColor: 'rgba(0,0,0,.4)', textShadowBlur: 3 } } });
+        edges.push({ id: 'ab-e-c-' + g.id, source: centerId, target: g.id, type: 'line', style: { stroke: 'rgba(240,199,92,.55)', lineWidth: 2, lineDash: [6, 4], endArrow: false } });
+        // 技术卡片
+        g.techs.forEach(function(t) {
+            var tid = 'ab-t-' + t.id;
+            var techSize = [t.cardW || 112, 38];
+            var techStyle = { fill: 'l(0) 0:' + g.catColor + ' 1:rgba(20,18,15,.85)', stroke: 'rgba(255,235,180,.6)', lineWidth: 1.6, radius: 11, shadowColor: 'rgba(212,175,55,.3)', shadowBlur: 9 };
+            nodes.push({ id: tid, label: t.name, type: 'rect', isTech: true, x: t.calcX, y: t.calcY, size: techSize, baseSize: techSize.slice(), frequency: t.frequency, catColor: g.catColor, catName: g.catName, style: techStyle, baseStyle: techStyle, labelCfg: { position: 'center', style: { fill: '#fff', fontSize: 15, fontWeight: 600, fontFamily: 'var(--font-sans),sans-serif', textShadowColor: 'rgba(0,0,0,.55)', textShadowBlur: 4 } } });
+            edges.push({ id: 'ab-e-t-' + t.id, source: g.id, target: tid, type: 'line', style: { stroke: 'rgba(212,175,55,.4)', lineWidth: 1.1, lineDash: [3, 3], endArrow: false } });
+        });
+    });
+
+    // 4) 创建 G6 图谱（交互/高亮/防白与岗位图谱一致）
+    var graph = null;
+    try {
+        graph = new G6.Graph({
+            container: 'ability-graph-container',
+            width: w,
+            height: h,
+            modes: { default: ['drag-canvas', 'zoom-canvas', 'drag-node'] },
+            layout: false,
+            animate: true,
+            animateCfg: { duration: 600 },
+            defaultNode: { type: 'circle', labelCfg: { position: 'bottom', offset: 5, style: { fill: '#fff', fontSize: 10, fontWeight: 500, fontFamily: 'var(--font-sans),sans-serif' } } },
+            defaultEdge: { type: 'line', style: { stroke: 'rgba(255,214,102,.25)', lineWidth: 1, endArrow: false } },
+            nodeStateStyles: {
+                active: { fill: 'rgba(16,36,52,.96)', lineWidth: 3, stroke: '#FFD666', shadowColor: 'rgba(255,214,102,.9)', shadowBlur: 24 },
+                linked: { lineWidth: 2, stroke: 'rgba(255,214,102,.75)', shadowColor: 'rgba(255,214,102,.4)', shadowBlur: 12 },
+                inactive: { opacity: 0.12 }
+            },
+            edgeStateStyles: { active: { stroke: '#FFD666', lineWidth: 2, opacity: 1, shadowColor: 'rgba(255,214,102,.8)', shadowBlur: 10 }, linked: { stroke: 'rgba(255,214,102,.6)', lineWidth: 1.4, opacity: 0.85 }, inactive: { opacity: 0.06 } }
+        });
+        graph.data({ nodes: nodes, edges: edges });
+        graph.render();
+        setTimeout(function() { if (graph && graph.fitView) graph.fitView(28); }, 400);
+        st.graph = graph;
+    } catch (e) {
+        console.error('[ability] graph init:', e);
+        talentAbilityRenderError('能力图谱渲染失败<br>请稍后重试');
+        return;
+    }
+
+    // 5) Hover 联动高亮（active 深色防白 + 关联高亮 + 非关联弱化）
+    function highlightGraph(model) {
+        if (!graph || !model) return;
+        var linkedNodeIds = {}, linkedEdgeIds = {};
+        graph.getEdges().forEach(function(edge) {
+            var em = edge.getModel();
+            if (em.source === model.id || em.target === model.id) {
+                linkedEdgeIds[em.id] = true;
+                if (em.source !== model.id) linkedNodeIds[em.source] = true;
+                if (em.target !== model.id) linkedNodeIds[em.target] = true;
+            }
+        });
+        graph.getNodes().forEach(function(node) {
+            var nm = node.getModel();
+            if (nm.type === 'decor' || nm.boxNode) return;
+            graph.clearItemStates(node, ['active', 'linked', 'inactive']);
+            if (nm.id === model.id) {
+                if (nm.type !== 'center') graph.setItemState(node, 'active', true);
+                if (nm.baseSize) {
+                    var bz = nm.baseSize;
+                    var hoverStyle = (nm.type === 'center')
+                        ? { lineWidth: 4, shadowColor: 'rgba(212,175,55,.9)', shadowBlur: 36 }
+                        : { fill: 'rgba(16,36,52,.96)', stroke: '#FFD666', lineWidth: 3, shadowColor: 'rgba(255,214,102,.9)', shadowBlur: 24 };
+                    graph.updateItem(node, { size: Array.isArray(bz) ? [bz[0] * 1.18, bz[1] * 1.18] : bz * 1.35, style: hoverStyle });
+                }
+            } else if (linkedNodeIds[nm.id]) {
+                graph.setItemState(node, 'linked', true);
+            } else {
+                graph.setItemState(node, 'inactive', true);
+            }
+        });
+        graph.getEdges().forEach(function(edge) {
+            var em = edge.getModel();
+            graph.clearItemStates(edge, ['active', 'linked', 'inactive']);
+            if (linkedEdgeIds[em.id]) graph.setItemState(edge, 'active', true);
+            else graph.setItemState(edge, 'inactive', true);
+        });
+    }
+    function resetHighlight() {
+        if (!graph) return;
+        graph.getNodes().forEach(function(node) {
+            var nm = node.getModel && node.getModel();
+            if (!nm || nm.type === 'decor' || nm.boxNode) return;
+            graph.clearItemStates(node, ['active', 'linked', 'inactive']);
+            var patch = {};
+            if (nm.baseSize) {
+                var bz = nm.baseSize;
+                var changed = Array.isArray(bz) ? (nm.size && (Math.abs(nm.size[0] - bz[0]) > 0.5 || Math.abs(nm.size[1] - bz[1]) > 0.5)) : Math.abs(nm.size - bz) > 0.5;
+                if (changed) patch.size = bz;
+            }
+            if (nm.baseStyle && nm.style && (nm.style.fill !== nm.baseStyle.fill || nm.style.lineWidth !== nm.baseStyle.lineWidth || (nm.style.stroke || '') !== (nm.baseStyle.stroke || ''))) {
+                patch.style = nm.baseStyle;
+            }
+            if (patch.size || patch.style) graph.updateItem(node, patch);
+        });
+        graph.getEdges().forEach(function(edge) { graph.clearItemStates(edge, ['active', 'linked', 'inactive']); });
+    }
+
+    var tooltipEl = document.createElement('div');
+    tooltipEl.className = 'tech-node-tooltip';
+    tooltipEl.style.cssText = 'display:none;position:absolute;z-index:1000;background:rgba(10,14,34,.95);color:#fff;padding:9px 15px;border-radius:10px;font-size:12px;pointer-events:none;white-space:nowrap;border:1px solid rgba(212,175,55,.45);box-shadow:0 6px 22px rgba(0,0,0,.5),0 0 16px rgba(212,175,55,.22);backdrop-filter:blur(8px);';
+    container.appendChild(tooltipEl);
+
+    graph.on('node:mouseenter', function(evt) {
+        var model = evt.item && evt.item.getModel ? evt.item.getModel() : null;
+        if (!model || model.type === 'decor' || model.boxNode) { resetHighlight(); return; }
+        highlightGraph(model);
+        if (model.type === 'center') { tooltipEl.style.display = 'none'; return; }
+        tooltipEl.style.display = 'block';
+        if (model.isTech) {
+            tooltipEl.innerHTML = '<div style="font-size:14px;font-weight:700;color:#FFE9B0;line-height:1.5">' + model.label + '</div>'
+                + '<div style="font-size:11px;color:rgba(255,214,102,.72);margin-top:3px">岗位需求频次: ' + (model.frequency || 0) + '</div>';
+        } else {
+            tooltipEl.innerHTML = '<div style="font-size:13px;font-weight:600;color:#FFE9B0">' + (model.label || model.id) + '</div>';
+        }
+    });
+    graph.on('node:mouseleave', function() { tooltipEl.style.display = 'none'; resetHighlight(); });
+    graph.on('node:mousemove', function(evt) { tooltipEl.style.left = (evt.canvasX + 14) + 'px'; tooltipEl.style.top = (evt.canvasY - 24) + 'px'; });
+
+    // 6) 汇总与图例
+    var summary = document.getElementById('ability-graph-summary');
+    if (summary) summary.textContent = '共 ' + saved.length + ' 项能力 · ' + groups.length + ' 个技术领域';
+    var legend = document.getElementById('ability-graph-legend');
+    if (legend) {
+        legend.innerHTML = groups.map(function(g) {
+            return '<div class="legend-item"><span class="legend-dot" style="background:' + g.catColor + '"></span>' + g.name + '</div>';
+        }).join('');
+    }
+}
+
+window.talentAbilityGraphFit = function() {
+    var st = window.talentAbilityState;
+    if (st.graph && st.graph.fitView) st.graph.fitView(28);
+};
+
+window.talentAbilityClose = function() {
+    var st = window.talentAbilityState;
+    if (st.graph) { try { st.graph.destroy(); } catch(e) {} st.graph = null; }
+    st.open = false;
+    var modal = document.getElementById('ability-modal');
+    if (modal) modal.style.display = 'none';
 };

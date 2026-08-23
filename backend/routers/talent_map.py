@@ -14,6 +14,7 @@ from backend.services import (
     fetch_tech_detail,
     fetch_city_jobs_full,
     fetch_city_preview,
+    fetch_job_tech_graph,
 )
 
 router = APIRouter()
@@ -160,6 +161,29 @@ async def get_city_tech_graph(
         )
     if not data:
         raise HTTPException(status_code=404, detail=f"城市 {city_name} 无岗位数据")
+    return ok(data)
+
+
+@router.get("/job-tech-graph/")
+async def get_job_tech_graph(
+    job_title: str = Query(..., description="岗位名称，例如 数据分析师"),
+    industry: Optional[str] = Query(None),
+    education: Optional[str] = Query(None),
+    experience: Optional[str] = Query(None),
+):
+    """岗位级技术知识图谱（中心岗位→技术分类→技术 / 岗位级别→技术）。
+
+    数据完全来自该岗位真实 skills 字段，不混入城市级聚合，供岗位技术图谱/
+    技术栈/级别三个视图复用。
+    """
+    pool = await get_pool()
+    async with pool.acquire() as conn:
+        data = await fetch_job_tech_graph(
+            conn, job_title,
+            industry=industry, education=education, experience=experience,
+        )
+    if not data:
+        raise HTTPException(status_code=404, detail=f"岗位 {job_title} 无数据")
     return ok(data)
 
 

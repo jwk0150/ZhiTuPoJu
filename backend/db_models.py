@@ -20,7 +20,8 @@ from backend.db import Base
 
 
 class JobPosting(Base):
-    __tablename__ = "job_postings"
+    # 数据源已切换:通过 the_total_table 视图访问 the_total_table_copy1(38780 条)
+    __tablename__ = "the_total_table"
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
     source_name: Mapped[str] = mapped_column(String(32))

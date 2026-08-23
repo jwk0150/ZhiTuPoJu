@@ -4,10 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>执图破局 · 数字人才地图</title>
-  <link rel="stylesheet" href="../css/tokens.css" />
-  <link rel="stylesheet" href="../css/shell.css" />
-  <link rel="stylesheet" href="../css/components.css" />
-  <link rel="stylesheet" href="../css/legacy-views.css" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <link rel="stylesheet" href="../css/tokens.css?v=20260823d" />
+  <link rel="stylesheet" href="../css/shell.css?v=20260824a" />
+  <link rel="stylesheet" href="../css/components.css?v=20260824a" />
+  <link rel="stylesheet" href="../css/legacy-views.css?v=20260824a" />
   <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@antv/g6@4.8.24/dist/g6.min.js"></script>
 </head>
@@ -21,14 +24,21 @@
 <div class="subtitle">全国人才分布 · 省份岗位洞察 · 岗位-能力知识图谱 · <span id="talent-stats-text">--</span></div>
 </div>
 <div class="page-actions">
-<button class="btn" onclick="window.talentMapBack()" id="talent-back-btn" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>返回</button>
-<button class="btn btn-primary" id="talent-export-btn" onclick="window.exportData('graph')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="7 13 12 18 17 13"/><polyline points="7 6 12 11 17 6"/></svg>导出数据</button>
+<button class="btn btn-primary" id="talent-ability-btn" onclick="window.talentOpenAbility()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M5.5 20c.8-3.5 3.5-5.5 6.5-5.5s5.7 2 6.5 5.5"/></svg>我的能力</button>
 </div>
 </div>
 <div class="graph-layout">
 
 <!-- 中间可视化区 -->
 <div class="graph-canvas" id="talent-map-canvas">
+
+<!-- 统一返回操作区（地图左上角） -->
+<div id="talent-back-zone">
+<button class="btn" onclick="window.talentMapBack()" id="talent-back-btn" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>返回</button>
+<button class="btn" id="talent-province-back-btn" onclick="window.talentMapBack()" style="display:none">← 返回全国总览</button>
+<button class="graph-btn" id="talent-graph-back-btn" title="返回" onclick="window.talentGraphBack()" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button>
+<button class="btn" id="talent-detail-back-btn" onclick="window.talentMapBack()" style="display:none">← 返回地图</button>
+</div>
 
 <!-- 左侧边缘筛选触发标签 -->
 <div class="graph-filter-edge-tab" id="graph-filter-toggle" onclick="window.talentMapToggleFilter()" title="展开筛选">
@@ -98,9 +108,8 @@ onmouseleave="window.gangaZoomHover('澳门',false)">
 <circle class="ganga-dot" id="ganga-dot-mo" cx="0" cy="0" r="3"/>
 </svg>
 <!-- Layer 2: 省份岗位列表 -->
-<div class="talent-map-layer" id="talent-layer-province" style="display:none;width:100%;height:100%;overflow-y:auto;padding:20px">
+<div class="talent-map-layer" id="talent-layer-province" style="display:none;width:100%;height:100%;overflow-y:auto;padding:68px 0 20px">
 <div class="talent-province-header" style="display:flex;align-items:center;gap:12px">
-<button class="btn" onclick="window.talentMapBack()" style="flex-shrink:0;margin-bottom:8px">← 返回全国总览</button>
 <h2 id="talent-province-title" style="margin:0"></h2>
 </div>
 <div class="talent-province-stats" id="talent-province-stats"></div>
@@ -111,8 +120,12 @@ onmouseleave="window.gangaZoomHover('澳门',false)">
 <div style="width:100%;height:100%;position:relative;display:flex;flex-direction:column;min-width:0">
 <div class="graph-toolbar">
 <div class="graph-toolbar-left">
-<button class="graph-btn" title="返回" onclick="window.talentGraphBack()" style="margin-right:4px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button>
 <div class="graph-city-label" id="talent-graph-city-label">--</div>
+<div class="graph-mode-toggle" id="talent-graph-mode-toggle" style="display:none">
+<button class="graph-mode-bubble active" id="talent-graph-view-overview" title="当前岗位 → 所需技术 → 技术关联" onclick="window.talentSetJobGraphView('overview')">岗位技术图谱</button>
+<button class="graph-mode-bubble" id="talent-graph-view-stack" title="技术分类 → 层级归属关系" onclick="window.talentSetJobGraphView('stack')">技术栈</button>
+<button class="graph-mode-bubble" id="talent-graph-view-level" title="岗位级别 → 所需技术" onclick="window.talentSetJobGraphView('level')">级别</button>
+</div>
 </div>
 <div class="graph-actions">
 <button class="graph-btn" title="适应窗口" onclick="window.talentGraphFit()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></button>
@@ -161,7 +174,6 @@ onmouseleave="window.gangaZoomHover('澳门',false)">
 <button class="btn btn-primary" style="width:100%" id="talent-hover-btn" onclick="window.talentMapClickCurrent()">查看详情 →</button>
 </div>
 <div id="talent-detail-province" style="display:none;padding:20px">
-<button class="btn" style="margin-bottom:12px" onclick="window.talentMapBack()">← 返回地图</button>
 <h3 style="color:var(--text-dark);margin-bottom:4px" id="talent-prov-detail-name"></h3>
 <div style="font-size:12px;color:var(--text-muted);margin-bottom:14px" id="talent-prov-detail-sub"></div>
 <div class="detail-stat-grid" id="talent-prov-stats-grid"></div>
@@ -171,19 +183,58 @@ onmouseleave="window.gangaZoomHover('澳门',false)">
 <div style="height:140px" id="talent-prov-trend"></div>
 <button class="btn btn-primary" style="width:100%;margin-top:14px" onclick="window.talentMapEnterProvince()">进入省份岗位分析 →</button>
 </div>
+<div id="talent-detail-job" style="display:none;padding:20px"></div>
 </div>
 </div>
 </section>
+<!-- 我的能力弹窗（能力问卷 / 个人能力图谱） -->
+<div class="ability-modal-mask" id="ability-modal" style="display:none">
+<div class="ability-modal">
+<div class="ability-modal-head">
+<div class="ability-modal-title">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M5.5 20c.8-3.5 3.5-5.5 6.5-5.5s5.7 2 6.5 5.5"/></svg>
+<span id="ability-modal-title-text">我的能力</span>
+</div>
+<button class="ability-modal-close" onclick="window.talentAbilityClose()" title="关闭">✕</button>
+</div>
+<div class="ability-modal-body" id="ability-modal-body"></div>
+</div>
+</div>
   </main>
-  <script src="../js/api.js"></script>
-  <script src="../js/runtime-core.js"></script>
-  <script src="../js/cinema-bg.js"></script>
-  <script src="../js/cinema-music.js"></script>
-  <script src="../js/shell.js"></script>
-  <script src="../js/pages/map.js"></script>
+  <script src="../js/api.js?v=20260823c"></script>
+  <script src="../js/runtime-core.js?v=20260823c"></script>
+  <script src="../js/cinema-bg.js?v=20260823c"></script>
+  <script src="../js/cinema-music.js?v=20260823c"></script>
+  <script src="../js/shell.js?v=20260823c"></script>
+  <script src="../js/pages/map.js?v=20260823c"></script>
   <script>
     window.Shell && window.Shell.mount({ pageId: 'map', title: '数字人才地图', subtitle: '区域人才与岗位能力空间洞察' });
     if (typeof window.initTalentMap === 'function') window.initTalentMap();
+  </script>
+  <script>
+    // 「我的能力」按钮兜底：防止浏览器缓存旧版 map.js 导致 window.talentOpenAbility 缺失、点击无反应。
+    // 若页面加载后仍未找到能力入口函数，说明可能命中了旧缓存；此时用带时间戳的 URL
+    // 强制重新加载整个页面（绕过 HTML/JS/CSS 缓存），若二次加载仍缺失则明确提示。
+    (function () {
+      function hasAbilityHandler() {
+        return typeof window.talentOpenAbility === 'function';
+      }
+      function bootAbilityGuard() {
+        if (hasAbilityHandler()) return;
+        var already = /[?&]nocache=\d+/.test(location.search);
+        console.warn('[ability] window.talentOpenAbility 缺失（可能为旧缓存），正在强制刷新页面加载最新功能脚本');
+        if (already) {
+          alert('「我的能力」功能脚本未能加载，请按 Ctrl+Shift+R 强制刷新后重试。');
+          return;
+        }
+        location.replace(location.pathname + '?nocache=' + Date.now());
+      }
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', bootAbilityGuard);
+      } else {
+        setTimeout(bootAbilityGuard, 400);
+      }
+    })();
   </script>
 </body>
 </html>
