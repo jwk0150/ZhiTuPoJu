@@ -4,25 +4,36 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>智能问答</title>
-  <link rel="stylesheet" href="../css/tokens.css" />
-  <link rel="stylesheet" href="../css/legacy-views.css" />
+  <link rel="stylesheet" href="../css/tokens.css?v=48" />
+  <!-- Do not load legacy-views.css — its chat skins force white panels. -->
   <style>
     :root {
       --qa-pad: 12px;
+      --qa-gold: #ecc984;
+      --qa-ink: #e8f2f8;
+      --qa-muted: #8aa0b2;
+      --qa-line: rgba(255, 255, 255, 0.1);
+      --qa-panel: rgba(255, 255, 255, 0.05);
+      --qa-bg: #0a0e14;
     }
+    *, *::before, *::after { box-sizing: border-box; }
     html, body {
       margin: 0;
       height: 100%;
-      background: #f4f7f8;
+      background: var(--qa-bg) !important;
       font-family: var(--font-body, "DM Sans", "Noto Sans SC", sans-serif);
-      color: var(--text-dark, #0f172a);
+      color: var(--qa-ink);
       overflow: hidden;
     }
-    .qa-panel {
-      display: flex;
+    .qa-panel,
+    #view-qa {
+      display: flex !important;
       flex-direction: column;
       height: 100%;
       min-height: 0;
+      padding: 0;
+      margin: 0;
+      background: var(--qa-bg) !important;
     }
     .qa-panel-tools {
       display: flex;
@@ -30,23 +41,38 @@
       padding: 10px var(--qa-pad) 0;
       flex-shrink: 0;
     }
-    .qa-panel-tools .btn {
-      flex: 1;
+    .btn {
+      display: inline-flex;
+      align-items: center;
       justify-content: center;
+      gap: 6px;
+      flex: 1;
       padding: 8px 10px;
       font-size: 12px;
+      font-family: inherit;
+      border-radius: 10px;
+      cursor: pointer;
+      background: var(--qa-panel) !important;
+      border: 1px solid var(--qa-line) !important;
+      color: var(--qa-ink) !important;
     }
+    .btn-primary {
+      background: linear-gradient(135deg, rgba(236, 201, 132, 0.95), #c4a574) !important;
+      border-color: transparent !important;
+      color: #1a1208 !important;
+    }
+    .btn svg { width: 14px; height: 14px; }
     .qa-suggest-wrap {
       flex-shrink: 0;
-      padding: 10px var(--qa-pad) 8px;
-      border-bottom: 1px solid var(--border, #e2e8f0);
-      background: #fff;
+      padding: 10px var(--qa-pad) 10px;
+      border-bottom: 1px solid var(--qa-line);
+      background: transparent !important;
     }
     .qa-suggest-label {
       font-size: 11px;
       font-weight: 600;
-      color: var(--text-muted, #94a3b8);
-      letter-spacing: 0.04em;
+      color: var(--qa-muted);
+      letter-spacing: 0.06em;
       margin-bottom: 8px;
     }
     .qa-suggest-row {
@@ -59,30 +85,22 @@
     .qa-suggest {
       flex: 0 0 auto;
       max-width: 220px;
-      padding: 8px 10px;
+      padding: 9px 12px;
       border-radius: 10px;
-      background: #f1f5f9;
+      background: var(--qa-panel) !important;
+      border: 1px solid var(--qa-line) !important;
+      border-left: 3px solid transparent;
       font-size: 12px;
       line-height: 1.45;
-      color: var(--text-secondary, #64748b);
+      color: var(--qa-ink) !important;
       cursor: pointer;
-      border-left: 3px solid transparent;
       white-space: normal;
+      transition: border-color 0.2s, background 0.2s;
     }
     .qa-suggest:hover {
-      background: rgba(15, 168, 188, 0.1);
-      color: var(--text-dark, #0f172a);
-      border-left-color: var(--signal-deep, #0aa8bc);
-      transform: none;
-    }
-    #view-qa {
-      display: flex !important;
-      flex-direction: column;
-      height: 100%;
-      min-height: 0;
-      padding: 0;
-      margin: 0;
-      animation: none;
+      background: rgba(236, 201, 132, 0.1) !important;
+      color: var(--qa-gold) !important;
+      border-left-color: var(--qa-gold);
     }
     .qa-chat-card {
       flex: 1;
@@ -92,54 +110,118 @@
       margin: 0;
       border: 0;
       border-radius: 0;
-      background: transparent;
-      box-shadow: none;
+      background: transparent !important;
+      box-shadow: none !important;
     }
     .chat-area {
       flex: 1;
       min-height: 0;
       padding: 14px var(--qa-pad);
       overflow-y: auto;
-      background: linear-gradient(180deg, #fff 0%, #f8fafc 100%);
+      background: transparent !important;
     }
     .chat-msg {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 18px;
       max-width: 100%;
     }
+    .chat-msg.user { align-items: flex-end; }
+    .chat-msg.ai { align-items: flex-start; }
+    .chat-bubble {
+      max-width: 88%;
+      padding: 12px 14px;
+      border-radius: 14px 14px 14px 6px;
+      font-size: 13px;
+      line-height: 1.7;
+      background: rgba(255, 255, 255, 0.06) !important;
+      border: 1px solid var(--qa-line) !important;
+      color: var(--qa-ink) !important;
+      box-shadow: none !important;
+    }
+    .chat-msg.user .chat-bubble {
+      border-radius: 14px 14px 6px 14px;
+      background: rgba(236, 201, 132, 0.14) !important;
+      border-color: rgba(236, 201, 132, 0.28) !important;
+      color: var(--qa-gold) !important;
+    }
+    .chat-time,
+    .chat-meta {
+      font-size: 11px;
+      color: var(--qa-muted) !important;
+      margin-top: 4px;
+    }
+    .chat-section-h {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--qa-ink);
+      margin: 12px 0 8px;
+    }
+    .chat-source {
+      background: var(--qa-panel) !important;
+      border: 1px solid var(--qa-line);
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin-top: 12px;
+      color: var(--qa-ink);
+    }
+    .chat-source-title { font-size: 12px; font-weight: 600; color: var(--qa-ink); }
+    .chat-source-item { font-size: 11px; color: var(--qa-muted); padding: 3px 0; }
     .chat-input-area {
       flex-shrink: 0;
-      padding: 10px var(--qa-pad) 14px;
-      border-top: 1px solid var(--border, #e2e8f0);
-      background: #fff;
+      display: flex;
+      align-items: center;
       gap: 8px;
+      padding: 10px var(--qa-pad) 14px;
+      border-top: 1px solid var(--qa-line);
+      background: rgba(8, 12, 18, 0.92) !important;
     }
-    .chat-attach { display: none; }
+    .chat-attach { display: none !important; }
     .chat-input {
+      flex: 1;
       min-width: 0;
-      font-size: 13px;
       padding: 10px 14px;
+      font-size: 13px;
+      font-family: inherit;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.06) !important;
+      border: 1px solid var(--qa-line) !important;
+      color: var(--qa-ink) !important;
+      outline: none;
+    }
+    .chat-input::placeholder { color: var(--qa-muted); }
+    .chat-input:focus {
+      border-color: rgba(236, 201, 132, 0.45) !important;
+      box-shadow: 0 0 0 3px rgba(236, 201, 132, 0.12);
     }
     .chat-send {
       flex-shrink: 0;
-      padding: 10px 12px;
+      padding: 10px 14px;
       font-size: 12px;
+      font-weight: 700;
+      font-family: inherit;
+      border-radius: 999px;
+      background: linear-gradient(135deg, rgba(236, 201, 132, 0.95), #c4a574) !important;
+      border: none !important;
+      color: #1a1208 !important;
+      cursor: pointer;
     }
     .chat-send svg { width: 14px; height: 14px; }
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      border: 1px solid var(--border, #e2e8f0);
-      background: #fff;
-      border-radius: 8px;
-      cursor: pointer;
-      color: var(--text-dark, #0f172a);
+    .chat-thinking { display: flex; gap: 4px; padding: 6px 0; }
+    .thinking-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--qa-gold);
+      animation: think 1.4s infinite;
     }
-    .btn-primary {
-      background: linear-gradient(135deg, #1fc8d9, #0aa8bc);
-      border-color: transparent;
-      color: #fff;
+    .thinking-dot:nth-child(2) { animation-delay: 0.2s; }
+    .thinking-dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes think {
+      0%, 60%, 100% { opacity: 0.3; transform: scale(0.8); }
+      30% { opacity: 1; transform: scale(1.1); }
     }
-    .btn svg { width: 14px; height: 14px; }
+    @media (prefers-reduced-motion: reduce) {
+      .thinking-dot { animation: none; }
+    }
   </style>
 </head>
 <body>
@@ -175,7 +257,6 @@
   <script src="../js/pages/qa.js"></script>
   <script>
     window.initQA && window.initQA();
-    // drawer greeting: shorten first message for narrow panel
     if (window.qaState && window.qaState.chatHistory && window.qaState.chatHistory[0]) {
       window.qaState.chatHistory[0].content =
         '您好！我是图谱问答助手。可点上方推荐问题，或直接输入岗位/技能/薪资相关问题。';

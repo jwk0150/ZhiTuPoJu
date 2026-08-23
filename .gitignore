@@ -38,3 +38,6 @@ crawler/exports/
 
 # 本地注册用户（含密码，禁止入库）
 backend/data/
+
+# 本地 UI QA 截图（Playwright 调试产物，不入库）
+frontend/_qa/

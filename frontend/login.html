@@ -7,8 +7,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&family=Noto+Serif+SC:wght@600;700&display=swap" rel="stylesheet" />
-  <style>
-    :root {
+    <style>
+        :root {
       --c-cyan: #10C8D4;
       --c-sky: #1EA8E8;
       --c-blue: #0E56C2;
@@ -28,12 +28,12 @@
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { height: 100%; min-height: 100%; }
-    body {
+        body {
       font-family: var(--font);
       color: var(--ink);
       background: #EEF4F8;
       overflow-x: hidden;
-      -webkit-font-smoothing: antialiased;
+            -webkit-font-smoothing: antialiased;
     }
 
     .bg-scene {
@@ -45,7 +45,7 @@
       background: #C8E8F4;
     }
     .bg-photo {
-      position: absolute;
+            position: absolute;
       inset: -4%;
       background-image: image-set(
         url("assets/brand/login-bg.png?v=10") 1x,
@@ -96,8 +96,8 @@
       opacity: 0.72;
     }
     .bg-waves svg {
-      width: 100%;
-      height: 100%;
+            width: 100%;
+            height: 100%;
       display: block;
     }
     .bg-waves .w1 {
@@ -168,9 +168,9 @@
       z-index: 1;
       min-height: 100vh;
       min-height: 100dvh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
       padding: 40px 48px 52px;
     }
 
@@ -212,8 +212,8 @@
     }
 
     .brand-lockup {
-      display: flex;
-      align-items: center;
+            display: flex;
+            align-items: center;
       gap: 18px;
       margin-bottom: 32px;
       width: fit-content;
@@ -332,7 +332,7 @@
       width: 96px;
       height: 96px;
       object-fit: contain;
-      display: block;
+            display: block;
       will-change: transform, filter;
       transform-origin: 50% 50%;
       filter: drop-shadow(0 8px 18px rgba(11, 47, 83, 0.16));
@@ -361,7 +361,7 @@
     }
     .brand-wordmark .brand-chat {
       margin-top: 10px;
-      font-size: 14px;
+            font-size: 14px;
       font-weight: 600;
       line-height: 1.45;
       letter-spacing: 0.02em;
@@ -474,8 +474,8 @@
     .feature-slide {
       position: absolute;
       inset: 0;
-      display: flex;
-      align-items: center;
+            display: flex;
+            align-items: center;
       gap: 14px;
       opacity: 0;
       transform: translateY(10px) scale(0.98);
@@ -516,7 +516,7 @@
     }
     .feature-copy span {
       display: block;
-      font-size: 13px;
+            font-size: 13px;
       line-height: 1.45;
       color: #3A536B;
       font-weight: 500;
@@ -534,7 +534,7 @@
       padding: 0;
       border-radius: 999px;
       background: rgba(14, 86, 194, 0.22);
-      cursor: pointer;
+            cursor: pointer;
       transition: width .35s var(--ease-out), background .35s ease;
     }
     .feature-dots button.is-active {
@@ -615,11 +615,11 @@
       padding: 11px 0 12px;
       border-radius: 0;
       font: inherit;
-      font-size: 14px;
+            font-size: 14px;
       font-weight: 600;
       color: #6A829A;
-      cursor: pointer;
-      position: relative;
+            cursor: pointer;
+            position: relative;
       transition: color .2s;
     }
     .segment .tab.active {
@@ -724,17 +724,17 @@
 
     .btn-primary,
     .btn-ghost {
-      width: 100%;
+            width: 100%;
       height: 48px;
       border-radius: 14px;
       font: inherit;
       font-size: 15px;
       font-weight: 700;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
       transition: transform .18s var(--ease-out), box-shadow .18s, opacity .15s, background .15s;
       position: relative;
       z-index: 1;
@@ -758,21 +758,21 @@
     }
     .btn-ghost svg { width: 16px; height: 16px; color: var(--c-blue); }
 
-    .divider {
+        .divider {
       display: flex;
       align-items: center;
       gap: 14px;
       margin: 14px 0 11px;
       color: var(--muted);
       font-size: 12px;
-      position: relative;
+            position: relative;
       z-index: 1;
-    }
-    .divider::before,
-    .divider::after {
+        }
+        .divider::before,
+        .divider::after {
       content: "";
       flex: 1;
-      height: 1px;
+            height: 1px;
       background: var(--line);
     }
 
@@ -915,8 +915,8 @@
       .brand-wordmark .name { font-size: 26px; }
       .feature-bubble { border-radius: 22px; padding: 16px 16px 14px; }
       .feature-copy strong { font-size: 15px; }
-    }
-  </style>
+        }
+    </style>
 </head>
 <body>
   <div class="bg-scene" aria-hidden="true">
@@ -940,12 +940,12 @@
         </defs>
         <path class="w2" d="M0,220 C180,160 320,280 520,210 C720,140 880,260 1080,200 C1240,155 1360,180 1440,150 L1440,320 L0,320 Z"/>
         <path class="w1" d="M0,250 C220,190 380,300 560,240 C760,170 940,290 1140,230 C1280,190 1380,210 1440,190 L1440,320 L0,320 Z"/>
-      </svg>
-    </div>
+                </svg>
+            </div>
     <div class="bg-shimmer"></div>
     <div class="bg-grain"></div>
     <div class="bg-veil"></div>
-  </div>
+                </div>
   <div class="frame">
     <div class="stage">
       <section class="brand" aria-label="品牌与平台能力">
@@ -960,17 +960,17 @@
             <span class="logo-node logo-node--b" aria-hidden="true"></span>
             <div class="brand-mark-core">
               <img src="assets/brand/logo.png?v=14" width="96" height="96" alt="执图破局" />
+                </div>
             </div>
-          </div>
           <div class="brand-wordmark is-typing" id="brand-wordmark">
             <div class="name" aria-label="执图破局">
               <span class="typed" id="brand-name-typed"></span><span class="caret" id="brand-name-caret" aria-hidden="true"></span>
-            </div>
+        </div>
             <p class="brand-chat" aria-live="polite">
               <span class="typed" id="brand-intro-typed"></span><span class="caret is-done" id="brand-intro-caret" aria-hidden="true"></span>
             </p>
-          </div>
-        </div>
+                </div>
+                </div>
 
         <div class="brand-kicker enter" style="--d:.16s"><i></i>AI 数字人才地图平台</div>
         <h1 class="brand-headline enter" style="--d:.26s">让人才与机会更精准连接</h1>
@@ -984,20 +984,20 @@
               <article class="feature-slide is-active" data-i="0">
                 <div class="feature-icon" aria-hidden="true">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2 2 7l10 5 10-5-10-5z"/><path d="m2 17 10 5 10-5"/><path d="m2 12 10 5 10-5"/></svg>
-                </div>
+                        </div>
                 <div class="feature-copy">
                   <strong>数字人才地图</strong>
                   <span>区域供需与能力分布，一眼看清</span>
-                </div>
+                    </div>
               </article>
               <article class="feature-slide" data-i="1">
                 <div class="feature-icon" aria-hidden="true">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 7h-7l-2-2H4a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="m9 14 2 2 4-4"/></svg>
-                </div>
+                        </div>
                 <div class="feature-copy">
                   <strong>人岗智能匹配</strong>
                   <span>精准对齐能力与岗位</span>
-                </div>
+                    </div>
               </article>
               <article class="feature-slide" data-i="2">
                 <div class="feature-icon" aria-hidden="true">
@@ -1027,7 +1027,7 @@
         <div class="auth-head enter" style="--d:.38s">
           <h2>进入工作台</h2>
           <p>登录后可使用地图、演化、发现与匹配等模块</p>
-        </div>
+                    </div>
 
         <div class="segment enter" style="--d:.48s" role="tablist">
           <button type="button" class="tab active" data-tab="login" role="tab" aria-selected="true">登录</button>
@@ -1040,7 +1040,7 @@
             <div class="control">
               <span class="lead" aria-hidden="true">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-              </span>
+                        </span>
               <input id="login-username" type="text" placeholder="请输入用户名或邮箱" autocomplete="username" />
             </div>
           </div>
@@ -1053,13 +1053,13 @@
               <input id="login-password" type="password" placeholder="请输入密码" autocomplete="current-password" />
               <button type="button" class="trail" onclick="togglePassword('login-password')" aria-label="显示或隐藏密码">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-              </button>
-            </div>
-          </div>
+                    </button>
+                </div>
+                        </div>
           <div class="row-meta">
             <label class="remember"><input type="checkbox" id="remember-me" /><span>记住我</span></label>
             <a class="forgot" href="#" onclick="return false;">忘记密码？</a>
-          </div>
+                    </div>
           <div class="error" id="login-error"></div>
           <button type="button" class="btn-primary" onclick="handleLogin()"><span>登录</span></button>
           <div class="dev-skip" id="devSkip" hidden>
@@ -1078,34 +1078,34 @@
             <div class="control">
               <span class="lead" aria-hidden="true">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 0v2"/><circle cx="12" cy="7" r="4"/></svg>
-              </span>
+                            </span>
               <input id="reg-username" type="text" placeholder="3-20个字符" autocomplete="username" />
-            </div>
-          </div>
+                        </div>
+                    </div>
           <div class="field">
             <label for="reg-password">密码</label>
             <div class="control">
               <span class="lead" aria-hidden="true">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-              </span>
+                            </span>
               <input id="reg-password" type="password" placeholder="至少6位" autocomplete="new-password" />
               <button type="button" class="trail" onclick="togglePassword('reg-password')" aria-label="显示或隐藏密码">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
               </button>
-            </div>
-          </div>
+                        </div>
+                    </div>
           <div class="field">
             <label for="reg-password-confirm">确认密码</label>
             <div class="control">
               <span class="lead" aria-hidden="true">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-              </span>
+                        </span>
               <input id="reg-password-confirm" type="password" placeholder="再次输入密码" autocomplete="new-password" />
               <button type="button" class="trail" onclick="togglePassword('reg-password-confirm')" aria-label="显示或隐藏密码">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-              </button>
+                    </button>
+                </div>
             </div>
-          </div>
           <div class="error" id="register-error"></div>
           <button type="button" class="btn-primary" onclick="handleRegister()"><span>立即注册</span></button>
           <p class="legal">注册即代表同意<a href="#" onclick="return false;">《用户协议》</a>和<a href="#" onclick="return false;">《隐私政策》</a></p>
@@ -1114,7 +1114,7 @@
     </div>
   </div>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
-  <script>
+    <script>
     const API_BASE = window.API_BASE || ((location.hostname === '127.0.0.1' || location.hostname === 'localhost') ? 'http://127.0.0.1:5000' : location.origin);
 
     (function initLogoMotion() {
@@ -1314,113 +1314,113 @@
       input.type = input.type === 'password' ? 'text' : 'password';
     }
 
-    function devLogin() {
+        function devLogin() {
       if (!isLocalHost()) return;
-      localStorage.setItem('zhitu_user', JSON.stringify({
+            localStorage.setItem('zhitu_user', JSON.stringify({
         username: 'developer', role: 'dev', loginTime: Date.now()
-      }));
-      window.location.href = 'pages/home.html';
-    }
+            }));
+            window.location.href = 'pages/home.html';
+        }
 
-    async function handleLogin() {
-      const username = document.getElementById('login-username').value.trim();
-      const password = document.getElementById('login-password').value;
-      const errorEl = document.getElementById('login-error');
-      const btn = document.querySelector('#login-form .btn-primary');
-      errorEl.classList.remove('show');
-      if (!username || !password) {
-        errorEl.textContent = '请输入用户名和密码';
-        errorEl.classList.add('show');
-        return;
-      }
+        async function handleLogin() {
+            const username = document.getElementById('login-username').value.trim();
+            const password = document.getElementById('login-password').value;
+            const errorEl = document.getElementById('login-error');
+            const btn = document.querySelector('#login-form .btn-primary');
+            errorEl.classList.remove('show');
+            if (!username || !password) {
+                errorEl.textContent = '请输入用户名和密码';
+                errorEl.classList.add('show');
+                return;
+            }
       const original = btn.innerHTML;
-      btn.disabled = true;
+            btn.disabled = true;
       btn.innerHTML = '<span class="spin"></span><span>登录中...</span>';
-      try {
+            try {
         const res = await fetch(API_BASE + '/api/auth/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username, password })
-        });
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
         const result = await res.json();
-        if (result.code === 0) {
-          localStorage.setItem('zhitu_user', JSON.stringify(result.data));
+                if (result.code === 0) {
+                    localStorage.setItem('zhitu_user', JSON.stringify(result.data));
           btn.innerHTML = '<span>登录成功</span>';
           setTimeout(() => { window.location.href = 'pages/home.html'; }, 400);
-        } else {
-          btn.disabled = false;
+                } else {
+                    btn.disabled = false;
           btn.innerHTML = original;
-          errorEl.textContent = result.message || '登录失败';
-          errorEl.classList.add('show');
-        }
+                    errorEl.textContent = result.message || '登录失败';
+                    errorEl.classList.add('show');
+                }
       } catch (e) {
-        btn.disabled = false;
+                btn.disabled = false;
         btn.innerHTML = original;
-        errorEl.textContent = '网络错误，请稍后重试';
-        errorEl.classList.add('show');
-      }
-    }
+                errorEl.textContent = '网络错误，请稍后重试';
+                errorEl.classList.add('show');
+            }
+        }
 
-    async function handleRegister() {
-      const username = document.getElementById('reg-username').value.trim();
-      const password = document.getElementById('reg-password').value;
+        async function handleRegister() {
+            const username = document.getElementById('reg-username').value.trim();
+            const password = document.getElementById('reg-password').value;
       const confirm = document.getElementById('reg-password-confirm').value;
-      const errorEl = document.getElementById('register-error');
-      const btn = document.querySelector('#register-form .btn-primary');
-      errorEl.classList.remove('show');
-      if (!username || username.length < 3 || username.length > 20) {
-        errorEl.textContent = '用户名长度应为3-20个字符';
-        errorEl.classList.add('show');
-        return;
-      }
-      if (!password || password.length < 6) {
-        errorEl.textContent = '密码长度至少6位';
-        errorEl.classList.add('show');
-        return;
-      }
+            const errorEl = document.getElementById('register-error');
+            const btn = document.querySelector('#register-form .btn-primary');
+            errorEl.classList.remove('show');
+            if (!username || username.length < 3 || username.length > 20) {
+                errorEl.textContent = '用户名长度应为3-20个字符';
+                errorEl.classList.add('show');
+                return;
+            }
+            if (!password || password.length < 6) {
+                errorEl.textContent = '密码长度至少6位';
+                errorEl.classList.add('show');
+                return;
+            }
       if (password !== confirm) {
-        errorEl.textContent = '两次密码输入不一致';
-        errorEl.classList.add('show');
-        return;
-      }
+                errorEl.textContent = '两次密码输入不一致';
+                errorEl.classList.add('show');
+                return;
+            }
       const original = btn.innerHTML;
-      btn.disabled = true;
+            btn.disabled = true;
       btn.innerHTML = '<span class="spin"></span><span>注册中...</span>';
-      try {
+            try {
         const res = await fetch(API_BASE + '/api/auth/register', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username, password })
-        });
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
         const result = await res.json();
-        if (result.code === 0) {
+                if (result.code === 0) {
           btn.innerHTML = '<span>注册成功</span>';
-          setTimeout(() => {
-            document.querySelector('[data-tab="login"]').click();
-            document.getElementById('login-username').value = username;
-            btn.disabled = false;
+                    setTimeout(() => {
+                        document.querySelector('[data-tab="login"]').click();
+                        document.getElementById('login-username').value = username;
+                        btn.disabled = false;
             btn.innerHTML = original;
           }, 700);
-        } else {
-          btn.disabled = false;
+                } else {
+                    btn.disabled = false;
           btn.innerHTML = original;
-          errorEl.textContent = result.message || '注册失败';
-          errorEl.classList.add('show');
-        }
+                    errorEl.textContent = result.message || '注册失败';
+                    errorEl.classList.add('show');
+                }
       } catch (e) {
-        btn.disabled = false;
+                btn.disabled = false;
         btn.innerHTML = original;
-        errorEl.textContent = '网络错误，请稍后重试';
-        errorEl.classList.add('show');
-      }
-    }
+                errorEl.textContent = '网络错误，请稍后重试';
+                errorEl.classList.add('show');
+            }
+        }
 
-    document.addEventListener('keypress', (e) => {
+        document.addEventListener('keypress', (e) => {
       if (e.key !== 'Enter') return;
       const active = document.querySelector('.form-panel.active');
       if (active && active.id === 'login-form') handleLogin();
       else handleRegister();
     });
-  </script>
+    </script>
 </body>
 </html>

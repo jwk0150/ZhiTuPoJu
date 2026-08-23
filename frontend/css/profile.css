@@ -159,3 +159,78 @@
 
 .profile-page .app{max-width:960px;margin:0 auto;padding:8px 8px 48px;}
 .page-main.profile-page{background:var(--bg-deep,#080c14);min-height:calc(100vh - var(--topbar-h,56px));}
+
+/* 嵌入人岗匹配：透明底板，与登录后统一风格对齐 */
+.profile-page--embed{
+  background:transparent !important;
+  min-height:0;
+  color:var(--text-dark,#E8F2F8);
+}
+.profile-page--embed .app{max-width:none;padding:4px 2px 24px;}
+.profile-page--embed .hero,
+.profile-page--embed .kpi,
+.profile-page--embed .card,
+.profile-page--embed .entry-card,
+.profile-page--embed .interview-sidebar,
+.profile-page--embed .resume-item,
+.profile-page--embed .ai-proj-card{
+  background:transparent !important;
+  border-color:rgba(255,255,255,.1) !important;
+  box-shadow:none !important;
+}
+.profile-page--embed .hero{
+  border-bottom:1px solid rgba(255,255,255,.08);
+  border-radius:0;
+  margin-bottom:16px;
+  padding:18px 8px 20px;
+}
+.profile-page--embed .kpi-row{gap:0;margin-bottom:16px;border-top:1px solid rgba(255,255,255,.08);border-bottom:1px solid rgba(255,255,255,.08);}
+.profile-page--embed .kpi{
+  border-radius:0;
+  border:none;
+  border-right:1px solid rgba(255,255,255,.08);
+  padding:16px 12px;
+}
+.profile-page--embed .kpi:last-child{border-right:0;}
+.profile-page--embed .tabs{border-bottom-color:rgba(255,255,255,.1);}
+.profile-page--embed .tab.active{color:var(--brand-gold,#ecc984);}
+.profile-page--embed .tab.active::after{background:var(--brand-gold,#ecc984);}
+.profile-page--embed .hero-avatar{
+  background:linear-gradient(135deg,#ecc984,#c4a574);
+  color:#1a1208;
+  box-shadow:0 0 20px rgba(236,201,132,.25);
+}
+.profile-page--embed .hero-name{color:var(--brand-gold,#ecc984);font-family:"Noto Serif SC",var(--font-display);}
+.profile-page--embed .btn-primary{
+  background:linear-gradient(135deg,rgba(236,201,132,.95),#c4a574);
+  color:#1a1208;
+  border:none;
+}
+.profile-page--embed .completion-fill,
+.profile-page--embed .ai-skill-fill{
+  background:linear-gradient(90deg,#ecc984,#c4a574);
+}
+.profile-page--embed .completion-pct,
+.profile-page--embed .kpi-value.accent,
+.profile-page--embed .match-pct,
+.profile-page--embed .ai-score-val{
+  color:var(--brand-gold,#ecc984);
+}
+.profile-page--embed .hero-tag{
+  background:rgba(236,201,132,.1);
+  color:var(--brand-gold,#ecc984);
+  border-color:rgba(236,201,132,.25);
+}
+.profile-page--embed .form-group input,
+.profile-page--embed .form-group select,
+.profile-page--embed .form-group textarea,
+.profile-page--embed .chat-input{
+  background:rgba(255,255,255,.05);
+  border-color:rgba(255,255,255,.12);
+  color:var(--text-dark,#E8F2F8);
+}
+.profile-page--embed .card-header{border-bottom-color:rgba(255,255,255,.08);}
+.profile-page--embed .upload-zone{
+  background:rgba(255,255,255,.04);
+  border-color:rgba(236,201,132,.3);
+}

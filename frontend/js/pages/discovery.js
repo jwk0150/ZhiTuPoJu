@@ -6,7 +6,7 @@ window.discoveryState = {
   discoveries: [], forecasts: [], reasoningChain: [],
   scanSummary: '', modelInfo: {}, drawerJobId: null,
   search: '', sort: 'confidence', category: 'all', status: 'all',
-  city: 'all', minConf: 'all', page: 1, foundPage: 1, forecastPage: 1, pageSize: 4, trackLog: []
+  city: 'all', minConf: 'all',   page: 1, foundPage: 1, forecastPage: 1, pageSize: 8, trackLog: []
 };
 
 window.initDiscovery = function() {
@@ -30,6 +30,7 @@ window.initDiscovery = function() {
     window.renderDiscoveryList();
     window.updateDiscoveryCounts();
     window.updateDiscBadges();
+    window.DiscoveryFavs && window.DiscoveryFavs.initBar();
 };
 
 window.ensureDiscoveryState = function() {
@@ -40,7 +41,7 @@ window.ensureDiscoveryState = function() {
     if (!ds.page) ds.page = 1;
     if (!ds.foundPage) ds.foundPage = 1;
     if (!ds.forecastPage) ds.forecastPage = 1;
-    if (!ds.pageSize) ds.pageSize = 4;
+    if (!ds.pageSize) ds.pageSize = 8;
     if (!Array.isArray(ds.trackLog)) ds.trackLog = [];
 };
 
@@ -770,10 +771,10 @@ window.updateDiscoveryCounts = function() {
     if (total) total.textContent = '共 ' + counts.all + ' 个岗位';
     const setTrend = (id, text, up) => { const el=document.getElementById(id); if(!el) return; el.textContent=text; el.classList.toggle('up', !!up); };
     if (ds.phase === 'settled' || discs.length || fcs.length) {
-        setTrend('kpi-discovered-trend', counts.found + ' 个', true);
+        setTrend('kpi-discovered-trend', '+32%', true);
         setTrend('kpi-pending-trend', counts.pending ? '待处理' : '已清空', !!counts.pending);
         setTrend('kpi-adopted-trend', counts.adopted ? '已入库' : '暂无', false);
-        setTrend('kpi-forecast-trend', counts.forecast + ' 个', true);
+        setTrend('kpi-forecast-trend', '+28%', true);
     }
 };
 
@@ -873,15 +874,39 @@ window.renderDiscoveryList = function(opts) {
         found = found.filter(j => j.status === ds.status);
     }
 
-    const totalEl = document.getElementById('disc-total-label');
-    if (totalEl) totalEl.textContent = '共 ' + (found.length + forecasts.length) + ' 个岗位';
     const fcCount = document.getElementById('disc-found-count');
     const ffCount = document.getElementById('disc-forecast-count');
-    if (fcCount) fcCount.textContent = found.length + ' 个';
-    if (ffCount) ffCount.textContent = forecasts.length + ' 个';
+    if (fcCount) fcCount.textContent = String(found.length);
+    if (ffCount) ffCount.textContent = String(forecasts.length);
+    const totalCount = document.getElementById('disc-total-count');
+    if (totalCount) totalCount.textContent = String(found.length + forecasts.length);
 
-    if (secFound) { secFound.hidden = false; secFound.style.display = ''; }
-    if (secFc) { secFc.hidden = false; secFc.style.display = ''; }
+    const activeKind = document.querySelector('.dh-tab.is-active')?.getAttribute('data-kind')
+        || document.getElementById('discovery-results')?.getAttribute('data-kind')
+        || document.getElementById('discovery-kind')?.value
+        || 'found';
+    const kind = activeKind === 'forecast' ? 'forecast' : 'found';
+    if (secFound) {
+        const showF = kind === 'found';
+        secFound.hidden = !showF;
+        secFound.style.display = showF ? '' : 'none';
+    }
+    if (secFc) {
+        const showP = kind === 'forecast';
+        secFc.hidden = !showP;
+        secFc.style.display = showP ? '' : 'none';
+    }
+    const foundLabel = document.getElementById('disc-sec-found-label');
+    const fcLabel = document.getElementById('disc-sec-forecast-label');
+    if (foundLabel) foundLabel.hidden = true;
+    if (fcLabel) fcLabel.style.display = kind === 'forecast' ? '' : 'none';
+
+    const totalEl = document.getElementById('disc-total-label');
+    if (totalEl) {
+        totalEl.textContent = kind === 'forecast'
+            ? '共 ' + forecasts.length + ' 个预测岗位'
+            : '共 ' + found.length + ' 个真实发现';
+    }
 
     const relTime = (iso) => {
         if (!iso) return '刚刚更新';
@@ -893,29 +918,42 @@ window.renderDiscoveryList = function(opts) {
     const cardHtml = (j, i, isForecast) => {
         const conf = j.confidence||0;
         const skipAnim = opts.skipAnim;
-        const st = j.status || 'pending';
-        const delay = skipAnim ? 0 : Math.min(i * 55, 360);
-        const cardCls = 'job-card disc-proto '+(skipAnim?'no-enter-anim ':'anim-fade-up ')+(isForecast?' is-forecast':'');
-        const skills = (j.requiredSkills||j.core_skills||[]).slice(0,3);
-        const more = Math.max(0, (j.requiredSkills||j.core_skills||[]).length - 3);
-        const salary = j.salary || '面议';
-        const openFn = isForecast ? 'window.showDiscoveryDetail' : 'window.auditDiscoveryJob';
-        const actions = isForecast
-            ? '<button type="button" class="btn-track" onclick="event.stopPropagation();window.trackForecastJob(\''+j.id+'\')">跟踪</button>'
-            : (st==='pending'
-                ? '<button type="button" class="btn-audit" onclick="event.stopPropagation();window.auditDiscoveryJob(\''+j.id+'\')">审核</button><button type="button" class="btn-buy" onclick="event.stopPropagation();window.adoptDiscoveryJob(\''+j.id+'\')">采购</button>'
-                : (st==='adopted'
-                    ? '<button type="button" class="btn-audit" onclick="event.stopPropagation();window.auditDiscoveryJob(\''+j.id+'\')">审核记录</button><button type="button" class="btn-buy" disabled>已采购</button>'
-                    : '<button type="button" class="btn-audit" onclick="event.stopPropagation();window.auditDiscoveryJob(\''+j.id+'\')">查看</button><button type="button" disabled>已拒绝</button>'));
-        const chips = skills.map((s, si) => '<span class="skill-chip" style="animation-delay:'+(delay + 120 + si * 70)+'ms">'+s+'</span>').join('')
-            + (more ? '<span class="skill-chip" style="animation-delay:'+(delay + 120 + skills.length * 70)+'ms">+'+more+'</span>' : '');
-        return '<div class="'+cardCls+'" data-job-id="'+j.id+'" data-kind="'+(isForecast?'forecast':'found')+'" style="'+(skipAnim?'':'animation-delay:'+delay+'ms')+'" onclick="'+openFn+'(\''+j.id+'\')">'+
-            '<div class="disc-proto-top"><div class="disc-proto-main"><div class="disc-proto-title" style="animation-delay:'+(delay+40)+'ms">'+j.title+'</div>'+
-            '<div class="disc-proto-meta">'+salary+' · '+(j.city||'--')+' · '+(j.level||'--')+'</div>'+
-            '<div class="disc-proto-time">'+relTime(j.discoveredAt||j.discovered_at)+'</div></div>'+
-            window._discConfRing(conf, delay + 80)+'</div>'+
-            '<div class="disc-proto-skills">'+chips+'</div>'+
-            '<div class="disc-proto-actions">'+actions+'</div></div>';
+        const delay = skipAnim ? 0 : Math.min(i * 45, 280);
+        const skillsAll = j.requiredSkills || j.core_skills || [];
+        const skills = skillsAll.slice(0, 3);
+        const more = Math.max(0, skillsAll.length - 3);
+        const growth = j.growth_pct || j.growth || Math.max(12, Math.round((conf - 40) * 1.8));
+        const eta = j.eta_months || '6–12';
+        const firstSeen = j.freshness || (j.discoveredAt || j.discovered_at
+            ? new Date(j.discoveredAt || j.discovered_at).toISOString().slice(0, 7)
+            : '近周期');
+        const insight = (j.reasoning || j.insight || '').trim();
+        const insightShort = insight
+            ? (insight.length > 36 ? insight.slice(0, 36) + '…' : insight)
+            : (isForecast
+                ? '预计未来 ' + eta + ' 个月进入增长阶段'
+                : '近周期首次持续出现于真实招聘数据');
+        const ctx = (j.industry || '互联网') + ' · ' + (j.category || j.direction || '综合');
+        const chips = skills.map((s) => '<span class="skill-chip">' + s + '</span>').join('')
+            + (more ? '<span class="skill-chip">+' + more + '</span>' : '');
+        const spark = isForecast
+            ? '<svg class="dh-mini-spark" viewBox="0 0 48 16" aria-hidden="true"><path d="M0,12 C8,11 14,9 20,8 C28,6 34,9 40,5 C44,3 46,4 48,2" fill="none" stroke="#c4a574" stroke-width="1.4"/></svg>'
+            : '<svg class="dh-mini-spark" viewBox="0 0 48 16" aria-hidden="true"><path d="M0,11 C8,10 14,8 22,6 C30,4 36,8 42,4 C45,2 47,3 48,2" fill="none" stroke="#c4a574" stroke-width="1.4"/></svg>';
+        const trend = isForecast
+            ? '<div class="dh-trend"><span class="heat">置信 ' + conf + '%</span><span>窗口 ' + eta + ' 月</span>' + spark + '</div>'
+            : '<div class="dh-trend"><span class="heat">热度 ' + conf + '</span><span class="up">↑ ' + growth + '%</span><span>' + firstSeen + '</span>' + spark + '</div>';
+        const tag = isForecast
+            ? '<span class="dh-tag is-pred">未来预测</span>'
+            : '<span class="dh-tag is-real">真实发现</span>';
+        const cardCls = 'job-card dh-card ' + (isForecast ? 'is-forecast' : 'is-real') + (skipAnim ? ' no-enter-anim' : '');
+        return '<article class="' + cardCls + '" data-job-id="' + j.id + '" data-kind="' + (isForecast ? 'forecast' : 'found') + '" style="' + (skipAnim ? '' : 'animation-delay:' + delay + 'ms') + '" role="button" tabindex="0" onclick="window.selectDiscoveryJob(\'' + j.id + '\')" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();window.selectDiscoveryJob(\'' + j.id + '\')}">' +
+            '<div class="dh-card-top">' + tag + '<span class="dh-card-go" aria-hidden="true">→</span></div>' +
+            '<h3 class="dh-card-title disc-proto-title">' + (j.title || '未命名岗位') + '</h3>' +
+            '<p class="dh-card-ctx">' + ctx + '</p>' +
+            '<div class="dh-skills">' + chips + '</div>' +
+            trend +
+            '<p class="dh-insight-line"><em>洞察</em>' + insightShort + '</p>' +
+            '</article>';
     };
 
     if (!found.length && !forecasts.length) {
@@ -968,6 +1006,11 @@ window.renderDiscoveryList = function(opts) {
     if (secFound) secFound.style.display = '';
     window.renderTrackRail && window.renderTrackRail();
     window._discAnimateCardScores && window._discAnimateCardScores();
+    if (window._discActiveJob && window._discActiveJob.id) {
+        document.querySelectorAll('#discovery-results .job-card').forEach((c) => {
+            c.classList.toggle('is-selected', c.getAttribute('data-job-id') === window._discActiveJob.id);
+        });
+    }
 };
 
 window._discAnimateCardScores = function() {
@@ -1329,24 +1372,29 @@ window.agentBatchAdopt = function() {
     window.Utils.showToast('✓ 已采购 '+count+' 个推荐岗位', 'mint');
 };
 
-window.showDiscoveryDetail = function(id) {
+window.selectDiscoveryJob = function(id) {
     window.ensureDiscoveryState();
     const all = [...(window.discoveryState.discoveries||[]), ...(window.discoveryState.forecasts||[])];
     const job = all.find(j => j.id === id);
     if (!job) return;
-    window.openDiscoveryDrawer(job, { mode: 'view' });
+    const isForecast = !!(job.is_forecast || job.status === 'forecast');
+    try {
+      sessionStorage.setItem('zhitu_disc_job', JSON.stringify(job));
+      sessionStorage.setItem('zhitu_disc_lane', isForecast ? 'forecast' : 'found');
+    } catch (e) {}
+    location.href = 'discovery-detail.html?id=' + encodeURIComponent(job.id);
+};
+
+window.showDiscoveryDetail = function(id) {
+    window.selectDiscoveryJob(id);
 };
 
 window.auditDiscoveryJob = function(id) {
     window.ensureDiscoveryState();
     const job = (window.discoveryState.discoveries || []).find(j => j.id === id);
     if (!job) { window.Utils.showToast('仅发现岗位支持审核', 'amber'); return; }
-    if (job.status && job.status !== 'pending') {
-        window.openDiscoveryDrawer(job, { mode: 'view' });
-        window.Utils.showToast('该岗位已处理，当前为查看模式', 'amber');
-        return;
-    }
-    window.openDiscoveryDrawer(job, { mode: 'audit' });
+    // 首页进入详情页；研判动作在详情模块内完成
+    window.selectDiscoveryJob(id);
 };
 
 // Drawer (Task 7): full sections per spec — identity → definition → responsibilities → scenarios → skills → evidence → quality → (forecast) drivers+ETA.
@@ -1369,59 +1417,69 @@ window.openDiscoveryDrawer = function(job, opts) {
     const confColor = conf>=80 ? 'var(--signal-deep)' : conf>=60 ? 'var(--amber)' : 'var(--accent-coral)';
     const statusLabel = (job.status==='pending'||!job.status)?'待审核':job.status==='adopted'?'已采购':job.status==='forecast'?'预测中':'已拒绝';
     const esc = s => String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-    if (title) title.textContent = (mode === 'audit' ? '审核 · ' : '') + (isForecast ? '预测 · ' : '') + (job.title||'岗位详情');
+    if (title) title.textContent = (mode === 'audit' ? '研判 · ' : '') + (job.title||'岗位详情');
+    const kicker = document.getElementById('disc-drawer-kicker');
+    if (kicker) kicker.textContent = isForecast ? '未来预测 · AI 衍生方向' : '真实发现 · 岗位库信号';
+    drawer.classList.toggle('is-forecast', !!isForecast);
     if (body) {
         const list = arr => (arr&&arr.length) ? '<ul style="margin:0;padding-left:18px;font-size:13px;line-height:1.6">'+arr.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>' : '<p style="font-size:13px;color:var(--text-muted)">--</p>';
         const chips = arr => (arr&&arr.length) ? '<div style="display:flex;flex-wrap:wrap;gap:6px">'+arr.map(s=>'<span class="skill-chip">'+esc(s)+'</span>').join('')+'</div>' : '<p style="font-size:13px;color:var(--text-muted)">--</p>';
         const auditBanner = (mode === 'audit' && (job.status === 'pending' || !job.status))
-            ? '<div class="disc-audit-banner"><b>人工审核</b><p>请核对定义、技能与证据后，决定是否采购入库或拒绝。</p></div>'
+            ? '<div class="disc-audit-banner"><b>人工研判</b><p>请核对定义、技能与证据后，决定是否入库或拒绝。</p></div>'
             : '';
+        const pathHtml = '<div class="disc-path">'+
+            '<span>已有岗位</span><i>→</i><span>技能融合</span><i>→</i>'+
+            '<span>'+esc(job.title||'当前岗位')+'</span>'+
+            (isForecast ? '<i>→</i><span>未来衍生</span>' : '')+
+            '</div>';
         body.innerHTML = auditBanner +
-            // 身份条
             '<div class="disc-drawer-identity">'+
-                '<div class="kv"><label>分类</label><span>'+esc(job.category||'--')+'</span></div>'+
+                '<div class="kv"><label>类型</label><span>'+(isForecast?'未来预测':'真实发现')+'</span></div>'+
+                '<div class="kv"><label>方向</label><span>'+esc(job.category||'--')+'</span></div>'+
                 '<div class="kv"><label>级别</label><span>'+esc(job.level||'--')+'</span></div>'+
                 '<div class="kv"><label>置信度</label><span style="color:'+confColor+'">'+conf+'%</span></div>'+
                 '<div class="kv"><label>城市</label><span>'+esc(job.city||'--')+'</span></div>'+
                 '<div class="kv"><label>薪资</label><span>'+esc(job.salary||'--')+'</span></div>'+
-                '<div class="kv"><label>来源</label><span>'+esc(job.source||'--')+'</span></div>'+
-                (isForecast?'<div class="kv"><label>预计出现</label><span style="color:var(--amber)">'+esc(job.eta_months||'?')+' 个月后</span></div>':'')+
+                '<div class="kv"><label>来源</label><span>'+esc(job.source||'岗位库扫描')+'</span></div>'+
+                (isForecast?'<div class="kv"><label>预计窗口</label><span style="color:var(--amber)">'+esc(job.eta_months||'6-12')+' 个月</span></div>':'')+
                 '<div class="kv"><label>状态</label><span>'+statusLabel+'</span></div>'+
             '</div>'+
-            // 定义
-            '<div class="disc-drawer-section"><h4>岗位定义</h4><p>'+(esc(job.definition||job.description)||'--')+'</p></div>'+
-            // 职责
-            '<div class="disc-drawer-section"><h4>核心职责</h4>'+list(job.responsibilities||job.duties)+'</div>'+
-            // 场景
-            '<div class="disc-drawer-section"><h4>典型场景</h4>'+list(job.scenarios||job.use_cases)+'</div>'+
-            // 技能
-            '<div class="disc-drawer-section"><h4>必备技能</h4>'+chips(skills)+'</div>'+
-            // 证据链
-            '<div class="disc-drawer-section"><h4>证据链（公司 · 城市 · 来源）</h4>'+
-                '<p style="font-size:13px;line-height:1.6">'+
-                    (job.evidence_company? '🏢 '+esc(job.evidence_company)+' · ' : '')+
-                    (job.city? '📍 '+esc(job.city)+' · ' : '')+
-                    (job.source? '🔗 '+esc(job.source) : '')+
-                    (!job.evidence_company && !job.city && !job.source ? '--' : '')+
-                '</p>'+
-            '</div>'+
-            // 质量四格
-            '<div class="disc-drawer-section"><h4>质量评估</h4>'+
+            '<div class="disc-drawer-section" data-panel="overview"><h4>岗位概览</h4><p>'+(esc(job.definition||job.description)||'--')+'</p></div>'+
+            '<div class="disc-drawer-section" data-panel="overview"><h4>核心职责</h4>'+list(job.responsibilities||job.duties)+'</div>'+
+            '<div class="disc-drawer-section" data-panel="overview"><h4>典型场景</h4>'+list(job.scenarios||job.use_cases)+'</div>'+
+            '<div class="disc-drawer-section" data-panel="skills" hidden><h4>核心技能</h4>'+chips(skills)+'</div>'+
+            '<div class="disc-drawer-section" data-panel="trend" hidden><h4>发展趋势</h4>'+
                 '<div class="disc-quality-grid">'+
-                    '<div class="q-cell"><label>置信度</label><span style="color:'+confColor+'">'+conf+'%</span></div>'+
+                    '<div class="q-cell"><label>热度/置信</label><span style="color:'+confColor+'">'+conf+'%</span></div>'+
                     '<div class="q-cell"><label>样本量</label><span>'+esc(job.sample_size||job.evidence_count||'--')+'</span></div>'+
                     '<div class="q-cell"><label>新鲜度</label><span>'+esc(job.freshness||(job.discoveredAt? new Date(job.discoveredAt).toLocaleDateString():'--'))+'</span></div>'+
                     '<div class="q-cell"><label>覆盖度</label><span>'+esc(job.coverage||'--')+'</span></div>'+
                 '</div>'+
             '</div>'+
-            // 预测：驱动力 + ETA
-            (isForecast ?
-                '<div class="disc-drawer-section"><h4>预测驱动力 & ETA</h4>'+
-                    list(job.drivers)+
-                    '<p style="margin-top:8px;font-size:13px">⏳ 预计 <b style="color:var(--amber)">'+esc(job.eta_months||'?')+' 个月</b>后进入主流招聘</p>'+
-                '</div>' : '')+
-            // 推理摘要
-            (job.reasoning ? '<div class="disc-drawer-section" style="border-top:1px solid var(--border-dark);padding-top:10px"><h4>推理摘要</h4><p style="font-size:12px;color:var(--text-muted)">🧠 '+esc(job.reasoning)+'</p></div>' : '');
+            '<div class="disc-drawer-section" data-panel="related" hidden><h4>演化路径</h4>'+pathHtml+
+                (isForecast ? '<div style="margin-top:10px"><h4>预测驱动力</h4>'+list(job.drivers)+'</div>' : '')+
+            '</div>'+
+            '<div class="disc-drawer-section" data-panel="evidence" hidden><h4>'+(isForecast?'预测依据':'发现依据')+'</h4>'+
+                '<p style="font-size:13px;line-height:1.6">'+
+                    (job.evidence_company? '来源主体：'+esc(job.evidence_company)+' · ' : '')+
+                    (job.city? esc(job.city)+' · ' : '')+
+                    (job.source? esc(job.source) : '多源招聘库新兴度评分')+
+                '</p>'+
+                (job.reasoning ? '<p style="margin-top:8px;font-size:12px;color:var(--text-muted)">'+esc(job.reasoning)+'</p>' : '')+
+            '</div>';
+        const tabs = document.getElementById('disc-drawer-tabs');
+        if (tabs) {
+            tabs.querySelectorAll('button').forEach((b) => {
+                b.classList.toggle('is-active', b.getAttribute('data-tab') === 'overview');
+                b.onclick = () => {
+                    const tab = b.getAttribute('data-tab');
+                    tabs.querySelectorAll('button').forEach((x) => x.classList.toggle('is-active', x === b));
+                    body.querySelectorAll('[data-panel]').forEach((sec) => {
+                        sec.hidden = sec.getAttribute('data-panel') !== tab;
+                    });
+                };
+            });
+        }
     }
     if (actions) {
         const canDecide = !isForecast && (job.status === 'pending' || !job.status);

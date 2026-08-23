@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>执图破局 · 岗位演化图谱</title>
+  <link rel="stylesheet" href="../css/tokens.css?v=50" />
+  <link rel="stylesheet" href="../css/shell.css?v=50" />
+  <link rel="stylesheet" href="../css/components.css?v=50" />
+  <link rel="stylesheet" href="../css/page-polish.css?v=50" />
+  <link rel="stylesheet" href="../css/discovery-evolve.css?v=4" />
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+</head>
+<body class="standalone-view de-cockpit-page" data-page="discovery">
+  <div id="app-shell"></div>
+  <main class="page-main page-main--cockpit" id="page-main">
+    <section class="view active de-page" id="view-discovery-evolve">
+
+      <nav class="de-crumb enter" style="--d:.02s" aria-label="探索路径">
+        <a href="discovery.html">新岗位发现</a>
+        <span aria-hidden="true">/</span>
+        <a href="#" id="de-back-detail">岗位详情</a>
+        <span aria-hidden="true">/</span>
+        <strong>岗位演化图谱</strong>
+        <em class="de-lane-note">真实发现线</em>
+      </nav>
+
+      <header class="de-hero enter" style="--d:.05s">
+        <div class="de-hero-main">
+          <div class="de-title-row">
+            <h1 class="de-title"><span id="de-job-title">岗位</span><span class="de-title-sep">·</span>岗位演化图谱</h1>
+            <span class="de-tag" id="de-tag">真实发现岗位</span>
+          </div>
+          <p class="de-sub">只解释真实发现岗位从哪来、关联到哪里。金色节点是示意方向，不会跳进预测线。</p>
+          <div class="de-meta" id="de-meta"></div>
+        </div>
+        <div class="de-hero-actions">
+          <a class="de-back" id="de-back-btn" href="#">← 返回岗位详情</a>
+          <button type="button" class="de-btn" id="de-export">导出图谱</button>
+        </div>
+      </header>
+
+      <div class="de-toolbar enter" style="--d:.08s">
+        <div class="de-views" role="tablist" aria-label="图谱视图">
+          <button type="button" class="is-active" data-view="evolve">演化图谱</button>
+          <button type="button" data-view="skill" disabled title="演示：能力迁移视图">能力迁移</button>
+          <button type="button" data-view="industry" disabled title="演示：行业图谱">行业图谱</button>
+        </div>
+        <div class="de-filters">
+          <label>
+            <span>时间维度</span>
+            <select id="de-range">
+              <option value="12">近 12 个月</option>
+              <option value="24" selected>近 24 个月</option>
+              <option value="36">近 36 个月</option>
+            </select>
+          </label>
+          <label>
+            <span>显示范围</span>
+            <select id="de-depth">
+              <option value="2">2 层关系</option>
+              <option value="3" selected>3 层关系</option>
+              <option value="4">4 层关系</option>
+            </select>
+          </label>
+        </div>
+        <div class="de-legend" aria-label="图例">
+          <span class="lg lg-hist"><i></i>相关已有岗位</span>
+          <span class="lg lg-real"><i></i>核心发现岗位</span>
+          <span class="lg lg-pred"><i></i>潜在方向（仅示意）</span>
+          <span class="lg lg-solid"><i></i>强关联</span>
+          <span class="lg lg-dash"><i></i>弱关联 / 预测</span>
+        </div>
+        <div class="de-tools">
+          <input type="search" id="de-search" placeholder="搜索岗位名称" autocomplete="off" />
+          <button type="button" class="de-btn ghost" id="de-reset">重置视图</button>
+        </div>
+      </div>
+
+      <div class="de-shell enter" style="--d:.12s">
+        <div class="de-canvas-wrap">
+          <div class="de-stage-label">
+            <span>已有基础岗位</span>
+            <span>能力演化</span>
+            <span>当前岗位</span>
+            <span>真实关联</span>
+            <span>潜在方向</span>
+          </div>
+          <div class="de-canvas" id="de-canvas" tabindex="0" aria-label="岗位演化主画布">
+            <svg class="de-edges" id="de-edges" aria-hidden="true"></svg>
+            <div class="de-nodes" id="de-nodes"></div>
+          </div>
+          <div class="de-zoom">
+            <button type="button" data-zoom="in" aria-label="放大">+</button>
+            <button type="button" data-zoom="out" aria-label="缩小">−</button>
+            <button type="button" data-zoom="fit" aria-label="适配">⊡</button>
+          </div>
+        </div>
+
+        <aside class="de-rail" aria-label="当前岗位演化面板">
+          <div class="de-rail-head">
+            <div class="de-rail-title-row">
+              <h2 id="de-rail-title">—</h2>
+              <span class="de-tag sm" id="de-rail-tag">真实发现</span>
+            </div>
+            <p id="de-rail-blurb">—</p>
+            <a class="de-link" id="de-open-detail" href="#">查看完整岗位详情 ›</a>
+          </div>
+
+          <div class="de-kpis" id="de-kpis"></div>
+
+          <div class="de-rail-block">
+            <h3>能力来源 TOP 5</h3>
+            <div class="de-bars is-hist" id="de-src-bars"></div>
+          </div>
+          <div class="de-rail-block">
+            <h3>能力迁移方向 TOP 5</h3>
+            <div class="de-bars is-real" id="de-mig-bars"></div>
+          </div>
+          <div class="de-rail-block">
+            <h3>未来演化路径</h3>
+            <ol class="de-path" id="de-path"></ol>
+          </div>
+          <div class="de-rail-charts">
+            <div class="de-mini-chart">
+              <h3>行业分布</h3>
+              <div id="de-industry-chart"></div>
+            </div>
+            <div class="de-mini-chart">
+              <h3>需求趋势</h3>
+              <div id="de-trend-chart"></div>
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      <div class="de-bottom enter" style="--d:.16s">
+        <section class="de-mod">
+          <h3>为什么产生这个岗位？</h3>
+          <p id="de-why">—</p>
+          <div class="de-stages" id="de-stages"></div>
+        </section>
+        <section class="de-mod">
+          <h3>关键能力变化</h3>
+          <div class="de-skill-delta" id="de-skill-delta"></div>
+        </section>
+        <section class="de-mod">
+          <h3>未来演化趋势</h3>
+          <div class="de-forecast-chart" id="de-forecast-chart"></div>
+        </section>
+      </div>
+    </section>
+  </main>
+  <script src="../js/api.js"></script>
+  <script src="../js/runtime-core.js"></script>
+  <script src="../js/cinema-bg.js"></script>
+  <script src="../js/cinema-music.js"></script>
+  <script src="../js/shell.js"></script>
+  <script src="../js/pages/discovery-evolve.js?v=3"></script>
+  <script>
+    window.Shell && window.Shell.mount({ pageId: 'discovery', title: '岗位演化图谱', subtitle: '新岗位发现' });
+    window.initDiscoveryEvolve && window.initDiscoveryEvolve();
+  </script>
+</body>
+</html>

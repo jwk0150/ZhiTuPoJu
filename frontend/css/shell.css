@@ -58,6 +58,15 @@ a {
   overflow: hidden;
 }
 
+.app-stage {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+
 /* ============ 顶部导航（简约三栏：左 brand / 中 nav / 右 user） ============ */
 .topnav {
   position: relative;
@@ -73,6 +82,31 @@ a {
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(18px) saturate(1.2);
   -webkit-backdrop-filter: blur(18px) saturate(1.2);
+}
+
+body:has(#cinema-bg) .app-frame {
+  padding: 0;
+}
+
+body:has(#cinema-bg) .app-stage {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  border-radius: 0;
+  background: rgba(5, 9, 11, 0.62);
+  border: none;
+  backdrop-filter: blur(16px) saturate(1.08);
+  -webkit-backdrop-filter: blur(16px) saturate(1.08);
+  box-shadow: none;
+  overflow: hidden;
+}
+
+body:has(#cinema-bg) .topnav {
+  background: transparent;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
 .topnav-left {
@@ -99,26 +133,28 @@ a {
 .topnav-brand {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  color: var(--text-dark);
+  gap: 12px;
+  color: var(--brand-gold);
   text-decoration: none;
 }
 
 .topnav-brand-logo {
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
-  background: center / cover no-repeat var(--brand-logo), rgba(255, 255, 255, 0.06);
+  object-fit: contain;
   flex-shrink: 0;
+  filter: drop-shadow(0 4px 12px rgba(72, 48, 12, 0.45));
 }
 
 .topnav-brand-title {
-  font-family: var(--font-display);
-  font-size: 15px;
+  font-family: "Noto Serif SC", "Songti SC", var(--font-display);
+  font-size: 17px;
   font-weight: 600;
-  color: var(--text-dark);
-  letter-spacing: 0.02em;
+  color: var(--brand-gold);
+  letter-spacing: 0.16em;
   white-space: nowrap;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.45);
 }
 
 .topnav-nav {
@@ -155,12 +191,12 @@ a {
 }
 
 .nav-item.active {
-  color: #fff;
+  color: var(--brand-gold-bright);
   font-weight: 600;
 }
 
 .nav-item.active svg {
-  color: var(--signal);
+  color: var(--brand-gold);
 }
 
 .topnav-user {
@@ -257,8 +293,8 @@ a {
 }
 
 .hub-tab.active {
-  background: linear-gradient(135deg, var(--signal), var(--signal-deep));
-  color: #fff;
+  background: linear-gradient(135deg, rgba(236, 201, 132, 0.95), #c4a574);
+  color: #1a1208;
 }
 
 .hub-panel {
@@ -352,7 +388,7 @@ a {
 .qa-drawer-title {
   font-size: 14px;
   font-weight: 700;
-  color: var(--text-dark);
+  color: #e8f2f8;
 }
 
 .qa-drawer-title small {
@@ -360,7 +396,7 @@ a {
   margin-top: 2px;
   font-size: 11px;
   font-weight: 500;
-  color: var(--text-muted);
+  color: #8aa0b2;
 }
 
 .qa-drawer-close {
@@ -406,6 +442,36 @@ a {
   overflow: auto;
   padding: 20px 22px 28px;
   background: transparent;
+}
+
+/* 登录后：顶栏与内容同一块透明黑底板 */
+body:has(#cinema-bg) .main-column {
+  padding: 0;
+  flex: 1;
+  min-height: 0;
+}
+
+body:has(#cinema-bg) .page-main {
+  margin: 0;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: none;
+}
+
+@media (max-width: 768px) {
+  body:has(#cinema-bg) .app-frame {
+    padding: 0;
+  }
+
+  body:has(#cinema-bg) .app-stage {
+    border-radius: 0;
+    backdrop-filter: blur(10px) saturate(1.05);
+    -webkit-backdrop-filter: blur(10px) saturate(1.05);
+    background: rgba(5, 9, 11, 0.72);
+  }
 }
 
 .page-main.page-main--embed {

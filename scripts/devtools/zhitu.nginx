@@ -1,6 +1,8 @@
+# Only reachable via SSH tunnel (listen localhost).
+# Access: ssh -N -L 8080:127.0.0.1:80 dbtunnel@SERVER  →  http://127.0.0.1:8080/
 server {
-    listen 80 default_server;
-    listen [::]:80 default_server;
+    listen 127.0.0.1:80 default_server;
+    listen [::1]:80 default_server;
     server_name _;
 
     root /opt/zhitu/frontend;

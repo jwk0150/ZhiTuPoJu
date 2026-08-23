@@ -1,0 +1,21 @@
+﻿---
+description: Always apply luxury-grade frontend craft and continuous motion to all UI work
+alwaysApply: true
+---
+
+# Frontend craft (global) — default for ALL UI
+
+**Default, not optional:** any frontend / UI / page / CSS / layout / login / landing / dashboard / visual polish / animation / background / redesign task MUST follow:
+
+1. `exceptional-frontend`
+2. `frontend-design`
+3. `luxury-brand-motion`
+
+Do **not** wait for the user to say 奢侈品、宣传片、精美、动效. Similar or weaker wording (“改一下页面”“好看点”“加动画”“登录页”“做个界面”) still triggers the full bar.
+
+Mandatory:
+
+- Call external tools/MCP (Mavis, GenerateImage, WebSearch/WebFetch, Playwright) as those skills require
+- Screenshot or image-read before claiming done
+- No UI-mockup-as-background
+- Continuous ambient + orchestrated enter; respect prefers-reduced-motion
