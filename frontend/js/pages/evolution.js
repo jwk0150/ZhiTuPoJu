@@ -437,8 +437,13 @@ window.renderEvoTimelineChart = function(profile, range) {
         if (old) old.dispose();
     }
     const chart = window.echarts.init(dom);
+    // 左侧 Y 轴：能力总数（按数据动态上界，向上取整）
+    const totalMax = Math.max(10, Math.ceil(Math.max(...ys1) * 1.15 / 10) * 10);
+    // 右侧 Y 轴：新生变化的能力（按数据动态上界，至少 6，圆整到合适的整十/整五）
+    const newlyMaxRaw = Math.max(...ys2);
+    const newlyMax = Math.max(6, Math.ceil(newlyMaxRaw * 1.4 / 5) * 5);
     chart.setOption({
-        grid: { left: 40, right: 32, top: 34, bottom: 32 },
+        grid: { left: 44, right: 56, top: 34, bottom: 32 },
         tooltip: {
             trigger: 'axis',
             backgroundColor: 'rgba(15,25,40,0.92)',
@@ -469,18 +474,34 @@ window.renderEvoTimelineChart = function(profile, range) {
             axisLine: { lineStyle: { color: 'rgba(255,255,255,0.2)' } },
             axisLabel: { color: 'rgba(220,232,240,0.75)', fontSize: 11 }
         },
-        yAxis: {
-            type: 'value',
-            name: '能力项数',
-            nameTextStyle: { color: 'rgba(220,232,240,0.6)', fontSize: 11 },
-            min: 0,
-            axisLine: { show: false },
-            axisLabel: { color: 'rgba(220,232,240,0.6)', fontSize: 11 },
-            splitLine: { lineStyle: { color: 'rgba(255,255,255,0.08)', type: 'dashed' } }
-        },
+        yAxis: [
+            {
+                type: 'value',
+                name: '能力总数',
+                nameTextStyle: { color: 'rgba(220,232,240,0.6)', fontSize: 11 },
+                min: 0,
+                max: totalMax,
+                position: 'left',
+                axisLine: { show: false },
+                axisLabel: { color: 'rgba(220,232,240,0.6)', fontSize: 11 },
+                splitLine: { lineStyle: { color: 'rgba(255,255,255,0.08)', type: 'dashed' } }
+            },
+            {
+                type: 'value',
+                name: '新生变化的能力',
+                nameTextStyle: { color: 'rgba(220,232,240,0.6)', fontSize: 11 },
+                min: 0,
+                max: newlyMax,
+                position: 'right',
+                axisLine: { show: false },
+                axisLabel: { color: 'rgba(240,180,41,0.7)', fontSize: 11 },
+                splitLine: { show: false }
+            }
+        ],
         series: [
             {
                 name: '能力总数', type: 'line', smooth: true, data: ys1,
+                yAxisIndex: 0,
                 lineStyle: { color: '#1fc8d9', width: 2.5 },
                 itemStyle: { color: '#1fc8d9' },
                 areaStyle: { color: 'rgba(31,200,217,0.18)' },
@@ -502,7 +523,8 @@ window.renderEvoTimelineChart = function(profile, range) {
                 }
             },
             {
-                name: '发生变化的能力', type: 'line', smooth: true, data: ys2,
+                name: '新生变化的能力', type: 'line', smooth: true, data: ys2,
+                yAxisIndex: 1,
                 lineStyle: { color: '#F0B429', width: 2 },
                 itemStyle: { color: '#F0B429' },
                 symbol: 'circle', symbolSize: 5
