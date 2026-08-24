@@ -29,12 +29,11 @@
 
   const NAV = {
     primary: [
-      { id: 'home', label: '工作台' },
+      { id: 'news', label: '岗位大新闻' },
       { id: 'map', label: '数字人才地图' },
       { id: 'insight', label: '岗位洞察' },
       { id: 'discovery', label: '新岗位发现' },
-      { id: 'match', label: '人岗匹配' },
-      { id: 'news', label: '岗位大新闻' }
+      { id: 'match', label: '人岗匹配' }
     ],
     more: [
       { id: 'data', label: '数据底座' }
@@ -213,7 +212,7 @@
       '<div class="app-stage">' +
         '<header class="topnav">' +
           '<div class="topnav-left">' +
-            '<a class="topnav-brand" href="' + PAGE_HREF.home + '" aria-label="执图破局">' +
+            '<a class="topnav-brand" href="' + PAGE_HREF.news + '" aria-label="执图破局">' +
               '<img class="topnav-brand-logo" src="' + logoSrc + '" width="36" height="36" alt="" />' +
               '<span class="topnav-brand-title">执图破局</span>' +
             '</a>' +
