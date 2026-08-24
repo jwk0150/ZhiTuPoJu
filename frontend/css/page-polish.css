@@ -2597,8 +2597,11 @@ body[data-page="insight"] #view-evolution .evo-important-card {
 }
 /* 右侧栏：压缩标题与列表，必要时内部滚动避免撑高页面 */
 body[data-page="insight"] #view-evolution .evo-new-side {
-  gap: 12px;
-  max-height: calc(100vh - 84px);
+  gap: 0;
+  max-height: calc(100vh - 60px);
+}
+body[data-page="insight"] #view-evolution .evo-new-side .evo-insight-card {
+  margin-bottom: 12px;
 }
 body[data-page="insight"] #view-evolution .evo-insight-card,
 body[data-page="insight"] #view-evolution .evo-source-card {
