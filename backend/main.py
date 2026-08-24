@@ -3,13 +3,20 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from backend.routers import agent, collection, discovery, evolution, graph, matching, data, talent_map, auth, profile, trends
+from backend.routers import agent, collection, discovery, evolution, graph, matching, data, talent_map, auth, profile, trends, ability
 from backend.db_async import close_pool
 from backend.config import config
+from backend.init_database import ensure_view_only
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    # 启动时确保 the_total_table 视图指向 the_total_table_copy1（幂等）
+    try:
+        await ensure_view_only()
+    except Exception:
+        # 数据源未就绪时不阻断后端启动；后续请求会按情况报错
+        pass
     yield
     await close_pool()
 
@@ -72,3 +79,6 @@ app.include_router(profile.router, prefix="/api/profile", tags=["user-profile"])
 
 # 新增：趋势分析路由（仪表盘、岗位兴衰、AI推演、洞察）
 app.include_router(trends.router, prefix="/api/trends", tags=["trends"])
+
+# 新增：我的能力路由（技术目录 + 用户能力问卷/图谱）
+app.include_router(ability.router, prefix="/api/ability", tags=["ability"])

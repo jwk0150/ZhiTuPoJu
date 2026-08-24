@@ -1,0 +1,192 @@
+/* 收藏栏 · 黑金情报台 */
+.dd-fav-bar {
+  flex-shrink: 0;
+  margin-bottom: 8px;
+  padding: 8px 12px 7px;
+  border-radius: 12px;
+  border: 1px solid rgba(212, 176, 122, 0.18);
+  background:
+    linear-gradient(165deg, rgba(212, 176, 122, 0.08), transparent 46%),
+    rgba(10, 14, 20, 0.88);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.dd-fav-bar-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.dd-fav-bar-title {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: rgba(232, 242, 248, 0.92);
+}
+
+.dd-fav-bar-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 6px;
+  border-radius: 99px;
+  border: 1px solid rgba(212, 176, 122, 0.28);
+  background: rgba(212, 176, 122, 0.1);
+  font-family: var(--font-mono, monospace);
+  font-size: 10px;
+  font-weight: 700;
+  color: #e8c988;
+}
+
+.dd-fav-bar-track {
+  display: flex;
+  align-items: stretch;
+  gap: 6px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 2px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(212, 176, 122, 0.35) transparent;
+}
+
+.dd-fav-bar-track::-webkit-scrollbar {
+  height: 4px;
+}
+
+.dd-fav-bar-track::-webkit-scrollbar-thumb {
+  border-radius: 99px;
+  background: rgba(212, 176, 122, 0.35);
+}
+
+.dd-fav-bar-empty {
+  margin: 0;
+  padding: 2px 0 4px;
+  font-size: 11px;
+  line-height: 1.45;
+  color: rgba(232, 242, 248, 0.42);
+  white-space: nowrap;
+}
+
+.dd-fav-chip-wrap {
+  position: relative;
+  flex: 0 0 auto;
+  display: flex;
+  align-items: stretch;
+}
+
+.dd-fav-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 240px;
+  padding: 5px 28px 5px 8px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.24);
+  text-decoration: none;
+  transition:
+    border-color 0.22s ease,
+    background 0.22s ease,
+    box-shadow 0.22s ease;
+}
+
+.dd-fav-chip:hover {
+  border-color: rgba(212, 176, 122, 0.32);
+  background: rgba(212, 176, 122, 0.08);
+}
+
+.dd-fav-chip-wrap.is-active .dd-fav-chip {
+  border-color: rgba(240, 208, 128, 0.42);
+  background: linear-gradient(135deg, rgba(240, 208, 128, 0.14), rgba(0, 0, 0, 0.22));
+  box-shadow: 0 0 14px rgba(240, 208, 128, 0.16);
+}
+
+.dd-fav-chip .lane {
+  flex-shrink: 0;
+  padding: 1px 6px;
+  border-radius: 99px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+.dd-fav-chip.is-found .lane {
+  border: 1px solid rgba(212, 176, 122, 0.28);
+  background: rgba(212, 176, 122, 0.1);
+  color: #e8c988;
+}
+
+.dd-fav-chip.is-forecast .lane {
+  border: 1px solid rgba(196, 165, 116, 0.28);
+  background: rgba(196, 165, 116, 0.1);
+  color: #f0d080;
+}
+
+.dd-fav-chip .title {
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(232, 242, 248, 0.9);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dd-fav-chip .conf {
+  flex-shrink: 0;
+  font-family: var(--font-mono, monospace);
+  font-size: 9px;
+  color: rgba(232, 201, 136, 0.72);
+}
+
+.dd-fav-chip-rm {
+  position: absolute;
+  top: 50%;
+  right: 4px;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: none;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(232, 242, 248, 0.55);
+  font-size: 13px;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    color 0.2s ease,
+    background 0.2s ease;
+}
+
+.dd-fav-chip-rm:hover {
+  color: #fff0c8;
+  background: rgba(212, 176, 122, 0.22);
+}
+
+#view-discovery-detail .dd-fav-bar {
+  margin-bottom: 6px;
+}
+
+#view-discovery .dd-fav-bar {
+  margin-bottom: 14px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .dd-fav-bar {
+    animation: ddFavBarGlow 4.8s ease-in-out infinite alternate;
+  }
+}
+
+@keyframes ddFavBarGlow {
+  from {
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  }
+  to {
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.05),
+      0 0 18px rgba(212, 176, 122, 0.08);
+  }
+}

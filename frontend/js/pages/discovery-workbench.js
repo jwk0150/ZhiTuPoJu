@@ -75,14 +75,16 @@
       }
     };
 
-    // Card click → dedicated detail page
+    // 两条线互不串门：真实→详情；预测→直接进详情（无中间选择栏）
     window.selectDiscoveryJob = function (id) {
       window.ensureDiscoveryState();
       const all = [...(window.discoveryState.discoveries || []), ...(window.discoveryState.forecasts || [])];
       const job = all.find((j) => j.id === id);
       if (!job) return;
+      const isForecast = !!(job.is_forecast || job.status === 'forecast');
       try {
         sessionStorage.setItem('zhitu_disc_job', JSON.stringify(job));
+        sessionStorage.setItem('zhitu_disc_lane', isForecast ? 'forecast' : 'found');
       } catch (_) {}
       location.href = 'discovery-detail.html?id=' + encodeURIComponent(job.id);
     };

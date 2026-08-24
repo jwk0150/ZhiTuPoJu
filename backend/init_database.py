@@ -19,57 +19,12 @@ from backend.config import config
 
 USER_CENTER_SCHEMA = ROOT / "backend" / "sql" / "user_center_schema.sql"
 
-# 历史代码查询 the_total_table，而爬虫数据存储在两个规范化表中。
-# 该视图提供只读兼容层，避免复制或迁移既有岗位数据。
+# 当前数据源:the_total_table_copy1(实际业务表,共 38780 条)。
+# 历史代码通过 the_total_table 视图访问岗位数据;这里把视图指向新数据源,
+# 保持上层 SQL 完全不变。
 TOTAL_TABLE_VIEW_SQL = """
 CREATE OR REPLACE VIEW public.the_total_table AS
-SELECT
-    jp.id,
-    jp.source_name,
-    jp.source_id,
-    jp.source_id_hash,
-    jp.job_title,
-    jp.company_name,
-    jp.city,
-    jp.district,
-    jp.salary_min,
-    jp.salary_max,
-    jp.salary_unit,
-    jp.experience,
-    jp.education,
-    jp.job_type,
-    jp.publish_time,
-    jp.crawl_time,
-    jp.status,
-    jp.fingerprint,
-    jp.completeness,
-    jp.source_name AS data_source,
-    COALESCE(jpd.company_industry, '') AS industry_tags,
-    COALESCE(array_to_string(jpd.skills, ','), '') AS skills,
-    jpd.job_description,
-    jp.education AS qualification,
-    jp.experience AS work_experience,
-    NULL::text AS city_seed,
-    NULL::double precision AS sort_weight,
-    jpd.company_industry,
-    jpd.company_size,
-    jpd.company_nature,
-    jpd.job_requirement,
-    jpd.job_highlights,
-    jpd.job_labels,
-    jpd.benefits,
-    jpd.keywords,
-    jpd.job_category_l1,
-    jpd.job_category_l2,
-    jpd.job_category_l3,
-    jpd.work_mode,
-    jpd.company_address,
-    jpd.source_url,
-    jpd.extra,
-    jpd.created_at,
-    jpd.updated_at
-FROM public.job_postings AS jp
-LEFT JOIN public.job_posting_details AS jpd ON jpd.job_id = jp.id;
+SELECT * FROM public.the_total_table_copy1;
 """
 
 
@@ -86,9 +41,23 @@ async def initialize() -> None:
         schema_sql = schema_sql.replace("BEGIN;", "").replace("COMMIT;", "")
         async with conn.transaction():
             await conn.execute(schema_sql)
+            # 检查 the_total_table_copy1 是否存在
+            # 注意:relkind 是 char 类型,asyncpg 会返回 bytes;用 ::text 保证是 str
+            copy1_kind = await conn.fetchval(
+                """
+                SELECT c.relkind::text
+                FROM pg_class AS c
+                JOIN pg_namespace AS n ON n.oid = c.relnamespace
+                WHERE n.nspname = 'public' AND c.relname = 'the_total_table_copy1'
+                """
+            )
+            if copy1_kind is None:
+                raise RuntimeError(
+                    "public.the_total_table_copy1 不存在；请先创建/导入该表（含 38780 条数据）后再运行初始化。"
+                )
             relation_kind = await conn.fetchval(
                 """
-                SELECT c.relkind
+                SELECT c.relkind::text
                 FROM pg_class AS c
                 JOIN pg_namespace AS n ON n.oid = c.relnamespace
                 WHERE n.nspname = 'public' AND c.relname = 'the_total_table'
@@ -99,6 +68,50 @@ async def initialize() -> None:
                     "public.the_total_table 已存在但不是视图；为避免覆盖数据，未执行初始化。"
                 )
             await conn.execute(TOTAL_TABLE_VIEW_SQL)
+    finally:
+        await conn.close()
+
+
+async def ensure_view_only() -> None:
+    """轻量级：仅保证 the_total_table 视图指向 the_total_table_copy1。
+
+    用于后端启动时自动应用，配合 init_database() 的安全检查使用，
+    避免业务数据被覆盖。本函数不修改任何业务表，不创建 user_center schema。
+    """
+    conn = await asyncpg.connect(
+        host=config.PG_HOST,
+        port=config.PG_PORT,
+        user=config.PG_USER,
+        password=config.PG_PASSWORD,
+        database=config.PG_DB,
+    )
+    try:
+        # 确保源表存在
+        # 注意:relkind 是 char 类型,asyncpg 会返回 bytes;用 ::text 保证是 str
+        copy1_kind = await conn.fetchval(
+            """
+            SELECT c.relkind::text
+            FROM pg_class AS c
+            JOIN pg_namespace AS n ON n.oid = c.relnamespace
+            WHERE n.nspname = 'public' AND c.relname = 'the_total_table_copy1'
+            """
+        )
+        if copy1_kind is None:
+            # 数据源还未就绪，不强求视图存在，由调用方决定如何降级
+            return
+        relation_kind = await conn.fetchval(
+            """
+            SELECT c.relkind::text
+            FROM pg_class AS c
+            JOIN pg_namespace AS n ON n.oid = c.relnamespace
+            WHERE n.nspname = 'public' AND c.relname = 'the_total_table'
+            """
+        )
+        if relation_kind == "r":
+            # the_total_table 是真实表，不动它（避免覆盖业务数据）
+            return
+        # None 或者 'v' 都允许 CREATE OR REPLACE VIEW
+        await conn.execute(TOTAL_TABLE_VIEW_SQL)
     finally:
         await conn.close()
 

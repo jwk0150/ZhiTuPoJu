@@ -30,6 +30,7 @@ window.initDiscovery = function() {
     window.renderDiscoveryList();
     window.updateDiscoveryCounts();
     window.updateDiscBadges();
+    window.DiscoveryFavs && window.DiscoveryFavs.initBar();
 };
 
 window.ensureDiscoveryState = function() {
@@ -937,7 +938,7 @@ window.renderDiscoveryList = function(opts) {
             + (more ? '<span class="skill-chip">+' + more + '</span>' : '');
         const spark = isForecast
             ? '<svg class="dh-mini-spark" viewBox="0 0 48 16" aria-hidden="true"><path d="M0,12 C8,11 14,9 20,8 C28,6 34,9 40,5 C44,3 46,4 48,2" fill="none" stroke="#c4a574" stroke-width="1.4"/></svg>'
-            : '<svg class="dh-mini-spark" viewBox="0 0 48 16" aria-hidden="true"><path d="M0,11 C8,10 14,8 22,6 C30,4 36,8 42,4 C45,2 47,3 48,2" fill="none" stroke="#3d9b94" stroke-width="1.4"/></svg>';
+            : '<svg class="dh-mini-spark" viewBox="0 0 48 16" aria-hidden="true"><path d="M0,11 C8,10 14,8 22,6 C30,4 36,8 42,4 C45,2 47,3 48,2" fill="none" stroke="#c4a574" stroke-width="1.4"/></svg>';
         const trend = isForecast
             ? '<div class="dh-trend"><span class="heat">置信 ' + conf + '%</span><span>窗口 ' + eta + ' 月</span>' + spark + '</div>'
             : '<div class="dh-trend"><span class="heat">热度 ' + conf + '</span><span class="up">↑ ' + growth + '%</span><span>' + firstSeen + '</span>' + spark + '</div>';
@@ -1376,9 +1377,12 @@ window.selectDiscoveryJob = function(id) {
     const all = [...(window.discoveryState.discoveries||[]), ...(window.discoveryState.forecasts||[])];
     const job = all.find(j => j.id === id);
     if (!job) return;
-    try { sessionStorage.setItem('zhitu_disc_job', JSON.stringify(job)); } catch (e) {}
-    const href = 'discovery-detail.html?id=' + encodeURIComponent(job.id);
-    location.href = href;
+    const isForecast = !!(job.is_forecast || job.status === 'forecast');
+    try {
+      sessionStorage.setItem('zhitu_disc_job', JSON.stringify(job));
+      sessionStorage.setItem('zhitu_disc_lane', isForecast ? 'forecast' : 'found');
+    } catch (e) {}
+    location.href = 'discovery-detail.html?id=' + encodeURIComponent(job.id);
 };
 
 window.showDiscoveryDetail = function(id) {

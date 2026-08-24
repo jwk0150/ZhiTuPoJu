@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="../css/shell.css?v=50" />
   <link rel="stylesheet" href="../css/components.css?v=50" />
   <link rel="stylesheet" href="../css/page-polish.css?v=50" />
-  <link rel="stylesheet" href="../css/discovery-evolve.css?v=1" />
+  <link rel="stylesheet" href="../css/discovery-evolve.css?v=4" />
   <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 </head>
@@ -23,6 +23,7 @@
         <a href="#" id="de-back-detail">岗位详情</a>
         <span aria-hidden="true">/</span>
         <strong>岗位演化图谱</strong>
+        <em class="de-lane-note">真实发现线</em>
       </nav>
 
       <header class="de-hero enter" style="--d:.05s">
@@ -31,7 +32,7 @@
             <h1 class="de-title"><span id="de-job-title">岗位</span><span class="de-title-sep">·</span>岗位演化图谱</h1>
             <span class="de-tag" id="de-tag">真实发现岗位</span>
           </div>
-          <p class="de-sub">追踪该岗位的来源、核心能力变化、关联岗位及未来潜在演化方向</p>
+          <p class="de-sub">只解释真实发现岗位从哪来、关联到哪里。金色节点是示意方向，不会跳进预测线。</p>
           <div class="de-meta" id="de-meta"></div>
         </div>
         <div class="de-hero-actions">
@@ -67,7 +68,7 @@
         <div class="de-legend" aria-label="图例">
           <span class="lg lg-hist"><i></i>相关已有岗位</span>
           <span class="lg lg-real"><i></i>核心发现岗位</span>
-          <span class="lg lg-pred"><i></i>未来预测岗位</span>
+          <span class="lg lg-pred"><i></i>潜在方向（仅示意）</span>
           <span class="lg lg-solid"><i></i>强关联</span>
           <span class="lg lg-dash"><i></i>弱关联 / 预测</span>
         </div>
@@ -84,7 +85,7 @@
             <span>能力演化</span>
             <span>当前岗位</span>
             <span>真实关联</span>
-            <span>未来预测</span>
+            <span>潜在方向</span>
           </div>
           <div class="de-canvas" id="de-canvas" tabindex="0" aria-label="岗位演化主画布">
             <svg class="de-edges" id="de-edges" aria-hidden="true"></svg>
@@ -156,7 +157,7 @@
   <script src="../js/cinema-bg.js"></script>
   <script src="../js/cinema-music.js"></script>
   <script src="../js/shell.js"></script>
-  <script src="../js/pages/discovery-evolve.js?v=1"></script>
+  <script src="../js/pages/discovery-evolve.js?v=3"></script>
   <script>
     window.Shell && window.Shell.mount({ pageId: 'discovery', title: '岗位演化图谱', subtitle: '新岗位发现' });
     window.initDiscoveryEvolve && window.initDiscoveryEvolve();
