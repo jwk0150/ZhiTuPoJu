@@ -864,7 +864,7 @@
       role: data.role || 'user',
       loginTime: Date.now()
     }));
-    window.location.href = 'pages/home.html';
+    window.location.href = 'pages/news/index.html';
   };
 
   const postAuth = async (path, body) => {

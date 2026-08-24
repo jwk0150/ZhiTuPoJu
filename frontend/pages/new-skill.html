@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>执图破局 · 新增技能详情</title>
+  <link rel="stylesheet" href="../css/tokens.css" />
+  <link rel="stylesheet" href="../css/shell.css" />
+  <link rel="stylesheet" href="../css/components.css" />
+  <link rel="stylesheet" href="../css/legacy-views.css" />
+  <link rel="stylesheet" href="../css/page-polish.css" />
+  <script src="../trends-mock.js" defer></script>
+</head>
+<body class="standalone-view" data-page="newSkill">
+  <div id="app-shell"></div>
+  <main class="page-main" id="page-main">
+    <section class="view active" id="view-newSkill">
+      <div class="page-header">
+        <a class="btn" id="ns-back-link" href="insight.html?v=2">← 返回演化分析</a>
+        <div class="page-title-block">
+          <h1>新增技能详情</h1>
+          <div class="subtitle">基于岗位能力演化趋势，深入分析新增技能的影响、趋势与关联</div>
+        </div>
+      </div>
+      <div class="ns-layout">
+        <aside class="card ns-sidebar">
+          <div class="card-header"><div class="card-title">岗位选择</div></div>
+          <div class="card-body">
+            <input type="text" class="input" id="ns-search" placeholder="搜索岗位名称">
+            <div class="lp-job-list" id="ns-job-list"></div>
+          </div>
+        </aside>
+        <div class="ns-main">
+          <div class="card ns-header-card">
+            <div class="card-body">
+              <div class="ns-skill-head">
+                <div class="ns-skill-info">
+                  <span class="new-badge">NEW</span>
+                  <span class="ns-skill-name" id="ns-skill-name">—</span>
+                  <span class="ns-skill-meta" id="ns-skill-meta">版本 — · 首次出现 — · 数据来源 —</span>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <div class="ns-stats-row">
+            <div class="card ns-stat-card">
+              <div class="card-body">
+                <div class="ns-stat-label">增长率（近3月）</div>
+                <div class="ns-stat-val ns-stat-up" id="ns-growth-val">+0%</div>
+                <div class="ns-mini-chart" id="ns-growth-chart"></div>
+              </div>
+            </div>
+            <div class="card ns-stat-card">
+              <div class="card-body">
+                <div class="ns-stat-label">影响等级</div>
+                <div class="ns-stat-val ns-stars" id="ns-impact-stars">★★☆☆☆</div>
+                <div class="ns-stat-sub" id="ns-impact-label">—</div>
+              </div>
+            </div>
+            <div class="card ns-stat-card">
+              <div class="card-body">
+                <div class="ns-stat-label">需求占比</div>
+                <div class="ns-stat-val" id="ns-ratio-val">0%</div>
+                <div class="ns-stat-sub">目前岗位需求占比</div>
+              </div>
+            </div>
+            <div class="card ns-stat-card">
+              <div class="card-body">
+                <div class="ns-stat-label">出源频率</div>
+                <div class="ns-stat-val" id="ns-freq-val">0 条JD</div>
+                <div class="ns-stat-sub">高频活跃性</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="ns-charts-row">
+            <div class="card">
+              <div class="card-header"><div class="card-title">需求趋势</div></div>
+              <div class="card-body"><div class="chart" id="ns-trend-chart"></div></div>
+            </div>
+            <div class="ns-right-col">
+              <div class="card">
+                <div class="card-header"><div class="card-title">关联技能</div></div>
+                <div class="card-body"><div class="ns-related-tags" id="ns-related"></div></div>
+              </div>
+              <div class="card">
+                <div class="card-header"><div class="card-title">典型JD示例</div></div>
+                <div class="card-body"><ul class="ns-jd-list" id="ns-jd-examples"></ul></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header"><div class="card-title">AI分析解读</div></div>
+            <div class="card-body"><div class="ns-ai-body" id="ns-ai-body">—</div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <script src="../js/api.js"></script>
+  <script src="../js/runtime-core.js"></script>
+  <script src="../js/cinema-bg.js?v=20260824mem"></script>
+  <script src="../js/perf-guard.js?v=1"></script>
+  <script src="../js/cinema-music.js?v=20260824mem"></script>
+  <script src="../js/shell.js"></script>
+  <script src="../js/pages/evolution.js"></script>
+  <script>
+    window.Shell && window.Shell.mount({ pageId: 'newSkill', title: '新增技能详情', subtitle: '能力演化与宏观趋势' });
+    // 返回链接使用统一路径，并加时间戳防止缓存
+    (function () {
+      var back = document.getElementById('ns-back-link');
+      if (back) {
+        var base = (window.PAGE_HREF && window.PAGE_HREF.evolution) || 'insight.html?v=2';
+        back.href = base + (base.indexOf('?') > -1 ? '&' : '?') + '_t=' + Date.now();
+      }
+    })();
+    function loadEcharts(cb) {
+      if (window.echarts) { cb(); return; }
+      if (window.__echartsLoading) { window.__echartsLoading.then(cb); return; }
+      window.__echartsLoading = new Promise(function (resolve) {
+        var s = document.createElement('script');
+        s.src = 'https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js';
+        s.async = true;
+        s.onload = function () { resolve(window.echarts); cb(); };
+        document.head.appendChild(s);
+      });
+    }
+    window.addEventListener('DOMContentLoaded', function () {
+      loadEcharts(function () {
+        try { window.initEvolution && window.initEvolution(); } catch (e) { console.error('[initEvolution]', e); }
+        try { window.initNewSkill && window.initNewSkill(); } catch (e) { console.error('[initNewSkill]', e); }
+      });
+    });
+  </script>
+</body>
+</html>
