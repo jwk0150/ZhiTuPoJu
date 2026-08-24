@@ -6,8 +6,8 @@
   function base() {
     const path = String(location.pathname || '').replace(/\\/g, '/');
     if (/\/pages\/more\//.test(path)) return '../../';
-    if (/\/pages\//.test(path)) return '../';
-    return '';
+    if (/\/pages\//.test(path) || /\/news\//.test(path)) return '../';
+    return './';
   }
 
   const B = base();

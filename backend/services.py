@@ -1,11 +1,7 @@
 """业务服务：从数据库聚合数据生成接口响应"""
-<<<<<<< HEAD
-import json
-=======
 import hashlib
 import json
 import random
->>>>>>> ebfe0503a88e347cada72195ca5a2fad8c551338
 import asyncpg
 from datetime import datetime, date, timedelta
 from typing import Optional, Dict, List, Any
@@ -15,15 +11,6 @@ from backend.mappings import (
     PROVINCE_CODE,
     categorize_job,
     parse_city_to_province,
-<<<<<<< HEAD
-)
-
-
-async def fetch_provinces_summary(conn: asyncpg.Connection) -> dict:
-    """全国省份聚合数据：每个省份的岗位总数、热门指数、增长率"""
-    # 1) 按省份聚合岗位数（先解析 city→province）
-    rows = await conn.fetch("""
-=======
     JOB_CATEGORY_RULES,
 )
 
@@ -79,36 +66,24 @@ async def fetch_provinces_summary(
 
     # 1) 按省份聚合岗位数（先解析 city→province）
     city_sql = f"""
->>>>>>> ebfe0503a88e347cada72195ca5a2fad8c551338
         SELECT
           city,
           count(*)::int AS cnt,
           avg((salary_min + salary_max) / 2.0) AS avg_salary,
           count(DISTINCT job_title)::int AS distinct_titles
-<<<<<<< HEAD
-        FROM job_postings
-        WHERE city IS NOT NULL AND city <> ''
-        GROUP BY city
-    """)
-    # 聚合到省份
-=======
         FROM the_total_table
         WHERE city IS NOT NULL AND city <> '' AND ({filter_where})
         GROUP BY city
     """
     rows = await conn.fetch(city_sql, *filter_params)
     # 聚合到省份（region 指定时仅保留该省）
->>>>>>> ebfe0503a88e347cada72195ca5a2fad8c551338
     province_map: dict[str, dict] = {}
     for r in rows:
         prov = parse_city_to_province(r["city"])
         if not prov:
             continue
-<<<<<<< HEAD
-=======
         if region and prov != region:
             continue
->>>>>>> ebfe0503a88e347cada72195ca5a2fad8c551338
         if prov not in province_map:
             province_map[prov] = {
                 "jobCount": 0,
@@ -124,14 +99,6 @@ async def fetch_provinces_summary(
             m["salarySum"] += float(r["avg_salary"]) * r["cnt"]
             m["salaryN"] += r["cnt"]
         # distinct titles 不在这里算，单独查
-<<<<<<< HEAD
-    # 2) distinct titles
-    distinct_rows = await conn.fetch("""
-        SELECT city, job_title
-        FROM job_postings
-        WHERE city IS NOT NULL AND city <> ''
-    """)
-=======
     # 2) distinct titles（带过滤）
     distinct_sql = f"""
         SELECT city, job_title
@@ -139,29 +106,17 @@ async def fetch_provinces_summary(
         WHERE city IS NOT NULL AND city <> '' AND ({filter_where})
     """
     distinct_rows = await conn.fetch(distinct_sql, *filter_params)
->>>>>>> ebfe0503a88e347cada72195ca5a2fad8c551338
     title_set_by_prov: dict[str, set] = {}
     for r in distinct_rows:
         prov = parse_city_to_province(r["city"])
         if not prov:
             continue
-<<<<<<< HEAD
-=======
         if region and prov != region:
             continue
->>>>>>> ebfe0503a88e347cada72195ca5a2fad8c551338
         title_set_by_prov.setdefault(prov, set()).add(r["job_title"])
     for prov, s in title_set_by_prov.items():
         province_map[prov]["distinctTitles"] = len(s)
 
-<<<<<<< HEAD
-    # 3) 总数据统计
-    total = await conn.fetchval("SELECT count(*) FROM job_postings") or 0
-    distinct_jobs = await conn.fetchval("""
-        SELECT count(DISTINCT job_title) FROM job_postings
-    """) or 0
-    update_time = await conn.fetchval("SELECT max(crawl_time)::text FROM job_postings") or ""
-=======
     # 3) 总数据统计（带过滤）
     total_sql = f"SELECT count(*) FROM the_total_table WHERE ({filter_where})"
     total = await conn.fetchval(total_sql, *filter_params) or 0
@@ -169,7 +124,6 @@ async def fetch_provinces_summary(
     distinct_jobs = await conn.fetchval(distinct_sql_tot, *filter_params) or 0
     upd_sql = f"SELECT max(crawl_time)::text FROM the_total_table WHERE ({filter_where})"
     update_time = await conn.fetchval(upd_sql, *filter_params) or ""
->>>>>>> ebfe0503a88e347cada72195ca5a2fad8c551338
 
     # 4) 构建省份列表（34 省全补齐，没数据的给 0）
     max_jobcount = max((m["jobCount"] for m in province_map.values()), default=1)
@@ -200,8 +154,6 @@ async def fetch_provinces_summary(
             "cityCount": m["cityCount"],
         })
     provinces.sort(key=lambda x: -x["jobCount"])
-<<<<<<< HEAD
-=======
 
     # 5) 筛选下拉框可选项
     regions = list(PROVINCE_CODE.keys())
@@ -220,22 +172,11 @@ async def fetch_provinces_summary(
     jobs_rows = await conn.fetch("SELECT DISTINCT job_title FROM the_total_table WHERE job_title IS NOT NULL AND job_title != '' ORDER BY job_title LIMIT 200")
     jobs = [r['job_title'] for r in jobs_rows]
 
->>>>>>> ebfe0503a88e347cada72195ca5a2fad8c551338
     return {
         "updateTime": update_time,
         "totalJobs": int(total),
         "distinctJobs": int(distinct_jobs),
         "provinces": provinces,
-<<<<<<< HEAD
-    }
-
-
-async def fetch_province_detail(conn: asyncpg.Connection, province_id: str) -> Optional[dict]:
-    """省份详情：岗位TOP列表 + 7日趋势"""
-    # 反查省名
-    prov_name = next((n for n, c in PROVINCE_CODE.items() if c == province_id), None)
-    if not prov_name:
-=======
         "regions": regions,
         "industries": industries,
         "jobs": jobs,
@@ -264,28 +205,12 @@ async def fetch_province_detail(
                 prov_name = n
                 break
     if not prov_name:
->>>>>>> ebfe0503a88e347cada72195ca5a2fad8c551338
         return None
     # 该省所有城市
     prov_cities = [c for c, p in CITY_TO_PROVINCE.items() if p == prov_name]
     if not prov_cities:
         return None
 
-<<<<<<< HEAD
-    # 1) TOP 岗位（按出现次数）
-    title_rows = await conn.fetch(f"""
-        SELECT job_title, count(*)::int AS cnt,
-               avg((salary_min + salary_max)/2.0) AS avg_sal
-        FROM job_postings
-        WHERE city = ANY($1)
-          AND job_title IS NOT NULL AND job_title <> ''
-        GROUP BY job_title
-        ORDER BY cnt DESC
-        LIMIT 20
-    """, prov_cities)
-    top_jobs = []
-    for i, r in enumerate(title_rows):
-=======
     # 构建过滤条件
     filter_where, extra_params = _build_filter_where(
         industry=industry, job=job, education=education, experience=experience,
@@ -312,7 +237,6 @@ async def fetch_province_detail(
     top_jobs = []
     for i, r in enumerate(title_rows):
         _, caps = _infer_capabilities(r["job_title"])
->>>>>>> ebfe0503a88e347cada72195ca5a2fad8c551338
         top_jobs.append({
             "id": i + 1,
             "name": r["job_title"],
@@ -320,10 +244,7 @@ async def fetch_province_detail(
             "hot": 0.0,  # 先占位，下面统一基于最大 count 计算
             "avgSalary": round(float(r["avg_sal"]), 0) if r["avg_sal"] else 0,
             "category": categorize_job(r["job_title"]),
-<<<<<<< HEAD
-=======
             "skills": caps[:8],
->>>>>>> ebfe0503a88e347cada72195ca5a2fad8c551338
         })
     # 基于 max(count) 统一计算 hot
     if top_jobs:
@@ -331,24 +252,6 @@ async def fetch_province_detail(
         for j in top_jobs:
             j["hot"] = round(j["count"] / max_cnt * 85 + 15, 1)
 
-<<<<<<< HEAD
-    # 2) 按日趋势（基于 crawl_time::date）
-    trend_rows = await conn.fetch(f"""
-        SELECT crawl_time::date AS d,
-               count(*)::int AS cnt
-        FROM job_postings
-        WHERE city = ANY($1)
-          AND crawl_time IS NOT NULL
-        GROUP BY d
-        ORDER BY d
-    """, prov_cities)
-    # 补齐最近 7 天（数据时间范围可能不在 today，以 max(crawl_time) 为基准回溯 7 天）
-    # 先查该省数据的 crawl_time 最大值
-    latest_row = await conn.fetchval(f"""
-        SELECT max(crawl_time)::date FROM job_postings
-        WHERE city = ANY($1) AND crawl_time IS NOT NULL
-    """, prov_cities)
-=======
     # 2) 按日趋势（带过滤）
     trend_rows = await conn.fetch(f"""
         SELECT crawl_time::date AS d,
@@ -365,7 +268,6 @@ async def fetch_province_detail(
         SELECT max(crawl_time)::date FROM the_total_table
         WHERE city = ANY(ARRAY[{c_holders}]) AND crawl_time IS NOT NULL AND ({where_shifted})
     """, *all_params)
->>>>>>> ebfe0503a88e347cada72195ca5a2fad8c551338
     end_date = latest_row if latest_row else date.today()
     trend_map = {r["d"]: r["cnt"] for r in trend_rows}
     raw = []
@@ -491,8 +393,6 @@ async def fetch_job_graph(conn: asyncpg.Connection, job_id: str) -> dict:
     }
 
 
-<<<<<<< HEAD
-=======
 async def fetch_cities_summary(
     conn: asyncpg.Connection,
     province_name: str,
@@ -792,7 +692,6 @@ async def fetch_city_detail(
     return detail
 
 
->>>>>>> ebfe0503a88e347cada72195ca5a2fad8c551338
 def _idx_to_title(idx: int) -> str:
     """把 1-based 序号映射回常见岗位名"""
     titles = [
@@ -831,8 +730,6 @@ def _infer_capabilities(title: str) -> tuple[list[str], list[str]]:
     return (["专业技能", "沟通协作", "问题解决"], ["办公软件", "专业知识", "团队协作", "项目管理"])
 
 
-<<<<<<< HEAD
-=======
 # ============== 筛选选项 ==============
 
 async def fetch_filter_options(conn: asyncpg.Connection) -> Dict[str, Any]:
@@ -864,7 +761,6 @@ async def fetch_filter_options(conn: asyncpg.Connection) -> Dict[str, Any]:
     return {"regions": regions, "industries": industries, "jobs": jobs}
 
 
->>>>>>> ebfe0503a88e347cada72195ca5a2fad8c551338
 # ============== 数据上传/更新管理 ==============
 
 # 内存中临时存储上传预览数据（key = session_id）
@@ -1002,8 +898,6 @@ async def apply_update(session_id: str, updater: str = 'admin') -> Dict[str, Any
         'new_count': new_count,
         'modify_count': modify_count,
         'stats': stats,
-<<<<<<< HEAD
-=======
     }
 
 
@@ -1937,5 +1831,4 @@ async def fetch_city_preview(
         "industryDist": industry_dist,
         "isSupplemented": added > 0,
         "supplementedCount": added,
->>>>>>> ebfe0503a88e347cada72195ca5a2fad8c551338
     }

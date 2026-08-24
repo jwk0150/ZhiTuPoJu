@@ -593,11 +593,6 @@ def build_gap_graph(profile: dict[str, Any], best_match: dict[str, Any]) -> dict
         source_id = "skill_" + re.sub(r"\W+", "_", skill.lower())
         edges.append({"source": source_id, "target": "target_job", "label": "直接匹配"})
     return {"nodes": nodes, "edges": edges}
-<<<<<<< HEAD
-
-
-def diagnose(filename: str, content: bytes, target_job_id: str | None = None) -> dict[str, Any]:
-=======
 def generate_perfect_resume(target_job: dict[str, Any], profile: dict[str, Any]) -> dict[str, Any]:
     """AI-generated ideal resume profile for the target position as benchmark."""
     system = """你是资深HR与岗位建模专家。基于目标岗位要求，推演该岗位"完美候选人"的画像，不得虚构具体人名。
@@ -766,7 +761,6 @@ def analyze_job_requirement(target_job: dict[str, Any]) -> dict[str, Any]:
 
 
 def diagnose(filename: str, content: bytes, target_job_id: str | None = None, mode: str = "b") -> dict[str, Any]:
->>>>>>> ebfe0503a88e347cada72195ca5a2fad8c551338
     document = extract_document(filename, content)
     profile, parse_meta = parse_resume(document["text"], filename)
     reviews, review_meta = _semantic_review(profile, data.JOBS)
@@ -781,8 +775,6 @@ def diagnose(filename: str, content: bytes, target_job_id: str | None = None, mo
     model_name = review_meta.get("llm") or parse_meta.get("llm") or "none"
     errors = [error for error in (parse_meta.get("error"), review_meta.get("error")) if error]
 
-<<<<<<< HEAD
-=======
     # New: Perfect Resume + Comparison + Job Analysis
     perfect_resume: dict[str, Any] = {}
     competitiveness: dict[str, Any] = {}
@@ -806,7 +798,6 @@ def diagnose(filename: str, content: bytes, target_job_id: str | None = None, mo
         except Exception as exc:
             errors.append(f"岗位分析失败: {exc}")
 
->>>>>>> ebfe0503a88e347cada72195ca5a2fad8c551338
     return {
         "profile": profile,
         "document": {key: value for key, value in document.items() if key != "text"},
@@ -814,21 +805,15 @@ def diagnose(filename: str, content: bytes, target_job_id: str | None = None, mo
         "selected_job_id": selected["job"]["id"],
         "gap_graph": gap_graph,
         "learning_path": learning_path,
-<<<<<<< HEAD
-=======
         "perfect_resume": perfect_resume,
         "competitiveness": competitiveness,
         "job_analysis": job_analysis,
->>>>>>> ebfe0503a88e347cada72195ca5a2fad8c551338
         "model": {
             "used": llm_used,
             "name": model_name,
             "mode": "deepseek-semantic" if llm_used else "local-fallback",
             "error": "；".join(errors)[:300] if errors else None,
-<<<<<<< HEAD
-=======
             "compare_error": compare_error,
->>>>>>> ebfe0503a88e347cada72195ca5a2fad8c551338
         },
         "trace": [
             {"key": "upload", "label": "文件校验", "status": "done"},
@@ -837,10 +822,7 @@ def diagnose(filename: str, content: bytes, target_job_id: str | None = None, mo
             {"key": "semantic", "label": "语义匹配", "status": "done" if reviews else "fallback"},
             {"key": "graph", "label": "图谱推理", "status": "done"},
             {"key": "plan", "label": "路径规划", "status": "done"},
-<<<<<<< HEAD
-=======
             {"key": "perfect", "label": "完美简历", "status": "done" if perfect_resume else ("fallback" if compare_error else "pending")},
             {"key": "compare", "label": "竞争力对比", "status": "done" if competitiveness else ("fallback" if compare_error else "pending")},
->>>>>>> ebfe0503a88e347cada72195ca5a2fad8c551338
         ],
     }

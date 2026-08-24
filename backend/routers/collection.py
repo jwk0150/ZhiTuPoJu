@@ -69,11 +69,7 @@ def get_sources():
                COUNT(DISTINCT company_name) AS company_count,
                ROUND(AVG(completeness), 1) AS avg_completeness,
                MAX(crawl_time) AS last_crawled_at
-<<<<<<< HEAD
-        FROM job_postings
-=======
         FROM the_total_table
->>>>>>> ebfe0503a88e347cada72195ca5a2fad8c551338
         GROUP BY source_name
         ORDER BY total_count DESC
     """
@@ -109,11 +105,7 @@ def get_collection_summary():
                ROUND(AVG(completeness), 1) AS avg_quality_score,
                COUNT(DISTINCT city) AS city_count,
                COUNT(DISTINCT company_name) AS company_count
-<<<<<<< HEAD
-        FROM job_postings
-=======
         FROM the_total_table
->>>>>>> ebfe0503a88e347cada72195ca5a2fad8c551338
         WHERE status = 0
     """
     rows = _pg_query(sql)
@@ -126,11 +118,7 @@ def get_collection_summary():
             COUNT(*) FILTER (WHERE crawl_time >= NOW() - INTERVAL '30 days'
                              AND crawl_time < NOW() - INTERVAL '7 days') AS aging,
             COUNT(*) FILTER (WHERE crawl_time < NOW() - INTERVAL '30 days') AS stale
-<<<<<<< HEAD
-        FROM job_postings
-=======
         FROM the_total_table
->>>>>>> ebfe0503a88e347cada72195ca5a2fad8c551338
         WHERE status = 0
     """
     fresh_rows = _pg_query(fresh_sql)
@@ -170,11 +158,7 @@ def get_cleaning_samples():
                p.experience, p.education, p.source_name,
                d.skills, d.job_description,
                p.completeness AS quality_score
-<<<<<<< HEAD
-        FROM job_postings p
-=======
         FROM the_total_table p
->>>>>>> ebfe0503a88e347cada72195ca5a2fad8c551338
         JOIN job_posting_details d ON d.job_id = p.id
         WHERE p.status = 0 AND d.skills IS NOT NULL
         ORDER BY p.crawl_time DESC

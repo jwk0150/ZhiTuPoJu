@@ -2,10 +2,7 @@ fastapi
 uvicorn[standard]
 pydantic
 psycopg[binary]
-<<<<<<< HEAD
-=======
 psycopg2-binary
->>>>>>> ebfe0503a88e347cada72195ca5a2fad8c551338
 httpx
 python-dotenv
 python-multipart

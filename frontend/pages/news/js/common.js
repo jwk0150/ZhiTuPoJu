@@ -1,7 +1,7 @@
 /* =========================================================================
  * 岗位大新闻 · 共享工具层
  * -------------------------------------------------------------------------
- * DOM 辅助 / 提示 / 数字动效 / 收藏 / 抽象视觉图 / 迷你趋势图
+ * DOM 辅助 / 提示 / 数字动效 / 收藏 / 抽象视觉图 / 格式化工具
  * ========================================================================= */
 (function () {
   'use strict';
@@ -41,7 +41,6 @@
     opts = opts || {};
     var decimals = opts.decimals != null ? opts.decimals : 0;
     var dur = opts.dur || 900;
-    var start = 0;
     var t0 = null;
     function fmt(v) {
       return decimals ? v.toFixed(decimals) : Math.round(v).toLocaleString('en-US');
@@ -50,19 +49,36 @@
       if (!t0) t0 = ts;
       var p = Math.min((ts - t0) / dur, 1);
       var eased = 1 - Math.pow(1 - p, 3);
-      el.textContent = fmt(start + (target - start) * eased);
+      el.textContent = fmt(p >= 1 ? target : start + (target - start) * eased);
       if (p < 1) requestAnimationFrame(step);
-      else el.textContent = fmt(target);
     }
+    var start = 0;
     requestAnimationFrame(step);
   }
 
   function animateDataValues(root) {
-    $$('[data-count]', root).forEach(function (el) {
+    $$('[data-count]', root || document).forEach(function (el) {
       var target = parseFloat(el.getAttribute('data-count')) || 0;
       var decimals = parseInt(el.getAttribute('data-decimals') || '0', 10);
       countUp(el, target, { decimals: decimals });
     });
+  }
+
+  /* ---------- 格式化 ---------- */
+  function fmtRead(n) {
+    n = Number(n) || 0;
+    if (n >= 10000) {
+      var v = n / 10000;
+      return (v % 1 === 0 ? v.toFixed(0) : v.toFixed(1)) + '万';
+    }
+    return String(n);
+  }
+
+  function growthInfo(g) {
+    g = Number(g) || 0;
+    if (g > 0) return { dir: 'up', text: g.toFixed(1) + '%' };
+    if (g < 0) return { dir: 'down', text: Math.abs(g).toFixed(1) + '%' };
+    return { dir: 'flat', text: '持平' };
   }
 
   /* ---------- 收藏（前端 localStorage 状态） ---------- */
@@ -116,95 +132,73 @@
     switch (kind) {
       case 'network':
         inner =
-          '<circle cx="38" cy="38" r="3.2" fill="#fff" fill-opacity="0.9"/>' +
-          '<circle cx="118" cy="24" r="2.4" fill="#fff" fill-opacity="0.7"/>' +
-          '<circle cx="150" cy="70" r="3.4" fill="#fff" fill-opacity="0.85"/>' +
-          '<circle cx="92" cy="96" r="2.6" fill="#fff" fill-opacity="0.7"/>' +
-          '<circle cx="24" cy="88" r="2.2" fill="#fff" fill-opacity="0.6"/>' +
+          '<circle cx="38" cy="38" r="3.2" fill="#D9B56A"/>' +
+          '<circle cx="118" cy="24" r="2.4" fill="#37C8FF" fill-opacity="0.9"/>' +
+          '<circle cx="150" cy="70" r="3.4" fill="#D9B56A" fill-opacity="0.9"/>' +
+          '<circle cx="92" cy="96" r="2.6" fill="#24D8C7" fill-opacity="0.85"/>' +
+          '<circle cx="24" cy="88" r="2.2" fill="#37C8FF" fill-opacity="0.8"/>' +
           '<path d="M38 38 L118 24 M38 38 L150 70 M38 38 L92 96 M38 38 L24 88" ' +
-            'stroke="#fff" stroke-opacity="0.45" stroke-width="1.4" fill="none"/>' +
-          '<path d="M118 24 L150 70 L92 96 L24 88 Z" stroke="#fff" stroke-opacity="0.2" stroke-width="1" fill="none"/>';
+            'stroke="#fff" stroke-opacity="0.28" stroke-width="1.4" fill="none"/>' +
+          '<path d="M118 24 L150 70 L92 96 L24 88 Z" stroke="#fff" stroke-opacity="0.14" stroke-width="1" fill="none"/>';
         break;
       case 'robot':
         inner =
           '<rect x="70" y="30" width="52" height="46" rx="12" fill="#fff" fill-opacity="0.9"/>' +
-          '<circle cx="86" cy="50" r="6" fill="#4A9FE8"/><circle cx="106" cy="50" r="6" fill="#4A9FE8"/>' +
-          '<path d="M86 66 h20" stroke="#4A9FE8" stroke-width="3" stroke-linecap="round"/>' +
+          '<circle cx="86" cy="50" r="6" fill="#37C8FF"/><circle cx="106" cy="50" r="6" fill="#37C8FF"/>' +
+          '<path d="M86 66 h20" stroke="#37C8FF" stroke-width="3" stroke-linecap="round"/>' +
           '<path d="M96 24 v-8 M96 30 h-4 M96 30 h4" stroke="#fff" stroke-width="2" fill="none"/>' +
-          '<rect x="34" y="40" width="20" height="20" rx="6" fill="#fff" fill-opacity="0.55"/>' +
-          '<rect x="138" y="40" width="20" height="20" rx="6" fill="#fff" fill-opacity="0.55"/>';
+          '<rect x="34" y="40" width="20" height="20" rx="6" fill="#24D8C7" fill-opacity="0.55"/>' +
+          '<rect x="138" y="40" width="20" height="20" rx="6" fill="#24D8C7" fill-opacity="0.55"/>';
         break;
       case 'data':
         inner =
           '<path d="M28 88 v-26 M58 88 v-46 M88 88 v-18 M118 88 v-38 M148 88 v-56" ' +
-            'stroke="#fff" stroke-opacity="0.85" stroke-width="7" stroke-linecap="round"/>' +
-          '<circle cx="28" cy="62" r="3" fill="#fff"/><circle cx="58" cy="42" r="3" fill="#fff"/>' +
-          '<circle cx="118" cy="50" r="3" fill="#fff"/><circle cx="148" cy="32" r="3" fill="#fff"/>';
+            'stroke="#37C8FF" stroke-opacity="0.9" stroke-width="7" stroke-linecap="round"/>' +
+          '<circle cx="28" cy="62" r="3" fill="#D9B56A"/><circle cx="58" cy="42" r="3" fill="#D9B56A"/>' +
+          '<circle cx="118" cy="50" r="3" fill="#D9B56A"/><circle cx="148" cy="32" r="3" fill="#D9B56A"/>';
         break;
       case 'grid':
         inner =
-          '<g stroke="#fff" stroke-opacity="0.5" stroke-width="1.2">' +
+          '<g stroke="#37C8FF" stroke-opacity="0.4" stroke-width="1.2">' +
           '<path d="M40 32 h112 M40 64 h112 M40 96 h112"/><path d="M64 32 v64 M112 32 v64 M160 32 v64"/>' +
           '</g>' +
-          '<rect x="64" y="32" width="22" height="22" rx="5" fill="#fff" fill-opacity="0.85"/>' +
-          '<rect x="136" y="64" width="22" height="22" rx="5" fill="#fff" fill-opacity="0.6"/>' +
-          '<rect x="88" y="64" width="22" height="22" rx="5" fill="#fff" fill-opacity="0.35"/>';
+          '<rect x="64" y="32" width="22" height="22" rx="5" fill="#D9B56A" fill-opacity="0.9"/>' +
+          '<rect x="136" y="64" width="22" height="22" rx="5" fill="#37C8FF" fill-opacity="0.6"/>' +
+          '<rect x="88" y="64" width="22" height="22" rx="5" fill="#24D8C7" fill-opacity="0.45"/>';
         break;
       case 'doc':
         inner =
           '<rect x="60" y="30" width="72" height="84" rx="10" fill="#fff" fill-opacity="0.92"/>' +
-          '<path d="M76 52 h40 M76 64 h40 M76 76 h26" stroke="#4A9FE8" stroke-width="4" stroke-linecap="round"/>' +
-          '<circle cx="144" cy="44" r="7" fill="#fff" fill-opacity="0.7"/>';
+          '<path d="M76 52 h40 M76 64 h40 M76 76 h26" stroke="#37C8FF" stroke-width="4" stroke-linecap="round"/>' +
+          '<circle cx="144" cy="44" r="7" fill="#D9B56A" fill-opacity="0.9"/>';
         break;
       case 'bars':
         inner =
-          '<path d="M30 96 h130" stroke="#fff" stroke-opacity="0.5" stroke-width="2"/>' +
-          '<path d="M42 88 v-34 h18 v34 z M74 88 v-52 h18 v52 z M106 88 v-24 h18 v24 z M138 88 v-42 h18 v42 z" fill="#fff" fill-opacity="0.8"/>';
+          '<path d="M30 96 h130" stroke="#fff" stroke-opacity="0.3" stroke-width="2"/>' +
+          '<path d="M42 88 v-34 h18 v34 z M74 88 v-52 h18 v52 z M106 88 v-24 h18 v24 z M138 88 v-42 h18 v42 z" fill="#37C8FF" fill-opacity="0.85"/>' +
+          '<circle cx="83" cy="34" r="3" fill="#D9B56A"/>';
         break;
       default:
-        inner = '<circle cx="96" cy="60" r="30" fill="#fff" fill-opacity="0.5"/>';
+        inner = '<circle cx="96" cy="60" r="30" fill="#37C8FF" fill-opacity="0.5"/>';
     }
     return (
       '<svg class="jn-art ' + cls + '" viewBox="0 0 192 128" preserveAspectRatio="xMidYMid slice" aria-hidden="true">' +
         '<defs><linearGradient id="' + id + '" x1="0" y1="0" x2="1" y2="1">' +
-          '<stop offset="0" stop-color="#7CC2F2"/><stop offset="1" stop-color="#4A9FE8"/>' +
+          '<stop offset="0" stop-color="#123044"/><stop offset="0.55" stop-color="#0D2231"/>' +
+          '<stop offset="1" stop-color="#101820"/>' +
         '</linearGradient></defs>' +
         '<rect width="192" height="128" fill="url(#' + id + ')"/>' +
+        '<circle cx="170" cy="14" r="40" fill="#D9B56A" fill-opacity="0.06"/>' +
         inner +
       '</svg>'
     );
   }
 
-  /* ---------- 迷你趋势 sparkline（SVG，极简） ---------- */
-  function sparkline(points, opts) {
-    opts = opts || {};
-    var w = opts.w || 260;
-    var h = opts.h || 84;
-    var pad = 10;
-    var min = Math.min.apply(null, points);
-    var max = Math.max.apply(null, points);
-    var range = max - min || 1;
-    var stepX = (w - pad * 2) / (points.length - 1);
-    var pts = points.map(function (v, i) {
-      var x = pad + i * stepX;
-      var y = h - pad - ((v - min) / range) * (h - pad * 2);
-      return { x: Math.round(x * 10) / 10, y: Math.round(y * 10) / 10 };
-    });
-    var line = pts.map(function (p, i) {
-      return (i === 0 ? 'M' : 'L') + p.x + ' ' + p.y;
-    }).join(' ');
-    var area = line + ' L' + pts[pts.length - 1].x + ' ' + (h - pad) + ' L' + pts[0].x + ' ' + (h - pad) + ' Z';
-    var gid = 'spg' + Math.random().toString(36).slice(2, 7);
-    return (
-      '<svg class="jn-spark" viewBox="0 0 ' + w + ' ' + h + '" preserveAspectRatio="none" aria-hidden="true">' +
-        '<defs><linearGradient id="' + gid + '" x1="0" y1="0" x2="0" y2="1">' +
-          '<stop offset="0" stop-color="#4A9FE8" stop-opacity="0.30"/>' +
-          '<stop offset="1" stop-color="#4A9FE8" stop-opacity="0"/>' +
-        '</linearGradient></defs>' +
-        '<path d="' + area + '" fill="url(#' + gid + ')" stroke="none"/>' +
-        '<path d="' + line + '" fill="none" stroke="#4A9FE8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>' +
-      '</svg>'
-    );
+  /* ---------- 趋势徽标 ---------- */
+  function trendBadge(growth) {
+    var g = growthInfo(growth);
+    var arrow = g.dir === 'up' ? '↑' : (g.dir === 'down' ? '↓' : '→');
+    return '<span class="jn-trend is-' + g.dir + '">' + arrow + ' ' + escapeHtml(g.text) + '</span>';
   }
 
   /* ---------- debounce ---------- */
@@ -218,14 +212,6 @@
     };
   }
 
-  /* ---------- 趋势徽标 ---------- */
-  function trendBadge(trend) {
-    if (!trend) return '';
-    var cls = trend.dir === 'up' ? 'is-up' : (trend.dir === 'down' ? 'is-down' : 'is-flat');
-    var arrow = trend.dir === 'up' ? '↑' : (trend.dir === 'down' ? '↓' : '→');
-    return '<span class="jn-trend ' + cls + '">' + arrow + ' ' + escapeHtml(trend.value) + '</span>';
-  }
-
   window.JN = {
     $: $,
     $$: $$,
@@ -233,13 +219,14 @@
     toast: toast,
     countUp: countUp,
     animateDataValues: animateDataValues,
+    fmtRead: fmtRead,
+    growthInfo: growthInfo,
     getFavs: getFavs,
     isFav: isFav,
     toggleFav: toggleFav,
     favButton: favButton,
     artVisual: artVisual,
-    sparkline: sparkline,
-    debounce: debounce,
-    trendBadge: trendBadge
+    trendBadge: trendBadge,
+    debounce: debounce
   };
 })();
