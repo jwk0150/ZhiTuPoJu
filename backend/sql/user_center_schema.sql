@@ -84,4 +84,26 @@ CREATE TABLE IF NOT EXISTS user_center.career_reports (
 );
 CREATE INDEX IF NOT EXISTS idx_career_reports_user ON user_center.career_reports(user_id);
 
+-- 6. 系统技术能力主表（由岗位真实技术数据聚合生成，供用户能力统一关联）
+--    与岗位技术图谱共用同一技术体系，为后续"岗位要求 -> 能力匹配"预留。
+CREATE TABLE IF NOT EXISTS user_center.tech_abilities (
+    id          BIGSERIAL PRIMARY KEY,
+    name        VARCHAR(128) NOT NULL UNIQUE,   -- 技术名称（如 Java / Spring Boot）
+    category    VARCHAR(64),                     -- 技术分类（如 编程语言）
+    frequency   INTEGER NOT NULL DEFAULT 0,      -- 岗位需求频次
+    sort_order  INTEGER NOT NULL DEFAULT 0,
+    created_at  TIMESTAMP DEFAULT NOW(),
+    updated_at  TIMESTAMP DEFAULT NOW()
+);
+
+-- 7. 用户能力关联表（user_id -> tech_abilities.id）
+CREATE TABLE IF NOT EXISTS user_center.user_abilities (
+    id          BIGSERIAL PRIMARY KEY,
+    user_id     VARCHAR(64) NOT NULL,
+    ability_id  BIGINT NOT NULL REFERENCES user_center.tech_abilities(id) ON DELETE CASCADE,
+    created_at  TIMESTAMP DEFAULT NOW(),
+    updated_at  TIMESTAMP DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_user_abilities_user ON user_center.user_abilities(user_id);
+
 COMMIT;

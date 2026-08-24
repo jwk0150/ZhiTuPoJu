@@ -916,25 +916,25 @@ window.initCareerTransitionGraph = function() {
     var container = document.getElementById('career-graph-container');
     if (!container) return;
 
-    // Dispose existing
     var existing = window.trendGraphInstances.careerTransition;
     if (existing) {
         try { existing.destroy(); } catch(e) {}
         window.trendGraphInstances.careerTransition = null;
     }
 
-    var displayData = window.getCareerDisplayData();
-    var cfg = window.buildCareerGraphConfig(displayData);
-    var graph = new G6.Graph(cfg);
-    graph.data({ nodes: cfg._nodes, edges: cfg._edges });
-    graph.render();
+    function boot() {
+        var displayData = window.getCareerDisplayData();
+        var cfg = window.buildCareerGraphConfig(displayData);
+        var graph = new G6.Graph(cfg);
+        graph.data({ nodes: cfg._nodes, edges: cfg._edges });
+        graph.render();
 
-    setTimeout(function() {
-        try { graph.fitView(30); } catch(e) {}
-    }, 250);
+        setTimeout(function() {
+            try { graph.fitView(30); } catch(e) {}
+        }, 250);
 
-    // ── Hover: highlight connected ──
-    graph.on('node:mouseenter', function(e) {
+        // ── Hover: highlight connected ──
+        graph.on('node:mouseenter', function(e) {
         var item = e.item;
         graph.getNodes().forEach(function(n) { graph.setItemState(n, 'inactive', true); });
         graph.getEdges().forEach(function(ed) { graph.setItemState(ed, 'inactive', true); });
@@ -997,6 +997,16 @@ window.initCareerTransitionGraph = function() {
 
     window.trendGraphInstances.careerTransition = graph;
     return graph;
+    }
+
+    if (typeof window.ensureG6 === 'function') {
+        window.ensureG6().then(boot).catch(function () {
+            container.innerHTML =
+                '<div style="padding:20px;color:#fff;text-align:center">图谱库加载失败，请检查网络后重试</div>';
+        });
+    } else {
+        boot();
+    }
 };
 
 // ── Highlight a specific path in the graph ──

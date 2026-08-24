@@ -1358,6 +1358,232 @@ async def fetch_city_tech_graph(
     }
 
 
+# 前端节点配色使用的技术分类（与 frontend/js/pages/map.js 中 TECH_CATEGORY_COLORS 对齐）
+# 关键词 → 分类名（用于把 skills 真实字段中的技术归类到统一的图谱分类）
+JOB_TECH_CATEGORY_MAP: Dict[str, str] = {
+    # 编程语言
+    "java": "编程语言", "python": "编程语言", "javascript": "编程语言", "js": "编程语言",
+    "c++": "编程语言", "c": "编程语言", "c#": "编程语言", "go": "编程语言",
+    "kotlin": "编程语言", "swift": "编程语言", "php": "编程语言", "shell": "编程语言",
+    "typescript": "编程语言", "ts": "编程语言", "scala": "编程语言", "rust": "编程语言",
+    "matlab": "编程语言", "r语言": "编程语言", "r": "编程语言", "ruby": "编程语言",
+    # 框架与开发
+    "spring boot": "框架与开发", "spring": "框架与开发", "springcloud": "框架与开发",
+    "spring cloud": "框架与开发", "vue": "框架与开发", "react": "框架与开发",
+    "django": "框架与开发", "flask": "框架与开发", "mybatis": "框架与开发",
+    ".net": "框架与开发", "laravel": "框架与开发", "express": "框架与开发",
+    "asp.net": "框架与开发", "redux": "框架与开发", "node.js": "框架与开发",
+    "nodejs": "框架与开发", "uniapp": "框架与开发", "uni-app": "框架与开发",
+    # 数据存储与处理
+    "mysql": "数据存储与处理", "redis": "数据存储与处理", "sql": "数据存储与处理",
+    "sqlite": "数据存储与处理", "sql server": "数据存储与处理",
+    "postgresql": "数据存储与处理", "mongodb": "数据存储与处理", "kafka": "数据存储与处理",
+    "elasticsearch": "数据存储与处理", "spark": "数据存储与处理", "pandas": "数据存储与处理",
+    "numpy": "数据存储与处理", "hadoop": "数据存储与处理", "hive": "数据存储与处理",
+    "clickhouse": "数据存储与处理", "flink": "数据存储与处理", "rabbitmq": "数据存储与处理",
+    # 工程化与运维
+    "docker": "工程化与运维", "kubernetes": "工程化与运维", "jenkins": "工程化与运维",
+    "nginx": "工程化与运维", "git": "工程化与运维", "linux": "工程化与运维",
+    "ansible": "工程化与运维", "prometheus": "工程化与运维", "webpack": "工程化与运维",
+    "vite": "工程化与运维", "maven": "工程化与运维", "jira": "工程化与运维",
+    "ci/cd": "工程化与运维", "cicd": "工程化与运维", "k8s": "工程化与运维",
+    "grafana": "工程化与运维", "tomcat": "工程化与运维",
+    # AI与算法
+    "pytorch": "AI与算法", "tensorflow": "AI与算法", "scikit-learn": "AI与算法",
+    "matplotlib": "AI与算法", "jupyter": "AI与算法", "cuda": "AI与算法",
+    "深度学习": "AI与算法", "机器学习": "AI与算法", "transformer": "AI与算法",
+    "llm": "AI与算法", "大模型": "AI与算法", "opencv": "AI与算法",
+    "nlp": "AI与算法", "计算机视觉": "AI与算法",
+    # 前端技术
+    "html/css": "前端技术", "html": "前端技术", "css": "前端技术", "sass": "前端技术",
+    "postcss": "前端技术", "axure": "前端技术", "babel": "前端技术",
+    "echarts": "前端技术", "element ui": "前端技术", "ant design": "前端技术",
+    # 架构设计
+    "微服务": "架构设计", "分布式": "架构设计", "架构设计": "架构设计",
+    "高并发": "架构设计", "消息队列": "架构设计", "mq": "架构设计",
+    # 后端技术
+    "后端开发": "后端技术", "restful": "后端技术", "api": "后端技术",
+    # 数据处理
+    "数据清洗": "数据处理", "etl": "数据处理", "数据可视化": "数据处理",
+    "bi": "数据处理", "tableau": "数据处理", "power bi": "数据处理",
+    # 测试技术
+    "jmeter": "测试技术", "selenium": "测试技术", "自动化测试": "测试技术",
+    "性能测试": "测试技术", "单元测试": "测试技术",
+    # 嵌入式/硬件
+    "stm32": "嵌入式/硬件", "rtos": "嵌入式/硬件", "altium": "嵌入式/硬件",
+    "keil": "嵌入式/硬件", "cadence": "嵌入式/硬件", "verilog": "嵌入式/硬件",
+    "pcb": "嵌入式/硬件", "plc": "嵌入式/硬件", "spi/i2c": "嵌入式/硬件",
+    "硬件接口": "嵌入式/硬件", "嵌入式": "嵌入式/硬件",
+}
+
+# 经验要求 → 岗位级别（基于数据库 experience 字段真实取值）
+EXPERIENCE_LEVEL_MAP: Dict[str, str] = {
+    # 初级
+    "不限": "初级", "无需经验": "初级", "在校生应届生": "初级", "1年": "初级",
+    "1年及以上": "初级", "1年以下": "初级", "应届生": "初级", "经验不限": "初级",
+    # 中级
+    "2年": "中级", "1-3年": "中级", "2年及以上": "中级", "3年及以上": "中级",
+    "3-5年": "中级", "3年以上": "中级", "2-3年": "中级", "1-3年经验": "中级",
+    # 高级
+    "5年及以上": "高级", "5-10年": "高级", "8年及以上": "高级", "10年及以上": "高级",
+    "5年以上": "高级", "高级": "高级", "10年以上": "高级", "8年以上": "高级",
+}
+
+
+def _classify_job_tech(tech: str) -> str:
+    """将单个技术归类到前端统一分类（与 TECH_CATEGORY_COLORS 的 key 对齐）"""
+    t = tech.strip().lower()
+    if not t:
+        return "核心技能"
+    # 精确匹配优先
+    if t in JOB_TECH_CATEGORY_MAP:
+        return JOB_TECH_CATEGORY_MAP[t]
+    # 包含匹配（处理 "spring boot" vs "springboot" 等变体）
+    for key, cat in JOB_TECH_CATEGORY_MAP.items():
+        if key in t or t in key:
+            return cat
+    return "核心技能"
+
+
+async def fetch_job_tech_graph(
+    conn: asyncpg.Connection,
+    job_title: str,
+    industry: Optional[str] = None,
+    education: Optional[str] = None,
+    experience: Optional[str] = None,
+) -> Optional[dict]:
+    """构建岗位级技术知识图谱真实数据（中心岗位→技术分类→技术 / 岗位级别→技术）。
+
+    数据完全来自 the_total_table 的 skills（结构化技能字段）与 experience 字段，
+    不做城市级聚合，避免混入其他岗位/城市的技术数据。
+    """
+    # 1. 取该岗位全部真实记录（含 skills、experience）
+    filter_where, filter_params = _build_filter_where(
+        industry=industry, job=job_title, education=education, experience=experience,
+    )
+    # job_title 作为精确岗位名筛选（走 job 维度，services 中 job 对应 job_title）
+    extra_where = ""
+    all_params = []
+    if filter_where:
+        where_shifted = filter_where
+        for i in range(len(filter_params), 0, -1):
+            where_shifted = where_shifted.replace(f"${i}", f"${i + len(all_params)}")
+        extra_where = f" AND ({where_shifted})"
+        all_params.extend(filter_params)
+
+    rows = await conn.fetch(f"""
+        SELECT skills, experience
+        FROM the_total_table
+        WHERE skills IS NOT NULL AND skills <> ''{extra_where}
+    """, *all_params)
+
+    if not rows:
+        # 该岗位无真实技能数据
+        return {
+            "jobTitle": job_title,
+            "centerJob": job_title,
+            "skillCount": 0,
+            "categories": [],
+            "levels": [],
+            "maxFrequency": 1,
+            "isFallback": True,
+        }
+
+    # 2. 聚合该岗位 skills（去重，统计出现频次）
+    from collections import Counter
+    tech_counter: Dict[str, int] = Counter()
+    # 级别维度：级别 → 技术频次
+    level_counter: Dict[str, Counter] = {"初级": Counter(), "中级": Counter(), "高级": Counter()}
+    for r in rows:
+        skills_raw = r["skills"] or ""
+        exp = (r["experience"] or "").strip()
+        level = EXPERIENCE_LEVEL_MAP.get(exp, "中级")  # 未识别的经验归中级
+        for raw in skills_raw.split(","):
+            name = raw.strip()
+            if not name:
+                continue
+            tech_counter[name] += 1
+            level_counter[level][name] += 1
+
+    if not tech_counter:
+        return {
+            "jobTitle": job_title,
+            "centerJob": job_title,
+            "skillCount": 0,
+            "categories": [],
+            "levels": [],
+            "maxFrequency": 1,
+            "isFallback": True,
+        }
+
+    # 3. 按前端统一分类聚合（技术栈视图）
+    tech_by_category: Dict[str, list] = {}
+    for tech, freq in tech_counter.items():
+        cat = _classify_job_tech(tech)
+        tech_by_category.setdefault(cat, []).append({"name": tech, "frequency": freq})
+
+    for cat in tech_by_category:
+        tech_by_category[cat].sort(key=lambda x: -x["frequency"])
+        tech_by_category[cat] = tech_by_category[cat][:12]
+
+    max_freq = max(tech_counter.values())
+    categories = []
+    for cat_name, techs in tech_by_category.items():
+        cat_tech_nodes = []
+        for t in techs:
+            ratio = t["frequency"] / max_freq if max_freq else 0
+            size = max(14, int(14 + ratio * 28))
+            cat_tech_nodes.append({
+                "name": t["name"],
+                "type": "technology",
+                "frequency": t["frequency"],
+                "size": size,
+                "ratio": round(ratio, 2),
+            })
+        categories.append({
+            "name": cat_name,
+            "type": "category",
+            "technologies": cat_tech_nodes,
+        })
+    # 按类别中技术数量排序
+    categories.sort(key=lambda c: -sum(t["frequency"] for t in c["technologies"]))
+
+    # 4. 级别维度（级别视图）
+    levels = []
+    for lv in ["初级", "中级", "高级"]:
+        lv_techs = level_counter[lv]
+        if not lv_techs:
+            continue
+        lv_nodes = []
+        for name, freq in lv_techs.most_common(15):
+            ratio = freq / max_freq if max_freq else 0
+            size = max(14, int(14 + ratio * 28))
+            lv_nodes.append({
+                "name": name,
+                "type": "technology",
+                "frequency": freq,
+                "size": size,
+                "ratio": round(ratio, 2),
+            })
+        levels.append({
+            "name": lv,
+            "type": "level",
+            "technologies": lv_nodes,
+        })
+    levels.sort(key=lambda x: ["初级", "中级", "高级"].index(x["name"]))
+
+    return {
+        "jobTitle": job_title,
+        "centerJob": job_title,
+        "skillCount": sum(tech_counter.values()),
+        "uniqueSkills": len(tech_counter),
+        "categories": categories,
+        "levels": levels,
+        "maxFrequency": max_freq,
+        "isFallback": False,
+    }
+
+
 async def fetch_tech_detail(
     conn: asyncpg.Connection,
     tech_name: str,
