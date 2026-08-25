@@ -17,18 +17,24 @@
     return String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   }
   function reduceMotion() { return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches; }
-  function animateNumber(el, to, dur, suffix) {
+  function animateNumber(el, to, dur, suffix, prefix, from) {
     if (!el) return;
-    suffix = suffix || '';
-    if (reduceMotion()) { el.textContent = Math.round(to) + suffix; return; }
+    suffix = suffix || ''; prefix = prefix || '';
+    const startVal = typeof from === 'number' ? from : 0;
+    if (reduceMotion()) { el.textContent = prefix + Math.round(to) + suffix; return; }
     const start = performance.now();
     function tick(now) {
       const t = Math.min(1, (now - start) / (dur || 900));
       const eased = 1 - Math.pow(1 - t, 3);
-      el.textContent = Math.round(to * eased) + suffix;
+      el.textContent = prefix + Math.round(startVal + (to - startVal) * eased) + suffix;
       if (t < 1) requestAnimationFrame(tick);
     }
     requestAnimationFrame(tick);
+  }
+  // 数字平滑过渡：从当前显示值滚动到目标值
+  function countUpTo(el, to, dur) {
+    if (!el) return;
+    animateNumber(el, to, dur, '', '', parseInt(el.textContent, 10) || 0);
   }
 
   /* ---------------- 全局状态 ---------------- */
@@ -36,8 +42,18 @@
     stage: 'resume',
     file: null, fileName: '', fileSize: 0,
     result: null, selectedJobId: null,
-    preferences: { cities: ['北京'], salaryMin: 15, salaryMax: 25, jobType: 'fulltime',
-      mustSkills: ['Java', 'Spring Boot', 'MySQL'], preferSkills: ['Redis', 'Docker'], others: ['校招', '接受异地'], direction: 'Java 后端开发' },
+    preferences: {
+      cities: ['北京'], salaryMin: 15, salaryMax: 25, jobTypes: ['fulltime'], jobType: 'fulltime',
+      mustSkills: ['Java', 'Spring Boot'], preferSkills: ['MySQL', 'Redis', 'Docker'],
+      others: ['校招', '接受异地'], direction: 'Java 后端开发',
+      skillMeta: {
+        Java: { level: 'core', strength: 5 },
+        'Spring Boot': { level: 'core', strength: 4 },
+        MySQL: { level: 'important', strength: 4 },
+        Redis: { level: 'plus', strength: 3 },
+        Docker: { level: 'plus', strength: 2 }
+      }
+    },
     recommendTab: 'now', jobTab: 'requirement',
     aipanelOpen: true, activeView: 'resume',
     activeSection: 'basic', resumeSections: null,
@@ -48,7 +64,11 @@
 
   /* ---------------- 常量 ---------------- */
   const CITIES = ['北京', '上海', '深圳', '杭州', '广州', '成都', '不限'];
-  const JOBTYPES = [['fulltime', '全职'], ['intern', '实习'], ['campus', '校招']];
+  const COND_CITIES = ['北京', '上海', '杭州', '深圳', '广州', '成都', '全国', '不限'];
+  const JOBTYPES = [['fulltime', '全职'], ['intern', '实习'], ['parttime', '兼职'], ['campus', '校招']];
+  const SKILL_LEVELS = [['core', '核心要求'], ['important', '重要能力'], ['plus', '加分项']];
+  const SKILL_POOL = ['Java', 'Spring Boot', 'MySQL', 'Redis', 'Docker', 'Kubernetes', '微服务', '消息队列', 'Python', 'Go', 'LLM', 'RAG', '向量数据库', 'Linux', '自动化测试', '系统设计'];
+  const STRENGTH_TO_REQ = { 1: 55, 2: 65, 3: 75, 4: 85, 5: 92 };
   const OTHERS = ['应届生', '接受异地', '接受远程', '大厂优先', '弹性工作'];
   const SUGGESTED_SKILLS = ['Java', 'Spring Boot', 'MySQL', 'Python', 'Redis', 'Docker', 'React', 'Kubernetes', 'PyTorch', 'LLM', 'RAG', 'Go', '微服务'];
   const ACCEPT_EXT = ['pdf', 'doc', 'docx', 'txt'];
@@ -89,7 +109,7 @@
       {
         job: { id: 'java-be', title: 'Java 后端开发', company: '某互联网大厂', city: '北京', salary: '25-45K', type: '全职',
           required_skills: ['Java', 'Spring Boot', 'MySQL', 'Redis', 'Docker', '微服务', '系统设计'], preferred_skills: ['Kubernetes', '消息队列'], exp: '0-3年' },
-        score: 88, tab: 'now',
+        score: 88, tab: 'now', quick_days: 7, potential_after: 95,
         matched: ['核心技能匹配', '项目经历匹配', '教育背景符合', '岗位发展方向一致'],
         missing: ['Docker 能力不足', '微服务项目经验不足'],
         gaps: [
@@ -114,14 +134,14 @@
       },
       {
         job: { id: 'data-dev', title: '数据开发', company: '某数据公司', city: '杭州', salary: '22-40K', type: '全职', required_skills: ['Java', 'Python', 'SQL', 'Hadoop'], preferred_skills: ['Spark'], exp: '0-3年' },
-        score: 78, tab: 'now',
+        score: 78, tab: 'now', quick_days: 14, potential_after: 90,
         matched: ['Java 背景可迁移'], missing: ['数据技术栈不足'],
         gaps: [{ skill: 'Java', readiness: 88 }, { skill: 'Python', readiness: 50 }, { skill: 'SQL', readiness: 65 }, { skill: 'Hadoop', readiness: 30 }],
         dimensions: { skills: 78, semantics: 74, projects: 75, experience: 72, graph: 70 }, evidences: { matched: [{ t: 'Java 背景可迁移', d: '工程基础可迁移至数据处理。' }], missing: [{ t: '数据技术栈不足', d: 'Python/Hadoop 缺失。' }] }
       },
       {
         job: { id: 'ai-app', title: 'AI 应用开发', company: '某 AI 公司', city: '深圳', salary: '28-50K', type: '全职', required_skills: ['Python', 'LLM', 'RAG', '向量数据库'], preferred_skills: ['Agent'], exp: '0-3年' },
-        score: 72, tab: 'future',
+        score: 72, tab: 'future', quick_days: 21, potential_after: 84,
         matched: ['工程基础尚可'], missing: ['AI 技术栈缺失'],
         gaps: [{ skill: 'Python', readiness: 55 }, { skill: 'LLM', readiness: 30 }, { skill: 'RAG', readiness: 25 }, { skill: '向量数据库', readiness: 20 }],
         dimensions: { skills: 72, semantics: 70, projects: 68, experience: 66, graph: 64 },
@@ -130,14 +150,14 @@
       },
       {
         job: { id: 'test-dev', title: '测试开发', company: '某软件公司', city: '成都', salary: '18-30K', type: '全职', required_skills: ['Java', '自动化测试', 'Python'], preferred_skills: ['性能测试'], exp: '0-3年' },
-        score: 69, tab: 'now',
+        score: 69, tab: 'now', quick_days: 3, potential_after: 85,
         matched: ['Java 可用'], missing: ['测试框架不足'],
         gaps: [{ skill: 'Java', readiness: 85 }, { skill: '自动化测试', readiness: 40 }, { skill: 'Python', readiness: 50 }],
         dimensions: { skills: 69, semantics: 66, projects: 64, experience: 62, graph: 60 }, evidences: { matched: [{ t: 'Java 可用', d: '可承担自动化脚本编写。' }], missing: [{ t: '测试框架不足', d: '缺乏 pytest/JUnit 深度使用。' }] }
       },
       {
         job: { id: 'cloud-arch', title: '云原生架构', company: '某云厂商', city: '北京', salary: '35-60K', type: '全职', required_skills: ['Kubernetes', 'Docker', '微服务', 'Go'], preferred_skills: ['Istio'], exp: '3-5年' },
-        score: 58, tab: 'future',
+        score: 58, tab: 'future', quick_days: 28, potential_after: 76,
         matched: ['系统设计了解'], missing: ['云原生栈缺失'],
         gaps: [{ skill: 'Kubernetes', readiness: 20 }, { skill: 'Docker', readiness: 41 }, { skill: '微服务', readiness: 45 }, { skill: 'Go', readiness: 25 }],
         dimensions: { skills: 58, semantics: 55, projects: 50, experience: 60, graph: 52 },
@@ -642,9 +662,9 @@
     st.activeView = name;
     const views = ['resume', 'match', 'jobs', 'analysis', 'learn', 'compare'];
     views.forEach((v) => { const el = $('view-' + v); if (el) { el.classList.toggle('is-active', v === name); el.hidden = (v !== name); } });
-    // 视觉插图已降内存关闭，保持 hidden
+    // view-resume 三栏工作台有自己的视觉，不展示艺术背景插图
     const art = qs('.match-art-layer');
-    if (art) art.hidden = true;
+    if (art) art.hidden = (name === 'resume');
     // 左导航高亮
     const navMap = { resume: 'resume', match: 'match', jobs: 'jobs', learn: 'learn', compare: 'compare' };
     qsa('.wks-nav-item').forEach((b) => b.classList.toggle('is-active', navMap[name] === b.dataset.nav));
@@ -656,7 +676,7 @@
     else if (name === 'interview') st.stage = 'interview';
     renderProgress();
     if (name === 'jobs') renderJobs();
-    if (name === 'match') renderMatchWorkbench();
+    if (name === 'match') renderCondWorkbench();
     if (name === 'learn') renderLearning();
     if (name === 'compare') renderCompare();
     if (name === 'resume') renderResume();
@@ -1039,169 +1059,589 @@
   }
 
   /* ============================================================
-   * STATE 2 · 匹配条件编辑器
+   * STATE 2 · 岗位匹配条件工作台
+   * 配置条件 → 实时分析条件影响 → 预览目标岗位 → AI 优化建议 → 运行人岗匹配
    * ============================================================ */
-  function bindMatchCond() {
-    const run = $('match-run');
-    if (run) run.addEventListener('click', runMatch);
-    const addBox = qs('.cond-add');
-    if (addBox) qsa('.chip-add', addBox).forEach((b) => b.addEventListener('click', () => addCondition(b.dataset.add)));
-    renderCondBar();
-  }
+  const SKILL_PLUS_CANDIDATES = ['Redis', 'Docker', 'Kubernetes', '消息队列', 'Linux', 'RAG', 'Agent', 'Git', '性能测试', '向量数据库'];
+  const LV_ORDER = ['core', 'important', 'plus'];
 
-  function renderCondBar() {
-    const st = window.matchState.preferences;
-    const bar = $('cond-bar');
-    if (!bar) return;
-    const items = [];
-    if (st.cities.length) items.push(condItem('城市', st.cities.map((c) => `<span class="chip is-on">${c}</span>`).join(''), 'cities'));
-    if (st.salaryMin != null || st.salaryMax != null) items.push(condItem('薪资', `<span class="chip is-on">${st.salaryMin || '?'}K — ${st.salaryMax || '?'}K</span>`, 'salary'));
-    if (st.jobType) { const lbl = labelOf(JOBTYPES, st.jobType); items.push(condItem('性质', `<span class="chip is-on">${lbl}</span>`, 'jobtype')); }
-    (st.mustSkills || []).forEach((s) => items.push(skillItem(s, 'must', '必备')));
-    (st.preferSkills || []).forEach((s) => items.push(skillItem(s, 'prefer', '希望')));
-    (st.others || []).forEach((s) => items.push(condItem('其他', `<span class="chip is-on">${s}</span>`, 'other-' + s)));
-    if (st.direction) items.push(condItem('方向', `<span class="chip is-on">${escapeHtml(st.direction)}</span>`, 'direction'));
-    if (!items.length) items.push(`<div class="mod-label muted">暂无条件，点击右侧「添加条件」开始配置</div>`);
-    bar.innerHTML = items.join('');
-    // 绑定技能点击 → Popover
-    qsa('.cond-skill', bar).forEach((el) => el.addEventListener('click', (e) => {
-      e.stopPropagation(); openSkillPopover(el, el.dataset.skill, el);
-    }));
-    qsa('.cond-item-remove', bar).forEach((el) => el.addEventListener('click', (e) => { e.stopPropagation(); removeCondition(el.dataset.target); }));
-    renderAIPanelMatch();
-    renderMatchWorkbench();
-  }
-
-  function renderMatchWorkbench() {
-    const box = $('match-workbench');
-    if (!box) return;
-    const pref = window.matchState.preferences;
-    const res = window.matchState.result || MOCK_RESULT;
-    const profile = res.profile || MOCK_RESULT.profile;
-    const selected = (res.matches || []).find((m) => m.job.title === pref.direction) || res.matches[0];
-    const filled = [pref.cities.length > 0, pref.salaryMin != null || pref.salaryMax != null, !!pref.jobType, pref.mustSkills.length > 0, !!pref.direction].filter(Boolean).length;
-    const completeness = Math.round(filled / 5 * 100);
-    const signals = [
-      { label: '技能覆盖', value: Math.min(96, 58 + pref.mustSkills.length * 9), note: `${pref.mustSkills.length} 项必备技能` },
-      { label: '目标清晰度', value: pref.direction ? 92 : 42, note: pref.direction || '尚未指定方向' },
-      { label: '地域匹配', value: pref.cities.length ? 86 : 40, note: pref.cities.join('、') || '不限城市' },
-      { label: '薪资区间', value: pref.salaryMin != null ? 78 : 38, note: pref.salaryMin != null ? `${pref.salaryMin}-${pref.salaryMax}K` : '待设置' }
-    ];
-    box.innerHTML = `<div class="match-workbench-head">
-      <div><span class="mod-label">MATCH READINESS</span><h2>匹配准备度</h2><p>条件越清晰，推荐结果越容易解释。你可以随时调整条件，再运行一次诊断。</p></div>
-      <div class="readiness-score"><b>${completeness}%</b><span>条件完整度</span></div>
-    </div>
-    <div class="match-workbench-grid">
-      <div class="match-signal-panel">
-        <div class="panel-title"><span>当前匹配信号</span><small>基于已配置条件</small></div>
-        <div class="match-signal-list">${signals.map((s) => `<div class="match-signal-row"><div class="match-signal-label"><b>${s.label}</b><small>${escapeHtml(s.note)}</small></div><div class="match-signal-track"><i style="width:${s.value}%"></i></div><strong>${s.value}</strong></div>`).join('')}</div>
-      </div>
-      <div class="match-target-panel">
-        <div class="panel-title"><span>目标岗位画像</span><small>实时预览</small></div>
-        <div class="target-job-name">${escapeHtml(pref.direction || '未设置岗位方向')}</div>
-        <div class="target-job-meta"><span>${escapeHtml(pref.cities.join('、') || '不限城市')}</span><span>${pref.salaryMin || '?'}-${pref.salaryMax || '?'}K</span><span>${escapeHtml(labelOf(JOBTYPES, pref.jobType) || '不限性质')}</span></div>
-        <div class="target-skill-cloud">${(pref.mustSkills || []).concat(pref.preferSkills || []).slice(0, 7).map((s, i) => `<span class="target-skill ${i < pref.mustSkills.length ? 'is-must' : ''}">${escapeHtml(s)}</span>`).join('')}</div>
-        <div class="target-job-foot"><span><i></i> 已识别 ${profile.skills ? profile.skills.length : 0} 项简历技能</span><span>预计可匹配 ${selected ? selected.score : '—'}%</span></div>
-      </div>
-    </div>
-    <div class="match-workbench-foot"><span>下一步：运行 AI 匹配后，将生成岗位清单、能力缺口和学习路径。</span><button class="btn-sm btn-sm--solid" id="match-workbench-run" type="button">开始生成结果 →</button></div>`;
-    const run = $('match-workbench-run');
-    if (run) run.addEventListener('click', runMatch);
-  }
-
-  function condItem(label, inner, target) {
-    return `<div class="cond-item"><span class="cond-item-label">${label}</span>
-      <div class="cond-item-val">${inner}</div>
-      ${target ? `<button class="cond-item-remove" data-target="${escapeHtml(target)}" title="移除">×</button>` : ''}</div>`;
-  }
-  function skillItem(skill, level, lvLabel) {
-    return `<div class="cond-item"><span class="cond-item-label">${lvLabel}技能</span>
-      <div class="cond-item-val"><span class="cond-skill" data-level="${level}" data-skill="${escapeHtml(skill)}">${escapeHtml(skill)} <span class="lv">${lvLabel}</span></span></div>
-      <button class="cond-item-remove" data-target="skill:${escapeHtml(skill)}" title="移除">×</button></div>`;
-  }
-
-  function addCondition(kind) {
-    const st = window.matchState.preferences;
-    if (kind === 'city') { st.cities.push('上海'); }
-    else if (kind === 'salary') { if (st.salaryMin == null) st.salaryMin = 15; if (st.salaryMax == null) st.salaryMax = 25; }
-    else if (kind === 'jobtype') { st.jobType = st.jobType || 'fulltime'; }
-    else if (kind === 'must') { if (st.mustSkills.indexOf('Redis') < 0) st.mustSkills.push('Redis'); }
-    else if (kind === 'prefer') { if (st.preferSkills.indexOf('Kubernetes') < 0) st.preferSkills.push('Kubernetes'); }
-    else if (kind === 'other') { if (st.others.indexOf('弹性工作') < 0) st.others.push('弹性工作'); }
-    else if (kind === 'direction') { st.direction = st.direction || 'Java 后端开发'; }
-    renderCondBar();
-  }
-  function removeCondition(target) {
-    const st = window.matchState.preferences;
-    if (target === 'cities') st.cities = [];
-    else if (target === 'salary') { st.salaryMin = null; st.salaryMax = null; }
-    else if (target === 'jobtype') st.jobType = '';
-    else if (target === 'direction') st.direction = '';
-    else if (target.indexOf('other-') === 0) st.others = st.others.filter((x) => x !== target.slice(6));
-    else if (target.indexOf('skill:') === 0) {
-      const s = target.slice(6);
-      st.mustSkills = st.mustSkills.filter((x) => x !== s);
-      st.preferSkills = st.preferSkills.filter((x) => x !== s);
-    }
-    renderCondBar();
-  }
-
+  function clampF(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
   function labelOf(pairs, val) { const p = pairs.find((x) => x[0] === val); return p ? p[1] : ''; }
 
-  /* ---- 技能级别 Popover ---- */
-  function openSkillPopover(anchor, skill, anchorEl) {
-    const pop = $('wks-popover');
-    if (!pop) return;
-    const st = window.matchState.preferences;
-    const isMust = st.mustSkills.indexOf(skill) >= 0;
-    const isPrefer = st.preferSkills.indexOf(skill) >= 0;
-    const cur = isMust ? 'must' : (isPrefer ? 'prefer' : 'none');
-    pop.innerHTML = `<div class="popover-title">${escapeHtml(skill)} 的要求级别</div>
-      <div class="popover-opt ${cur === 'must' ? 'is-on' : ''}" data-lv="must"><span class="radio"></span>必须</div>
-      <div class="popover-opt ${cur === 'prefer' ? 'is-on' : ''}" data-lv="prefer"><span class="radio"></span>希望具备</div>
-      <div class="popover-opt ${cur === 'none' ? 'is-on' : ''}" data-lv="none"><span class="radio"></span>不限制</div>
-      <button class="popover-confirm" type="button">确定</button>`;
-    const rect = anchorEl.getBoundingClientRect();
-    pop.style.left = Math.min(rect.left, window.innerWidth - 240) + 'px';
-    pop.style.top = (rect.bottom + 6) + 'px';
-    pop.hidden = false;
-    qsa('.popover-opt', pop).forEach((opt) => opt.addEventListener('click', () => {
-      const lv = opt.dataset.lv;
-      st.mustSkills = st.mustSkills.filter((x) => x !== skill);
-      st.preferSkills = st.preferSkills.filter((x) => x !== skill);
-      if (lv === 'must') st.mustSkills.push(skill);
-      if (lv === 'prefer') st.preferSkills.push(skill);
-      qsa('.popover-opt', pop).forEach((o) => o.classList.toggle('is-on', o === opt));
+  function bindMatchCond() {
+    const run = $('cond-run-match');
+    if (run) run.addEventListener('click', runMatch);
+    const editJob = $('cond-edit-job');
+    if (editJob) editJob.addEventListener('click', openJobEditor);
+    bindJobEditorModal();
+    renderCondWorkbench();
+  }
+
+  // 技能优先级 → 兼容字段同步（mustSkills / preferSkills 供其它模块使用）
+  function syncSkillsToLegacy(pref) {
+    const meta = pref.skillMeta || {};
+    pref.mustSkills = Object.keys(meta).filter((k) => meta[k].level === 'core');
+    pref.preferSkills = Object.keys(meta).filter((k) => meta[k].level === 'important' || meta[k].level === 'plus');
+    if (pref.jobTypes && pref.jobTypes.length) pref.jobType = pref.jobTypes[0];
+  }
+
+  /* ---- 条件影响计算引擎（mock 实时计算，后续可平滑接 API） ---- */
+  function computeCondImpact(pref) {
+    const n = pref.cities.length;
+    const cityPool = n === 0 ? 846 : 85 + 43 * n; // 全国 846，1 城 128
+    // 薪资相对系数（15-25K 为基准 1）
+    let salR = 1;
+    if (pref.salaryMin != null && pref.salaryMax != null) {
+      const mid = (pref.salaryMin + pref.salaryMax) / 2;
+      const span = pref.salaryMax - pref.salaryMin;
+      salR = clampF(1 - (mid - 20) * 0.03 - (span - 10) * 0.012, 0.18, 1.6);
+    }
+    // 工作性质数量系数（1 种为基准 1）
+    const tn = (pref.jobTypes || []).length;
+    const typeR = [1.2, 1, 0.8, 0.64, 0.5][tn] != null ? [1.2, 1, 0.8, 0.64, 0.5][tn] : 0.45;
+    // 技能严格度系数（默认 2 核心 + 1 重要 + 强度 18 为基准 1）
+    const meta = pref.skillMeta || {};
+    const names = Object.keys(meta);
+    const coreN = names.filter((k) => meta[k].level === 'core').length;
+    const impN = names.filter((k) => meta[k].level === 'important').length;
+    const strengthSum = names.reduce((a, k) => a + (meta[k].strength || 0), 0);
+    const skillR = clampF((1.12 - coreN * 0.085 - impN * 0.03 - strengthSum * 0.011) / 0.722, 0.28, 1.12);
+    const pool = clampF(Math.round(cityPool * salR * typeR * skillR), 6, 846);
+
+    // 条件严格度（0-100）
+    let s = 0;
+    s += n === 0 ? 0 : (n === 1 ? 16 : n === 2 ? 26 : n === 3 ? 34 : 40);
+    if (pref.salaryMin != null) { const mid = (pref.salaryMin + pref.salaryMax) / 2; s += mid < 18 ? 10 : mid < 25 ? 18 : mid < 35 ? 30 : 42; }
+    s += tn === 0 ? 0 : (tn === 1 ? 10 : tn === 2 ? 18 : tn === 3 ? 25 : 30);
+    s += coreN === 0 ? 0 : (coreN === 1 ? 14 : coreN === 2 ? 22 : coreN === 3 ? 32 : 42);
+    s += strengthSum > 18 ? 10 : strengthSum > 12 ? 6 : 3;
+    const strictness = clampF(s, 0, 100);
+    const strictLabel = strictness < 30 ? '当前条件较宽松' : strictness <= 60 ? '当前条件适中' : '当前条件偏严格';
+
+    const high = Math.round(pool * clampF(0.42 - (strictness - 40) / 400, 0.18, 0.5));
+    const normal = Math.max(0, pool - high);
+    const matchRate = Math.round(clampF(88 - Math.max(0, coreN - 2) * 4 - Math.max(0, strictness - 72) * 0.3 + impN * 1.5, 55, 96));
+
+    return { pool, high, normal, strictness, strictLabel, matchRate, cityPool, coreN, impN, strengthSum };
+  }
+
+  /* ---- AI 条件优化建议 ---- */
+  function buildAiSuggestions(pref, impact) {
+    const meta = pref.skillMeta || {};
+    const list = [];
+    const plusCore = Object.keys(meta).filter((k) => meta[k].level === 'core' && SKILL_PLUS_CANDIDATES.indexOf(k) >= 0);
+    if (plusCore.length) {
+      const sk = plusCore[0];
+      const p2 = computeCondImpact(Object.assign({}, pref, { skillMeta: Object.assign({}, meta, { [sk]: Object.assign({}, meta[sk], { level: 'plus' }) }) }));
+      const gain = p2.pool - impact.pool;
+      const gainPct = impact.pool ? Math.round((gain / impact.pool) * 100) : 0;
+      list.push({
+        title: `「${sk}」被设置为「核心要求」`,
+        suggest: `调整为「加分项」`,
+        body: `预计岗位覆盖 ${impact.pool} → ${p2.pool}，岗位池 ${gain > 0 ? '+' : ''}${gainPct}%`,
+        reason: `${sk} 在当前目标岗位中更常作为加分技能，不建议作为硬性筛选条件。`,
+        apply: () => { meta[sk].level = 'plus'; }
+      });
+    } else if (impact.coreN >= 4) {
+      const weak = Object.keys(meta).filter((k) => meta[k].level === 'core').sort((a, b) => meta[a].strength - meta[b].strength)[0];
+      list.push({
+        title: `核心要求过多（${impact.coreN} 项）`,
+        suggest: `将「${weak}」调整为重要能力`,
+        body: '降低硬性门槛有助于扩大岗位池，同时保留匹配倾向。',
+        reason: '硬性核心要求过多会显著缩小岗位覆盖，建议保留真正关键的 1-3 项。',
+        apply: () => { if (weak) meta[weak].level = 'important'; }
+      });
+    } else if (pref.salaryMin != null && pref.salaryMax != null && (pref.salaryMax - pref.salaryMin) <= 10 && pref.salaryMin >= 20) {
+      list.push({
+        title: `薪资范围偏窄（${pref.salaryMin}-${pref.salaryMax}K）`,
+        suggest: '放宽至 15-30K',
+        body: '略放宽薪资区间即可显著扩大岗位覆盖范围。',
+        reason: '该区间的岗位数量有限，建议保留弹性，优先保证岗位池质量。',
+        apply: () => { pref.salaryMin = 15; pref.salaryMax = 30; }
+      });
+    } else if (pref.cities.length === 1) {
+      list.push({
+        title: '城市限定为单一城市',
+        suggest: '增加至 2-3 个城市',
+        body: '跨城市搜索可显著扩大岗位覆盖范围。',
+        reason: '单一城市岗位池有限，开放 2-3 个一线城市可提升高匹配岗位数量。',
+        apply: () => { pref.cities = ['北京', '上海', '杭州']; }
+      });
+    }
+    return list;
+  }
+
+  /* ---- 整体渲染入口 ---- */
+  function renderCondWorkbench() {
+    const pref = window.matchState.preferences;
+    syncSkillsToLegacy(pref);
+    const impact = computeCondImpact(pref);
+    const last = window.matchState._lastCondImpact;
+    impact.delta = (last && last.pool != null) ? impact.pool - last.pool : 0;
+    impact.deltaPct = (last && last.pool) ? Math.round((impact.delta / last.pool) * 100) : 0;
+    window.matchState._lastCondImpact = { pool: impact.pool };
+
+    renderCondEditor(pref, impact);
+    renderCondImpactPanel(pref, impact);
+    renderCondTarget(pref, impact);
+    renderCondChecks(pref, impact);
+    renderCondCompleteness(pref);
+    renderAIPanelMatch();
+  }
+
+  /* ================= 左栏 · 条件编辑器 ================= */
+  function renderCondEditor(pref, impact) {
+    const box = $('cond-editor'); if (!box) return;
+    const meta = pref.skillMeta || {};
+    const skillNames = Object.keys(meta);
+    const allCities = pref.cities.length === 0;
+    const salFree = pref.salaryMin == null || pref.salaryMax == null;
+    const cityPotential = computeCondImpact(Object.assign({}, pref, { cities: [] })).pool - impact.pool;
+    const salPotential = salFree ? 0 : computeCondImpact(Object.assign({}, pref, { salaryMin: null, salaryMax: null })).pool - impact.pool;
+    const typePotential = computeCondImpact(Object.assign({}, pref, { jobTypes: [] })).pool - impact.pool;
+    const skillPotential = impact.coreN > 2 ? Math.round(impact.pool * 0.16) : 0;
+
+    box.innerHTML = `
+      <div class="cond-section">
+        <div class="cond-section-title">基础条件</div>
+        <div class="cond-row">
+          <span class="cond-row-label">城市<span class="cond-row-pot ${cityPotential > 0 ? 'is-up' : ''}" data-focus="city">+${cityPotential}</span></span>
+          <div class="cond-row-body">
+            <div class="cond-chips">
+              ${allCities ? '<span class="cond-chip cond-chip--all">全国 <i data-clear="city" title="移除">×</i></span>' : pref.cities.map((c) => `<span class="cond-chip">${escapeHtml(c)} <i data-city="${escapeHtml(c)}" title="移除">×</i></span>`).join('')}
+            </div>
+            <div class="cond-addbox">
+              <button class="cond-addbtn" id="cond-add-city" type="button">+ 添加城市</button>
+              <div class="cond-picker" id="cond-city-picker" hidden>
+                ${COND_CITIES.map((c) => (c === '全国' || c === '不限' || pref.cities.indexOf(c) < 0) ? `<button class="cond-pick-item" data-city="${escapeHtml(c)}" type="button">${escapeHtml(c)}</button>` : '').join('')}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="cond-row">
+          <span class="cond-row-label">薪资<span class="cond-row-pot ${salPotential > 0 ? 'is-up' : ''}" data-focus="salary">${salPotential > 0 ? '+' + salPotential : ''}</span></span>
+          <div class="cond-row-body">${renderSalaryControl(pref)}</div>
+        </div>
+        <div class="cond-row">
+          <span class="cond-row-label">工作性质<span class="cond-row-pot ${typePotential > 0 ? 'is-up' : ''}" data-focus="type">+${typePotential}</span></span>
+          <div class="cond-row-body">
+            <div class="cond-opt-chips">
+              ${JOBTYPES.map(([v, l]) => `<button class="cond-opt-chip ${(pref.jobTypes || []).indexOf(v) >= 0 ? 'is-on' : ''}" data-type="${v}" type="button">${l}</button>`).join('')}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="cond-section">
+        <div class="cond-section-title">技能条件 <small>点击优先级标签切换 · 点击星星设置强度</small></div>
+        <div class="cond-skill-list">
+          ${skillNames.length ? skillNames.map((s) => renderSkillItem(s, meta[s])).join('') : '<div class="cond-empty">尚未配置技能条件，点击下方「+ 添加技能」</div>'}
+        </div>
+        <div class="cond-addbox">
+          <button class="cond-addbtn" id="cond-add-skill" type="button">+ 添加技能</button>
+          <div class="cond-picker cond-picker--skill" id="cond-skill-picker" hidden>
+            ${SKILL_POOL.filter((s) => skillNames.indexOf(s) < 0).map((s) => `<button class="cond-pick-item" data-skill="${escapeHtml(s)}" type="button">${escapeHtml(s)}</button>`).join('') || '<div class="cond-pick-empty">技能已全部添加</div>'}
+          </div>
+        </div>
+      </div>`;
+    bindCondEditorEvents(box, pref);
+  }
+
+  function renderSalaryControl(pref) {
+    const free = pref.salaryMin == null || pref.salaryMax == null;
+    const min = free ? 15 : pref.salaryMin;
+    const max = free ? 25 : pref.salaryMax;
+    return `
+      <div class="cond-salary">
+        <div class="cond-range">
+          <div class="cond-range-bar"><i id="cond-range-fill" style="left:${pctOf(min)}%;right:${100 - pctOf(max)}%"></i></div>
+          <input type="range" class="cond-rmin" id="cond-salary-min" min="5" max="80" step="1" value="${min}" ${free ? 'disabled' : ''}>
+          <input type="range" class="cond-rmax" id="cond-salary-max" min="5" max="80" step="1" value="${max}" ${free ? 'disabled' : ''}>
+        </div>
+        <div class="cond-salary-inputs">
+          <label>最低 <input type="number" id="cond-salary-min-n" min="5" max="80" value="${min}" ${free ? 'disabled' : ''}>K</label>
+          <label>最高 <input type="number" id="cond-salary-max-n" min="5" max="80" value="${max}" ${free ? 'disabled' : ''}>K</label>
+          <label class="cond-check"><input type="checkbox" id="cond-salary-free" ${free ? 'checked' : ''}> 面议</label>
+        </div>
+      </div>`;
+  }
+  function pctOf(v) { return clampF(((v - 5) / 75) * 100, 0, 100); }
+
+  function renderSkillItem(name, cfg) {
+    return `
+      <div class="cond-skill-item" data-skill="${escapeHtml(name)}">
+        <div class="cond-skill-row">
+          <span class="cond-skill-name">${escapeHtml(name)}</span>
+          <button class="cond-skill-lv cond-lv--${cfg.level}" data-lv-toggle="${escapeHtml(name)}" type="button" title="点击切换优先级">${labelOf(SKILL_LEVELS, cfg.level)}</button>
+          <button class="cond-skill-rm" data-skill-rm="${escapeHtml(name)}" type="button" title="移除技能">×</button>
+        </div>
+        <div class="cond-skill-str">
+          <span class="cond-skill-str-label">要求强度</span>
+          <span class="cond-stars" data-stars="${escapeHtml(name)}">
+            ${[1, 2, 3, 4, 5].map((i) => `<i class="cond-star ${i <= cfg.strength ? 'on' : ''}" data-v="${i}"></i>`).join('')}
+          </span>
+          <b class="cond-skill-str-val">${cfg.strength}/5</b>
+        </div>
+      </div>`;
+  }
+
+  /* ================= 中栏 · 条件影响分析 ================= */
+  function renderCondImpactPanel(pref, impact) {
+    const box = $('cond-impact'); if (!box) return;
+    const aiList = buildAiSuggestions(pref, impact);
+    const d = impact.delta;
+    const deltaHtml = d === 0
+      ? '<span class="cond-delta cond-delta--none">条件未变化</span>'
+      : d > 0
+        ? `<span class="cond-delta cond-delta--up">+${d} 个岗位</span><span class="cond-delta-note">覆盖范围扩大 ${impact.deltaPct}%</span>`
+        : `<span class="cond-delta cond-delta--down">${d} 个岗位</span><span class="cond-delta-note">岗位范围减少 ${Math.abs(impact.deltaPct)}%</span>`;
+    box.innerHTML = `
+      <div class="cond-strict">
+        <div class="cond-strict-head"><span>条件严格度</span><b id="cond-strict-num">0</b><small>/ 100</small></div>
+        <div class="cond-strict-bar"><i id="cond-strict-fill"></i><span class="cond-strict-dot" id="cond-strict-dot"></span></div>
+        <div class="cond-strict-scale"><span>低</span><b id="cond-strict-label">${escapeHtml(impact.strictLabel)}</b><span>高</span></div>
+      </div>
+      <div class="cond-impact-section">
+        <div class="cond-impact-title">岗位覆盖范围</div>
+        <div class="cond-pool-row">
+          <b id="cond-pool-num">0</b><span>个岗位</span>${deltaHtml}
+        </div>
+        <div class="cond-pool-bar"><i id="cond-pool-high"></i><i id="cond-pool-normal"></i></div>
+        <div class="cond-pool-legend">
+          <span><i class="lg-high"></i>高匹配 <b id="cond-high-num">0</b></span>
+          <span><i class="lg-normal"></i>普通匹配 <b id="cond-normal-num">0</b></span>
+        </div>
+      </div>
+      <div class="cond-impact-section" id="cond-factor-box">
+        <div class="cond-impact-title">条件影响 <small>放宽该项可增加的岗位</small></div>
+        <div class="cond-factor-list">
+          ${[['city', '城市', pref.cities.length ? pref.cities.length + ' 城' : '全国', impact.cityPool >= 400 ? 100 : Math.round(impact.cityPool / 8.46)], ['salary', '薪资', pref.salaryMin == null ? '面议' : pref.salaryMin + '-' + pref.salaryMax + 'K', Math.round(impact.pool / 8.46)], ['type', '性质', (pref.jobTypes || []).length + ' 种', Math.round(impact.pool / 8.46)], ['skill', '技能', impact.coreN + ' 核心', Math.round(impact.pool / 8.46)]].map((f) => `
+            <div class="cond-factor" data-factor="${f[0]}">
+              <span class="cond-factor-label">${f[1]}</span>
+              <div class="cond-factor-track"><i style="width:${clampF(f[3], 4, 100)}%"></i></div>
+              <span class="cond-factor-cur">${escapeHtml(f[2])}</span>
+            </div>`).join('')}
+        </div>
+      </div>
+      <div class="cond-ai" id="cond-ai-box">
+        ${aiList.length ? `
+          <div class="cond-ai-head"><span class="cond-ai-ico">💡</span><b>AI 条件优化建议</b></div>
+          <div class="cond-ai-title">当前：${escapeHtml(aiList[0].title)}</div>
+          <div class="cond-ai-suggest">建议：${escapeHtml(aiList[0].suggest)}</div>
+          <div class="cond-ai-meta">${escapeHtml(aiList[0].body)}</div>
+          <div class="cond-ai-reason">推荐理由：${escapeHtml(aiList[0].reason)}</div>
+          <button class="btn-sm btn-sm--solid cond-ai-apply" type="button">应用建议</button>`
+        : '<div class="cond-ai-empty">当前条件下暂无需优化，条件较为均衡。</div>'}
+      </div>`;
+    // 动画（从当前值平滑过渡到新值）
+    countUpTo($('cond-strict-num'), impact.strictness, 900);
+    countUpTo($('cond-pool-num'), impact.pool, 1000);
+    countUpTo($('cond-high-num'), impact.high, 1000);
+    countUpTo($('cond-normal-num'), impact.normal, 1000);
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      const sf = $('cond-strict-fill'); if (sf) sf.style.width = impact.strictness + '%';
+      const sd = $('cond-strict-dot'); if (sd) sd.style.left = impact.strictness + '%';
+      const ph = $('cond-pool-high'); if (ph) ph.style.width = Math.round((impact.high / Math.max(1, impact.pool)) * 100) + '%';
+      const pn = $('cond-pool-normal'); if (pn) pn.style.width = Math.round((impact.normal / Math.max(1, impact.pool)) * 100) + '%';
     }));
-    pop.querySelector('.popover-confirm').addEventListener('click', () => { pop.hidden = true; renderCondBar(); });
-    setTimeout(() => {
-      const close = (e) => { if (!pop.contains(e.target) && e.target !== anchorEl) { pop.hidden = true; document.removeEventListener('click', close); } };
-      document.addEventListener('click', close);
-    }, 0);
+    // AI 建议应用
+    const aiApply = qs('.cond-ai-apply', box);
+    if (aiApply) aiApply.addEventListener('click', () => {
+      const list = buildAiSuggestions(pref, impact);
+      if (list[0]) { list[0].apply(); hidePickers(); renderCondWorkbench(); }
+    });
+    // 条件影响行点击高亮
+    qsa('.cond-factor', box).forEach((f) => f.addEventListener('click', () => {
+      qsa('.cond-factor', box).forEach((x) => x.classList.remove('is-hl'));
+      f.classList.add('is-hl');
+    }));
+  }
+
+  /* ================= 右栏 · 目标岗位画像 ================= */
+  function renderCondTarget(pref, impact) {
+    const box = $('cond-target'); if (!box) return;
+    const meta = pref.skillMeta || {};
+    const core = Object.keys(meta).filter((k) => meta[k].level === 'core');
+    const imp = Object.keys(meta).filter((k) => meta[k].level === 'important');
+    const plus = Object.keys(meta).filter((k) => meta[k].level === 'plus');
+    const reqVal = (s) => (STRENGTH_TO_REQ[meta[s].strength] != null ? STRENGTH_TO_REQ[meta[s].strength] : 75);
+    const cityTxt = pref.cities.length ? pref.cities.join(' · ') : '全国';
+    const salaryTxt = pref.salaryMin == null ? '面议' : pref.salaryMin + '-' + pref.salaryMax + 'K';
+    const typeTxt = (pref.jobTypes || []).map((t) => labelOf(JOBTYPES, t)).filter(Boolean).join(' / ') || '不限';
+    const reqRows = (list, cls) => list.map((s) => `<div class="cond-skill-req"><span>${escapeHtml(s)}</span><div class="cond-skill-req-bar"><i data-w="${reqVal(s)}"></i></div><b>${reqVal(s)}</b></div>`).join('');
+    box.innerHTML = `
+      <div class="cond-target-name">${escapeHtml(pref.direction || '目标岗位')}</div>
+      <div class="cond-target-co">某科技公司 · 校招优先</div>
+      <div class="cond-target-meta">
+        <span>${escapeHtml(cityTxt)}</span><span>${escapeHtml(salaryTxt)}</span><span>${escapeHtml(typeTxt)}</span>
+      </div>
+      <div class="cond-target-rate">
+        <svg class="cond-rate-ring" viewBox="0 0 48 48">
+          <circle class="ring-bg" cx="24" cy="24" r="19" pathLength="100"></circle>
+          <circle class="ring-fg" id="cond-rate-fg" cx="24" cy="24" r="19" pathLength="100" data-rate="${impact.matchRate}"></circle>
+        </svg>
+        <div class="cond-rate-num"><b id="cond-rate-num">0</b><span>%</span></div>
+        <div class="cond-rate-label">当前预计匹配</div>
+      </div>
+      <div class="cond-target-sec"><span>核心技能</span>${core.length ? reqRows(core) : '<div class="cond-empty">未配置</div>'}</div>
+      ${imp.length ? `<div class="cond-target-sec"><span>重要能力</span>${reqRows(imp)}</div>` : ''}
+      ${plus.length ? `<div class="cond-target-sec cond-target-sec--plus"><span>加分技能</span>${reqRows(plus)}</div>` : ''}
+      <div class="cond-target-foot">
+        <div><b id="cond-tpool">0</b><span>可匹配岗位</span></div>
+        <div><b id="cond-thigh">0</b><span>高匹配岗位</span></div>
+      </div>`;
+    countUpTo($('cond-rate-num'), impact.matchRate, 1000);
+    countUpTo($('cond-tpool'), impact.pool, 1000);
+    countUpTo($('cond-thigh'), impact.high, 1000);
+    const fg = $('cond-rate-fg');
+    if (fg) fg.style.strokeDashoffset = 100 - (parseFloat(fg.dataset.rate || 0) || 0);
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      box.querySelectorAll('.cond-skill-req-bar i').forEach((el) => { el.style.width = el.dataset.w + '%'; });
+    }));
+  }
+
+  /* ================= 底部状态栏 ================= */
+  function renderCondChecks(pref, impact) {
+    const box = $('cond-checks'); if (!box) return;
+    const meta = pref.skillMeta || {};
+    const complete = !!pref.direction && pref.cities.length > 0 && (pref.salaryMin != null || pref.salaryMax != null) && (pref.jobTypes || []).length > 0 && Object.keys(meta).length > 0;
+    const checks = [
+      { ok: complete, text: '条件完整' },
+      { ok: impact.pool > 0, text: '岗位有效' }
+    ];
+    if (impact.strictness > 65) checks.push({ warn: true, text: '1 项条件可能限制岗位范围' });
+    box.innerHTML = checks.map((c) => c.warn
+      ? '<span class="cond-check cond-check--warn"><i>⚠</i>' + c.text + '</span>'
+      : `<span class="cond-check ${c.ok ? 'cond-check--ok' : 'cond-check--no'}"><i>${c.ok ? '✓' : '·'}</i>${c.text}</span>`).join('');
+  }
+
+  function renderCondCompleteness(pref) {
+    const el = $('cond-completeness'); if (!el) return;
+    const meta = pref.skillMeta || {};
+    const filled = [!!pref.direction, pref.cities.length > 0, pref.salaryMin != null || pref.salaryMax != null, (pref.jobTypes || []).length > 0, Object.keys(meta).length > 0].filter(Boolean).length;
+    countUpTo(el, Math.round(filled / 5 * 100), 900);
+  }
+
+  // 轻量刷新（滑块拖动等高频场景：不重建左栏编辑器，只更新影响/画像/状态）
+  function refreshImpact() {
+    const pref = window.matchState.preferences;
+    const impact = computeCondImpact(pref);
+    const last = window.matchState._lastCondImpact;
+    impact.delta = (last && last.pool != null) ? impact.pool - last.pool : 0;
+    impact.deltaPct = (last && last.pool) ? Math.round((impact.delta / last.pool) * 100) : 0;
+    window.matchState._lastCondImpact = { pool: impact.pool };
+    renderCondImpactPanel(pref, impact);
+    renderCondTarget(pref, impact);
+    renderCondChecks(pref, impact);
+    renderCondCompleteness(pref);
+  }
+
+  /* ================= 左栏交互 ================= */
+  function bindCondEditorEvents(root, pref) {
+    root.querySelectorAll('[data-city]').forEach((i) => i.addEventListener('click', (e) => {
+      e.stopPropagation();
+      pref.cities = pref.cities.filter((c) => c !== i.dataset.city);
+      renderCondWorkbench();
+    }));
+    root.querySelectorAll('[data-clear="city"]').forEach((i) => i.addEventListener('click', (e) => {
+      e.stopPropagation(); pref.cities = []; renderCondWorkbench();
+    }));
+    const addCity = $('cond-add-city');
+    if (addCity) addCity.addEventListener('click', () => togglePicker('cond-city-picker'));
+    root.querySelectorAll('#cond-city-picker [data-city]').forEach((b) => b.addEventListener('click', () => {
+      const c = b.dataset.city;
+      if (c === '全国' || c === '不限') pref.cities = [];
+      else if (pref.cities.indexOf(c) < 0) pref.cities.push(c);
+      hidePickers(); renderCondWorkbench();
+    }));
+    root.querySelectorAll('.cond-opt-chip[data-type]').forEach((b) => b.addEventListener('click', () => {
+      if (!pref.jobTypes) pref.jobTypes = [];
+      const i = pref.jobTypes.indexOf(b.dataset.type);
+      if (i >= 0) pref.jobTypes.splice(i, 1); else pref.jobTypes.push(b.dataset.type);
+      renderCondWorkbench();
+    }));
+    bindSalaryEvents(pref);
+    const addSkill = $('cond-add-skill');
+    if (addSkill) addSkill.addEventListener('click', () => togglePicker('cond-skill-picker'));
+    root.querySelectorAll('#cond-skill-picker [data-skill]').forEach((b) => b.addEventListener('click', () => {
+      const s = b.dataset.skill;
+      if (!pref.skillMeta[s]) pref.skillMeta[s] = { level: 'important', strength: 3 };
+      hidePickers(); renderCondWorkbench();
+    }));
+    root.querySelectorAll('.cond-skill-lv[data-lv-toggle]').forEach((b) => b.addEventListener('click', () => {
+      const s = b.dataset.lvToggle;
+      const cur = pref.skillMeta[s] ? pref.skillMeta[s].level : 'important';
+      pref.skillMeta[s].level = LV_ORDER[(LV_ORDER.indexOf(cur) + 1) % LV_ORDER.length];
+      renderCondWorkbench();
+    }));
+    root.querySelectorAll('.cond-stars[data-stars]').forEach((wrap) => wrap.addEventListener('click', (e) => {
+      const star = e.target.closest('.cond-star'); if (!star) return;
+      const s = wrap.dataset.stars;
+      pref.skillMeta[s].strength = parseInt(star.dataset.v, 10);
+      renderCondWorkbench();
+    }));
+    root.querySelectorAll('.cond-skill-rm[data-skill-rm]').forEach((b) => b.addEventListener('click', () => {
+      delete pref.skillMeta[b.dataset.skillRm];
+      renderCondWorkbench();
+    }));
+    // 点击条件影响潜力标签 → 高亮中栏对应维度
+    root.querySelectorAll('.cond-row-pot[data-focus]').forEach((el) => el.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const box = $('cond-impact'); if (!box) return;
+      const item = qs('.cond-factor[data-factor="' + el.dataset.focus + '"]', box);
+      qsa('.cond-factor', box).forEach((x) => x.classList.remove('is-hl'));
+      if (item) { item.classList.add('is-hl'); item.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+    }));
+  }
+
+  function bindSalaryEvents(pref) {
+    const rmin = $('cond-salary-min'); const rmax = $('cond-salary-max');
+    const nmin = $('cond-salary-min-n'); const nmax = $('cond-salary-max-n');
+    const free = $('cond-salary-free');
+    const sync = () => {
+      if (!rmin || !rmax) return;
+      let lo = parseInt(rmin.value, 10); let hi = parseInt(rmax.value, 10);
+      if (lo > hi) { if (document.activeElement === rmin) { hi = lo; rmax.value = hi; } else { lo = hi; rmin.value = lo; } }
+      pref.salaryMin = lo; pref.salaryMax = hi;
+      if (nmin) nmin.value = lo; if (nmax) nmax.value = hi;
+      const fill = $('cond-range-fill');
+      if (fill) { fill.style.left = pctOf(lo) + '%'; fill.style.right = (100 - pctOf(hi)) + '%'; }
+      refreshImpact();
+    };
+    if (rmin) rmin.addEventListener('input', sync);
+    if (rmax) rmax.addEventListener('input', sync);
+    if (rmin) rmin.addEventListener('change', renderCondWorkbench);
+    if (rmax) rmax.addEventListener('change', renderCondWorkbench);
+    if (nmin) nmin.addEventListener('change', () => {
+      const hi = rmax ? parseInt(rmax.value, 10) : 80;
+      pref.salaryMin = clampF(parseInt(nmin.value, 10) || 5, 5, hi); renderCondWorkbench();
+    });
+    if (nmax) nmax.addEventListener('change', () => {
+      const lo = rmin ? parseInt(rmin.value, 10) : 5;
+      pref.salaryMax = clampF(parseInt(nmax.value, 10) || 80, lo, 80); renderCondWorkbench();
+    });
+    if (free) free.addEventListener('change', () => {
+      if (free.checked) { pref.salaryMin = null; pref.salaryMax = null; }
+      else { pref.salaryMin = 15; pref.salaryMax = 25; }
+      renderCondWorkbench();
+    });
+  }
+
+  function togglePicker(id) {
+    const p = $(id); if (!p) return;
+    const willShow = p.hidden;
+    hidePickers();
+    p.hidden = !willShow;
+  }
+  function hidePickers() { qsa('.cond-picker').forEach((x) => { x.hidden = true; }); }
+
+  /* ================= 岗位画像编辑浮层 ================= */
+  function openJobEditor() {
+    const modal = $('cond-job-modal'); if (!modal) return;
+    const pref = window.matchState.preferences;
+    const body = $('cond-job-body'); if (!body) return;
+    body.innerHTML = `
+      <div class="cond-job-field"><label>岗位名称</label><input type="text" id="cjob-name" value="${escapeHtml(pref.direction || '')}"></div>
+      <div class="cond-job-field"><label>城市</label>
+        <select id="cjob-city">
+          ${COND_CITIES.map((c) => `<option value="${escapeHtml(c)}" ${pref.cities.length === 1 && pref.cities[0] === c ? 'selected' : ''}>${escapeHtml(c)}</option>`).join('')}
+        </select>
+      </div>
+      <div class="cond-job-field"><label>薪资范围</label>
+        <div class="cond-job-salary">
+          <input type="number" id="cjob-smin" min="5" max="80" value="${pref.salaryMin == null ? 15 : pref.salaryMin}">
+          <span>—</span>
+          <input type="number" id="cjob-smax" min="5" max="80" value="${pref.salaryMax == null ? 25 : pref.salaryMax}">
+          <span>K</span>
+        </div>
+      </div>
+      <div class="cond-job-field"><label>工作性质</label>
+        <div class="cond-opt-chips" id="cjob-types">
+          ${JOBTYPES.map(([v, l]) => `<button class="cond-opt-chip ${(pref.jobTypes || []).indexOf(v) >= 0 ? 'is-on' : ''}" data-type="${v}" type="button">${l}</button>`).join('')}
+        </div>
+      </div>
+      <div class="cond-job-field"><label>技能要求</label>
+        <div class="cond-job-skills" id="cjob-skills">${renderJobSkillChips(pref)}</div>
+        <div class="cond-job-addskill">
+          <select id="cjob-skill-add"><option value="">+ 添加技能…</option>${SKILL_POOL.filter((s) => !pref.skillMeta[s]).map((s) => `<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join('')}</select>
+        </div>
+      </div>`;
+    modal.hidden = false;
+  }
+  function renderJobSkillChips(pref) {
+    return Object.keys(pref.skillMeta || {}).map((s) => `<span class="cond-chip">${escapeHtml(s)} <i data-skill="${escapeHtml(s)}">×</i></span>`).join('') || '<span class="cond-job-skill-empty">暂无技能</span>';
+  }
+  function bindJobEditorModal() {
+    const modal = $('cond-job-modal'); if (!modal) return;
+    const close = $('cond-job-close'); if (close) close.addEventListener('click', () => { modal.hidden = true; });
+    const cancel = $('cond-job-cancel'); if (cancel) cancel.addEventListener('click', () => { modal.hidden = true; });
+    const mask = modal.querySelector('.cond-job-mask'); if (mask) mask.addEventListener('click', () => { modal.hidden = true; });
+    const save = $('cond-job-save'); if (save) save.addEventListener('click', () => {
+      const pref = window.matchState.preferences;
+      const name = $('cjob-name'); if (name && name.value.trim()) pref.direction = name.value.trim();
+      const city = $('cjob-city');
+      if (city) { const v = city.value; pref.cities = (v === '全国' || v === '不限') ? [] : [v]; }
+      const smin = $('cjob-smin'); const smax = $('cjob-smax');
+      if (smin && smax) {
+        const lo = clampF(parseInt(smin.value, 10) || 15, 5, 80);
+        const hi = clampF(parseInt(smax.value, 10) || 25, lo, 80);
+        pref.salaryMin = lo; pref.salaryMax = hi;
+      }
+      modal.hidden = true;
+      renderCondWorkbench();
+    });
+    modal.addEventListener('click', (e) => {
+      const tb = e.target.closest('#cjob-types .cond-opt-chip');
+      if (tb) {
+        const pref = window.matchState.preferences;
+        if (!pref.jobTypes) pref.jobTypes = [];
+        const i = pref.jobTypes.indexOf(tb.dataset.type);
+        if (i >= 0) pref.jobTypes.splice(i, 1); else pref.jobTypes.push(tb.dataset.type);
+        tb.classList.toggle('is-on');
+        return;
+      }
+      const del = e.target.closest('#cjob-skills [data-skill]');
+      if (del) {
+        delete window.matchState.preferences.skillMeta[del.dataset.skill];
+        const box = $('cjob-skills'); if (box) box.innerHTML = renderJobSkillChips(window.matchState.preferences);
+        const sel = $('cjob-skill-add');
+        if (sel) sel.innerHTML = '<option value="">+ 添加技能…</option>' + SKILL_POOL.filter((s) => !window.matchState.preferences.skillMeta[s]).map((s) => `<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join('');
+        return;
+      }
+      const sel = e.target.closest('#cjob-skill-add');
+      if (sel && sel.value) {
+        const pref = window.matchState.preferences;
+        if (!pref.skillMeta[sel.value]) pref.skillMeta[sel.value] = { level: 'important', strength: 3 };
+        sel.value = '';
+        const box = $('cjob-skills'); if (box) box.innerHTML = renderJobSkillChips(pref);
+        sel.innerHTML = '<option value="">+ 添加技能…</option>' + SKILL_POOL.filter((s) => !pref.skillMeta[s]).map((s) => `<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join('');
+      }
+    });
   }
 
   /* ============================================================
-   * AI 分析（动态能力构建）
+   * AI 分析 · 简历解析引擎（AI Processing）
+   * 中央 AI 能量球 + 环形任务节点 + 实时识别流 + 生成内容预览
    * ============================================================ */
-  const THEATER_STEPS = [
-    { t: '简历结构', d: '解析 PDF/文本，分离教育、经历、项目、技能区块。' },
-    { t: '教育背景', d: '识别学历层次、专业方向与时间线。' },
-    { t: '工作经历', d: '抽取公司、职责、技术栈与量化成果。' },
-    { t: '项目经验', d: '定位核心项目与你在其中的技术角色。' },
-    { t: '技能体系', d: '归一化技能名称，标注掌握程度与证据。' },
-    { t: '能力图谱', d: '将个人能力节点与岗位要求节点建立关系。' },
-    { t: '岗位语义', d: '理解目标岗位的隐性要求与优先项。' },
-    { t: '匹配推理', d: '计算技能/语义/项目/经验多维度匹配。' },
-    { t: '岗位推荐', d: '按匹配度与潜力排序生成岗位清单。' }
+  const RP_STEPS = [
+    { t: '简历结构解析', d: '解析 PDF / 文本，分离教育、经历、项目、技能区块', icon: '📄' },
+    { t: '技术技能识别', d: '归一化技能名称，识别掌握程度与项目证据', icon: '⚙️' },
+    { t: '项目经验分析', d: '定位核心项目与你在其中的技术角色', icon: '🗂️' },
+    { t: '职业能力建模', d: '将能力节点构建为六维职业画像', icon: '◉' },
+    { t: '岗位匹配计算', d: '与目标岗位要求比对，计算多维匹配度', icon: '⌁' }
   ];
+  const RP_KEYWORDS = ['Java', 'Spring Boot', 'Redis', 'MySQL', '微服务', 'Docker', 'JVM', '并发编程', 'Nacos', 'Kubernetes', 'Maven', 'Git', 'Linux', 'RESTful'];
+  const RP_RING_C = 251.2;
+  let _rpsKw = 0;
 
   function runMatch() {
     setView('analysis');
     startTheater();
-    diagnoseResume(window.matchState.file).then((res) => {
-      window.matchState.result = res;
+    // 保证分析动画至少展示 4.6s，给用户完整的“AI 正在阅读”体验
+    const minShow = new Promise((r) => setTimeout(r, reduceMotion() ? 400 : 4600));
+    Promise.all([diagnoseResume(window.matchState.file), minShow]).then((arr) => {
+      window.matchState.result = arr[0];
       finishTheater();
-      setTimeout(() => { setView('jobs'); }, reduceMotion() ? 200 : 600);
+      setTimeout(() => { setView('jobs'); }, reduceMotion() ? 200 : 700);
     }).catch((err) => {
       stopTheater();
       window.showToast('匹配失败：' + (err && err.message ? err.message : '请重试'), 'amber');
@@ -1214,91 +1654,164 @@
   }
   function mockDiagnose() { return new Promise((resolve) => setTimeout(() => resolve(structuredClone(MOCK_RESULT)), reduceMotion() ? 180 : 900)); }
 
-  function startTheater() {
-    const title = $('analysis-title'); if (title) title.textContent = '正在构建你的能力图谱';
-    const bar = $('build-lines'); const pct = $('analysis-pct'); const stepList = $('step-list');
+  /* ---- 环形任务节点 ---- */
+  function renderRpsRing() {
+    const ring = $('rps-ring'); if (!ring) return;
+    const stage = $('rps-stage');
+    const w = Math.max(620, stage ? stage.clientWidth : 900);
+    const h = Math.max(420, stage ? stage.clientHeight : 520);
+    const cx = w / 2, cy = h / 2;
+    const rx = Math.min(w * 0.36, 320);
+    const ry = Math.min(h * 0.3, 150);
+    const N = RP_STEPS.length;
+    let nodes = '', lines = '';
+    const pts = [];
+    for (let i = 0; i < N; i++) {
+      const a = (i / N) * Math.PI * 2 - Math.PI / 2;
+      const x = cx + Math.cos(a) * rx;
+      const y = cy + Math.sin(a) * ry;
+      pts.push({ x, y });
+      lines += `<line class="rps-node-line" data-step="${i}" x1="${cx.toFixed(1)}" y1="${cy.toFixed(1)}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" />`;
+      nodes += `<div class="rps-node is-todo" data-step="${i}" style="left:${x.toFixed(1)}px;top:${y.toFixed(1)}px">
+        <span class="rps-node-icon">${RP_STEPS[i].icon}</span>
+        <span class="rps-node-name">${escapeHtml(RP_STEPS[i].t)}</span>
+        <span class="rps-node-state"><i></i><em>等待</em></span>
+      </div>`;
+    }
+    ring.innerHTML = `<svg class="rps-node-svg" viewBox="0 0 ${w} ${h}" aria-hidden="true">${lines}</svg>` + nodes;
+    // 进度环补足中心圆点
+    const p = document.createElement('div');
+    p.className = 'rps-node-center';
+    p.style.cssText = `left:${cx.toFixed(1)}px;top:${cy.toFixed(1)}px;`;
+    ring.appendChild(p);
+  }
+
+  function setRpsStepState(i, state) {
+    const node = document.querySelector('.rps-node[data-step="' + i + '"]');
+    const line = document.querySelector('.rps-node-line[data-step="' + i + '"]');
+    if (node) {
+      node.classList.remove('is-done', 'is-doing', 'is-todo');
+      node.classList.add(state);
+      const em = node.querySelector('.rps-node-state em');
+      if (em) em.textContent = state === 'is-done' ? '已完成' : (state === 'is-doing' ? '进行中' : '等待');
+    }
+    if (line) {
+      line.classList.remove('is-live', 'is-done');
+      if (state === 'is-doing') line.classList.add('is-live');
+      else if (state === 'is-done') line.classList.add('is-done');
+    }
+  }
+
+  function setRpsProgress(pct) {
+    const bar = $('rps-ring-bar');
+    const num = $('analysis-pct');
     if (bar) {
-      const prof = MOCK_RESULT.profile;
-      bar.innerHTML = (prof.skills || []).map((s) => `
-        <div class="build-line" data-skill="${escapeHtml(s.name)}">
-          <span class="build-line-name">${escapeHtml(s.name)}</span>
-          <span class="build-track"><i></i></span>
-          <span class="build-line-mark"></span>
-        </div>`).join('');
+      bar.style.strokeDashoffset = (RP_RING_C * (1 - pct / 100)).toFixed(1);
+      bar.style.stroke = pct >= 86 ? '#f0b429' : (pct >= 42 ? '#f7c948' : '#35e0c8');
     }
-    if (stepList) {
-      stepList.innerHTML = THEATER_STEPS.map((s, i) =>
-        `<li class="step-item is-todo" data-step="${i}"><span class="step-mark"></span><span>${s.t}</span></li>`).join('');
-      qsa('.step-item', stepList).forEach((li) => li.addEventListener('click', () => toggleStepEvi(li)));
-    }
-    if (pct) pct.textContent = '0%';
-    if (window.matchState._theater) clearInterval(window.matchState._theater);
-    const total = THEATER_STEPS.length;
-    let i = 0;
+    if (num) num.textContent = pct;
+  }
+
+  function updateRpsLog(step) {
+    const log = $('rps-dyn-log'); if (!log) return;
+    if (step >= RP_STEPS.length) { log.textContent = '已生成职业画像，正在进入岗位推荐…'; return; }
+    log.textContent = '正在进行 · ' + RP_STEPS[step].t;
+  }
+
+  function addRpsKeyword(kw) {
+    const chips = $('rps-find-chips'); if (!chips) return;
+    const c = document.createElement('span');
+    c.className = 'rps-kw';
+    c.textContent = kw;
+    chips.appendChild(c);
+    if (chips.scrollWidth > chips.clientWidth + 10) chips.scrollLeft = chips.scrollWidth;
+  }
+
+  function renderRpsMarquee() {
+    const track = $('rps-marquee-track'); if (!track) return;
+    const seq = RP_KEYWORDS.concat(RP_KEYWORDS, RP_KEYWORDS);
+    track.innerHTML = seq.map((k) => `<span class="rps-mq-kw">${escapeHtml(k)}</span>`).join('<span class="rps-mq-sep">◆</span>');
+  }
+
+  function updateRpsCounts(el) {
+    const t = Math.min(1, el * 1.3);
+    const ease = 1 - Math.pow(1 - t, 3);
+    qsa('.rps-count b').forEach((b) => {
+      const target = parseInt(b.dataset.count, 10) || 0;
+      b.textContent = Math.round(ease * target);
+    });
+  }
+
+  function startTheater() {
+    const root = $('rps'); if (!root) return;
+    const title = $('analysis-title'); if (title) title.textContent = '正在分析你的简历';
+    const m = getSelectedJob();
+    const dir = $('analysis-direction');
+    if (dir) dir.innerHTML = (m && m.job && m.job.title) ? escapeHtml(m.job.title) + ' 方向' : 'Java 后端开发方向';
+    renderRpsRing();
+    renderRpsMarquee();
+    const chips = $('rps-find-chips'); if (chips) chips.innerHTML = '';
+    _rpsKw = 0;
+    qsa('.rps-count b').forEach((b) => { b.textContent = '0'; });
+    setRpsProgress(0);
+    qsa('.rps-node').forEach((n) => setRpsStepState(parseInt(n.dataset.step, 10), 'is-todo'));
+    qsa('.rps-preview-card').forEach((c) => c.classList.remove('is-ready'));
+    if (window.matchState._theater) { clearInterval(window.matchState._theater); window.matchState._theater = null; }
+
+    const DUR = reduceMotion() ? 700 : 4600;
+    const t0 = performance.now();
+    const total = RP_STEPS.length;
+    const N = RP_KEYWORDS.length;
+    let lastStep = -1;
     const tick = () => {
-      if (i >= total) { return; }
-      const li = stepList && stepList.children[i];
-      qsa('.step-item', stepList).forEach((x, j) => { x.className = 'step-item ' + (j < i ? 'is-done' : (j === i ? 'is-doing' : 'is-todo')); });
-      // 能力线逐步接入
-      const lines = bar ? qsa('.build-line', bar) : [];
-      if (lines[i]) {
-        const tr = lines[i].querySelector('.build-track i');
-        const mk = lines[i].querySelector('.build-line-mark');
-        const sk = (MOCK_RESULT.profile.skills || [])[i % (MOCK_RESULT.profile.skills.length)];
-        if (tr) tr.style.width = (sk ? sk.readiness : 60) + '%';
-        if (mk) { mk.textContent = '✓'; mk.className = 'build-line-mark is-ok'; }
+      const el = Math.min(1, (performance.now() - t0) / DUR);
+      setRpsProgress(Math.round(el * 100));
+      // 环形节点逐个激活
+      const s = Math.min(total, Math.floor(el * total));
+      if (s !== lastStep) {
+        lastStep = s;
+        for (let j = 0; j < total; j++) setRpsStepState(j, j < s ? 'is-done' : (j === s ? 'is-doing' : 'is-todo'));
+        updateRpsLog(s);
       }
-      if (pct) pct.textContent = Math.round(((i + 1) / total) * 100) + '%';
-      i++;
-      window.matchState._theater = setTimeout(tick, reduceMotion() ? 120 : 420);
+      // 技能关键词自动浮现
+      const kw = Math.min(N, Math.floor(el * N * 1.2));
+      while (_rpsKw < kw) { addRpsKeyword(RP_KEYWORDS[_rpsKw]); _rpsKw++; }
+      // 计数滚动
+      updateRpsCounts(el);
+      if (el >= 1) { clearInterval(window.matchState._theater); window.matchState._theater = null; }
     };
+    window.matchState._theater = setInterval(tick, 50);
     tick();
   }
-  function stopTheater() { if (window.matchState._theater) { clearTimeout(window.matchState._theater); window.matchState._theater = null; } }
+
+  function stopTheater() {
+    if (window.matchState._theater) { clearInterval(window.matchState._theater); window.matchState._theater = null; }
+  }
+
   function finishTheater() {
     stopTheater();
-    const bar = $('build-lines');
-    if (bar) qsa('.build-line', bar).forEach((l, i) => {
-      const sk = (MOCK_RESULT.profile.skills || [])[i % (MOCK_RESULT.profile.skills.length)];
-      const tr = l.querySelector('.build-track i'); const mk = l.querySelector('.build-line-mark');
-      if (tr) tr.style.width = (sk ? sk.readiness : 60) + '%';
-      if (mk && !sk) { mk.textContent = '✕'; mk.className = 'build-line-mark is-miss'; l.querySelector('.build-track').classList.add('is-miss'); }
-      l.style.cursor = 'pointer';
-      l.addEventListener('click', () => openNodeDrawer(sk ? sk.name : 'Docker'));
-    });
-    const stepList = $('step-list');
-    if (stepList) qsa('.step-item', stepList).forEach((x) => { x.className = x.className.replace('is-doing', 'is-done'); });
-    const pct = $('analysis-pct'); if (pct) pct.textContent = '100%';
+    setRpsProgress(100);
+    for (let j = 0; j < RP_STEPS.length; j++) setRpsStepState(j, 'is-done');
+    const log = $('rps-dyn-log'); if (log) log.textContent = '分析完成 · 职业画像构建完毕';
+    // 补齐未浮现的关键词
+    while (_rpsKw < RP_KEYWORDS.length) { addRpsKeyword(RP_KEYWORDS[_rpsKw]); _rpsKw++; }
+    qsa('.rps-count b').forEach((b) => { b.textContent = b.dataset.count; });
+    qsa('.rps-preview-card').forEach((c) => c.classList.add('is-ready'));
     renderAIPanelAnalysis();
-  }
-  function toggleStepEvi(li) {
-    const i = parseInt(li.dataset.step, 10);
-    const s = THEATER_STEPS[i];
-    let evi = li.nextElementSibling;
-    if (evi && evi.classList.contains('step-evi')) { evi.classList.toggle('is-open'); return; }
-    evi = document.createElement('div'); evi.className = 'step-evi'; evi.innerHTML = `<b>${s.t}</b><br>${escapeHtml(s.d)}`;
-    li.insertAdjacentElement('afterend', evi);
-    evi.classList.add('is-open');
   }
 
   /* ============================================================
    * STATE 4 · 岗位推荐（高密度列表）
    * ============================================================ */
   function bindJobs() {
-    const filterBox = $('jobs-filter');
-    if (filterBox) filterBox.addEventListener('click', (e) => {
-      const chip = e.target.closest('.chip'); if (!chip) return;
-      const f = chip.dataset.filter; const v = chip.dataset.value;
-      if (f === 'tab') { setJobsTab(v); }
-      if (f === 'city') { /* 简化：仅高亮 */ }
-    });
-    const tabs = $('jobs-tabs');
-    if (tabs) qsa('.jobs-tab', tabs).forEach((t) => t.addEventListener('click', () => {
-      qsa('.jobs-tab', tabs).forEach((x) => x.classList.toggle('active', x === t));
-      setJobsTab(t.dataset.recTab);
-    }));
     const sort = $('jobs-sort');
-    if (sort) sort.addEventListener('change', () => renderJobs());
+    if (sort) sort.addEventListener('click', (e) => {
+      const chip = e.target.closest('.jobs-sort-chip');
+      if (!chip) return;
+      qsa('.jobs-sort-chip', sort).forEach((c) => c.classList.toggle('is-active', c === chip));
+      window.matchState.jobSort = chip.dataset.sort;
+      renderJobs();
+    });
   }
 
   function setJobsTab(tab) {
@@ -1310,60 +1823,117 @@
     renderJobs();
   }
 
+  function salaryNum(s) { const m = String(s || '').match(/(\d+)/g); return m ? parseInt(m[m.length - 1], 10) : 0; }
+  // 最快到岗排序因子：数值越小越快
+  function quickNum(m) { return typeof m.quick_days === 'number' ? m.quick_days : 14; }
+
   function getFilteredJobs() {
     const st = window.matchState; const res = st.result || MOCK_RESULT;
-    let list = (res.matches || []).slice();
-    const tab = st.recommendTab;
-    if (tab === 'now') list = list.filter((m) => m.tab === 'now');
-    else if (tab === 'future') list = list.filter((m) => m.tab === 'future');
-    else if (tab === 'top') { /* 全部按匹配度 */ }
-    else if (tab === 'high') list = list.slice().sort((a, b) => salaryNum(b.job.salary) - salaryNum(a.job.salary));
-    if (tab !== 'high') list = list.slice().sort((a, b) => b.score - a.score);
-    const sort = $('jobs-sort') ? $('jobs-sort').value : 'match';
-    if (sort === 'salary') list = list.slice().sort((a, b) => salaryNum(b.job.salary) - salaryNum(a.job.salary));
-    else if (sort === 'city') list = list.slice().sort((a, b) => a.job.city.localeCompare(b.job.city));
-    return list;
+    const list = (res.matches || []).slice();
+    const sort = st.jobSort || 'match';
+    const sorters = {
+      match: (a, b) => (b.score || 0) - (a.score || 0),
+      salary: (a, b) => salaryNum(b.job.salary) - salaryNum(a.job.salary) || (b.score || 0) - (a.score || 0),
+      quick: (a, b) => quickNum(a) - quickNum(b) || (b.score || 0) - (a.score || 0),
+      growth: (a, b) => ((b.potential_after || b.score || 0) - (a.potential_after || a.score || 0)) || (b.score || 0) - (a.score || 0)
+    };
+    return list.slice().sort(sorters[sort] || sorters.match);
   }
-  function salaryNum(s) { const m = String(s || '').match(/(\d+)/g); return m ? parseInt(m[m.length - 1], 10) : 0; }
+
+  /* ---- 岗位卡片：匹配标签 ---- */
+  function jobMatchTags(m, pref) {
+    const tags = [];
+    if ((m.score || 0) >= 85) tags.push({ t: '高匹配', c: 'high' });
+    if ((m.matched || []).length >= 3) tags.push({ t: '技能覆盖', c: 'cover' });
+    const smin = (pref && pref.salaryMin) || 0;
+    const smax = (pref && pref.salaryMax) || 99;
+    const hi = salaryNum(m.job.salary);
+    if (hi >= smin && hi <= smax * 1.4) tags.push({ t: '薪资符合', c: 'salary' });
+    if ((m.missing || []).length) tags.push({ t: m.missing.length + ' 项缺口', c: 'gap' });
+    return tags;
+  }
+
+  /* ---- 岗位卡片：360×180 环形匹配度 + 技能差距可视化 ---- */
+  function renderJobCard(m, pref) {
+    const job = m.job || {};
+    const g = m.gaps || [];
+    const skills = g.slice(0, 4);
+    const tags = jobMatchTags(m, pref);
+    const isFav = !!window.matchState.favJobs[job.id];
+    const score = m.score || 0;
+    return `<div class="job-card" data-job="${job.id}">
+      <div class="job-card-glow" aria-hidden="true"></div>
+      <div class="job-card-top">
+        <div class="job-card-logo">${escapeHtml((job.company || '某').charAt(0))}</div>
+        <div class="job-card-title">
+          <b>${escapeHtml(job.title || '')}</b>
+          <span>${escapeHtml(job.company || '')} · ${escapeHtml(job.city || '')} · ${escapeHtml(job.salary || '')}</span>
+        </div>
+        <button class="job-fav ${isFav ? 'is-fav' : ''}" data-fav="${job.id}" title="收藏">${isFav ? '★' : '☆'}</button>
+      </div>
+      <div class="job-card-mid">
+        <div class="match-ring" data-p="${score}" style="--p:0">
+          <svg viewBox="0 0 72 72" aria-hidden="true">
+            <circle class="ring-track" cx="36" cy="36" r="30"></circle>
+            <circle class="ring-bar" cx="36" cy="36" r="30"></circle>
+          </svg>
+          <span class="match-ring-num"><b data-p="${score}">0</b><small>%</small></span>
+          <span class="match-ring-lbl">匹配度</span>
+        </div>
+        <div class="job-card-skills">
+          ${skills.map((s) => `<div class="job-card-skill" data-skill="${escapeHtml(s.skill)}" title="点击查看分析">
+            <span class="nm">${escapeHtml(s.skill)}</span>
+            <span class="bar"><i data-w="${s.readiness || 0}"></i></span>
+            <span class="v" data-w="${s.readiness || 0}">0</span>
+          </div>`).join('') || '<div class="job-card-skill-empty">暂无技能数据</div>'}
+        </div>
+      </div>
+      <div class="job-card-tags">${tags.map((t) => `<span class="mtag mtag--${t.c}">${t.t}</span>`).join('')}</div>
+      <div class="job-card-foot">
+        <span class="job-card-hint">Hover 查看光效 · 点击技能展开分析</span>
+        <button class="job-card-go" type="button">查看分析 →</button>
+      </div>
+    </div>`;
+  }
+
+  /* ---- 匹配圆环动态增长 + 技能条动画 ---- */
+  function animateJobCardFX(list) {
+    qsa('.match-ring', list).forEach((ring) => {
+      const p = parseFloat(ring.dataset.p || 0);
+      const b = ring.querySelector('.match-ring-num b');
+      if (b) animateNumber(b, p, 1100, '%');
+      requestAnimationFrame(() => requestAnimationFrame(() => ring.style.setProperty('--p', p)));
+    });
+    qsa('.job-card-skill .bar i', list).forEach((bar) => {
+      bar.style.width = (parseFloat(bar.dataset.w || 0) || 0) + '%';
+    });
+    qsa('.job-card-skill .v', list).forEach((v) => animateNumber(v, parseFloat(v.dataset.w || 0) || 0, 900, '%'));
+  }
 
   function renderJobs() {
     const res = window.matchState.result || MOCK_RESULT;
     const list = $('jobs-list'); if (!list) return;
     const jobs = getFilteredJobs();
     const pref = window.matchState.preferences;
-    // 筛选 chips
-    const filterBox = $('jobs-filter');
-    if (filterBox) filterBox.innerHTML = [
-      `<span class="chip" data-filter="tab" data-value="now" style="opacity:.6">城市 ${pref.cities.join('/') || '全部'}</span>`,
-      `<span class="chip" data-filter="tab" data-value="now" style="opacity:.6">薪资 ${pref.salaryMin || '?'}-${pref.salaryMax || '?'}K</span>`,
-      `<span class="chip" data-filter="tab" data-value="now" style="opacity:.6">方向 ${escapeHtml(pref.direction || '全部')}</span>`
-    ].join('');
+    renderRecProfile(pref, res);
 
-    list.innerHTML = jobs.map((m) => {
-      const g = m.gaps || [];
-      const isFav = !!window.matchState.favJobs[m.job.id];
-      return `<div class="job-row" data-job="${m.job.id}">
-        <button class="job-fav ${isFav ? 'is-fav' : ''}" data-fav="${m.job.id}" title="收藏">${isFav ? '★' : '☆'}</button>
-        <div class="job-main">
-          <div class="job-title-row"><span class="job-title">${escapeHtml(m.job.title)}</span></div>
-          <div class="job-co">${escapeHtml(m.job.company)} · ${escapeHtml(m.job.city)} · ${escapeHtml(m.job.salary)} · ${escapeHtml(m.job.type || '全职')}</div>
-          <div class="job-meta"><span class="mod-tag mod-tag--ok" style="padding:1px 7px">+${m.matched.length} 强匹配</span><span class="job-pill job-pill--gap">${m.missing.length} 能力缺口</span></div>
-        </div>
-        <div class="job-match-badge"><span class="job-match-num">${m.score}</span><span class="job-match-lbl">% MATCH</span></div>
-        <div class="job-skills">${g.slice(0, 4).map((s) => `<div class="job-skill-mini"><span class="nm">${escapeHtml(s.skill)}</span><span class="bar"><i style="width:${s.readiness}%"></i></span><span class="v">${s.readiness}</span></div>`).join('')}</div>
-        <div class="job-tags"><span class="job-go">查看岗位分析 →</span></div>
-      </div>`;
-    }).join('') || `<div class="aip-empty">该筛选下暂无岗位</div>`;
+    list.innerHTML = jobs.map((m) => renderJobCard(m, pref)).join('') || `<div class="aip-empty">该筛选下暂无岗位</div>`;
+    animateJobCardFX(list);
 
-    qsa('.job-row', list).forEach((row) => {
-      row.addEventListener('click', (e) => {
-        if (e.target.closest('.job-fav')) return;
+    qsa('.job-card', list).forEach((row) => {
+      const select = () => {
         window.matchState.selectedJobId = row.dataset.job;
-        qsa('.job-row', list).forEach((r) => r.classList.remove('is-selected'));
+        qsa('.job-card', list).forEach((r) => r.classList.remove('is-selected'));
         row.classList.add('is-selected');
-        // 视图未变（仍在 jobs 视图），仅刷新右栏详情，避免重建列表闪烁
         if (typeof renderDetail === 'function') renderDetail();
+      };
+      row.addEventListener('click', (e) => {
+        if (e.target.closest('.job-fav') || e.target.closest('.job-card-go')) return;
+        if (e.target.closest('.job-card-skill')) { openNodeDrawer(e.target.closest('.job-card-skill').dataset.skill); return; }
+        select();
       });
+      const go = row.querySelector('.job-card-go');
+      if (go) go.addEventListener('click', (e) => { e.stopPropagation(); select(); });
     });
     qsa('.job-fav', list).forEach((f) => f.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -1375,11 +1945,41 @@
     // 按 selectedJobId 高亮（若在当前过滤列表中）
     const targetId = window.matchState.selectedJobId;
     if (targetId) {
-      const hit = qs('.job-row[data-job="' + (window.CSS && CSS.escape ? CSS.escape(targetId) : String(targetId).replace(/"/g, '\\"')) + '"]', list);
+      const hit = qs('.job-card[data-job="' + (window.CSS && CSS.escape ? CSS.escape(targetId) : String(targetId).replace(/"/g, '\\"')) + '"]', list);
       if (hit) hit.classList.add('is-selected');
     }
     renderAIPanelJobs(jobs[0]);
     if (typeof renderDetail === 'function') renderDetail();
+  }
+
+  /* ---- 左栏顶部：你的画像 ---- */
+  function renderRecProfile(pref, res) {
+    const el = $('rec-profile'); if (!el) return;
+    const role = pref.direction || 'Java 后端工程师';
+    // 当前能力 = 核心技能掌握度综合值（演示环境使用 82% 画像基线）
+    const cap = 82;
+    const smin = pref.salaryMin != null ? pref.salaryMin : 15;
+    const smax = pref.salaryMax != null ? pref.salaryMax : 25;
+    el.innerHTML = `
+      <div class="rec-profile-head"><span>你的画像</span><button class="rec-profile-edit" id="rec-profile-edit" type="button">编辑画像</button></div>
+      <div class="rec-profile-row">
+        <div class="rec-profile-avatar">${escapeHtml((role || 'J').charAt(0))}</div>
+        <div class="rec-profile-main">
+          <b class="rec-profile-role">${escapeHtml(role)}</b>
+          <div class="rec-profile-meta">
+            <span>当前能力 <b class="gold" data-cap="${cap}">0</b></span>
+            <span>期望薪资 <b>${smin}-${smax}K</b></span>
+          </div>
+        </div>
+      </div>
+      <div class="rec-profile-reason">
+        <span class="rec-ai-badge">AI 推荐理由</span>
+        <p>"你的 Spring Boot、Redis 能力高度匹配该岗位"</p>
+      </div>`;
+    const capEl = el.querySelector('[data-cap]');
+    if (capEl) animateNumber(capEl, cap, 900, '%');
+    const edit = $('rec-profile-edit');
+    if (edit) edit.addEventListener('click', () => setView('match'));
   }
 
   /* ============================================================
@@ -1395,6 +1995,11 @@
         if (pane) qsa('.jd-pane', pane).forEach((p) => p.classList.toggle('is-active', p.dataset.jdPane === key));
       }));
     }
+    // AI Interview Coach 浮窗
+    const cc = $('interview-coach-close');
+    if (cc) cc.addEventListener('click', () => { const c = $('interview-coach'); if (c) c.hidden = true; });
+    const cs = $('interview-coach-start');
+    if (cs) cs.addEventListener('click', openInterview);
   }
 
   function getSelectedJob() {
@@ -1402,14 +2007,97 @@
     return (res.matches || []).find((m) => m.job.id === window.matchState.selectedJobId) || res.matches[0];
   }
 
+  /* ---- 推荐指数星级 ---- */
+  function starOf(score) {
+    if (score >= 92) return '★★★★★';
+    if (score >= 85) return '★★★★☆';
+    if (score >= 75) return '★★★☆☆';
+    if (score >= 65) return '★★☆☆☆';
+    return '★☆☆☆☆';
+  }
+  /* ---- 预计提升后匹配度 ---- */
+  function boostTarget(m) {
+    return Math.min(95, Math.round((m.score || 0) + (m.potential_after ? (m.potential_after - m.score) : Math.min(7, 3 + (m.gaps || []).filter((g) => g.readiness < 70).length * 2))));
+  }
+
+  /* ---- 右侧岗位 Header ---- */
+  function renderJobHeader(m) {
+    const el = $('jd-header'); if (!el) return;
+    const job = m.job || {};
+    const score = m.score || 0;
+    el.innerHTML = `
+      <div class="jd-header-logo">${escapeHtml((job.company || '某').charAt(0))}</div>
+      <div class="jd-header-main">
+        <div class="jd-header-title-row">
+          <h2>${escapeHtml(job.title || '')}</h2>
+          <span class="jd-header-score"><b data-score="${score}">0</b><small>%</small></span>
+        </div>
+        <div class="jd-header-meta">
+          <span class="jd-meta-item"><i>公司</i><b>${escapeHtml(job.company || '—')}</b></span>
+          <span class="jd-meta-item"><i>城市</i><b>${escapeHtml(job.city || '—')}</b></span>
+          <span class="jd-meta-item"><i>薪资</i><b>${escapeHtml(job.salary || '—')}</b></span>
+          <span class="jd-meta-item"><i>经验</i><b>${escapeHtml(job.exp || '0-3年')}</b></span>
+          <span class="jd-meta-item"><i>推荐指数</i><b class="jd-stars">${starOf(score)}</b></span>
+        </div>
+      </div>
+      <button class="btn-sm btn-sm--solid jd-prepare-btn" id="jd-prepare-btn" type="button">⚡ 立即准备面试</button>`;
+    const nb = el.querySelector('.jd-header-score b');
+    if (nb) animateNumber(nb, score, 1000, '%');
+    const pb = $('jd-prepare-btn');
+    if (pb) pb.addEventListener('click', openInterview);
+  }
+
+  /* ---- AI 匹配分析卡：为什么推荐这个岗位？ ---- */
+  function renderAIMatchCard(m) {
+    const ev = m.evidences || {};
+    const matched = (ev.matched || []).map((x) => x.t);
+    const missing = (ev.missing || []).map((x) => x.t);
+    const gaps = (m.gaps || []).filter((g) => g.readiness < 70);
+    const up = gaps.map((g) => g.skill).join(' + ') || '分布式架构';
+    const target = boostTarget(m);
+    return `
+      <div class="ai-match-card">
+        <div class="ai-match-head">
+          <span class="ai-orb">AI</span>
+          <div class="ai-match-title"><b>为什么推荐这个岗位？</b><small>基于能力图谱 · 项目经历 · 薪资偏好 的多维推理</small></div>
+          <div class="ai-match-badge"><b data-score="${m.score || 0}">0</b><small>%</small></div>
+        </div>
+        <div class="ai-match-cols">
+          <div class="ai-match-col is-good">
+            <div class="ai-match-col-head"><span>✓</span>优势</div>
+            <div class="ai-match-list">
+              ${(matched.length ? matched : m.matched || []).slice(0, 4).map((t) => `<div class="ai-match-li"><i class="ai-ok">✓</i>${escapeHtml(t)}</div>`).join('') || '<div class="ai-match-li ai-muted">暂无优势数据</div>'}
+            </div>
+          </div>
+          <div class="ai-match-col is-gap">
+            <div class="ai-match-col-head"><span>⚠</span>差距</div>
+            <div class="ai-match-list">
+              ${(missing.length ? missing : m.missing || []).slice(0, 3).map((t) => `<div class="ai-match-li"><i class="ai-warn">⚠</i>${escapeHtml(t)}</div>`).join('') || '<div class="ai-match-li ai-muted">✓ 核心能力已覆盖</div>'}
+            </div>
+          </div>
+          <div class="ai-match-col is-up">
+            <div class="ai-match-col-head"><span>↗</span>提升</div>
+            <p class="ai-match-up-text">学习 <b>${escapeHtml(up)}</b></p>
+            <div class="ai-match-up-bar">
+              <span>${m.score || 0}%</span>
+              <span class="bar"><i data-w="${Math.round(((m.score || 0) / target) * 100)}"></i></span>
+              <b class="gold">${target}%</b>
+            </div>
+            <p class="ai-match-up-hint">补齐短板后预计提升 <b>${target - (m.score || 0)}%</b> 匹配度</p>
+          </div>
+        </div>
+      </div>`;
+  }
+
   function renderDetail() {
     const m = getSelectedJob(); if (!m) return;
     const job = m.job || {};
-    const tEl = $('detail-job-title'); if (tEl) tEl.textContent = job.title || '岗位详情';
-    const sEl = $('detail-job-score'); if (sEl) sEl.textContent = (m.score || 0) + '%';
+    renderJobHeader(m);
     renderDetailInfoPane(m, job);
     renderDetailResumePane(m, job);
     renderDetailInterviewPane(m, job);
+    renderDecisionPath(m);
+    renderCoach(m);
     renderAIPanelDetail(m);
   }
 
@@ -1420,41 +2108,46 @@
     const reqs = (job.required_skills || []).concat((job.preferred_skills || []).map((s) => s + '（优先）'));
     const duty = '负责核心业务系统的需求分析、方案设计与编码实现；\n参与高并发、高可用架构的落地与演进，保障系统稳定运行；\n与产品、测试、前端协作完成迭代交付，参与 Code Review；\n持续优化性能与工程质量，沉淀可复用的组件与最佳实践。';
     el.innerHTML = `
-      <div class="jd-info-grid">
-        <div class="jd-info-col jd-info-col--text">
-          <div class="detail-section-title">岗位基本信息</div>
-          <div class="detail-kv"><span class="k">公司</span><span>${escapeHtml(job.company || '—')}</span></div>
-          <div class="detail-kv"><span class="k">地区</span><span>${escapeHtml(job.city || '—')}</span></div>
-          <div class="detail-kv"><span class="k">薪资</span><span>${escapeHtml(job.salary || '—')}</span></div>
-          <div class="detail-kv"><span class="k">性质</span><span>${escapeHtml(job.type || '全职')}</span></div>
-          <div class="detail-kv"><span class="k">经验</span><span>${escapeHtml(job.exp || '0-3年')}</span></div>
-          <div class="detail-kv"><span class="k">学历</span><span>本科及以上</span></div>
-          <div class="detail-kv"><span class="k">到岗时间</span><span>1 周内到岗</span></div>
+      <div class="jd-info-scroll">
+        ${renderAIMatchCard(m)}
+        <div class="jd-info-grid">
+          <div class="jd-info-col jd-info-col--text">
+            <div class="detail-section-title">岗位基本信息</div>
+            <div class="detail-kv"><span class="k">公司</span><span>${escapeHtml(job.company || '—')}</span></div>
+            <div class="detail-kv"><span class="k">地区</span><span>${escapeHtml(job.city || '—')}</span></div>
+            <div class="detail-kv"><span class="k">薪资</span><span>${escapeHtml(job.salary || '—')}</span></div>
+            <div class="detail-kv"><span class="k">性质</span><span>${escapeHtml(job.type || '全职')}</span></div>
+            <div class="detail-kv"><span class="k">经验</span><span>${escapeHtml(job.exp || '0-3年')}</span></div>
+            <div class="detail-kv"><span class="k">学历</span><span>本科及以上</span></div>
+            <div class="detail-kv"><span class="k">到岗时间</span><span>1 周内到岗</span></div>
 
-          <div class="detail-section-title mt">岗位要求</div>
-          <div class="detail-req">${reqs.map((s) => `<span class="chip">${escapeHtml(s)}</span>`).join('')}</div>
-          <p class="jd-req-hint">优先项已标注「（优先）」，面试前可针对性准备对应场景题。</p>
+            <div class="detail-section-title mt">岗位要求</div>
+            <div class="detail-req">${reqs.map((s) => `<span class="chip">${escapeHtml(s)}</span>`).join('')}</div>
+            <p class="jd-req-hint">优先项已标注「（优先）」，面试前可针对性准备对应场景题。</p>
 
-          <div class="detail-section-title mt">岗位职责</div>
-          <div class="jd-duty">${duty.split('\n').map((l) => `<div class="jd-duty-li">· ${escapeHtml(l)}</div>`).join('')}</div>
+            <div class="detail-section-title mt">岗位职责</div>
+            <div class="jd-duty">${duty.split('\n').map((l) => `<div class="jd-duty-li">· ${escapeHtml(l)}</div>`).join('')}</div>
 
-          <div class="detail-section-title mt">JD 摘要</div>
-          <div class="aip-p">${escapeHtml(summary)}</div>
+            <div class="detail-section-title mt">JD 摘要</div>
+            <div class="aip-p">${escapeHtml(summary)}</div>
 
-          <div class="detail-section-title mt">福利待遇</div>
-          <div class="jd-welfare">五险一金 · 补充医疗 · 弹性工作 · 年度调薪 · 节日礼包 · 免费午餐</div>
+            <div class="detail-section-title mt">福利待遇</div>
+            <div class="jd-welfare">五险一金 · 补充医疗 · 弹性工作 · 年度调薪 · 节日礼包 · 免费午餐</div>
 
-          <div class="jd-pane-actions">
-            <button class="btn-sm btn-sm--ghost" id="jd-learn-btn" type="button">生成学习路径 →</button>
+            <div class="jd-pane-actions">
+              <button class="btn-sm btn-sm--ghost" id="jd-learn-btn" type="button">生成学习路径 →</button>
+            </div>
+          </div>
+          <div class="jd-info-col jd-info-col--graph">
+            <div id="detail-graph"></div>
           </div>
         </div>
-        <div class="jd-info-col jd-info-col--graph">
-          <div class="detail-section-title">能力图谱 · 你 vs 岗位</div>
-          <div id="detail-graph"></div>
-          <p class="jd-graph-tip">左侧为你的能力值，右侧为岗位要求，缺口技能可直接纳入学习路径。</p>
-        </div>
       </div>`;
-    renderCapabilityGraph($('detail-graph'), m);
+    const badge = el.querySelector('.ai-match-badge b');
+    if (badge) animateNumber(badge, m.score || 0, 1000, '%');
+    const bar = el.querySelector('.ai-match-up-bar .bar i');
+    if (bar) requestAnimationFrame(() => requestAnimationFrame(() => { bar.style.width = (bar.dataset.w || 0) + '%'; }));
+    renderCapabilityGapAnalysis($('detail-graph'), m);
     const lb = $('jd-learn-btn'); if (lb) lb.addEventListener('click', () => openLearningProfile());
   }
 
@@ -1491,90 +2184,439 @@
     const eb = $('jd-excellent-btn'); if (eb) eb.addEventListener('click', openBenchmark);
   }
 
-  function renderDetailInterviewPane(m, job) {
+  /* ============================================================
+   * 面试训练地图
+   * 分类：基础能力 / 工程能力 / 综合能力
+   * 每个模块：问题数量 · 完成率 · 难度；点击展开问题卡
+   * ============================================================ */
+  const TRAIN_MAP = [
+    {
+      group: '基础能力',
+      modules: [
+        {
+          skill: 'Java', icon: 'J', total: 8, done: 6, level: '中级',
+          questions: [
+            { tag: 'Java', level: '中级', q: '谈谈 JVM 内存模型，堆、栈、方法区分别存放什么？', targets: ['JVM 原理', '内存模型', 'GC 机制'] },
+            { tag: 'Java', level: '中级', q: 'synchronized 与 volatile 的区别是什么？volatile 能保证原子性吗？', targets: ['并发编程', '内存可见性'] },
+            { tag: 'Java', level: '高级', q: 'ConcurrentHashMap 在 JDK8 中如何保证线程安全？', targets: ['并发容器', '锁机制'] }
+          ]
+        },
+        {
+          skill: 'Spring Boot', icon: 'S', total: 6, done: 3, level: '中级',
+          questions: [
+            { tag: 'Spring Boot', level: '中级', q: 'Spring Boot 自动配置的原理是什么？如何自定义一个 Starter？', targets: ['自动配置', 'Starter 机制'] },
+            { tag: 'Spring Boot', level: '中级', q: 'Spring Bean 的生命周期是怎样的？AOP 底层如何实现？', targets: ['Bean 生命周期', 'AOP'] }
+          ]
+        },
+        {
+          skill: 'MySQL', icon: 'M', total: 7, done: 5, level: '初级',
+          questions: [
+            { tag: 'MySQL', level: '初级', q: '讲讲索引最左前缀原则，以及一次你做过的慢查询优化。', targets: ['索引优化', '慢查询'] },
+            { tag: 'MySQL', level: '中级', q: '事务隔离级别有哪些？MVCC 如何解决幻读？', targets: ['事务隔离', 'MVCC'] }
+          ]
+        }
+      ]
+    },
+    {
+      group: '工程能力',
+      modules: [
+        {
+          skill: 'Docker', icon: 'D', total: 5, done: 1, level: '初级',
+          questions: [
+            { tag: 'Docker', level: '初级', q: '镜像与容器的区别是什么？Dockerfile 分层优化的要点？', targets: ['镜像分层', 'Dockerfile'] }
+          ]
+        },
+        {
+          skill: '微服务', icon: 'μ', total: 6, done: 0, level: '高级',
+          questions: [
+            { tag: '微服务', level: '高级', q: '服务拆分的原则是什么？注册中心与配置中心如何选型？', targets: ['服务拆分', '注册发现'] },
+            { tag: '微服务', level: '高级', q: '分布式事务如何落地？Seata 的 AT / TCC 模式区别？', targets: ['分布式事务', 'Seata'] }
+          ]
+        },
+        {
+          skill: '系统设计', icon: 'Σ', total: 8, done: 5, level: '高级',
+          questions: [
+            { tag: '系统设计', level: '高级', q: '如何设计百万级订单系统？考虑存储、缓存、异步与容灾。', targets: ['架构能力', '数据库设计', '扩展能力'] },
+            { tag: '系统设计', level: '高级', q: '高并发场景下如何做限流、降级与熔断？', targets: ['限流', '降级', '熔断'] }
+          ]
+        }
+      ]
+    },
+    {
+      group: '综合能力',
+      modules: [
+        {
+          skill: '项目经验', icon: 'P', total: 4, done: 4, level: '中级',
+          questions: [
+            { tag: '项目经验', level: '中级', q: '讲一个你最有成就感的项目：角色、技术难点、结果与复盘。', targets: ['表达逻辑', '项目复盘', '量化结果'] }
+          ]
+        },
+        {
+          skill: '架构设计', icon: 'A', total: 6, done: 2, level: '高级',
+          questions: [
+            { tag: '架构设计', level: '高级', q: '如何评估一个系统的容量？从 QPS、存储、带宽角度给出方案。', targets: ['容量评估', '扩展能力'] },
+            { tag: '架构设计', level: '高级', q: '缓存与数据库一致性如何保证？说说你的取舍与降级策略。', targets: ['缓存一致性', '降级策略'] }
+          ]
+        }
+      ]
+    }
+  ];
+
+  function trainModuleOf(skill) {
+    for (const g of TRAIN_MAP) {
+      const hit = g.modules.find((x) => x.skill === skill);
+      if (hit) return hit;
+    }
+    return null;
+  }
+
+  function renderDetailInterviewPane(m) {
     const el = $('jd-pane-interview'); if (!el) return;
-    const qs = buildInterviewQuestions(m, job);
+    const gaps = (m.gaps || []).filter((g) => g.readiness < 70);
     el.innerHTML = `
-      <div class="detail-section-title">面试常问题</div>
-      <div class="jd-iv-list">
-        ${qs.map((q) => `<div class="jd-iv-q"><span class="qt">${escapeHtml(q.tag)}</span><span class="qx">${escapeHtml(q.q)}</span></div>`).join('')}
-        <div class="jd-iv-tips">
-          <div class="jd-iv-tip"><b>准备贴士</b></div>
-          <div class="jd-iv-tip">· 自我介绍准备 1 分钟与 3 分钟两个版本，突出与岗位的匹配点。</div>
-          <div class="jd-iv-tip">· 项目经历用「背景—行动—结果」结构，量化指标随口可答。</div>
-          <div class="jd-iv-tip">· 结尾准备 2-3 个反问问题，展现你对岗位与团队的思考。</div>
+      <div class="train-scroll">
+        <div class="train-hero">
+          <div class="train-hero-head"><span class="ai-orb sm">AI</span><div><b>面试训练地图</b><small>按能力维度拆解，逐项补齐面试必考题</small></div></div>
+          <div class="train-hero-stat"><b>${gaps.length || 2}</b><span>个待补强模块</span></div>
         </div>
-      </div>
-      <div class="jd-iv-cta">
-        <button class="btn-sm btn-sm--solid btn-lg" id="jd-interview-btn" type="button">▶ 开始模拟面试</button>
-        <span class="jd-iv-hint">AI 将基于该岗位要求实时提问，并给出回答评估</span>
+        <div class="train-groups" id="train-groups"></div>
+        <div class="train-questions" id="train-questions"></div>
+        <div class="jd-iv-cta">
+          <button class="btn-sm btn-sm--solid btn-lg" id="jd-interview-btn" type="button">▶ 立即开始模拟面试</button>
+          <span class="jd-iv-hint">AI 面试官将基于岗位要求实时提问并给出评估</span>
+        </div>
       </div>`;
+    renderTrainGroups(m);
     const ib = $('jd-interview-btn'); if (ib) ib.addEventListener('click', openInterview);
   }
 
-  function buildInterviewQuestions(m, job) {
-    const jobTitle = job.title || '该岗位';
-    const list = [];
-    list.push({ tag: '通用', q: '请用 1 分钟做自我介绍，并说明为什么投递「' + jobTitle + '」。' });
-    list.push({ tag: '岗位', q: '你如何理解「' + jobTitle + '」的核心职责与考核指标？' });
-    list.push({ tag: '公司', q: '你为什么选择我们公司？对业务方向或技术栈做过哪些了解？' });
-    (m.gaps || []).filter((g) => g.readiness < 70).slice(0, 3).forEach((g) => {
-      list.push({ tag: '补强·' + g.skill, q: '请描述一次你在「' + g.skill + '」上的实践，遇到过什么难点，又是如何解决的？' });
-    });
-    (job.required_skills || []).slice(0, 3).forEach((s) => {
-      list.push({ tag: '技术·' + s, q: '「' + s + '」你最熟悉的框架/工具是什么？讲一个真实项目用法与踩坑经历。' });
-    });
-    list.push({ tag: '场景', q: '如果线上接口突然变慢，你会按什么顺序排查？（请结合你的技术栈展开）' });
-    list.push({ tag: '项目', q: '讲一个你最有成就感的项目：你的角色、技术难点、结果与复盘。' });
-    list.push({ tag: '规划', q: '你未来 1-2 年的职业规划是什么？希望如何成长？' });
-    list.push({ tag: '薪资', q: '你的期望薪资范围是多少？说明一下理由。' });
-    list.push({ tag: '反问', q: '你还有什么想问我们的？（提前准备 2-3 个高质量反问）' });
-    return list;
-  }
-
-  /* ---- 能力图谱（SVG） ---- */
-  function renderCapabilityGraph(container, m) {
-    if (!container) return;
-    const skills = (m.gaps || []);
-    const W = 360, H = 260;
-    // 左列：个人能力；中列：岗位要求；右列：缺口/学习
-    const left = skills.map((s) => ({ type: 'cap', name: s.skill, val: s.readiness }));
-    const right = skills.map((s) => ({ type: s.readiness < 60 ? 'gap' : 'req', name: s.skill, val: s.readiness }));
-    const colX = [70, 180, 290];
-    const nodeY = (i) => 40 + i * (180 / Math.max(1, skills.length - 1 || 1));
-    let nodes = '';
-    let edges = '';
-    left.forEach((n, i) => {
-      const y = 30 + i * (200 / Math.max(1, left.length));
-      const leftKey = 'l_' + n.name;
-      nodes += gnode(colX[0], y, n.name, n.type, n.val, false, leftKey);
-      const ry = 30 + i * (200 / Math.max(1, right.length));
-      const r = right[i];
-      const rightKey = 'r_' + r.name;
-      edges += `<line class="gedge" data-from="${leftKey}" data-to="${rightKey}" x1="${colX[0] + 22}" y1="${y}" x2="${colX[2] - 22}" y2="${ry}" />`;
-      nodes += gnode(colX[2], ry, r.name, r.type, r.val, true, rightKey);
-    });
-    // 中间岗位要求节点（虚线列）
-    nodes += `<text x="${colX[1]}" y="20" text-anchor="middle" class="gnode-meta">岗位要求</text>`;
-    container.innerHTML = `<div class="graph-wrap"><svg class="graph-svg" viewBox="0 0 ${W} ${H}" id="cap-graph-svg">${edges}${nodes}</svg></div>`;
-    const svg = container.querySelector('svg');
-    qsa('.gnode', svg).forEach((g) => g.addEventListener('click', () => {
-      const name = g.dataset.name;
-      qsa('.gnode', svg).forEach((x) => x.classList.toggle('is-hl', x === g));
-      qsa('.gedge', svg).forEach((e) => e.classList.toggle('is-hl', e.dataset.from === g.dataset.idx || e.dataset.to === g.dataset.idx));
-      openNodeDrawer(name);
+  function renderTrainGroups(m) {
+    const box = $('train-groups'); if (!box) return;
+    const gapSet = new Set((m.gaps || []).filter((g) => g.readiness < 70).map((g) => g.skill));
+    box.innerHTML = TRAIN_MAP.map((g) => `
+      <div class="train-group">
+        <div class="train-group-head"><b>${g.group}</b><span>${g.modules.length} 个模块 · ${g.modules.reduce((a, x) => a + x.total, 0)} 题</span></div>
+        <div class="train-modules">
+          ${g.modules.map((mod) => {
+            const pct = Math.round((mod.done / mod.total) * 100);
+            const weak = gapSet.has(mod.skill);
+            return `<button class="train-module${weak ? ' is-weak' : ''}" data-skill="${escapeHtml(mod.skill)}" type="button">
+              <span class="train-module-icon">${escapeHtml(mod.icon)}</span>
+              <span class="train-module-name">${escapeHtml(mod.skill)}</span>
+              <span class="train-module-level${mod.level === '高级' ? ' is-hard' : ''}">${escapeHtml(mod.level)}</span>
+              <span class="train-module-meta"><i>${mod.total}题</i><i>完成 ${pct}%</i></span>
+              <span class="train-module-prog"><i style="width:${pct}%"></i></span>
+              <span class="train-module-go">展开问题 ▾</span>
+            </button>`;
+          }).join('')}
+        </div>
+      </div>`).join('');
+    qsa('.train-module', box).forEach((btn) => btn.addEventListener('click', () => {
+      const skill = btn.dataset.skill;
+      qsa('.train-module', box).forEach((b) => b.classList.toggle('is-open', b === btn));
+      renderTrainQuestions(m, skill);
     }));
   }
-  function gnode(x, y, name, type, val, isRight, idxKey) {
-    const fill = type === 'gap' ? '#f8e9eb' : (isRight ? '#e6f3ec' : '#fff');
-    const stroke = type === 'gap' ? '#c84c5a' : (isRight ? '#3f9d6d' : '#202231');
-    return `<g class="gnode" data-name="${escapeHtml(name)}" data-idx="${escapeHtml(idxKey)}" data-type="${type}">
-      <circle cx="${x}" cy="${y}" r="20" fill="${fill}" stroke="${stroke}" stroke-width="2"/>
-      <text x="${x}" y="${y + 4}" text-anchor="middle">${escapeHtml(shortName(name))}</text>
-      <text x="${x}" y="${y + 34}" text-anchor="middle" class="gnode-meta">${val}%</text>
-    </g>`;
+
+  function renderTrainQuestions(m, skill) {
+    const box = $('train-questions'); if (!box) return;
+    const mod = trainModuleOf(skill);
+    if (!mod) { box.innerHTML = ''; return; }
+    const qs = mod.questions || [];
+    box.innerHTML = `
+      <div class="train-q-head"><span>${escapeHtml(mod.skill)} 专项训练</span><small>${qs.length} 道高频题</small></div>
+      <div class="train-q-list">
+        ${qs.map((q) => `
+          <div class="train-question">
+            <div class="train-q-tags"><span>${escapeHtml(q.tag)}</span><span class="lv${q.level === '高级' ? ' lv-hard' : ''}">${escapeHtml(q.level)}</span></div>
+            <p class="train-q-text">${escapeHtml(q.q)}</p>
+            <div class="train-q-targets"><span>考察：</span>${q.targets.map((t) => `<i>${escapeHtml(t)}</i>`).join('')}</div>
+            <button class="train-q-btn" type="button">开始练习 →</button>
+          </div>`).join('')}
+      </div>`;
+    qsa('.train-q-btn', box).forEach((btn) => btn.addEventListener('click', () => openInterview()));
   }
-  function shortName(n) { return n.length > 5 ? n.slice(0, 4) + '…' : n; }
+
+  /* ---- 底部：职业决策路径 ---- */
+  function renderDecisionPath(m) {
+    const el = $('jd-decision'); if (!el) return;
+    const score = m.score || 0;
+    const target = boostTarget(m);
+    const gaps = (m.gaps || []).filter((g) => g.readiness < 70);
+    const firstGap = (gaps[0] && gaps[0].skill) || 'Redis';
+    el.innerHTML = `
+      <div class="jd-decision-head"><span class="mod-label">CAREER DECISION PATH</span><b>职业决策路径</b></div>
+      <div class="jd-decision-steps">
+        <div class="jd-decision-step is-current">
+          <span class="jd-decision-dot"></span><b>当前匹配</b><em class="gold">${score}%</em>
+        </div>
+        <span class="jd-decision-arrow">↓</span>
+        <div class="jd-decision-step">
+          <span class="jd-decision-dot"></span><b>补齐 ${escapeHtml(firstGap)}</b><em>学习 + 项目实践</em>
+        </div>
+        <span class="jd-decision-arrow">↓</span>
+        <div class="jd-decision-step">
+          <span class="jd-decision-dot"></span><b>完成模拟面试</b><em>AI 面试官陪练</em>
+        </div>
+        <span class="jd-decision-arrow">↓</span>
+        <div class="jd-decision-step is-target">
+          <span class="jd-decision-dot"></span><b>匹配提升</b><em class="gold">${target}%</em>
+        </div>
+      </div>`;
+  }
+
+  /* ---- AI Interview Coach 浮窗 ---- */
+  function renderCoach(m) {
+    const el = $('interview-coach'); if (!el) return;
+    const gaps = (m.gaps || []).filter((g) => g.readiness < 70);
+    const focus = gaps[0] || { skill: 'Redis' };
+    const boost = Math.min(8, Math.max(3, 3 + (gaps.length || 1)));
+    const body = $('interview-coach-body');
+    if (body) body.innerHTML = `
+      <div class="interview-coach-today">今日推荐</div>
+      <p class="interview-coach-rec">练习 <b>${escapeHtml(focus.skill)}</b> 高并发问题</p>
+      <div class="interview-coach-up">预计提升 <b>+${boost}%</b> 岗位匹配度</div>`;
+    el.hidden = false;
+  }
+
+  /* ============================================================
+   * 能力差距分析（双轨能力差距条）
+   * 语义：岗位要求强度(required) / 当前能力掌握度(current) / 差距(delta=current-required)
+   * 状态：>=0 已达标 / -1~-5 轻度缺口 / -6~-10 中度缺口 / <=-11 重点提升
+   * 交互：点击能力项内联展开「能力诊断」面板；顶部极简雷达辅助概览
+   * ============================================================ */
+  let cgRadarChart = null;
+
+  // 岗位要求强度基准（技能 → 该岗位通常要求达到的强度）
+  const SKILL_REQ_BASE = {
+    Java: 92, 'Spring Boot': 88, MySQL: 93, Redis: 85,
+    Docker: 78, 微服务: 82, 系统设计: 70,
+    Kubernetes: 88, Go: 80, 消息队列: 72,
+    Python: 80, SQL: 74, Hadoop: 82, Spark: 78,
+    LLM: 88, RAG: 85, 向量数据库: 80, Agent: 78, 'Prompt工程': 72,
+    自动化测试: 72, 性能测试: 70
+  };
+
+  // 能力诊断知识库：可能缺失的能力 + 推荐提升路径
+  const SKILL_DIAGNOSIS = {
+    Java: { missing: ['JVM 原理', '并发编程', 'Spring 底层机制', '集合与锁源码'], path: ['JVM 原理', '并发编程', 'Spring 底层机制', '项目实战'] },
+    'Spring Boot': { missing: ['自动配置原理', 'Spring IoC / AOP', '事务与隔离', '安全认证'], path: ['Spring 核心', '自动配置', '事务与安全', '微服务实战'] },
+    MySQL: { missing: ['索引优化', '事务隔离级别', '分库分表', '慢查询分析'], path: ['SQL 与索引', '事务与锁', '分库分表', '性能优化实战'] },
+    Redis: { missing: ['缓存一致性', '持久化机制', '分布式锁', '过期淘汰策略'], path: ['Redis 数据结构', '缓存一致性', '分布式锁', '高可用集群'] },
+    Docker: { missing: ['镜像分层原理', 'Dockerfile 优化', 'Compose 编排', '容器网络'], path: ['Docker 基础', 'Dockerfile', 'Compose 编排', '容器化部署'] },
+    微服务: { missing: ['服务拆分', '服务注册与发现', '配置中心', '链路追踪'], path: ['Spring Cloud 基础', '注册与发现', '配置中心', '微服务实战'] },
+    系统设计: { missing: ['高并发架构', '缓存与限流', '消息队列', '容量评估'], path: ['高并发设计', '缓存与限流', '消息队列', '架构评审'] },
+    Kubernetes: { missing: ['Pod / Deployment', '服务网格', '存储与调度', '集群运维'], path: ['K8s 基础', 'Pod 与编排', '服务网格', '集群实战'] },
+    Go: { missing: ['goroutine 并发', 'channel 通信', '内存模型'], path: ['Go 基础', '并发编程', '工程实践'] },
+    Python: { missing: ['异步编程', '类型标注', '性能优化'], path: ['Python 基础', '异步与并发', '工程实战'] },
+    SQL: { missing: ['复杂查询', '窗口函数', '执行计划'], path: ['SQL 基础', '窗口函数', '执行计划优化'] },
+    Hadoop: { missing: ['HDFS 原理', 'MapReduce', 'YARN 调度'], path: ['HDFS', 'MapReduce', 'YARN 与调度'] },
+    LLM: { missing: ['Transformer 原理', 'Prompt 工程', '微调与评测'], path: ['Transformer', 'Prompt 工程', '微调与部署'] },
+    RAG: { missing: ['向量检索', '切片策略', '重排序', '幻觉抑制'], path: ['嵌入与向量', '检索链路', '重排序', 'RAG 落地'] },
+    向量数据库: { missing: ['向量索引', '相似度检索', '混合检索'], path: ['向量索引', '相似度检索', '混合检索实战'] },
+    自动化测试: { missing: ['用例设计', '测试框架', 'CI 集成'], path: ['测试理论', '框架实战', 'CI 流水线'] }
+  };
+
+  // 计算岗位要求强度：核心技能高要求，优先技能中要求，其余为补充要求
+  function jobRequirement(skill, job) {
+    const base = SKILL_REQ_BASE[skill];
+    const required = (job.required_skills || job.requiredSkills || []);
+    const preferred = (job.preferred_skills || job.preferredSkills || []);
+    if (required.indexOf(skill) >= 0) return base != null ? base : 85;
+    if (preferred.indexOf(skill) >= 0) return base != null ? Math.min(base, 78) : 72;
+    return base != null ? Math.min(base, 68) : 62;
+  }
+
+  // 差距状态判定
+  function gapStatusOf(delta) {
+    if (delta >= 0) return { key: 'ok', label: '已达标' };
+    if (delta >= -5) return { key: 'light', label: '轻度缺口' };
+    if (delta >= -10) return { key: 'mid', label: '中度缺口' };
+    return { key: 'high', label: '重点提升' };
+  }
+
+  // 构建能力差距数据行（按岗位要求优先级排序，核心技能排最前）
+  function buildGapRows(m) {
+    const job = m.job || {};
+    const order = (job.required_skills || job.requiredSkills || []).concat(job.preferred_skills || job.preferredSkills || []);
+    let skills = (m.gaps || []).slice();
+    // 兜底：gaps 缺失时用岗位核心技能 + 简历能力构造
+    if (!skills.length) {
+      const res = window.matchState.result || MOCK_RESULT;
+      const prof = (res.profile && res.profile.skills) || [];
+      skills = (job.required_skills || job.requiredSkills || []).map((sk) => {
+        const p = prof.find((s) => s.name === sk) || {};
+        return { skill: sk, readiness: p.readiness != null ? p.readiness : 40 };
+      });
+    }
+    const scoreOf = (s) => { const i = order.indexOf(s.skill); return i < 0 ? 999 + skills.indexOf(s) : i; };
+    skills.sort((a, b) => scoreOf(a) - scoreOf(b));
+    return skills.map((g) => {
+      const required = typeof g.required === 'number' ? g.required : jobRequirement(g.skill, job);
+      const current = g.readiness;
+      const delta = current - required;
+      return { skill: g.skill, required: required, current: current, delta: delta, status: gapStatusOf(delta), reason: g.reason || '' };
+    });
+  }
+
+  function renderCapabilityGapAnalysis(container, m) {
+    if (!container || !m) return;
+    const rows = buildGapRows(m);
+    const gaps = rows.filter((r) => r.delta < 0);
+    const keyGaps = gaps.slice().sort((a, b) => a.delta - b.delta).slice(0, 3);
+    const score = m.score || 0;
+    const trend = Math.min(8, Math.max(2, Math.round(gaps.length * 1.5)));
+
+    container.innerHTML = `
+      <div class="cg-wrap">
+        <div class="cg-head">
+          <div class="cg-title">
+            <div class="cg-title-main">能力差距分析</div>
+            <div class="cg-title-sub">你的能力 × 岗位要求</div>
+          </div>
+          <div class="cg-head-right">
+            <div class="cg-radar" id="cg-radar"></div>
+            <div class="cg-overall">
+              <div class="cg-overall-label">综合匹配</div>
+              <div class="cg-overall-val"><span id="cg-overall-num">0</span><span class="cg-overall-pct">%</span></div>
+              <div class="cg-overall-trend">▲ 提升潜力 +${trend}%</div>
+            </div>
+          </div>
+        </div>
+        <div class="cg-list" id="cg-list">
+          ${rows.map((r) => renderGapItem(r)).join('')}
+        </div>
+        <div class="cg-summary">
+          <div class="cg-summary-left">
+            <span class="cg-summary-ico">⚠</span>
+            <div>
+              <b>${gaps.length} 项能力存在提升空间</b>
+              <small>${keyGaps.length ? '重点缺口：' + keyGaps.map((g) => g.skill + ' ' + (g.delta > 0 ? '+' : '') + g.delta).join(' · ') : '核心能力已覆盖岗位要求'}</small>
+            </div>
+          </div>
+          <button class="cg-summary-btn" id="cg-goto-full" type="button">查看完整诊断 →</button>
+        </div>
+      </div>`;
+
+    renderMiniRadar($('cg-radar'), rows);
+    animateNumber($('cg-overall-num'), score, 900);
+    bindGapInteractions(container, m, rows);
+  }
+
+  function renderGapItem(r) {
+    const st = r.status;
+    const sign = r.delta > 0 ? '+' : '';
+    const flag = r.delta < 0 ? (st.key === 'high' ? '⚠' : '') : '✓';
+    return `
+      <div class="cg-item" data-skill="${escapeHtml(r.skill)}">
+        <div class="cg-item-head">
+          <span class="cg-name">${escapeHtml(r.skill)}</span>
+          <span class="cg-status cg-status--${st.key}">${st.label}</span>
+          <span class="cg-gap cg-gap--${st.key}"><span class="cg-gap-num" data-w="${r.delta}">0</span><span class="cg-gap-flag">${flag}</span></span>
+        </div>
+        <div class="cg-track">
+          <div class="cg-track-row">
+            <span class="cg-track-label">岗位要求</span>
+            <div class="cg-track-bar"><i class="cg-track-fill cg-fill--req" data-w="${r.required}"></i><span class="cg-dot cg-dot--req" data-w="${r.required}"></span></div>
+            <span class="cg-track-val" data-w="${r.required}">0</span>
+          </div>
+          <div class="cg-track-row">
+            <span class="cg-track-label">当前能力</span>
+            <div class="cg-track-bar"><i class="cg-track-fill cg-fill--cur" data-w="${r.current}"></i></div>
+            <span class="cg-track-val" data-w="${r.current}">0</span>
+          </div>
+        </div>
+        <div class="cg-diag" hidden>${renderGapDiag(r)}</div>
+      </div>`;
+  }
+
+  function renderGapDiag(r) {
+    const info = SKILL_DIAGNOSIS[r.skill] || { missing: ['领域知识基础'], path: ['基础巩固', '项目实战'] };
+    const sign = r.delta > 0 ? '+' : '';
+    const neg = r.delta < 0;
+    return `
+      <div class="cg-diag-metrics">
+        <div class="cg-diag-metric"><div class="cg-diag-metric-label">当前能力</div><div class="cg-diag-metric-val" style="color:var(--cg-signal,#1FC8D9)">${r.current}</div></div>
+        <div class="cg-diag-metric"><div class="cg-diag-metric-label">岗位要求</div><div class="cg-diag-metric-val" style="color:var(--cg-gold,#F0B429)">${r.required}</div></div>
+        <div class="cg-diag-metric"><div class="cg-diag-metric-label">能力缺口</div><div class="cg-diag-metric-val ${neg ? 'neg' : 'pos'}">${sign}${r.delta}</div></div>
+      </div>
+      <div class="cg-diag-sec">可能缺失的能力</div>
+      <div class="cg-diag-missing">${info.missing.map((x) => `<span class="cg-diag-chip">${escapeHtml(x)}</span>`).join('')}</div>
+      <div class="cg-diag-sec">推荐提升路径</div>
+      <div class="cg-diag-path">${info.path.map((p, i) => `
+        <div class="cg-diag-path-step"><span class="cg-idx">${i + 1}</span><b>${escapeHtml(p)}</b>${i < info.path.length - 1 ? '<span class="arr">↓</span>' : ''}</div>`).join('')}</div>
+      <button class="btn-sm btn-sm--solid cg-diag-cta" type="button">生成学习路径 →</button>`;
+  }
+
+  // 顶部极简雷达：能力结构概览（辅助视觉，主体仍为双轨能力差距条）
+  function renderMiniRadar(container, rows) {
+    if (!container || typeof echarts === 'undefined' || !rows || !rows.length) return;
+    if (cgRadarChart) { cgRadarChart.dispose(); cgRadarChart = null; }
+    try {
+      const chart = echarts.init(container);
+      cgRadarChart = chart;
+      const show = rows.slice(0, 5);
+      chart.setOption({
+        radar: {
+          indicator: show.map((r) => ({ name: r.skill, max: 100 })),
+          radius: '66%', center: ['50%', '54%'], splitNumber: 3,
+          axisName: { color: 'rgba(169,189,203,.8)', fontSize: 9 },
+          splitLine: { lineStyle: { color: 'rgba(255,255,255,.09)' } },
+          splitArea: { show: false },
+          axisLine: { lineStyle: { color: 'rgba(255,255,255,.14)' } }
+        },
+        series: [{
+          type: 'radar', symbol: 'none', lineStyle: { width: 1.4 },
+          data: [
+            { value: show.map((r) => r.required), name: '岗位要求', lineStyle: { color: '#F0B429' }, itemStyle: { color: '#F0B429' }, areaStyle: { color: 'rgba(240,180,41,.10)' } },
+            { value: show.map((r) => r.current), name: '当前能力', lineStyle: { color: '#1FC8D9' }, itemStyle: { color: '#1FC8D9' }, areaStyle: { color: 'rgba(31,200,217,.16)' } }
+          ]
+        }],
+        tooltip: { trigger: 'item' }, legend: { show: false }
+      });
+    } catch (e) { /* 雷达仅为辅助，失败不影响主模块 */ }
+  }
+
+  function bindGapInteractions(container, m, rows) {
+    // 首次进入：进度条 0 → 实际值，数字 0 → 实际值
+    const fills = container.querySelectorAll('.cg-track-fill, .cg-dot');
+    const vals = container.querySelectorAll('.cg-track-val');
+    const gaps = container.querySelectorAll('.cg-gap-num');
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        fills.forEach((el) => { el.style.width = (el.dataset.w || 0) + '%'; });
+        vals.forEach((el) => animateNumber(el, parseFloat(el.dataset.w || 0), 1000));
+        gaps.forEach((el) => {
+          const v = parseFloat(el.dataset.w || 0);
+          animateNumber(el, v, 1100, '', v > 0 ? '+' : '');
+        });
+      });
+    });
+
+    // 点击能力项：展开/收起内联诊断面板
+    container.querySelectorAll('.cg-item').forEach((item) => {
+      item.addEventListener('click', (e) => {
+        if (e.target.closest('.cg-diag-cta')) return;
+        const willOpen = !item.classList.contains('is-open');
+        container.querySelectorAll('.cg-item.is-open').forEach((x) => x.classList.remove('is-open'));
+        container.querySelectorAll('.cg-item .cg-diag').forEach((d) => { d.hidden = true; });
+        if (willOpen) {
+          item.classList.add('is-open');
+          const diag = item.querySelector('.cg-diag');
+          if (diag) diag.hidden = false;
+        }
+      });
+    });
+
+    // 生成学习路径
+    container.querySelectorAll('.cg-diag-cta').forEach((btn) => {
+      btn.addEventListener('click', (e) => { e.stopPropagation(); openLearningProfile(); });
+    });
+
+    // 查看完整诊断
+    const full = $('cg-goto-full');
+    if (full) full.addEventListener('click', () => openLearningProfile());
+  }
 
   /* ---- 能力节点 Drawer ---- */
   function bindDrawers() {
@@ -1618,44 +2660,840 @@
   }
 
   /* ============================================================
-   * STATE 6 · 学习路径（垂直 timeline + WhatIf）
+   * STATE 6 · 学习路径 · AI Career OS（职业成长操作系统）
+   * 结构：成长概览 Dashboard / Timeline + Skill Cards /
+   *       岗位能力地图 / 能力提升预测 / AI Career Coach 浮窗
    * ============================================================ */
-  function bindLearning() { /* 事件在 render 内绑定 */ }
+
+  /* ---------- 学习路径数据模型（演示态，字段预留后端 API） ---------- */
+  const LEARN_OS_DEFAULT_TITLE = 'Java 后端开发工程师成长路线';
+  const LEARN_OS = {
+    career: {
+      levelFrom: '初级', levelTo: '中级',
+      match: 67, mastered: 18, total: 42, eta: '3 个月',
+      matchDelta: '+6% 较上次诊断',
+      radar: {
+        indicators: ['Java 基础', 'Spring 生态', '数据库', '微服务', '云原生', '工程实践'],
+        values: [82, 74, 78, 42, 28, 55]
+      },
+      advice: '你的 Spring Cloud 能力不足，影响高级岗位匹配度，建议优先学习微服务治理。',
+      tags: ['微服务治理', 'Spring Cloud', '服务容错']
+    },
+    stages: [
+      { id: 's1', name: 'Java 基础强化', en: 'JAVA FUNDAMENTALS', progress: 92, count: 8, value: '+12%', desc: '语言核心 · 并发 · JVM' },
+      { id: 's2', name: '企业级开发能力', en: 'ENTERPRISE DEV', progress: 74, count: 10, value: '+10%', desc: 'Spring 生态 · 数据访问 · 缓存' },
+      { id: 's3', name: '微服务架构', en: 'MICROSERVICES', progress: 35, count: 9, value: '+9%', desc: '服务拆分 · 注册中心 · 网关' },
+      { id: 's4', name: '云原生部署', en: 'CLOUD NATIVE', progress: 18, count: 7, value: '+8%', desc: '容器化 · 编排 · CI/CD' },
+      { id: 's5', name: '高级工程实践', en: 'ENGINEERING', progress: 12, count: 8, value: '+7%', desc: '系统设计 · 高并发 · 调优' }
+    ],
+    skills: [
+      { id: 'java-core', name: 'Java 核心', icon: '☕', stage: 's1', tags: ['基础', '核心技能'], status: 'mastered', from: 92, to: 96, hours: 6, level: '入门', impact: '+4% 匹配度', desc: '主导 3 个 Java 项目，日均 50w+ 请求', deliverable: '高并发订单系统' },
+      { id: 'jvm', name: 'JVM 虚拟机', icon: '⚙️', stage: 's1', tags: ['进阶', '岗位必备'], status: 'learning', from: 62, to: 80, hours: 8, level: '进阶', impact: '+7% 匹配度', desc: 'GC 与类加载是性能调优关键', deliverable: 'GC 调优实践' },
+      { id: 'concurrency', name: '并发编程', icon: '⇶', stage: 's1', tags: ['核心', '能力缺口'], status: 'gap', from: 20, to: 60, hours: 12, level: '进阶', impact: '+6% 匹配度', desc: 'JUC 工具链是后端面试必考', deliverable: 'JUC 并发实战' },
+      { id: 'collection', name: '集合框架', icon: '▣', stage: 's1', tags: ['基础'], status: 'mastered', from: 90, to: 96, hours: 4, level: '入门', impact: '+3% 匹配度', desc: 'HashMap 与并发容器底层原理', deliverable: '集合源码分析' },
+      { id: 'spring-boot', name: 'Spring Boot', icon: '⚡', stage: 's2', tags: ['核心', '企业必备'], status: 'mastered', from: 90, to: 94, hours: 10, level: '熟练', impact: '+5% 匹配度', desc: '自动装配与 Starter 落地生产', deliverable: '营销平台服务端' },
+      { id: 'mybatis', name: 'MyBatis', icon: '⛁', stage: 's2', tags: ['数据访问', '企业必备'], status: 'learning', from: 68, to: 82, hours: 6, level: '熟练', impact: '+4% 匹配度', desc: '动态 SQL 与二级缓存机制', deliverable: 'ORM 项目实战' },
+      { id: 'mysql', name: 'MySQL 调优', icon: '▤', stage: 's2', tags: ['数据库', '核心'], status: 'mastered', from: 87, to: 92, hours: 8, level: '熟练', impact: '+5% 匹配度', desc: '索引优化与慢查询排查', deliverable: '慢查询优化专项' },
+      { id: 'redis', name: 'Redis 缓存', icon: '♦', stage: 's2', tags: ['缓存', '企业必备'], status: 'learning', from: 72, to: 88, hours: 8, level: '进阶', impact: '+6% 匹配度', desc: '缓存一致性是高频考察点', deliverable: '缓存一致性方案' },
+      { id: 'spring-cloud', name: 'Spring Cloud', icon: '☁️', stage: 's3', tags: ['微服务', '能力缺口'], status: 'gap', from: 30, to: 70, hours: 16, level: '高级', impact: '+8% 匹配度', desc: '微服务治理能力直接影响高级岗位', deliverable: '微服务治理 demo' },
+      { id: 'nacos', name: 'Nacos 注册中心', icon: '✺', stage: 's3', tags: ['微服务', '能力缺口'], status: 'gap', from: 25, to: 65, hours: 8, level: '进阶', impact: '+6% 匹配度', desc: '服务注册与配置中心', deliverable: '服务注册与发现' },
+      { id: 'gateway', name: 'API 网关', icon: '⇄', stage: 's3', tags: ['微服务', '能力缺口'], status: 'gap', from: 22, to: 60, hours: 6, level: '进阶', impact: '+5% 匹配度', desc: '统一鉴权与流量治理入口', deliverable: '统一网关接入' },
+      { id: 'feign', name: '服务调用', icon: '⇌', stage: 's3', tags: ['微服务'], status: 'gap', from: 40, to: 68, hours: 4, level: '进阶', impact: '+4% 匹配度', desc: '声明式 HTTP 客户端与负载均衡', deliverable: '声明式调用链路' },
+      { id: 'docker', name: 'Docker 容器化', icon: '🐳', stage: 's4', tags: ['基础', '工程实践', '企业必备'], status: 'learning', from: 41, to: 67, hours: 6, level: '入门', impact: '+8% 匹配度', desc: '容器化是云原生第一步', deliverable: '构建第一个镜像', reco: true },
+      { id: 'kubernetes', name: 'Kubernetes', icon: '☸', stage: 's4', tags: ['编排', '能力缺口'], status: 'gap', from: 20, to: 60, hours: 14, level: '高级', impact: '+9% 匹配度', desc: '集群编排决定运维竞争力', deliverable: 'K8s 集群部署' },
+      { id: 'cicd', name: 'CI/CD 流水线', icon: '⇢', stage: 's4', tags: ['工程实践', '能力缺口'], status: 'gap', from: 15, to: 55, hours: 8, level: '进阶', impact: '+7% 匹配度', desc: '自动化部署提升交付效率', deliverable: '自动化流水线' },
+      { id: 'linux', name: 'Linux 基础', icon: '⌨', stage: 's4', tags: ['基础'], status: 'mastered', from: 88, to: 92, hours: 5, level: '入门', impact: '+3% 匹配度', desc: '服务器环境是后端基本功', deliverable: '线上环境运维' },
+      { id: 'system-design', name: '高并发系统设计', icon: '⌬', stage: 's5', tags: ['系统设计', '高级'], status: 'learning', from: 55, to: 75, hours: 12, level: '高级', impact: '+7% 匹配度', desc: '架构设计是资深工程师分水岭', deliverable: '架构设计文档' },
+      { id: 'mq', name: '消息队列', icon: '≈', stage: 's5', tags: ['中间件', '能力缺口'], status: 'gap', from: 18, to: 58, hours: 10, level: '高级', impact: '+6% 匹配度', desc: '削峰填谷与异步解耦', deliverable: 'MQ 削峰方案' },
+      { id: 'es', name: 'Elasticsearch', icon: '⌗', stage: 's5', tags: ['搜索', '能力缺口'], status: 'gap', from: 12, to: 50, hours: 8, level: '进阶', impact: '+5% 匹配度', desc: '全文检索与日志分析', deliverable: '搜索服务落地' },
+      { id: 'arch', name: '微服务架构治理', icon: '⎔', stage: 's5', tags: ['架构', '高级'], status: 'gap', from: 30, to: 65, hours: 10, level: '高级', impact: '+6% 匹配度', desc: '拆分、容错与可观测性', deliverable: '架构治理方案' }
+    ],
+    graph: {
+      nodes: [
+        { id: 'java', name: 'Java', sub: '已掌握', x: 95, y: 205, status: 'mastered', info: '语言核心能力已达标，是整条能力链的地基。', learn: '保持输出，深入 JMM 与并发模型。' },
+        { id: 'spring-boot', name: 'Spring Boot', sub: '已掌握', x: 255, y: 88, status: 'mastered', info: '企业级开发框架，项目落地充分。', learn: '向自动装配原理与 Starter 机制深化。' },
+        { id: 'mybatis', name: 'MyBatis', sub: '学习中', x: 415, y: 205, status: 'learning', info: '数据访问层桥梁，链接框架与数据库。', learn: '掌握动态 SQL、插件机制与二级缓存。' },
+        { id: 'redis', name: 'Redis', sub: '学习中', x: 575, y: 88, status: 'learning', info: '缓存与高并发表现的关键中间件。', learn: '完善缓存一致性方案与防穿透击穿。' },
+        { id: 'docker', name: 'Docker', sub: '学习中', x: 720, y: 205, status: 'learning', info: '容器化是云原生与 DevOps 的起点。', learn: '编写规范 Dockerfile 并完成项目容器化。' },
+        { id: 'kubernetes', name: 'Kubernetes', sub: '能力缺口', x: 875, y: 88, status: 'gap', info: '核心缺口：编排能力决定高级岗位竞争力。', learn: '掌握 Pod/Deployment 与弹性伸缩。' },
+        { id: 'microservice', name: '微服务架构', sub: '能力缺口', x: 990, y: 205, status: 'gap', info: '最终目标：把单体拆分为可治理的微服务体系。', learn: '结合 Spring Cloud 落地注册中心与网关。' }
+      ],
+      chain: ['java', 'spring-boot', 'mybatis', 'redis', 'docker', 'kubernetes', 'microservice']
+    },
+    forecast: [
+      { label: '现在', value: 67, note: '当前匹配度' },
+      { label: '完成 Spring Cloud', value: 78, note: '微服务治理' },
+      { label: '完成 Kubernetes', value: 86, note: '云原生部署' },
+      { label: '完成项目实战', value: 92, note: '工程实践' }
+    ],
+    coach: { task: '完成 Docker 基础', reason: '该技能可提升你的 DevOps 岗位匹配概率', progress: 41, to: 67 }
+  };
+
+  const LOS_RING_CIRC = 125.6;
+  let _losObserver = null;
+
+  function getLearnStage() {
+    if (!window.matchState.learnOS) window.matchState.learnOS = { stage: 'all', active: 's1' };
+    return window.matchState.learnOS;
+  }
 
   function renderLearning() {
+    const wrap = $('los'); if (!wrap) return;
     const res = window.matchState.result || MOCK_RESULT;
     const m = getSelectedJob();
-    const title = $('learn-title'); if (title) title.textContent = m ? (m.job.title + ' · 学习路径') : '学习路径';
-    const tl = $('learn-timeline'); if (!tl) return;
-    const whatifSkills = Object.keys(window.matchState.whatif).filter((k) => window.matchState.whatif[k]);
-    let path = (res.learning_path || []).filter((l) => !whatifSkills.length || whatifSkills.indexOf(l.skill) >= 0 || window.matchState.whatif[l.skill] !== false);
-    if (!path.length) path = res.learning_path || [];
-    tl.innerHTML = path.map((l) => `
-      <div class="learn-node" data-skill="${escapeHtml(l.skill)}">
-        <div class="learn-node-top"><span class="learn-node-title">${escapeHtml(l.title)}</span>
-          <span class="learn-meta-up">${l.from}% → ${l.to}%</span></div>
-        <div class="learn-node-meta">
-          <span class="learn-meta-tag">⏱ ${escapeHtml(l.schedule)}</span>
-          <span class="learn-meta-tag">难度 ${escapeHtml(l.level)}</span>
-          <span class="learn-meta-tag">${escapeHtml(l.way)}</span>
-          <span class="learn-meta-tag">${escapeHtml(l.skill)}</span>
+    renderLearnHero(m, res);
+    renderLearnStages();
+    renderLearnCards();
+    applyLearnStageFilter(getLearnStage().stage);
+    renderLearnGraph();
+    renderLearnForecast();
+    renderLearnCoach(m, res);
+    observeLosStages();
+  }
+
+  function bindLearning() {
+    const wrap = $('los'); if (!wrap) return;
+    // 事件委托：阶段筛选 / 卡片操作 / 图谱节点 / 教练浮窗
+    wrap.addEventListener('click', (e) => {
+      const stageEl = e.target.closest('.los-stage');
+      if (stageEl) { setLearnStage(stageEl.dataset.stage); return; }
+      const allBtn = e.target.closest('#los-filter-all');
+      if (allBtn) { setLearnStage('all'); return; }
+      const card = e.target.closest('.los-card');
+      if (card) {
+        const action = e.target.closest('[data-action]');
+        if (action) {
+          const act = action.dataset.action;
+          if (act === 'start') startLearnSkill(card);
+          else if (act === 'graph') focusLearnGraph(card.dataset.skill);
+          else if (act === 'qa') { if (window.Shell && window.Shell.openQA) window.Shell.openQA(); else if (window.showToast) window.showToast('AI 问答即将打开', 'info'); }
+        } else {
+          card.classList.toggle('is-expanded');
+        }
+        return;
+      }
+      const node = e.target.closest('.los-gnode');
+      if (node) { showLearnGraphInfo(node.dataset.skill); return; }
+      const coachBtn = e.target.closest('#los-coach-start');
+      if (coachBtn) {
+        const c = document.querySelector('.los-card[data-skill="docker"]');
+        if (c) { c.scrollIntoView({ behavior: 'smooth', block: 'center' }); setTimeout(() => startLearnSkill(c), 450); }
+        return;
+      }
+    });
+    // 图谱节点 hover 联动（明暗）
+    wrap.addEventListener('mouseover', (e) => {
+      const node = e.target.closest('.los-gnode');
+      if (!node) return;
+      qsa('.los-gnode').forEach((g) => g.classList.toggle('is-dim', g !== node));
+      qsa('.los-gedge').forEach((ed) => ed.classList.toggle('is-live', ed.dataset.skill === node.dataset.skill));
+    });
+    wrap.addEventListener('mouseout', (e) => {
+      if (!e.target.closest('.los-gnode')) return;
+      qsa('.los-gnode').forEach((g) => g.classList.remove('is-dim'));
+      qsa('.los-gedge').forEach((ed) => ed.classList.remove('is-live'));
+    });
+    bindLosChartsResize();
+  }
+
+  function bindLosChartsResize() {
+    if (window.__losResizeBound) return;
+    window.__losResizeBound = true;
+    window.addEventListener('resize', () => {
+      [['los-radar-canvas'], ['los-forecast-canvas']].forEach(([id]) => {
+        const el = $(id); if (el && el._losChart) el._losChart.resize();
+      });
+    });
+  }
+
+  function losChart(id, option) {
+    if (!window.echarts) return null;
+    const el = $(id); if (!el) return null;
+    if (el._losChart) { try { el._losChart.dispose(); } catch (_) {} }
+    const chart = echarts.init(el);
+    el._losChart = chart;
+    chart.setOption(option);
+    return chart;
+  }
+
+  /* ---------- ① 顶部职业成长概览 Dashboard ---------- */
+  function renderLearnHero(m, res) {
+    const hero = $('los-hero'); if (!hero) return;
+    const c = LEARN_OS.career;
+    const title = (m && m.job && m.job.title) ? (m.job.title + ' · 成长路线') : LEARN_OS_DEFAULT_TITLE;
+    const skills = (res && res.profile && res.profile.skills) || [];
+    hero.innerHTML = `
+      <div class="los-hero-left los-glass los-glow">
+        <div class="los-hero-title-row">
+          <h2 class="los-hero-title">${escapeHtml(title)}</h2>
+          <span class="los-hero-live"><i></i>AI 实时分析</span>
         </div>
-        <div class="learn-node-desc">${escapeHtml(l.description)}</div>
-        <div class="learn-node-actions"><button class="btn-sm btn-sm--solid" type="button">开始学习</button></div>
+        <div class="los-level">
+          <div class="los-level-tag"><small>当前等级</small><b>${escapeHtml(c.levelFrom)}</b></div>
+          <span class="los-level-arrow">→</span>
+          <div class="los-level-tag"><small>目标等级</small><b>${escapeHtml(c.levelTo)}</b></div>
+          <div class="los-level-eta"><b>${escapeHtml(c.eta)}</b><small>预计达成</small></div>
+        </div>
+        <div class="los-stats">
+          <div class="los-stat">
+            <div class="los-stat-label">岗位匹配度</div>
+            <div class="los-stat-value"><b class="hot" data-count="${c.match}">0</b><small>%</small></div>
+            <div class="los-stat-sub"><span class="up">${escapeHtml(c.matchDelta)}</span></div>
+            <div class="los-stat-meter"><i style="width:${c.match}%"></i></div>
+          </div>
+          <div class="los-stat">
+            <div class="los-stat-label">已掌握技能</div>
+            <div class="los-stat-value"><b>${c.mastered}</b><small> / ${c.total}</small></div>
+            <div class="los-stat-sub">${skills.length ? '覆盖 ' + skills.length + ' 项核心技能' : '基于简历分析'}</div>
+            <div class="los-stat-meter"><i style="width:${Math.round(c.mastered / c.total * 100)}%"></i></div>
+          </div>
+          <div class="los-stat">
+            <div class="los-stat-label">学习目标</div>
+            <div class="los-stat-value"><b class="gold">${escapeHtml(c.levelTo)}</b></div>
+            <div class="los-stat-sub">下一阶段 · ${escapeHtml(c.eta)}</div>
+            <div class="los-stat-meter"><i style="width:42%"></i></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="los-radar los-glass">
+        <div class="los-radar-head">
+          <div class="los-radar-title">能力雷达<small>六维职业能力画像</small></div>
+          <span class="los-radar-badge">基于简历 + 项目证据</span>
+        </div>
+        <div class="los-radar-canvas" id="los-radar-canvas"></div>
+      </div>
+
+      <div class="los-advice los-glass los-glow">
+        <div class="los-advice-head">
+          <div class="los-ai-orb">AI</div>
+          <div class="los-advice-title"><b>AI 职业建议</b><small>基于岗位差距生成</small></div>
+          <span class="los-advice-state"><i></i>已生成</span>
+        </div>
+        <p class="los-advice-text">"${escapeHtml(c.advice)}"</p>
+        <div class="los-advice-tags">
+          ${c.tags.map((t) => `<span class="los-tag los-tag--gap">${escapeHtml(t)}</span>`).join('')}
+        </div>
+        <button class="los-btn los-btn--gold" id="los-plan-btn" type="button">生成专属学习计划 →</button>
+      </div>`;
+
+    // 数字动画
+    const cnt = hero.querySelector('[data-count]');
+    if (cnt) animateNumber(cnt, c.match, 1100, '%', '');
+    // 雷达图
+    const option = {
+      tooltip: { show: false },
+      radar: {
+        indicator: c.radar.indicators.map((n) => ({ name: n, max: 100 })),
+        radius: '66%',
+        center: ['50%', '54%'],
+        splitNumber: 4,
+        axisName: { color: '#9db2c6', fontSize: 11, fontFamily: '"Outfit","Noto Sans SC",sans-serif' },
+        splitArea: { areaStyle: { color: ['rgba(255,255,255,0.015)', 'rgba(255,255,255,0.03)'] } },
+        splitLine: { lineStyle: { color: 'rgba(140,190,255,0.14)' } },
+        axisLine: { lineStyle: { color: 'rgba(140,190,255,0.18)' } }
+      },
+      series: [{
+        type: 'radar',
+        data: [{ value: c.radar.values, name: '当前能力' }],
+        symbol: 'circle',
+        symbolSize: 5,
+        lineStyle: { width: 2, color: '#35e0c8' },
+        itemStyle: { color: '#f0b429', borderColor: '#f0b429', borderWidth: 2 },
+        areaStyle: { color: 'rgba(53,224,200,0.22)' }
+      }]
+    };
+    requestAnimationFrame(() => losChart('los-radar-canvas', option));
+    // 生成计划按钮
+    const planBtn = $('los-plan-btn');
+    if (planBtn) planBtn.addEventListener('click', () => {
+      if (window.showToast) window.showToast('正在基于能力差距生成学习计划…', 'info');
+      setTimeout(() => {
+        const firstGap = document.querySelector('.los-card.is-gap');
+        if (firstGap) { firstGap.scrollIntoView({ behavior: 'smooth', block: 'center' }); firstGap.classList.add('is-expanded'); }
+        if (window.showToast) window.showToast('已生成：优先补齐微服务治理 → 云原生部署', 'ok');
+      }, 700);
+    });
+  }
+
+  /* ---------- ② 时间轴 ---------- */
+  function renderLearnStages() {
+    const tl = $('los-timeline'); if (!tl) return;
+    const st = getLearnStage();
+    tl.innerHTML = LEARN_OS.stages.map((s, i) => `
+      <div class="los-stage ${st.active === s.id ? 'is-active' : ''} ${st.stage === s.id ? 'is-selected' : ''}" data-stage="${s.id}">
+        <div class="los-stage-top">
+          <div>
+            <div class="los-stage-name">阶段 ${i + 1} · ${escapeHtml(s.name)}</div>
+            <div class="los-stage-en">${escapeHtml(s.en)}</div>
+          </div>
+          <span class="los-stage-value">${escapeHtml(s.value)}</span>
+        </div>
+        <div class="los-stage-meta">
+          <span>完成 <b>${s.progress}%</b></span>
+          <span>技能 <b>${s.count}</b> 项</span>
+        </div>
+        <div class="los-stage-bar"><i style="width:${s.progress}%"></i></div>
       </div>`).join('');
-    // WhatIf 面板（含尾部 LEARNING IMPACT 块，整体重建避免重复拼接）
-    renderWhatIf();
+  }
+
+  function observeLosStages() {
+    if (!window.IntersectionObserver) return;
+    if (_losObserver) _losObserver.disconnect();
+    _losObserver = new IntersectionObserver((entries) => {
+      entries.forEach((en) => {
+        if (en.isIntersecting) {
+          const st = getLearnStage();
+          st.active = en.target.dataset.stage;
+          qsa('.los-stage').forEach((s) => s.classList.toggle('is-active', s.dataset.stage === st.active));
+        }
+      });
+    }, { root: $('wks-center') || null, rootMargin: '-15% 0px -55% 0px' });
+    qsa('.los-stage').forEach((s) => _losObserver.observe(s));
+  }
+
+  function applyLearnStageFilter(stageId) {
+    qsa('.los-stage').forEach((s) => s.classList.toggle('is-selected', s.dataset.stage === stageId));
+    qsa('.los-card').forEach((card) => {
+      const show = stageId === 'all' || card.dataset.stage === stageId;
+      if (show) { card.classList.remove('is-hidden'); card.style.animation = 'none'; void card.offsetWidth; card.style.animation = ''; }
+      else card.classList.add('is-hidden');
+    });
+    const cnt = $('los-cards-count');
+    if (cnt) {
+      const visible = qsa('.los-card').filter((c) => !c.classList.contains('is-hidden')).length;
+      cnt.innerHTML = `当前展示 <b>${visible}</b> / ${LEARN_OS.skills.length} 个技能模块`;
+    }
+    const allBtn = $('los-filter-all');
+    if (allBtn) {
+      const stageObj = LEARN_OS.stages.find((s) => s.id === stageId);
+      allBtn.textContent = stageObj ? '回到全部阶段' : '显示全部阶段';
+    }
+  }
+
+  function setLearnStage(stageId) {
+    const st = getLearnStage();
+    st.stage = stageId;
+    applyLearnStageFilter(stageId);
+  }
+
+  /* ---------- ② 技能模块卡片 ---------- */
+  function skillCardHtml(s) {
+    const ring = s.status === 'mastered' ? s.to : s.from;
+    const offset = LOS_RING_CIRC * (1 - ring / 100);
+    const statusClass = s.status === 'mastered' ? 'is-mastered' : (s.status === 'gap' ? 'is-gap' : 'is-learning');
+    const reco = s.reco ? '<span class="los-card-reco">AI 推荐下一技能<i></i></span>' : '';
+    const btnLabel = s.status === 'mastered' ? '已完成 ✓' : '开始学习';
+    const tags = s.tags.map((t) => {
+      let cls = '';
+      if (t.indexOf('缺口') >= 0) cls = 'los-tag--gap';
+      else if (t.indexOf('必备') >= 0 || t.indexOf('核心') >= 0) cls = 'los-tag--teal';
+      else if (t === '基础') cls = 'los-tag--mastered';
+      return `<span class="los-tag los-tag--s ${cls}">${escapeHtml(t)}</span>`;
+    }).join('');
+    return `<article class="los-card ${statusClass}" data-skill="${escapeHtml(s.id)}" data-name="${escapeHtml(s.name)}" data-stage="${s.stage}" data-from="${s.from}" data-to="${s.to}">
+      ${reco}
+      <div class="los-card-head">
+        <div class="los-card-icon">${s.icon}</div>
+        <div class="los-card-title">
+          <h3>${escapeHtml(s.name)}</h3>
+          <div class="los-card-tags">${tags}</div>
+        </div>
+        <div class="los-ring-wrap">
+          <svg class="los-ring" viewBox="0 0 48 48" aria-hidden="true">
+            <circle class="los-ring-track" cx="24" cy="24" r="20"></circle>
+            <circle class="los-ring-bar" cx="24" cy="24" r="20" stroke-dasharray="${LOS_RING_CIRC.toFixed(1)}" stroke-dashoffset="${offset.toFixed(1)}"></circle>
+          </svg>
+          <span class="los-ring-num"><b class="los-ring-val">${ring}</b><small>%</small></span>
+        </div>
+      </div>
+      <div class="los-card-value">
+        <span class="los-card-value-label">技能价值</span>
+        <b>${escapeHtml(s.impact)}</b>
+      </div>
+      <div class="los-card-progress">
+        <div class="los-card-progress-row"><span>学习进度 · ${escapeHtml(s.level)} · ${s.hours} 小时</span><b>${s.from}% → ${s.to}%</b></div>
+        <div class="los-progress-bar"><i style="width:${ring}%"></i></div>
+      </div>
+      <div class="los-card-actions">
+        <button class="los-btn los-btn--solid" data-action="start" type="button">${btnLabel}</button>
+        <button class="los-btn los-btn--ghost" data-action="graph" type="button">知识图谱</button>
+        <button class="los-btn los-btn--ghost" data-action="qa" type="button">AI 问答</button>
+      </div>
+      <div class="los-card-detail">
+        <div class="los-card-detail-row"><span class="k">交付成果</span><span>${escapeHtml(s.deliverable)}</span></div>
+        <div class="los-card-detail-row"><span class="k">岗位价值</span><span>${escapeHtml(s.desc)}</span></div>
+      </div>
+    </article>`;
+  }
+
+  function renderLearnCards() {
+    const box = $('los-cards'); if (!box) return;
+    const all = LEARN_OS.skills;
+    box.innerHTML = `<div class="los-cards-head">
+        <div class="los-cards-count" id="los-cards-count">当前展示 <b>${all.length}</b> / ${all.length} 个技能模块</div>
+        <span class="los-cards-count">点击卡片展开详情</span>
+      </div>` + all.map((s, i) => skillCardHtml(s)).join('');
+  }
+
+  function startLearnSkill(card) {
+    if (!card || card.classList.contains('is-mastered') || card.classList.contains('is-complete') || card.classList.contains('is-learning')) return;
+    const from = parseInt(card.dataset.from, 10) || 0;
+    const to = parseInt(card.dataset.to, 10) || 85;
+    card.classList.add('is-learning');
+    const btn = card.querySelector('[data-action="start"]');
+    if (btn) btn.textContent = '学习中…';
+    const bar = card.querySelector('.los-progress-bar i');
+    if (bar) { bar.style.width = from + '%'; requestAnimationFrame(() => { bar.style.width = to + '%'; }); }
+    const ring = card.querySelector('.los-ring-bar');
+    if (ring) { ring.style.strokeDashoffset = (LOS_RING_CIRC * (1 - from / 100)).toFixed(1); requestAnimationFrame(() => { ring.style.strokeDashoffset = (LOS_RING_CIRC * (1 - to / 100)).toFixed(1); }); }
+    const num = card.querySelector('.los-ring-val');
+    if (num) animateNumber(num, to, 1500, '', '', from);
+    setTimeout(() => {
+      card.classList.remove('is-learning');
+      card.classList.add('is-complete');
+      if (btn) btn.textContent = '已完成 ✓';
+      burstUnlock(card);
+      unlockNextSkill(card.dataset.skill);
+      if (window.showToast) window.showToast('学习完成 · ' + (card.dataset.name || '技能') + ' 能力已解锁', 'ok');
+    }, 1600);
+  }
+
+  function burstUnlock(card) {
+    const burst = document.createElement('div');
+    burst.className = 'los-unlock-burst';
+    for (let i = 0; i < 10; i++) {
+      const p = document.createElement('span');
+      const ang = (i / 10) * Math.PI * 2;
+      p.style.setProperty('--dx', (Math.cos(ang) * (38 + Math.random() * 30)) + 'px');
+      p.style.setProperty('--dy', (Math.sin(ang) * (38 + Math.random() * 30)) + 'px');
+      burst.appendChild(p);
+    }
+    card.appendChild(burst);
+    setTimeout(() => burst.remove(), 800);
+  }
+
+  function unlockNextSkill(skillId) {
+    const chain = LEARN_OS.graph.chain;
+    const idx = chain.indexOf(skillId);
+    if (idx < 0 || idx >= chain.length - 1) return;
+    const next = chain[idx + 1];
+    const node = document.querySelector('.los-gnode[data-skill="' + next + '"]');
+    if (node && node.classList.contains('is-gap')) {
+      node.classList.add('is-live');
+      setTimeout(() => node.classList.remove('is-live'), 1600);
+      if (window.showToast) window.showToast('已解锁下一技能：' + (LEARN_OS.graph.nodes.find((n) => n.id === next) || {}).name, 'info');
+    }
+  }
+
+  /* ---------- ③ 岗位能力地图 ---------- */
+  function renderLearnGraph() {
+    const box = $('los-graph'); if (!box) return;
+    const g = LEARN_OS.graph;
+    const pos = {};
+    g.nodes.forEach((n) => { pos[n.id] = n; });
+    const edges = [];
+    for (let i = 0; i < g.chain.length - 1; i++) {
+      const a = pos[g.chain[i]], b = pos[g.chain[i + 1]];
+      const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2 - 26;
+      edges.push({ a, b, d: `M ${a.x} ${a.y} C ${mx} ${a.y}, ${mx} ${b.y}, ${b.x} ${b.y}` });
+    }
+    box.innerHTML = `
+      <div class="los-graph-legend">
+        <span><i class="d-mastered"></i>已掌握</span>
+        <span><i class="d-learning"></i>学习中</span>
+        <span><i class="d-gap"></i>能力缺口</span>
+        <span class="hint">点击节点查看能力说明</span>
+      </div>
+      <svg class="los-graph-svg" viewBox="0 0 1060 285" role="img" aria-label="岗位能力地图">
+        ${edges.map((ed) => `<path class="los-gedge" data-skill="${escapeHtml(ed.b.id)}" d="${ed.d}" />`).join('')}
+        ${g.nodes.map((n) => `
+          <g class="los-gnode is-${n.status}" data-skill="${escapeHtml(n.id)}" transform="translate(${n.x},${n.y})">
+            <circle class="los-gnode-halo" r="42"></circle>
+            <circle class="los-gnode-core" r="24" stroke-width="1.8"></circle>
+            <text class="los-gnode-label" y="4">${escapeHtml(n.name)}</text>
+            <text class="los-gnode-sub" y="19">${escapeHtml(n.sub)}</text>
+          </g>`).join('')}
+      </svg>
+      <div class="los-graph-info" id="los-graph-info"></div>`;
+  }
+
+  function showLearnGraphInfo(skillId) {
+    const info = $('los-graph-info'); if (!info) return;
+    const g = LEARN_OS.graph;
+    const node = g.nodes.find((n) => n.id === skillId);
+    if (!node) return;
+    const idx = g.chain.indexOf(skillId);
+    const next = idx >= 0 && idx < g.chain.length - 1 ? g.nodes.find((n) => n.id === g.chain[idx + 1]) : null;
+    const chainLen = g.chain.length;
+    const statusMap = { mastered: ['已掌握', '#34d399'], learning: ['学习中', '#fbbf24'], gap: ['能力缺口', '#fb7185'] };
+    const [statusLabel, statusColor] = statusMap[node.status];
+    info.innerHTML = `
+      <div class="lg-title">
+        <span class="dot" style="background:${statusColor};box-shadow:0 0 10px ${statusColor}"></span>
+        <strong>${escapeHtml(node.name)}</strong>
+        <span class="los-tag los-tag--s ${node.status === 'mastered' ? 'los-tag--mastered' : (node.status === 'learning' ? 'los-tag--learning' : 'los-tag--gap')}">${statusLabel}</span>
+        <span style="margin-left:auto;font-size:10.5px;color:var(--los-ink-faint)">能力链第 ${idx + 1} / ${chainLen} 环</span>
+      </div>
+      <div class="lg-row"><span class="k">为什么学习</span><span>${escapeHtml(node.info)}</span></div>
+      <div class="lg-row"><span class="k">学习建议</span><span>${escapeHtml(node.learn)}</span></div>
+      ${next ? `<div class="lg-row"><span class="k">下一环节</span><span>→ ${escapeHtml(next.name)}（${statusMap[next.status][0]}）</span></div>` : '<div class="lg-row"><span class="k">下一环节</span><span>✅ 已到达能力链终点</span></div>'}
+      <div class="lg-cta">
+        <button class="los-btn los-btn--ghost" data-action="qa" type="button">向 AI 咨询此技能</button>
+      </div>`;
+    const qa = info.querySelector('[data-action="qa"]');
+    if (qa) qa.addEventListener('click', () => { if (window.Shell && window.Shell.openQA) window.Shell.openQA(); });
+  }
+
+  /* ---------- ④ 能力提升预测 ---------- */
+  function renderLearnForecast() {
+    const box = $('los-forecast'); if (!box) return;
+    box.innerHTML = `<div class="los-forecast-canvas" id="los-forecast-canvas"></div>`;
+    if (!window.echarts) {
+      box.innerHTML = `<div style="padding:20px;color:var(--los-ink-soft);font-size:12.5px">图表库加载中，请稍候…</div>`;
+      return;
+    }
+    const points = LEARN_OS.forecast;
+    const option = {
+      grid: { left: 48, right: 30, top: 40, bottom: 40 },
+      tooltip: {
+        trigger: 'axis',
+        backgroundColor: 'rgba(10,18,36,0.92)',
+        borderColor: 'rgba(53,224,200,0.35)',
+        textStyle: { color: '#e8f2f8', fontSize: 12 },
+        formatter: (params) => {
+          const p = points[params[0].dataIndex];
+          return `<b>${escapeHtml(p.label)}</b><br/>岗位匹配度 <b style="color:#35e0c8">${p.value}%</b><br/><span style="color:#9db2c6">${escapeHtml(p.note)}</span>`;
+        }
+      },
+      xAxis: {
+        type: 'category',
+        data: points.map((p) => p.label),
+        boundaryGap: false,
+        axisLine: { lineStyle: { color: 'rgba(140,190,255,0.18)' } },
+        axisTick: { show: false },
+        axisLabel: { color: '#9db2c6', fontSize: 11, interval: 0 }
+      },
+      yAxis: {
+        type: 'value',
+        min: 55,
+        max: 100,
+        splitLine: { lineStyle: { color: 'rgba(140,190,255,0.08)', type: 'dashed' } },
+        axisLabel: { color: '#5d738c', fontSize: 11, formatter: '{value}%' }
+      },
+      series: [{
+        type: 'line',
+        data: points.map((p) => p.value),
+        smooth: true,
+        symbol: 'circle',
+        symbolSize: 9,
+        lineStyle: { width: 3, color: '#35e0c8', shadowColor: 'rgba(53,224,200,0.5)', shadowBlur: 14 },
+        itemStyle: { color: '#f0b429', borderColor: '#0a1224', borderWidth: 2 },
+        areaStyle: {
+          color: {
+            type: 'linear', x: 0, y: 0, x2: 0, y2: 1,
+            colorStops: [
+              { offset: 0, color: 'rgba(53,224,200,0.35)' },
+              { offset: 1, color: 'rgba(53,224,200,0.02)' }
+            ]
+          }
+        },
+        markPoint: {
+          data: points.map((p, i) => ({
+            coord: [i, p.value],
+            value: '',
+            symbol: 'roundRect',
+            symbolSize: 0,
+            itemStyle: { color: 'transparent' },
+            label: {
+              formatter: p.value + '%',
+              color: '#f5ddb0',
+              fontSize: 11,
+              fontWeight: 700,
+              position: 'top',
+              distance: 8
+            }
+          }))
+        }
+      }]
+    };
+    requestAnimationFrame(() => losChart('los-forecast-canvas', option));
+  }
+
+  /* ---------- AI Career Coach 浮窗 ---------- */
+  function renderLearnCoach(m, res) {
+    const coach = $('los-coach'); if (!coach) return;
+    const c = LEARN_OS.coach;
+    const jobName = (m && m.job && m.job.title) || 'Java 后端开发工程师';
+    coach.innerHTML = `
+      <div class="los-coach-head">
+        <div class="los-coach-orb">AI</div>
+        <div class="los-coach-title"><b>AI Career Coach</b><small>职业教练 · ${escapeHtml(jobName)}</small></div>
+        <span class="los-coach-live"><i></i>ONLINE</span>
+      </div>
+      <div class="los-coach-body">
+        <div class="los-coach-task-label">TODAY'S TASK · 今日任务</div>
+        <div class="los-coach-task"><span class="tick">◆</span>${escapeHtml(c.task)}</div>
+        <div class="los-coach-reason">"${escapeHtml(c.reason)}"</div>
+        <div class="los-coach-progress">
+          <div class="row"><span>当前进度</span><b>${c.progress}% → ${c.to}%</b></div>
+          <div class="los-progress-bar"><i style="width:${c.progress}%"></i></div>
+        </div>
+      </div>
+      <div style="padding:0 16px 16px">
+        <button class="los-coach-cta" id="los-coach-start" type="button">开始学习 →</button>
+      </div>`;
   }
 
   /* ============================================================
-   * 学习画像悬浮窗（知识掌握图谱 + AI 判断）
+   * AI 人岗能力诊断工作台（学习画像重构版）
+   * 数据契约：PROFILE_MODEL —— 字段预留后端 API：
+   *   id / name / currentScore / requiredScore / gap / priority /
+   *   status / evidence / jobImpact / relatedSkills / learningPath
+   * 交互闭环：能力地图 → 点击能力 → AI 诊断 → 证据 → 岗位影响 →
+   *           能力提升模拟 → 预计匹配度 → 生成学习路径 → 进入学习
    * ============================================================ */
+  const PROFILE_LAYOUT = {
+    center: [{ x: 500, y: 300 }],
+    core: [{ x: 290, y: 225 }, { x: 620, y: 180 }, { x: 620, y: 440 }],
+    extension: [{ x: 150, y: 120 }, { x: 150, y: 340 }, { x: 830, y: 120 }, { x: 830, y: 310 }, { x: 830, y: 470 }, { x: 290, y: 440 }]
+  };
+
+  const PROFILE_MODEL = {
+    job: {
+      id: 'java-be', name: 'Java 后端开发', centerLabel: 'Java 后端',
+      overallScore: 76, overallDelta: 6,
+      matchScore: 88, matchDelta: 4,
+      gapCount: 3, highPriorityGaps: 2,
+      dataUpdatedAt: '08/24 23:36',
+      dataSources: {
+        overview: [
+          { label: '简历分析', value: '3 年经验' },
+          { label: '项目证据', value: '3 项' },
+          { label: '练习记录', value: '86 次' },
+          { label: '对话记录', value: '12 次' }
+        ],
+        categories: [
+          { name: '简历', desc: '技能、经历、量化成果' },
+          { name: '项目', desc: '项目经历与代码证据' },
+          { name: '练习', desc: '练习记录与正确率' },
+          { name: '对话', desc: 'AI 辅导对话中的表现' },
+          { name: '测验', desc: '阶段测评与诊断结果' }
+        ],
+        updates: [
+          { label: '简历分析', time: '今天' },
+          { label: '练习记录', time: '今天' },
+          { label: '知识点掌握', time: '今天' },
+          { label: '项目证据', time: '昨天' },
+          { label: '对话记录', time: '昨天' }
+        ]
+      }
+    },
+    skills: [
+      {
+        id: 'java', name: 'Java', layer: 'core', currentScore: 96, requiredScore: 92, gap: 4,
+        priority: 'low', status: 'strong',
+        summary: '核心技能，已达岗位要求',
+        evidence: {
+          projectCount: 3, exerciseCount: 26, knowledgeCount: 18, accuracy: 94,
+          project: [
+            { title: '高并发订单系统', desc: '主导核心链路开发，日均 500w+ 调用', skills: ['Java', 'Spring Boot', 'MySQL'] },
+            { title: 'Spring Boot 营销平台', desc: '负责服务端接口与限流设计', skills: ['Java', 'Spring Boot'] }
+          ],
+          learn: [{ title: '完成 Java 集合框架与 JMM 内存模型章节', time: '近 30 天' }],
+          practice: [{ title: 'Java 相关题目 26 道', accuracy: 94 }],
+          dialogue: [{ title: 'AI 对话中能解释 volatile 与 synchronized 的区别' }],
+          mastered: ['集合框架', 'JMM 基础', '并发工具类'], weak: []
+        },
+        jobImpact: { role: '核心能力', matchImpact: 0, potentialImprovement: 0, suggestion: '已达标，保持输出', newJobs: 0 },
+        relatedSkills: ['jvm', 'concurrency', 'springboot', 'mysql'],
+        learningPath: []
+      },
+      {
+        id: 'springboot', name: 'Spring Boot', layer: 'core', currentScore: 90, requiredScore: 85, gap: 5,
+        priority: 'low', status: 'strong',
+        summary: '主流后端框架，项目落地充分',
+        evidence: {
+          projectCount: 2, exerciseCount: 15, knowledgeCount: 12, accuracy: 92,
+          project: [{ title: 'Spring Boot 营销平台', desc: '使用 Spring Boot 搭建服务并落地生产', skills: ['Spring Boot', 'Java'] }],
+          learn: [{ title: '完成 Spring Boot 自动装配与 Starter 章节', time: '近 30 天' }],
+          practice: [{ title: 'Spring Boot 相关题目 15 道', accuracy: 92 }],
+          dialogue: [{ title: 'AI 对话中能解释 Bean 生命周期' }],
+          mastered: ['自动装配', 'Web 开发', '数据访问'], weak: []
+        },
+        jobImpact: { role: '核心能力', matchImpact: 0, potentialImprovement: 0, suggestion: '已达标，可加深微服务方向', newJobs: 0 },
+        relatedSkills: ['microservice', 'redis', 'java'],
+        learningPath: []
+      },
+      {
+        id: 'mysql', name: 'MySQL', layer: 'core', currentScore: 87, requiredScore: 80, gap: 7,
+        priority: 'low', status: 'strong',
+        summary: '核心技能，含慢查询优化实践',
+        evidence: {
+          projectCount: 2, exerciseCount: 14, knowledgeCount: 10, accuracy: 90,
+          project: [{ title: 'MySQL 慢查询优化专项', desc: '负责核心表设计与慢查询优化', skills: ['MySQL', 'Java'] }],
+          learn: [{ title: '完成索引与执行计划章节', time: '近 30 天' }],
+          practice: [{ title: 'MySQL 相关题目 14 道', accuracy: 90 }],
+          dialogue: [{ title: 'AI 对话中能解释最左前缀原则' }],
+          mastered: ['索引优化', '事务控制', '慢查询排查'], weak: []
+        },
+        jobImpact: { role: '核心能力', matchImpact: 0, potentialImprovement: 0, suggestion: '已达标，可补充分库分表', newJobs: 0 },
+        relatedSkills: ['systemdesign', 'redis'],
+        learningPath: []
+      },
+      {
+        id: 'jvm', name: 'JVM', layer: 'extension', currentScore: 62, requiredScore: 80, gap: -18,
+        priority: 'high', status: 'weak',
+        summary: '内存模型有基础，GC 与类加载薄弱',
+        evidence: {
+          projectCount: 1, exerciseCount: 18, knowledgeCount: 11, accuracy: 71,
+          project: [{ title: '参与 Spring Boot 后端项目', desc: '性能调优过程中涉及 JVM 参数与堆栈分析', skills: ['JVM', 'Java', 'Spring Boot'] }],
+          learn: [{ title: '完成 JVM 内存管理章节（GC 部分未深入）', time: '近 30 天' }],
+          practice: [{ title: 'JVM 相关题目 18 道', accuracy: 71 }],
+          dialogue: [{ title: 'AI 对话中能够解释堆 / 栈区别' }],
+          mastered: ['内存模型', '堆 / 栈'], weak: ['GC', '类加载机制']
+        },
+        jobImpact: { role: '核心能力', matchImpact: -7, potentialImprovement: 7, suggestion: '优先提升', newJobs: 17 },
+        relatedSkills: ['java', 'concurrency', 'springboot'],
+        learningPath: [
+          { title: 'JVM 内存结构与堆栈分析', hours: 1.5, target: 72 },
+          { title: 'GC 原理与调优实践', hours: 1.2, target: 78 },
+          { title: '类加载机制与实战排查', hours: 0.8, target: 80 }
+        ]
+      },
+      {
+        id: 'microservice', name: '微服务', layer: 'extension', currentScore: 45, requiredScore: 55, gap: -10,
+        priority: 'high', status: 'weak',
+        summary: '了解概念，缺少服务拆分落地经验',
+        evidence: {
+          projectCount: 0, exerciseCount: 8, knowledgeCount: 6, accuracy: 60,
+          project: [],
+          learn: [{ title: '完成微服务拆分概念章节', time: '近 30 天' }],
+          practice: [{ title: '微服务相关题目 8 道', accuracy: 60 }],
+          dialogue: [{ title: 'AI 对话中能描述服务注册与发现' }],
+          mastered: ['服务拆分概念'], weak: ['Spring Cloud 组件', '注册中心实践']
+        },
+        jobImpact: { role: '加分能力', matchImpact: -4, potentialImprovement: 4, suggestion: '重点提升', newJobs: 9 },
+        relatedSkills: ['springboot', 'systemdesign', 'docker', 'concurrency'],
+        learningPath: [
+          { title: 'Spring Cloud 核心组件', hours: 1.5, target: 58 },
+          { title: '服务拆分与注册中心实践', hours: 1.5, target: 65 },
+          { title: '分布式链路与容错', hours: 1, target: 70 }
+        ]
+      },
+      {
+        id: 'systemdesign', name: '系统设计', layer: 'extension', currentScore: 55, requiredScore: 62, gap: -7,
+        priority: 'medium', status: 'weak',
+        summary: '参与过架构评审，方案输出待深化',
+        evidence: {
+          projectCount: 1, exerciseCount: 6, knowledgeCount: 7, accuracy: 66,
+          project: [{ title: '高并发系统设计评审', desc: '参与高并发系统设计评审并输出方案', skills: ['系统设计', 'MySQL'] }],
+          learn: [{ title: '完成高并发架构模式章节', time: '近 30 天' }],
+          practice: [{ title: '系统设计相关题目 6 道', accuracy: 66 }],
+          dialogue: [{ title: 'AI 对话中能描述分库分表思路' }],
+          mastered: ['高并发模式'], weak: ['分库分表', '缓存一致性']
+        },
+        jobImpact: { role: '核心能力', matchImpact: -3, potentialImprovement: 3, suggestion: '按路径提升', newJobs: 6 },
+        relatedSkills: ['mysql', 'microservice'],
+        learningPath: [
+          { title: '高并发架构模式', hours: 0.8, target: 62 },
+          { title: '分库分表与缓存设计', hours: 0.7, target: 68 },
+          { title: '架构评审与复盘', hours: 0.5, target: 75 }
+        ]
+      },
+      {
+        id: 'concurrency', name: '并发编程', layer: 'extension', currentScore: 20, requiredScore: 60, gap: -40,
+        priority: 'high', status: 'unlearned',
+        summary: '尚未建立有效能力证据',
+        evidence: {
+          projectCount: 0, exerciseCount: 0, knowledgeCount: 2, accuracy: 0,
+          project: [], learn: [], practice: [], dialogue: [],
+          mastered: [], weak: ['线程模型', 'JUC 工具']
+        },
+        jobImpact: { role: '核心能力', matchImpact: -3, potentialImprovement: 3, suggestion: '建议系统学习', newJobs: 8 },
+        relatedSkills: ['jvm', 'java', 'microservice'],
+        learningPath: [
+          { title: '并发基础与线程模型', hours: 1.2, target: 40 },
+          { title: 'JUC 并发工具', hours: 1, target: 50 },
+          { title: '并发实战与问题排查', hours: 0.8, target: 60 }
+        ]
+      },
+      {
+        id: 'docker', name: 'Docker', layer: 'extension', currentScore: 25, requiredScore: 50, gap: -25,
+        priority: 'medium', status: 'unlearned',
+        summary: '尚未建立有效能力证据',
+        evidence: {
+          projectCount: 0, exerciseCount: 4, knowledgeCount: 3, accuracy: 50,
+          project: [], learn: [{ title: '了解容器与镜像概念', time: '近 30 天' }],
+          practice: [{ title: 'Docker 基础题 4 道', accuracy: 50 }], dialogue: [],
+          mastered: [], weak: ['Dockerfile', '容器编排']
+        },
+        jobImpact: { role: '加分能力', matchImpact: -2, potentialImprovement: 2, suggestion: '建议补充', newJobs: 5 },
+        relatedSkills: ['microservice'],
+        learningPath: [
+          { title: '镜像与容器基础', hours: 1, target: 40 },
+          { title: 'Dockerfile 编写', hours: 0.8, target: 50 }
+        ]
+      },
+      {
+        id: 'redis', name: 'Redis', layer: 'extension', currentScore: 76, requiredScore: 75, gap: 1,
+        priority: 'low', status: 'strong',
+        summary: '缓存场景已有基础实践',
+        evidence: {
+          projectCount: 1, exerciseCount: 9, knowledgeCount: 8, accuracy: 85,
+          project: [{ title: '营销平台缓存改造', desc: '缓存场景中的基础使用与失效处理', skills: ['Redis', 'Spring Boot'] }],
+          learn: [{ title: '完成缓存设计与一致性章节', time: '近 30 天' }],
+          practice: [{ title: 'Redis 相关题目 9 道', accuracy: 85 }],
+          dialogue: [{ title: 'AI 对话中能解释缓存穿透与击穿' }],
+          mastered: ['基础数据结构', '缓存失效'], weak: []
+        },
+        jobImpact: { role: '核心能力', matchImpact: 0, potentialImprovement: 0, suggestion: '已达标', newJobs: 0 },
+        relatedSkills: ['springboot', 'mysql', 'systemdesign'],
+        learningPath: []
+      }
+    ],
+    edges: [
+      ['java-be', 'java'], ['java-be', 'springboot'], ['java-be', 'mysql'],
+      ['java', 'jvm'], ['java', 'concurrency'], ['jvm', 'concurrency'],
+      ['springboot', 'microservice'], ['springboot', 'redis'],
+      ['mysql', 'redis'], ['mysql', 'systemdesign'],
+      ['microservice', 'systemdesign'], ['microservice', 'docker']
+    ],
+    recommendedPath: {
+      skillIds: ['jvm', 'concurrency', 'microservice', 'systemdesign'],
+      steps: [
+        { skillId: 'jvm', target: 80, hours: 3.5 },
+        { skillId: 'concurrency', target: 60, hours: 3 },
+        { skillId: 'microservice', target: 70, hours: 4 },
+        { skillId: 'systemdesign', target: 75, hours: 2 }
+      ],
+      hours: 12.5, matchFrom: 88, matchTo: 96
+    }
+  };
+
+  function getProfileState() {
+    if (!window.matchState.profile) {
+      window.matchState.profile = { selectedId: null, filter: 'all', sort: 'impact', search: '', searchHitId: null, simId: null, simVal: null, pathOn: false, entered: false };
+    }
+    return window.matchState.profile;
+  }
+
+  function resetProfileState() {
+    const st = getProfileState();
+    st.selectedId = null; st.simId = null; st.simVal = null;
+    st.search = ''; st.searchHitId = null; st.pathOn = false; st.entered = false;
+    st.filter = 'all'; st.sort = 'impact';
+    const search = $('rp-search-input'); if (search) search.value = '';
+    const hint = $('rp-search-hint'); if (hint) hint.hidden = true;
+    const btn = $('rp-path-btn'); if (btn) { btn.disabled = false; btn.textContent = '生成学习路径 →'; }
+  }
+
   function openLearningProfile() {
     const modal = $('rp-modal'); if (!modal) return;
-    const res = window.matchState.result || MOCK_RESULT;
     const m = getSelectedJob();
     if (!m) { if (typeof showToast === 'function') showToast('请先选择一个岗位', 'amber'); return; }
-    renderLearningProfile(m, res);
+    resetProfileState();
+    renderLearningProfile();
     modal.hidden = false;
     document.body.style.overflow = 'hidden';
   }
@@ -1663,135 +3501,527 @@
   function closeLearningProfile() {
     const modal = $('rp-modal'); if (modal) modal.hidden = true;
     document.body.style.overflow = '';
+    profileClosePops();
+    profileCloseEvidence();
   }
 
   function bindLearningProfile() {
     const modal = $('rp-modal'); if (!modal) return;
     const close = $('rp-close'); if (close) close.addEventListener('click', closeLearningProfile);
     const mask = modal.querySelector('.rp-mask'); if (mask) mask.addEventListener('click', closeLearningProfile);
-    const plan = $('rp-plan-btn'); if (plan) plan.addEventListener('click', () => { closeLearningProfile(); setView('learn'); });
-    document.addEventListener('keydown', (e) => { if (modal && !modal.hidden && e.key === 'Escape') closeLearningProfile(); });
-  }
+    const evClose = $('rp-ev-close'); if (evClose) evClose.addEventListener('click', profileCloseEvidence);
 
-  function renderLearningProfile(m, res) {
-    const job = m.job || {};
-    const gaps = m.gaps || [];
-    const matched = Array.isArray(m.matched) ? m.matched : [];
-    const path = res.learning_path || [];
-
-    const allVals = [...matched.map(() => 88), ...gaps.map((g) => g.readiness)];
-    const overall = allVals.length ? Math.round(allVals.reduce((a, b) => a + b, 0) / allVals.length) : (m.score || 0);
-
-    const titleEl = $('rp-title'); if (titleEl) titleEl.textContent = (job.title || '岗位') + ' · 学习画像';
-    const timeEl = $('rp-ai-time'); if (timeEl) timeEl.textContent = new Date().toLocaleString('zh-CN', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
-    const oEl = $('rp-overall'); if (oEl) oEl.textContent = overall + '%';
-    const oHint = $('rp-overall-hint'); if (oHint) oHint.textContent = overall >= 80 ? '优秀' : (overall >= 40 ? '中等' : '需加强');
-    const cEl = $('rp-confidence'); if (cEl) cEl.textContent = '94%';
-
-    const ev = $('rp-evidence');
-    if (ev) ev.innerHTML = '<span class="rp-ev-chip">✓ 提及次数 ' + (path.length || 1) + ' 次</span><span class="rp-ev-chip">✓ 举例深度</span><span class="rp-ev-chip">✓ 已评估 ' + (gaps.length + matched.length) + ' 个知识点</span>';
-
-    const firstGap = gaps[0];
-    const evalEl = $('rp-eval');
-    const evalSkill = $('rp-evalskill');
-    if (evalEl) {
-      if (firstGap) {
-        const sk = firstGap.skill;
-        if (evalSkill) evalSkill.textContent = '薄弱技能评估 · ' + sk;
-        evalEl.innerHTML = '「' + escapeHtml(sk) + '」在岗位要求中出现频次较高，但你的简历中缺少项目级实践证据。当前掌握度来自知识图谱诊断，参考学习路径与岗位匹配缺口。';
-      } else {
-        if (evalSkill) evalSkill.textContent = '薄弱技能评估';
-        evalEl.textContent = '暂无明显薄弱点，继续保持练习。';
-      }
-    }
-    const relEl = $('rp-rel');
-    if (relEl) {
-      if (firstGap) {
-        const sk = firstGap.skill;
-        relEl.innerHTML = '<div><b>关联</b>：' + escapeHtml(sk) + ' 与 Java / Spring Boot 等核心技能强相关</div><div><b>外联</b>：基于岗位的整体评估，建议按学习路径优先补齐</div>';
-      } else {
-        relEl.innerHTML = '';
-      }
-    }
-
-    const nextSkillEl = $('rp-next-skill');
-    const nextPctEl = $('rp-next-pct');
-    const nextStepsEl = $('rp-next-steps');
-    if (firstGap) {
-      if (nextSkillEl) nextSkillEl.textContent = firstGap.skill + ' · 基本关系';
-      if (nextPctEl) nextPctEl.textContent = firstGap.readiness + '%';
-      if (nextStepsEl) {
-        const lp = path.filter((l) => l.skill === firstGap.skill);
-        const item = lp[0];
-        const steps = (item && item.steps) || [
-          { name: '概念讲解与例题', min: 60 },
-          { name: '针对性练习', min: 30 },
-          { name: '错题复盘与关联迁移', min: 30 }
-        ];
-        nextStepsEl.innerHTML = steps.map((s) => '<div class="rp-next-step"><span class="rp-next-check">✓</span><span class="rp-next-step-name">' + escapeHtml(s.name) + '</span><span class="rp-next-step-time">约 ' + (s.min || 30) + ' 分钟</span></div>').join('');
-      }
-    } else {
-      if (nextSkillEl) nextSkillEl.textContent = '继续保持';
-      if (nextPctEl) nextPctEl.textContent = overall + '%';
-      if (nextStepsEl) nextStepsEl.innerHTML = '';
-    }
-
-    renderLearningGraph($('rp-graph'), job, gaps, matched);
-  }
-
-  function renderLearningGraph(container, job, gaps, matched) {
-    if (!container) return;
-    const allNodes = [];
-    gaps.forEach((g) => allNodes.push({ name: g.skill, val: g.readiness, type: 'gap' }));
-    matched.forEach((t, i) => allNodes.push({ name: typeof t === 'string' ? t : (t.t || ''), val: 86 + (i % 9), type: 'match' }));
-    const group = (val) => val < 40 ? 'tl' : (val < 65 ? 'tr' : (val < 80 ? 'bl' : 'br'));
-    const quads = { tl: [], tr: [], bl: [], br: [] };
-    allNodes.forEach((n) => quads[group(n.val)].push(n));
-    const positions = [];
-    const place = (quad, baseX, baseY) => {
-      const arr = quads[quad];
-      arr.forEach((n, i) => {
-        const idx = i - (arr.length - 1) / 2;
-        const x = baseX + idx * 110;
-        const y = baseY + (i % 2 === 0 ? 0 : 18);
-        positions.push({ ...n, x: Math.max(70, Math.min(690, x)), y: Math.max(70, Math.min(470, y)) });
-      });
-    };
-    place('tl', 220, 150);
-    place('tr', 540, 150);
-    place('bl', 220, 410);
-    place('br', 540, 410);
-
-    const color = (val) => val < 40 ? '#c84c5a' : (val < 80 ? '#e8a13a' : '#2faa6a');
-    let edges = '';
-    for (let i = 0; i < positions.length; i++) {
-      for (let j = i + 1; j < positions.length; j++) {
-        const a = positions[i], b = positions[j];
-        const dist = Math.hypot(a.x - b.x, a.y - b.y);
-        if (dist < 260) {
-          edges += '<line x1="' + a.x + '" y1="' + a.y + '" x2="' + b.x + '" y2="' + b.y + '" stroke="#e8a13a" stroke-width="1" stroke-dasharray="4 3" opacity=".7"/>';
+    // 统一事件委托：浮层开关、节点、筛选、缺口、操作按钮、时间选项
+    modal.addEventListener('click', (e) => {
+      const toggle = e.target.closest('.rp-pop-toggle');
+      if (toggle) {
+        profileClosePops();
+        const pop = $(toggle.dataset.pop);
+        if (pop && pop.hidden) {
+          if (toggle.dataset.pop === 'rp-source-pop') pop.innerHTML = profileSourcePopHTML();
+          else if (toggle.dataset.pop === 'rp-updated-pop') pop.innerHTML = profileUpdatedPopHTML();
+          else pop.innerHTML = '<div class="rp-pop-title">时间范围</div><div class="rp-pop-item" data-time="7">近 7 天</div><div class="rp-pop-item" data-time="30">近 30 天</div><div class="rp-pop-item" data-time="all">全部</div>';
+          pop.hidden = false;
         }
+        return;
       }
+      if (e.target.closest('.rp-pop')) {
+        const t = e.target.closest('[data-time]');
+        if (t) { const lbl = $('rp-time-label'); if (lbl) lbl.textContent = t.textContent.trim(); profileClosePops(); }
+        return;
+      }
+      profileClosePops();
+
+      const node = e.target.closest('.rp-node');
+      if (node) { profileSelectSkill(node.dataset.id); return; }
+      const cat = e.target.closest('.rp-cat');
+      if (cat) { profileSetFilter(cat.dataset.filter); return; }
+      const chip = e.target.closest('.rp-gap-chip');
+      if (chip) { profileSelectSkill(chip.dataset.id); return; }
+      const gapRow = e.target.closest('.rp-gap-row');
+      if (gapRow) { profileSelectSkill(gapRow.dataset.id); return; }
+      if (e.target.closest('#rp-evidence-btn') || e.target.closest('#rp-see-evidence')) { profileOpenEvidence(); return; }
+      if (e.target.closest('#rp-impact-btn')) { profileScrollToImpact(); return; }
+      if (e.target.closest('#rp-path-btn') || e.target.closest('#rp-path-cta')) { profileGeneratePath(); return; }
+    });
+
+    // 搜索：定位节点 + 高亮 + 自动打开诊断
+    const search = $('rp-search-input');
+    if (search) {
+      let timer = null;
+      search.addEventListener('input', () => { clearTimeout(timer); timer = setTimeout(() => profileSearch(search.value), 220); });
+      search.addEventListener('keydown', (e) => { if (e.key === 'Enter') { clearTimeout(timer); profileSearch(search.value); } });
     }
 
-    const nodes = positions.map((n) => {
-      const r = n.val >= 90 ? 28 : 24;
-      const label = escapeHtml(n.name).slice(0, 6);
-      return '<g class="rp-node" data-skill="' + escapeHtml(n.name) + '" transform="translate(' + n.x + ',' + n.y + ')">' +
-        '<circle r="' + r + '" fill="' + color(n.val) + '" stroke="rgba(255,255,255,.5)" stroke-width="1.5"/>' +
-        '<text text-anchor="middle" dy="-2" fill="#fff" font-size="10" font-weight="600">' + label + '</text>' +
-        '<text text-anchor="middle" dy="11" fill="#fff" font-size="9" opacity=".85">' + n.val + '%</text>' +
-        '</g>';
-    }).join('');
+    // 排序
+    const sort = $('rp-sort');
+    if (sort) sort.addEventListener('change', () => { getProfileState().sort = sort.value; renderProfileGraph(); });
 
-    const centerName = escapeHtml(job.title || '岗位').slice(0, 6);
-    const centerSVG = '<g transform="translate(380,270)">' +
-      '<circle r="42" fill="#c84c5a" stroke="rgba(255,255,255,.5)" stroke-width="2"/>' +
-      '<text text-anchor="middle" dy="-2" fill="#fff" font-size="13" font-weight="700">' + centerName + '</text>' +
-      '<text text-anchor="middle" dy="13" fill="#fff" font-size="10" opacity=".9">核心</text>' +
-      '</g>';
+    // 能力提升模拟滑块（只局部更新，不重绘整面板）
+    modal.addEventListener('input', (e) => {
+      const r = e.target.closest('.rp-sim-range');
+      if (r) profileSimulate(r.dataset.id, parseInt(r.value, 10));
+    });
 
-    container.innerHTML = '<svg viewBox="0 0 760 540" preserveAspectRatio="xMidYMid meet" style="width:100%;height:100%">' + edges + nodes + centerSVG + '</svg>';
+    document.addEventListener('keydown', (e) => {
+      if (modal && !modal.hidden && e.key === 'Escape') { profileClosePops(); profileCloseEvidence(); closeLearningProfile(); }
+    });
+  }
+
+  function renderLearningProfile() {
+    const model = PROFILE_MODEL;
+    const titleEl = $('rp-title'); if (titleEl) titleEl.textContent = model.job.name + ' · 学习画像';
+    const updEl = $('rp-updated-time'); if (updEl) updEl.textContent = model.job.dataUpdatedAt;
+    renderProfileKpis();
+    renderProfileGraph();
+    renderProfileAIPanel();
+    renderProfileGapBar();
+  }
+
+  /* ---------- 顶部 KPI ---------- */
+  function renderProfileKpis() {
+    const j = PROFILE_MODEL.job;
+    const o = $('rp-kpi-overall'); if (o) animateNumber(o, j.overallScore, 700, '%');
+    const od = $('rp-kpi-overall-delta'); if (od) od.textContent = '↑ 较上次 +' + j.overallDelta + '%';
+    const m = $('rp-kpi-match'); if (m) animateNumber(m, j.matchScore, 700, '%');
+    const md = $('rp-kpi-match-delta'); if (md) md.textContent = '↑ 核心能力匹配';
+    const g = $('rp-kpi-gaps'); if (g) g.textContent = j.gapCount + ' 项';
+    const gd = $('rp-kpi-gaps-delta'); if (gd) gd.textContent = j.highPriorityGaps + ' 项高优先级';
+  }
+
+  /* ---------- 能力地图（层级布局 + 筛选 + 排序） ---------- */
+  function profileSkillVisible(s, filter) {
+    if (filter === 'all') return true;
+    if (filter === 'core') return s.layer === 'core';
+    if (filter === 'gap') return s.status === 'weak';
+    if (filter === 'mastered') return s.status === 'strong';
+    if (filter === 'unlearned') return s.status === 'unlearned';
+    return true;
+  }
+
+  function profileSortFn(kind) {
+    if (kind === 'gap') return (a, b) => (a.gap - b.gap) || (a.requiredScore - b.requiredScore);
+    if (kind === 'alpha') return (a, b) => a.name.localeCompare(b.name, 'zh');
+    return (a, b) => (a.jobImpact.matchImpact - b.jobImpact.matchImpact) || (a.gap - b.gap);
+  }
+
+  function renderProfileGraph() {
+    const cont = $('rp-graph'); if (!cont) return;
+    const st = getProfileState();
+    const model = PROFILE_MODEL;
+
+    const visible = model.skills.filter((s) => profileSkillVisible(s, st.filter));
+    const sortFn = profileSortFn(st.sort);
+    const byLayer = { core: [], extension: [] };
+    visible.forEach((s) => byLayer[s.layer].push(s));
+    byLayer.core.sort(sortFn);
+    byLayer.extension.sort(sortFn);
+
+    const pos = {};
+    byLayer.core.forEach((s, i) => { pos[s.id] = PROFILE_LAYOUT.core[i] || PROFILE_LAYOUT.core[PROFILE_LAYOUT.core.length - 1]; });
+    byLayer.extension.forEach((s, i) => { pos[s.id] = PROFILE_LAYOUT.extension[i] || PROFILE_LAYOUT.extension[PROFILE_LAYOUT.extension.length - 1]; });
+
+    const sel = st.selectedId ? model.skills.find((s) => s.id === st.selectedId) : null;
+    const linked = new Set();
+    if (sel) { linked.add(sel.id); (sel.relatedSkills || []).forEach((r) => linked.add(r)); }
+    const pathIds = st.pathOn ? model.recommendedPath.skillIds : [];
+
+    let edgesSvg = '';
+    model.edges.forEach(([a, b], i) => {
+      const pa = pos[a], pb = pos[b];
+      if (!pa || !pb) return;
+      // 中心节点恒为高亮；连线只在两端均与选中能力相关时保持亮度
+      const aLink = a === 'java-be' ? true : linked.has(a);
+      const bLink = b === 'java-be' ? true : linked.has(b);
+      const dim = sel ? !(aLink && bLink) : false;
+      const isPath = st.pathOn && pathIds.indexOf(a) >= 0 && pathIds.indexOf(b) >= 0;
+      edgesSvg += '<line class="rp-edge' + (dim ? ' is-dimmed' : '') + (isPath ? ' is-path' : '') + '" x1="' + pa.x + '" y1="' + pa.y + '" x2="' + pb.x + '" y2="' + pb.y + '" style="animation-delay:' + (120 + i * 70) + 'ms"/>';
+    });
+
+    const c = PROFILE_LAYOUT.center[0];
+    let nodesSvg = '';
+    ['core', 'extension'].forEach((layer) => {
+      byLayer[layer].forEach((s, i) => { nodesSvg += profileNodeSVG(s, pos[s.id], sel, linked, pathIds, i + 1); });
+    });
+    const centerSvg = profileNodeSVG(null, c, sel, linked, pathIds, 0);
+
+    cont.innerHTML = '<svg viewBox="0 0 1000 560" preserveAspectRatio="xMidYMid meet">' + edgesSvg + centerSvg + nodesSvg + '</svg>';
+    if (!st.entered) st.entered = true;
+  }
+
+  function profileNodeSVG(s, p, sel, linked, pathIds, idx) {
+    const st = getProfileState();
+    const isCenter = !s;
+    const id = isCenter ? 'java-be' : s.id;
+    const name = isCenter ? PROFILE_MODEL.job.centerLabel : s.name;
+    const r = isCenter ? 48 : (s.layer === 'core' ? 40 : 34);
+
+    const classes = ['rp-node'];
+    if (isCenter) classes.push('is-center');
+    else if (s.status === 'strong') classes.push('is-strong');
+    else if (s.status === 'weak') classes.push('is-weak');
+    else classes.push('is-unlearned');
+
+    if (!isCenter && sel) {
+      if (sel.id === id) classes.push('is-selected');
+      else if (!linked.has(id)) classes.push('is-dimmed');
+      else classes.push('is-linked');
+    } else if (!isCenter && !sel) {
+      classes.push('is-linked');
+    }
+    if (st.searchHitId === id) classes.push('is-search-hit');
+    if (st.pathOn && pathIds.indexOf(id) >= 0) classes.push('is-path', 'rp-path-in');
+    if (!st.entered) classes.push('rp-enter');
+
+    let inner;
+    if (isCenter) {
+      inner = '<text class="rp-node-name" y="-6">' + escapeHtml(name) + '</text>' +
+        '<text class="rp-node-score" y="14">核心</text>' +
+        '<text class="rp-node-req" y="27">目标岗位</text>';
+    } else if (s.status === 'unlearned') {
+      inner = '<text class="rp-node-name" y="-2">' + escapeHtml(name) + '</text>' +
+        '<text class="rp-node-req" y="13">未学习</text>';
+    } else {
+      const g = s.gap > 0 ? '+' + s.gap : String(s.gap);
+      inner = '<text class="rp-node-name" y="-7">' + escapeHtml(name) + '</text>' +
+        '<text class="rp-node-score" y="9">' + s.currentScore + '%</text>' +
+        '<text class="rp-node-req" y="22">岗位要求 ' + s.requiredScore + '</text>' +
+        '<text class="rp-node-gap" y="33">' + g + '</text>';
+    }
+
+    const delay = isCenter ? 40 : (60 + idx * 45);
+    const pathDelay = st.pathOn ? 400 + pathIds.indexOf(id) * 220 : 0;
+    const animDelay = st.pathOn && pathIds.indexOf(id) >= 0 ? pathDelay : delay;
+    return '<g class="' + classes.join(' ') + '" data-id="' + id + '" transform="translate(' + p.x + ',' + p.y + ')" style="animation-delay:' + animDelay + 'ms">' +
+      '<circle class="rp-node-core" r="' + r + '"/>' + inner + '</g>';
+  }
+
+  function profileSetFilter(filter) {
+    const st = getProfileState();
+    st.filter = filter; st.entered = true;
+    syncProfileFilterButtons();
+    renderProfileGraph();
+  }
+
+  function syncProfileFilterButtons() {
+    const st = getProfileState();
+    qsa('#rp-filters .rp-cat').forEach((b) => b.classList.toggle('is-active', b.dataset.filter === st.filter));
+  }
+
+  function profileSelectSkill(id) {
+    const st = getProfileState();
+    if (id === 'java-be') {
+      st.selectedId = null; st.simId = null;
+    } else {
+      st.filter = 'all';
+      st.selectedId = (st.selectedId === id) ? null : id;
+      st.simId = st.selectedId;
+    }
+    st.searchHitId = null; st.entered = true;
+    syncProfileFilterButtons();
+    renderProfileGraph();
+    renderProfileAIPanel();
+    renderProfileGapBar();
+  }
+
+  /* ---------- 搜索 ---------- */
+  function profileSearch(term) {
+    const st = getProfileState();
+    const model = PROFILE_MODEL;
+    const hint = $('rp-search-hint');
+    term = (term || '').trim().toLowerCase();
+    if (!term) {
+      st.searchHitId = null;
+      if (hint) hint.hidden = true;
+      return;
+    }
+    const hit = model.skills.find((s) =>
+      s.name.toLowerCase().indexOf(term) >= 0 ||
+      (s.summary && s.summary.toLowerCase().indexOf(term) >= 0) ||
+      JSON.stringify(s.evidence || {}).toLowerCase().indexOf(term) >= 0 ||
+      (s.relatedSkills || []).some((r) => { const rs = model.skills.find((x) => x.id === r); return rs && rs.name.toLowerCase().indexOf(term) >= 0; })
+    );
+    if (hit) {
+      st.filter = 'all'; st.selectedId = hit.id; st.simId = hit.id; st.searchHitId = hit.id; st.entered = true;
+      syncProfileFilterButtons();
+      renderProfileGraph();
+      renderProfileAIPanel();
+      renderProfileGapBar();
+      if (hint) hint.hidden = true;
+    } else if (hint) {
+      hint.textContent = '未找到与「' + term + '」相关的能力';
+      hint.hidden = false;
+    }
+  }
+
+  /* ---------- 右侧 AI 能力诊断 ---------- */
+  function renderProfileAIPanel() {
+    const pane = $('rp-ai-pane'); if (!pane) return;
+    const st = getProfileState();
+    const model = PROFILE_MODEL;
+    const sk = st.selectedId ? model.skills.find((s) => s.id === st.selectedId) : null;
+    pane.innerHTML = sk ? profileAISkillHTML(model, sk) : profileAIOverallHTML(model);
+    pane.style.animation = 'none'; void pane.offsetWidth; pane.style.animation = '';
+  }
+
+  function profileStatusMeta(sk) {
+    if (sk.status === 'strong') return { label: '已达标', cls: 'ok' };
+    if (sk.status === 'weak') return { label: sk.priority === 'high' ? '重点提升' : '建议提升', cls: 'bad' };
+    return { label: '未学习', cls: 'none' };
+  }
+
+  function profileAIOverallHTML(model) {
+    const j = model.job;
+    const gaps = model.skills.filter((s) => s.status === 'weak').sort(profileSortFn('impact'));
+    const path = model.recommendedPath;
+    return `
+      <div class="rp-ai-block">
+        <div class="rp-ai-kicker">AI 能力诊断 · 整体概览</div>
+        <div class="rp-ai-note" style="margin-top:0">当前岗位匹配 <b style="color:var(--ok)">${j.matchScore}%</b>，核心能力扎实；${j.gapCount} 项能力存在缺口，建议按优先级补强 <b style="color:var(--rose)">${gaps.map((g) => escapeHtml(g.name)).join(' / ')}</b>。</div>
+      </div>
+      <div class="rp-ai-block">
+        <div class="rp-ai-kicker">判断依据</div>
+        <div class="rp-ev-grid">
+          ${j.dataSources.overview.map((d) => `<div class="rp-ev-cell"><div class="v">${escapeHtml(d.value)}</div><div class="l">${escapeHtml(d.label)}</div></div>`).join('')}
+        </div>
+        <div class="rp-ai-note">证据来自简历 / 项目 / 练习 / 对话 / 测验数据源，点击顶部「数据来源」可查看明细。</div>
+      </div>
+      <div class="rp-ai-block">
+        <div class="rp-ai-kicker">优先提升</div>
+        ${gaps.map((g) => `<div class="rp-gap-row" data-id="${g.id}">
+          <span class="nm">${escapeHtml(g.name)}</span>
+          <span class="bar"><i style="width:${Math.max(4, Math.round(g.currentScore / g.requiredScore * 100))}%"></i></span>
+          <span class="gap-v">${g.currentScore}% / ${g.requiredScore}%</span></div>`).join('')}
+      </div>
+      <div class="rp-ai-block">
+        <div class="rp-ai-kicker">推荐学习路径</div>
+        ${profilePathStepsHTML(model, path.steps)}
+        <div class="rp-lp-total"><span>预计 <b>${path.hours} 小时</b></span><span>匹配度 <b>${path.matchFrom}% → ${path.matchTo}%</b></span></div>
+      </div>
+      <div class="rp-ai-block">
+        <button class="btn-sm btn-sm--solid btn-block" id="rp-path-cta" type="button">生成学习路径 →</button>
+      </div>`;
+  }
+
+  function profileAISkillHTML(model, sk) {
+    const st = getProfileState();
+    const j = model.job;
+    const meta = profileStatusMeta(sk);
+    const isStrong = sk.status === 'strong';
+    const ev = sk.evidence || {};
+    const simVal = st.simId === sk.id && st.simVal != null ? st.simVal : sk.currentScore;
+    const simMatch = profileSimMatch(model, sk, simVal);
+    return `
+      <div class="rp-ai-block rp-dg">
+        <div class="rp-dg-head">
+          <span class="rp-dg-name">${escapeHtml(sk.name)}</span>
+          <span class="rp-dg-badge ${meta.cls}">${meta.label}</span>
+        </div>
+        <div class="rp-dg-stats">
+          <div class="rp-dg-stat"><b>${sk.currentScore}%</b><span>当前掌握</span></div>
+          <div class="rp-dg-stat req"><b>${sk.requiredScore}%</b><span>岗位要求</span></div>
+          <div class="rp-dg-stat ${sk.gap < 0 ? 'gap' : 'okg'}"><b>${sk.gap > 0 ? '+' + sk.gap : sk.gap}</b><span>能力差距</span></div>
+        </div>
+        ${sk.status === 'unlearned' ? '<div class="rp-ai-note">该能力尚未建立有效证据，无法准确评估，建议系统学习并积累练习记录。</div>' : ''}
+      </div>
+      <div class="rp-ai-block">
+        <div class="rp-ai-kicker">能力证据</div>
+        <div class="rp-ev-grid">
+          <div class="rp-ev-cell"><div class="v">${ev.projectCount || 0} 项</div><div class="l">项目经历</div></div>
+          <div class="rp-ev-cell"><div class="v">${ev.exerciseCount || 0} 次</div><div class="l">练习记录</div></div>
+          <div class="rp-ev-cell"><div class="v">${ev.knowledgeCount || 0} 个</div><div class="l">知识点</div></div>
+          <div class="rp-ev-cell"><div class="v">${ev.accuracy || 0}%</div><div class="l">正确率</div></div>
+        </div>
+        ${profileMasteredWeakHTML(ev)}
+        <button class="rp-link-btn" id="rp-see-evidence" type="button">查看完整能力证据 →</button>
+      </div>
+      <div class="rp-ai-block" id="rp-sec-impact">
+        <div class="rp-ai-kicker">岗位影响</div>
+        ${isStrong ? `
+        <div class="rp-impact ok-style">
+          <div class="rp-impact-row"><span class="k">岗位角色</span><span class="v">${sk.jobImpact.role}</span></div>
+          <div class="rp-impact-row"><span class="k">当前状态</span><span class="v okv">已达标</span></div>
+          <div class="rp-impact-row"><span class="k">建议</span><span class="v">${sk.jobImpact.suggestion}</span></div>
+          <div class="rp-impact-forecast">${escapeHtml(sk.name)} 已超过岗位要求，不会成为匹配瓶颈，继续保持即可。</div>
+        </div>` : `
+        <div class="rp-impact">
+          <div class="rp-impact-row"><span class="k">岗位角色</span><span class="v">${sk.jobImpact.role}</span></div>
+          <div class="rp-impact-row"><span class="k">当前缺口</span><span class="v gapv">${sk.gap}</span></div>
+          <div class="rp-impact-row"><span class="k">预计匹配影响</span><span class="v gapv">${sk.jobImpact.matchImpact > 0 ? '+' + sk.jobImpact.matchImpact : sk.jobImpact.matchImpact}%</span></div>
+          <div class="rp-impact-row"><span class="k">建议</span><span class="v">${sk.jobImpact.suggestion}</span></div>
+          <div class="rp-impact-forecast">若 ${escapeHtml(sk.name)} ${sk.currentScore} → ${sk.requiredScore}，预计岗位匹配 <b>${j.matchScore}%</b> → <b>${profileSkillMatchAt(model, sk, sk.requiredScore)}%</b></div>
+        </div>`}
+      </div>
+      ${isStrong ? '' : `
+      <div class="rp-ai-block">
+        <div class="rp-ai-kicker">能力提升模拟</div>
+        <div class="rp-sim">
+          <div class="rp-sim-head"><span>拖动调整当前掌握度</span><span>岗位要求 ${sk.requiredScore}</span></div>
+          <input type="range" class="rp-sim-range" min="${sk.currentScore}" max="100" value="${simVal}" data-id="${sk.id}"/>
+          <div class="rp-sim-match">
+            <span class="from">${simVal}%</span>
+            <span class="arr">→</span>
+            <span class="to">${simMatch}%</span>
+            <span class="lbl">岗位匹配</span>
+          </div>
+          ${simVal >= sk.requiredScore
+            ? `<div class="rp-sim-gain">提升 ${escapeHtml(sk.name)} 至岗位要求后，预计可新增 ${sk.jobImpact.newJobs || 0} 个高匹配岗位。</div>`
+            : `<div class="rp-sim-hint">将 ${escapeHtml(sk.name)} 提升至岗位要求，预计匹配度可达 ${profileSkillMatchAt(model, sk, sk.requiredScore)}%</div>`}
+        </div>
+      </div>`}
+      <div class="rp-ai-block">
+        <div class="rp-ai-kicker">推荐学习路径</div>
+        ${sk.learningPath && sk.learningPath.length ? profileSkillPathHTML(model, sk) : '<div class="rp-ai-note">该能力已达标，暂无优先补强路径；可将精力用于核心缺口的提升。</div>'}
+      </div>`;
+  }
+
+  function profileMasteredWeakHTML(ev) {
+    let h = '';
+    if (ev.mastered && ev.mastered.length) h += '<div class="rp-mw">' + ev.mastered.map((m) => '<span class="rp-mw-chip ok">✓ ' + escapeHtml(m) + '</span>').join('') + '</div>';
+    if (ev.weak && ev.weak.length) h += '<div class="rp-mw">' + ev.weak.map((m) => '<span class="rp-mw-chip bad">⚠ ' + escapeHtml(m) + '</span>').join('') + '</div>';
+    return h;
+  }
+
+  function profilePathStepsHTML(model, steps) {
+    return `<div class="rp-lp">` + steps.map((t, i) => {
+      const sk = model.skills.find((s) => s.id === t.skillId);
+      return `<div class="rp-lp-step"><span class="idx">${i + 1}</span><span class="nm">${sk ? escapeHtml(sk.name) : ''}</span><span class="target">→ ${t.target}%</span><span class="h">${t.hours}h</span></div>`;
+    }).join('') + `</div>`;
+  }
+
+  function profileSkillPathHTML(model, sk) {
+    const steps = sk.learningPath || [];
+    const totalH = steps.reduce((a, b) => a + (b.hours || 0), 0);
+    return `<div class="rp-lp">` + steps.map((t, i) =>
+      `<div class="rp-lp-step"><span class="idx">${i + 1}</span><span class="nm">${escapeHtml(t.title)}</span><span class="target">→ ${t.target}%</span><span class="h">${t.hours}h</span></div>`).join('') + `</div>
+      <div class="rp-lp-total"><span>预计耗时 <b>${totalH} 小时</b></span><span>预计匹配提升 <b>+${sk.jobImpact.potentialImprovement || 0}%</b></span></div>`;
+  }
+
+  /* ---------- 能力提升模拟（实时局部更新） ---------- */
+  function profileSimMatch(model, sk, val) {
+    const j = model.job;
+    const cur = sk.currentScore, req = sk.requiredScore, pot = sk.jobImpact.potentialImprovement || 0;
+    if (val <= cur) return j.matchScore;
+    if (val >= req) return Math.min(99, j.matchScore + pot);
+    return Math.round(j.matchScore + pot * (val - cur) / (req - cur));
+  }
+
+  function profileSkillMatchAt(model, sk, target) {
+    if (target >= sk.requiredScore) return Math.min(99, model.job.matchScore + (sk.jobImpact.potentialImprovement || 0));
+    return profileSimMatch(model, sk, target);
+  }
+
+  function profileSimulate(id, val) {
+    const st = getProfileState();
+    const model = PROFILE_MODEL;
+    const sk = model.skills.find((s) => s.id === id);
+    st.simId = id; st.simVal = val;
+    if (!sk) return;
+    const match = profileSimMatch(model, sk, val);
+    const sim = qs('.rp-sim', $('rp-ai-pane'));
+    if (!sim) return;
+    const from = sim.querySelector('.rp-sim-match .from');
+    const to = sim.querySelector('.rp-sim-match .to');
+    if (from) from.textContent = val + '%';
+    if (to) { to.textContent = match + '%'; to.classList.toggle('hot', match > model.job.matchScore); }
+    const old = sim.querySelector('.rp-sim-gain, .rp-sim-hint');
+    if (old) old.remove();
+    const extra = document.createElement('div');
+    if (val >= sk.requiredScore) {
+      extra.className = 'rp-sim-gain';
+      extra.textContent = `提升 ${sk.name} 至岗位要求后，预计可新增 ${sk.jobImpact.newJobs || 0} 个高匹配岗位。`;
+    } else {
+      extra.className = 'rp-sim-hint';
+      extra.textContent = `将 ${sk.name} 提升至岗位要求，预计匹配度可达 ${profileSkillMatchAt(model, sk, sk.requiredScore)}%`;
+    }
+    sim.appendChild(extra);
+  }
+
+  /* ---------- 岗位影响聚焦 ---------- */
+  function profileScrollToImpact() {
+    const st = getProfileState();
+    if (!st.selectedId) {
+      const g = PROFILE_MODEL.skills.find((s) => s.status === 'weak');
+      if (g) profileSelectSkill(g.id);
+    }
+    const pane = $('rp-ai-pane'); const sec = $('rp-sec-impact');
+    if (!pane || !sec) return;
+    sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    sec.classList.add('is-flash');
+    setTimeout(() => sec.classList.remove('is-flash'), 1200);
+  }
+
+  /* ---------- 能力证据 Drawer ---------- */
+  function profileOpenEvidence() {
+    const model = PROFILE_MODEL;
+    const st = getProfileState();
+    const sk = st.selectedId ? model.skills.find((s) => s.id === st.selectedId) : null;
+    const target = sk || model.skills.find((s) => s.id === 'jvm');
+    const drawer = $('rp-ev-drawer'); const body = $('rp-ev-body'); const title = $('rp-ev-title');
+    if (!drawer || !body || !target) return;
+    if (title) title.textContent = (sk ? '' : '重点能力 · ') + target.name + ' · 能力证据';
+    body.innerHTML = profileEvidenceHTML(target);
+    drawer.hidden = false;
+  }
+
+  function profileCloseEvidence() {
+    const drawer = $('rp-ev-drawer'); if (drawer) drawer.hidden = true;
+  }
+
+  function profileEvidenceHTML(sk) {
+    const ev = sk.evidence || {};
+    const card = (it) => `<div class="rp-ev-card">${escapeHtml(it.title)}${it.desc ? '<div class="ev-desc">' + escapeHtml(it.desc) + '</div>' : ''}${it.skills && it.skills.length ? '<div class="ev-tags">' + it.skills.map((t) => '<span class="rp-ev-tag">' + escapeHtml(t) + '</span>').join('') + '</div>' : ''}${it.accuracy != null ? '<div class="ev-meta">正确率 ' + it.accuracy + '%</div>' : ''}${it.time ? '<div class="ev-meta">' + escapeHtml(it.time) + '</div>' : ''}</div>`;
+    const sec = (label, items) => items && items.length ? `<div class="rp-ev-sec"><h4>${label}</h4>${items.map(card).join('')}</div>` : '';
+    let h = sec('项目证据', ev.project) + sec('学习证据', ev.learn) + sec('练习证据', ev.practice) + sec('对话证据', ev.dialogue);
+    if (ev.mastered && ev.mastered.length) h += `<div class="rp-ev-sec"><h4>已掌握</h4><div class="rp-mw">${ev.mastered.map((m) => '<span class="rp-mw-chip ok">✓ ' + escapeHtml(m) + '</span>').join('')}</div></div>`;
+    if (ev.weak && ev.weak.length) h += `<div class="rp-ev-sec"><h4>薄弱点</h4><div class="rp-mw">${ev.weak.map((m) => '<span class="rp-mw-chip bad">⚠ ' + escapeHtml(m) + '</span>').join('')}</div></div>`;
+    return h || '<div class="rp-ai-note">暂无该能力的直接证据，建议先完成学习与练习后重新评估。</div>';
+  }
+
+  /* ---------- 底部缺口栏 ---------- */
+  function renderProfileGapBar() {
+    const el = $('rp-gaps'); if (!el) return;
+    const model = PROFILE_MODEL;
+    const hi = model.skills.filter((s) => s.status === 'weak' && s.priority === 'high').sort(profileSortFn('gap'));
+    const mid = model.skills.filter((s) => s.status === 'weak' && s.priority !== 'high').sort(profileSortFn('gap'));
+    const ok = model.skills.filter((s) => s.status === 'strong').sort((a, b) => b.gap - a.gap);
+    const chip = (s, cls) => `<button class="rp-gap-chip ${cls}" data-id="${s.id}" type="button">${escapeHtml(s.name)} <b>${s.gap > 0 ? '+' + s.gap : s.gap}</b></button>`;
+    const group = (label, arr, cls) => arr.length ? `<div class="rp-gap-group"><span class="rp-gap-group-label">${label}</span>${arr.map((s) => chip(s, cls)).join('')}</div>` : '';
+    el.innerHTML = group('高优先级', hi, 'hi') + group('中优先级', mid, '') + group('已达标', ok, 'ok');
+  }
+
+  /* ---------- 生成学习路径：路径节点逐个点亮 → 进入学习视图 ---------- */
+  function profileGeneratePath() {
+    const st = getProfileState();
+    const model = PROFILE_MODEL;
+    st.filter = 'all'; st.selectedId = null; st.simId = null;
+    st.pathOn = true; st.entered = true;
+    syncProfileFilterButtons();
+    renderProfileGraph();
+    renderProfileAIPanel();
+    const btn = $('rp-path-btn');
+    if (btn) { btn.disabled = true; btn.textContent = '已生成学习路径，正在进入学习…'; }
+    const path = model.recommendedPath;
+    setTimeout(() => {
+      closeLearningProfile();
+      setView('learn');
+      if (typeof showToast === 'function') showToast('学习路径已生成：预计 ' + path.hours + ' 小时，匹配度 ' + path.matchFrom + '% → ' + path.matchTo + '%', 'teal');
+    }, 1500);
+  }
+
+  /* ---------- 浮层（数据来源 / 更新时间 / 时间范围） ---------- */
+  function profileClosePops() {
+    ['rp-source-pop', 'rp-updated-pop', 'rp-time-pop'].forEach((id) => { const p = $(id); if (p) p.hidden = true; });
+  }
+
+  function profileSourcePopHTML() {
+    const cats = PROFILE_MODEL.job.dataSources.categories;
+    return `<div class="rp-pop-title">AI 判断数据来源</div>` + cats.map((c) => `<div class="rp-pop-item"><span>${c.name}</span><small>${escapeHtml(c.desc)}</small></div>`).join('');
+  }
+
+  function profileUpdatedPopHTML() {
+    const ups = PROFILE_MODEL.job.dataSources.updates;
+    return `<div class="rp-pop-title">最近更新</div>` + ups.map((u) => `<div class="rp-pop-item"><span>${u.label}</span><b>${u.time}</b></div>`).join('');
   }
 
   function renderWhatIf() {
@@ -1962,12 +4192,16 @@
   function renderAIPanelMatch() {
     const aip = $('aip-body'); if (!aip) return;
     const st = window.matchState.preferences;
+    const impact = computeCondImpact(st);
+    const core = Object.keys(st.skillMeta || {}).filter((k) => st.skillMeta[k].level === 'core');
     aip.innerHTML = `<div class="aip-block"><div class="aip-kicker">MATCH CONTEXT</div>
-      <div class="aip-h">当前求职条件</div>
-      <div class="aip-p">方向：<b>${escapeHtml(st.direction || '未设置')}</b><br>城市：${st.cities.join('、') || '不限'}<br>薪资：${st.salaryMin || '?'}-${st.salaryMax || '?'}K<br>性质：${labelOf(JOBTYPES, st.jobType) || '不限'}</div>
-      <div class="aip-kicker mt">必备技能</div>${st.mustSkills.map((s) => `<span class="chip" style="margin:0 4px 4px 0">${escapeHtml(s)}</span>`).join('')}
-      <div class="aip-kicker mt">发展技能</div>${st.preferSkills.map((s) => `<span class="chip" style="margin:0 4px 4px 0">${escapeHtml(s)}</span>`).join('')}
-      <div class="aip-p mt">调整条件后点击「运行 AI 匹配」。</div></div>`;
+      <div class="aip-h">岗位匹配条件</div>
+      <div class="aip-p">方向：<b>${escapeHtml(st.direction || '未设置')}</b><br>城市：${st.cities.join('、') || '全国'}<br>薪资：${st.salaryMin == null ? '面议' : st.salaryMin + '-' + st.salaryMax + 'K'}<br>性质：${(st.jobTypes || []).map((t) => labelOf(JOBTYPES, t)).filter(Boolean).join(' / ') || '不限'}</div>
+      <div class="aip-kicker mt">岗位覆盖</div>
+      <div class="aip-metric-row"><span>可匹配岗位</span><span class="bar"><i style="width:${Math.round(impact.pool / 8.46)}%"></i></span><span class="v">${impact.pool}</span></div>
+      <div class="aip-metric-row"><span>高匹配</span><span class="bar"><i style="width:${Math.round((impact.high / Math.max(1, impact.pool)) * 100)}%"></i></span><span class="v">${impact.high}</span></div>
+      <div class="aip-kicker mt">核心技能</div>${core.map((s) => `<span class="chip" style="margin:0 4px 4px 0">${escapeHtml(s)}</span>`).join('')}
+      <div class="aip-p mt">修改条件时，覆盖范围与匹配度将实时更新。就绪后点击「运行 AI 人岗匹配」。</div></div>`;
   }
   function renderAIPanelAnalysis() {
     const aip = $('aip-body'); if (!aip) return;
@@ -1994,7 +4228,7 @@
     const aip = $('aip-body'); if (!aip || !m) return;
     aip.innerHTML = `<div class="aip-block"><div class="aip-kicker">AI DIAGNOSIS</div>
       <div class="aip-h">${escapeHtml(m.job.title)}</div>
-      <div class="aip-p">综合匹配度 <b>${m.score}%</b>。点击中间图谱节点，查看单能力的证据与学习路径。</div>
+      <div class="aip-p">综合匹配度 <b>${m.score}%</b>。右侧「能力差距分析」中点击任意能力条，可查看缺口详情与提升路径。</div>
       <div class="aip-kicker mt">多维度评分</div>
       ${Object.entries(m.dimensions).map(([k, v]) => `<div class="aip-metric-row"><span>${dimLabel(k)}</span><span class="bar"><i style="width:${v}%"></i></span><span class="v">${v}</span></div>`).join('')}
       <span class="aip-link" id="aip-todrawer">→ 查看能力缺口详情</span></div>`;
@@ -2038,26 +4272,140 @@
     if (mic) mic.addEventListener('click', () => toggleCtrl(mic));
     if (cam) cam.addEventListener('click', () => toggleCtrl(cam));
     if (spk) spk.addEventListener('click', () => toggleCtrl(spk));
+    // 查看回答建议 → 打开 AI 面试助手抽屉
+    const hint = $('int-hint');
+    if (hint) hint.addEventListener('click', () => toggleIntDrawer(true));
+    const tog = $('int-assistant-toggle');
+    if (tog) tog.addEventListener('click', () => toggleIntDrawer());
+    const dc = $('int-drawer-close');
+    if (dc) dc.addEventListener('click', () => toggleIntDrawer(false));
   }
   function toggleCtrl(btn) {
     const on = btn.getAttribute('aria-pressed') === 'true';
     btn.setAttribute('aria-pressed', on ? 'false' : 'true');
   }
+  function toggleIntDrawer(forceOpen) {
+    const d = $('int-drawer'); if (!d) return;
+    const willOpen = typeof forceOpen === 'boolean' ? forceOpen : d.hidden;
+    d.hidden = !willOpen;
+  }
+
   const INTERVIEW_Q = [
-    { topic: 'Java 基础', q: '请介绍一下你在简历中提到的项目，并说明你在其中的技术角色。', base: 'strong' },
-    { topic: '项目介绍', q: '你提到用 Spring Boot 搭建了营销平台，能讲讲你如何处理高并发场景吗？', base: 'mid' },
-    { topic: 'Redis', q: '为什么在项目中引入 Redis？如果缓存与数据库不一致，你会怎么处理？', base: 'weak' },
-    { topic: '系统设计', q: '如果要设计一个日均千万级的订单系统，你会怎么做分库分表？', base: 'mid' },
-    { topic: '微服务', q: '你如何理解服务拆分？能否举例说明一个不适合拆分的场景？', base: 'weak' },
-    { topic: 'Docker', q: '你的项目是否做过容器化部署？如果让你写 Dockerfile 你会注意什么？', base: 'weak' },
-    { topic: 'MySQL', q: '讲讲你对索引最左前缀原则的理解，以及一次你做过的慢查询优化。', base: 'mid' },
-    { topic: '综合能力', q: '回顾这次面试，你认为自己最需要在哪方面补强？', base: 'mid' }
+    { topic: 'Java 基础', q: '请介绍一下你在简历中提到的项目，并说明你在其中的技术角色。', base: 'strong',
+      keywords: ['JVM', '集合', '内存模型'], detect: ['技术表达', '基础扎实'], metric: { tech: 82, expr: 74, proj: 86 }, score: 81,
+      good: ['技术基础扎实，项目表述清晰'], bad: ['缺少量化指标'], advise: '用「背景-行动-结果」结构，补充 1-2 个量化数据。' },
+    { topic: '项目介绍', q: '你提到用 Spring Boot 搭建了营销平台，能讲讲你如何处理高并发场景吗？', base: 'mid',
+      keywords: ['Spring Boot', '高并发', 'Redis'], detect: ['项目真实性', '技术表达'], metric: { tech: 78, expr: 70, proj: 85 }, score: 76,
+      good: ['有真实项目作为支撑'], bad: ['高并发方案不完整'], advise: '补充限流、缓存、异步的完整链路设计。' },
+    { topic: 'Redis', q: '为什么在项目中引入 Redis？如果缓存与数据库不一致，你会怎么处理？', base: 'weak',
+      keywords: ['Redis', '缓存一致性', '持久化'], detect: ['架构理解', '技术表达'], metric: { tech: 72, expr: 66, proj: 80 }, score: 74,
+      good: ['理解缓存基本使用'], bad: ['缓存一致性方案不足'], advise: '掌握 Cache-Aside 模式与延迟双删等一致性方案。' },
+    { topic: '系统设计', q: '如果要设计一个日均千万级的订单系统，你会怎么做分库分表？', base: 'mid',
+      keywords: ['订单系统', '分库分表', '缓存'], detect: ['架构理解', '扩展能力'], metric: { tech: 70, expr: 68, proj: 82 }, score: 73,
+      good: ['有系统设计的基本思路'], bad: ['缺少高并发经验'], advise: '系统学习分库分表、容量评估与高可用架构。' },
+    { topic: '微服务', q: '你如何理解服务拆分？能否举例说明一个不适合拆分的场景？', base: 'weak',
+      keywords: ['服务拆分', '注册中心', '配置中心'], detect: ['架构理解', '系统设计'], metric: { tech: 66, expr: 64, proj: 78 }, score: 72,
+      good: ['了解微服务核心概念'], bad: ['缺少拆分落地经验'], advise: '用 Spring Cloud 落地一个微服务 demo 并补充拆分原则。' },
+    { topic: 'Docker', q: '你的项目是否做过容器化部署？如果让你写 Dockerfile 你会注意什么？', base: 'weak',
+      keywords: ['Dockerfile', '镜像', '容器编排'], detect: ['工程实践', '技术表达'], metric: { tech: 62, expr: 66, proj: 75 }, score: 71,
+      good: ['具备基础容器概念'], bad: ['无部署实践'], advise: '为现有项目编写 Dockerfile 并完成本地容器化部署。' },
+    { topic: 'MySQL', q: '讲讲你对索引最左前缀原则的理解，以及一次你做过的慢查询优化。', base: 'mid',
+      keywords: ['索引', '执行计划', '事务'], detect: ['技术表达', '数据库'], metric: { tech: 80, expr: 72, proj: 84 }, score: 79,
+      good: ['有慢查询优化实践经验'], bad: ['事务隔离细节不深'], advise: '深化事务隔离级别与 MVCC，补齐分库分表知识。' },
+    { topic: '综合能力', q: '回顾这次面试，你认为自己最需要在哪方面补强？', base: 'mid',
+      keywords: ['成长规划', '学习路径', '复盘'], detect: ['表达能力', '岗位匹配'], metric: { tech: 75, expr: 78, proj: 80 }, score: 78,
+      good: ['职业规划清晰，复盘意识好'], bad: ['补强优先级不明确'], advise: '按「岗位缺口 → 学习路径 → 项目验证」闭环推进。' }
   ];
+
+  /* ---- 面试进度步骤条 ---- */
+  function renderIntSteps() {
+    const box = $('int-steps'); if (!box) return;
+    box.innerHTML = INTERVIEW_Q.map((it, i) => `<span class="md-int-step" data-step="${i}">${i + 1}</span>`).join('');
+  }
+  function setIntStep(idx) {
+    const box = $('int-steps'); if (!box) return;
+    qsa('.md-int-step', box).forEach((s) => {
+      const i = parseInt(s.dataset.step, 10);
+      s.className = 'md-int-step' + (i < idx ? ' is-done' : (i === idx ? ' is-active' : ''));
+    });
+  }
+
+  /* ---- 当前能力评估（左栏 AI 面试官） ---- */
+  function renderIntMetrics(metric) {
+    const box = $('int-ai-metrics'); if (!box) return;
+    qsa('.md-int-metric', box).forEach((m) => {
+      const k = m.dataset.k;
+      const v = metric ? metric[k] : 0;
+      const bar = m.querySelector('.bar i');
+      const num = m.querySelector('b');
+      if (bar) bar.style.width = v + '%';
+      if (num) animateNumber(num, v, 700, '%');
+    });
+  }
+
+  /* ---- 实时分析层（关键词 / 检测能力 / 评分） ---- */
+  function renderIntAnalysis(item) {
+    const kw = $('int-keywords'); if (kw) kw.innerHTML = (item.keywords || []).map((k) => `<span>${escapeHtml(k)}</span>`).join('');
+    const det = $('int-detect'); if (det) det.innerHTML = (item.detect || []).map((d) => `<span>✓ ${escapeHtml(d)}</span>`).join('');
+    const sc = $('int-analysis-score'); if (sc) animateNumber(sc, item.score || 0, 800);
+    const gauge = $('int-analysis-gauge'); if (gauge) requestAnimationFrame(() => requestAnimationFrame(() => { gauge.style.width = (item.score || 0) + '%'; }));
+  }
+
+  /* ---- AI 面试助手抽屉内容 ---- */
+  function renderIntDrawerContent(item) {
+    const body = $('int-drawer-body'); if (!body) return;
+    body.innerHTML = `
+      <div class="md-int-drawer-sec">
+        <div class="md-int-drawer-sec-label ok">优势</div>
+        ${(item.good || []).map((g) => `<div class="md-int-drawer-li"><i class="ai-ok">✓</i>${escapeHtml(g)}</div>`).join('')}
+      </div>
+      <div class="md-int-drawer-sec">
+        <div class="md-int-drawer-sec-label warn">不足</div>
+        ${(item.bad || []).map((g) => `<div class="md-int-drawer-li"><i class="ai-warn">⚠</i>${escapeHtml(g)}</div>`).join('')}
+      </div>
+      <div class="md-int-drawer-sec">
+        <div class="md-int-drawer-sec-label">建议</div>
+        <div class="md-int-drawer-li"><i class="ai-gold">↗</i>${escapeHtml(item.advise || '')}</div>
+      </div>
+      <div class="md-int-drawer-hint">回答完成后点击「下一题」，AI 将刷新评估。</div>`;
+  }
+
+  /* ---- 模拟 AI 实时分析：评分滚动 / 字幕 / 状态流转 ---- */
+  function startIntAnalysis(item) {
+    stopIntAnalysis();
+    const st = window.matchState.interview;
+    let tick = 0;
+    const liveEl = $('int-live-score');
+    const stateEl = $('int-live-state');
+    const capEl = $('int-live-caption');
+    const captions = ['正在识别回答内容...', '检测到关键词：' + (item.keywords || []).join(' / '), '正在评估表达能力与逻辑结构...', '分析完成 · 已生成回答建议'];
+    const score = item.score || 0;
+    st._liveScore = Math.max(30, score - 8);
+    if (liveEl) liveEl.textContent = st._liveScore;
+    st._intTimer = setInterval(() => {
+      tick++;
+      if (tick % 2 === 0 && st._liveScore < score + 1) st._liveScore = Math.min(96, st._liveScore + 1);
+      if (liveEl) animateNumber(liveEl, st._liveScore, 500);
+      if (stateEl) {
+        if (tick < 6) stateEl.innerHTML = '<i></i>AI 分析中...';
+        else if (tick < 10) stateEl.innerHTML = '<i></i>评估完成';
+        else stateEl.innerHTML = '<i></i>等待下一题';
+      }
+      if (capEl) capEl.textContent = captions[Math.min(captions.length - 1, Math.floor(tick / 3))];
+    }, 900);
+  }
+  function stopIntAnalysis() {
+    const st = window.matchState.interview;
+    if (st && st._intTimer) { clearInterval(st._intTimer); st._intTimer = null; }
+  }
+
   function openInterview() {
     const m = getSelectedJob();
-    const jobLabel = $('int-job-label'); if (jobLabel) jobLabel.textContent = m ? (m.job.title + ' · ' + m.job.company) : '模拟面试';
+    const jobLabel = $('int-job-text'); if (jobLabel) jobLabel.textContent = m ? (m.job.title + ' · 模拟面试') : '模拟面试';
     const inter = $('md-interview'); if (inter) inter.hidden = false;
-    window.matchState.interview = { index: 0, answers: [], questions: [] };
+    window.matchState.interview = { index: 0, answers: [], questions: [], _liveScore: 60, _intTimer: null };
+    renderIntSteps();
+    toggleIntDrawer(false);
     startCamera();
     askQuestion(0);
     setView('interview');
@@ -2065,6 +4413,7 @@
   function closeInterview() {
     const inter = $('md-interview'); if (inter) inter.hidden = true;
     stopCamera();
+    stopIntAnalysis();
     showReport();
   }
   function askQuestion(idx) {
@@ -2073,11 +4422,16 @@
     if (!item) { closeInterview(); return; }
     st.index = idx;
     const prog = $('int-progress'); if (prog) prog.textContent = String(idx + 1).padStart(2, '0') + ' / ' + String(INTERVIEW_Q.length).padStart(2, '0');
-    const label = $('int-q-label'); if (label) label.textContent = '当前考察：' + item.topic;
+    const label = $('int-q-label'); if (label) label.textContent = 'AI 正在提问 · 第 ' + (idx + 1) + ' 题';
     const qt = $('int-question-text'); if (qt) qt.textContent = item.q;
     st.questions[idx] = item;
+    setIntStep(idx);
+    renderIntMetrics(item.metric);
+    renderIntAnalysis(item);
+    renderIntDrawerContent(item);
+    startIntAnalysis(item);
     // 最后一题按钮文案切换为"查看报告"
-    const next = $('int-next'); if (next) next.textContent = (idx + 1 >= INTERVIEW_Q.length) ? '查看报告 →' : '下一问 →';
+    const next = $('int-next'); if (next) next.textContent = (idx + 1 >= INTERVIEW_Q.length) ? '查看报告 →' : '下一题 →';
     // 模拟 AI 语音波
     setTimeout(() => { const w = $('int-ai-wave'); if (w) w.style.opacity = '1'; }, 300);
   }
@@ -2094,38 +4448,145 @@
   }
 
   /* ============================================================
-   * 面试报告
+   * AI 面试分析报告 · 职业能力分析 Dashboard
    * ============================================================ */
+  const REPORT_SKILLS = [
+    { idx: 1, name: 'Java 基础', score: 86, status: '优秀', cls: 'ok',
+      ev: '基础扎实，能够理解 JVM 内存模型与集合原理，并发工具使用熟练。', detail: '证据：JVM 内存模型 / 集合框架 / 并发工具类回答准确率 94%' },
+    { idx: 2, name: 'Spring 生态', score: 82, status: '优秀', cls: 'ok',
+      ev: '熟悉 Spring Boot 自动装配原理，能讲清 Bean 生命周期与 AOP 应用。', detail: '证据：自动装配 / Bean 生命周期 / 事务与安全章节完成' },
+    { idx: 3, name: '数据库', score: 79, status: '良好', cls: 'good',
+      ev: '掌握索引优化与事务隔离级别，有慢查询优化实践，分库分表待深化。', detail: '证据：慢查询优化专项 / 索引与执行计划章节完成' },
+    { idx: 4, name: '系统设计', score: 73, status: '需要提升', cls: 'warn',
+      ev: '能够完成基本系统设计，缺少高并发与大规模数据场景的落地经验。', detail: '建议：学习高并发架构模式 / 分库分表 / 容量评估' },
+    { idx: 5, name: '工程实践', score: 68, status: '需要提升', cls: 'warn',
+      ev: '容器化与 CI/CD 实践不足，Docker 停留在概念阶段，微服务无落地。', detail: '建议：为项目编写 Dockerfile / 用 Spring Cloud 落地微服务' },
+    { idx: 6, name: '沟通表达', score: 74, status: '良好', cls: 'good',
+      ev: '回答条理清晰、结论先行；可补充更多量化数据与结构化输出。', detail: '建议：用 STAR 法则组织项目描述，结尾准备高质量反问' }
+  ];
+  const REPORT_RADAR = { dims: ['Java 基础', 'Spring 生态', '数据库', '系统设计', '工程实践', '沟通表达'], vals: [86, 82, 79, 73, 68, 74] };
+  const REPORT_INSIGHT = {
+    strong: ['Spring Boot', 'Redis', '项目实践'],
+    risk: ['系统设计', '分布式经验'],
+    learn: ['Spring Cloud', 'Docker', 'Kafka'],
+    from: 78, to: 90
+  };
+  const REPORT_CAREER = {
+    current: 'Java 后端工程师',
+    next: '高级 Java 工程师',
+    need: ['微服务', '架构设计', '云原生']
+  };
+  let reportRadarChart = null;
+
   function bindReport() {
     const back = $('report-back'); if (back) back.addEventListener('click', () => { const r = $('md-report'); if (r) r.hidden = true; setView('jobs'); });
     const restart = $('report-restart'); if (restart) restart.addEventListener('click', () => { const r = $('md-report'); if (r) r.hidden = true; openInterview(); });
+    const pathBtn = $('report-path-btn');
+    if (pathBtn) pathBtn.addEventListener('click', () => { const r = $('md-report'); if (r) r.hidden = true; openLearningProfile(); });
   }
+
   function showReport() {
     const score = 78;
-    const dims = { '技术基础': 86, '项目理解': 73, '表达能力': 68, '逻辑分析': 79, '岗位匹配': 81 };
-    const meta = $('report-meta'); if (meta) meta.textContent = (getSelectedJob() ? getSelectedJob().job.title : '模拟面试') + ' · 8 题';
-    const sc = $('report-score'); if (sc) animateNumber(sc, score, 1000);
-    const dimsBox = $('report-dims');
-    if (dimsBox) dimsBox.innerHTML = Object.entries(dims).map(([k, v]) =>
-      `<div class="dim-row"><span class="nm">${k}</span><span class="bar"><i style="width:${v}%"></i></span><span class="v">${v}</span></div>`).join('');
-    const issues = $('report-issues');
-    if (issues) {
-      const rows = INTERVIEW_Q.map((it, i) => {
-        const lvl = it.base === 'strong' ? 'strong' : (it.base === 'mid' ? 'mid' : 'weak');
-        const lvlTxt = it.base === 'strong' ? '强' : (it.base === 'mid' ? '中' : '弱');
-        const analysis = it.base === 'weak' ? `知识准确性 ${40 + i}, 完整性偏低。主要问题：缺少系统性处理方案。` :
-          (it.base === 'mid' ? '回答基本到位，可补充更多量化细节。' : '回答扎实，有项目佐证。');
-        return `<div class="issue-row" data-issue="${i}"><span class="issue-rank">${String(i + 1).padStart(2, '0')}</span>
-          <span class="issue-name">${escapeHtml(it.topic)}</span><span class="issue-lvl ${lvl}">${lvlTxt}</span></div>
-          <div class="issue-detail" data-detail="${i}"><b>问题：</b>${escapeHtml(it.q)}<br><b>AI 分析：</b>${escapeHtml(analysis)}<br><b>建议：</b>${it.base === 'weak' ? '加入学习路径补强' : '保持并深化'}</div>`;
-      }).join('');
-      issues.innerHTML = rows;
-      qsa('.issue-row', issues).forEach((row) => row.addEventListener('click', () => {
-        const d = issues.querySelector('[data-detail="' + row.dataset.issue + '"]');
-        if (d) d.classList.toggle('is-open');
-      }));
-    }
+    // 先显示报告容器，再渲染图表（确保 echarts 读取到正确的容器尺寸）
     const r = $('md-report'); if (r) r.hidden = false;
+    const sc = $('report-score'); if (sc) animateNumber(sc, score, 1100);
+    const mt = $('report-match'); if (mt) animateNumber(mt, 82, 1100, '%');
+    const lvl = $('report-level'); if (lvl) lvl.textContent = '中级 Java 工程师';
+    renderReportRadar();
+    renderReportSkills();
+    renderReportInsights();
+    renderReportCareer();
+  }
+
+  function renderReportRadar() {
+    const cont = $('report-radar'); if (!cont) return;
+    if (reportRadarChart) { reportRadarChart.dispose(); reportRadarChart = null; }
+    if (typeof echarts === 'undefined') return;
+    try {
+      const chart = echarts.init(cont);
+      reportRadarChart = chart;
+      chart.setOption({
+        radar: {
+          indicator: REPORT_RADAR.dims.map((d) => ({ name: d, max: 100 })),
+          radius: '66%', center: ['50%', '52%'], splitNumber: 4,
+          axisName: { color: 'rgba(169,189,203,.85)', fontSize: 11 },
+          splitLine: { lineStyle: { color: 'rgba(255,255,255,.10)' } },
+          splitArea: { show: false },
+          axisLine: { lineStyle: { color: 'rgba(255,255,255,.16)' } }
+        },
+        series: [{
+          type: 'radar', symbolSize: 4,
+          data: [{
+            value: REPORT_RADAR.vals, name: '当前能力',
+            lineStyle: { color: '#1FC8D9', width: 2 },
+            itemStyle: { color: '#1FC8D9' },
+            areaStyle: { color: 'rgba(31,200,217,.22)' }
+          }]
+        }],
+        tooltip: { trigger: 'item' }, animationDuration: 1200
+      });
+    } catch (e) { /* 雷达失败不影响报告展示 */ }
+  }
+
+  function renderReportSkills() {
+    const box = $('report-skills'); if (!box) return;
+    box.innerHTML = REPORT_SKILLS.map((s) => `
+      <div class="rpt-skill is-${s.cls}" data-idx="${s.idx}">
+        <div class="rpt-skill-top">
+          <span class="rpt-skill-idx">${String(s.idx).padStart(2, '0')}</span>
+          <b class="rpt-skill-name">${escapeHtml(s.name)}</b>
+          <span class="rpt-skill-status is-${s.cls}">${s.status}</span>
+        </div>
+        <div class="rpt-skill-score"><b data-w="${s.score}">0</b><small>分</small></div>
+        <div class="rpt-skill-bar"><i data-w="${s.score}"></i></div>
+        <p class="rpt-skill-eval">${s.ev}</p>
+        <div class="rpt-skill-detail" hidden><div class="rpt-skill-detail-inner">${escapeHtml(s.detail)}</div></div>
+      </div>`).join('');
+    qsa('.rpt-skill-score b', box).forEach((b) => animateNumber(b, parseFloat(b.dataset.w || 0), 1000));
+    qsa('.rpt-skill-bar i', box).forEach((i) => requestAnimationFrame(() => requestAnimationFrame(() => { i.style.width = (i.dataset.w || 0) + '%'; })));
+    qsa('.rpt-skill', box).forEach((card) => card.addEventListener('click', () => {
+      const detail = card.querySelector('.rpt-skill-detail');
+      if (!detail) return;
+      const isOpen = !detail.hidden;
+      qsa('.rpt-skill', box).forEach((c) => { c.classList.remove('is-open'); const d = c.querySelector('.rpt-skill-detail'); if (d) d.hidden = true; });
+      if (!isOpen) { card.classList.add('is-open'); detail.hidden = false; }
+    }));
+  }
+
+  function renderReportInsights() {
+    const box = $('report-insights'); if (!box) return;
+    box.innerHTML = `
+      <div class="rpt-insight is-strong">
+        <div class="rpt-insight-head"><span>★★★★★</span>优势能力</div>
+        <div class="rpt-insight-tags">${REPORT_INSIGHT.strong.map((t) => `<span>${escapeHtml(t)}</span>`).join('')}</div>
+      </div>
+      <div class="rpt-insight is-risk">
+        <div class="rpt-insight-head"><span>⚠</span>风险项</div>
+        <div class="rpt-insight-tags">${REPORT_INSIGHT.risk.map((t) => `<span>${escapeHtml(t)}</span>`).join('')}</div>
+      </div>
+      <div class="rpt-insight is-learn">
+        <div class="rpt-insight-head"><span>↗</span>提升建议</div>
+        <div class="rpt-insight-tags">${REPORT_INSIGHT.learn.map((t) => `<span>${escapeHtml(t)}</span>`).join('')}</div>
+        <div class="rpt-insight-up"><span>预计提升</span><b>${REPORT_INSIGHT.from}% → ${REPORT_INSIGHT.to}%</b><small>岗位匹配度</small></div>
+      </div>`;
+  }
+
+  function renderReportCareer() {
+    const box = $('report-career'); if (!box) return;
+    box.innerHTML = `
+      <div class="rpt-career-step is-cur">
+        <span class="rpt-career-dot"></span>
+        <div class="rpt-career-card"><b>${escapeHtml(REPORT_CAREER.current)}</b><small>当前定位</small></div>
+      </div>
+      <span class="rpt-career-arrow">→</span>
+      <div class="rpt-career-step is-next">
+        <span class="rpt-career-dot"></span>
+        <div class="rpt-career-card"><b>${escapeHtml(REPORT_CAREER.next)}</b><small>下一阶段</small></div>
+      </div>
+      <div class="rpt-career-need">
+        <span class="rpt-career-need-lbl">需要补齐</span>
+        <div class="rpt-career-tags">${REPORT_CAREER.need.map((t) => `<span>${escapeHtml(t)}</span>`).join('')}</div>
+      </div>`;
   }
 
   /* ---------------- 暴露入口 ---------------- */

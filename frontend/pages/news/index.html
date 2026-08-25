@@ -28,9 +28,14 @@
     <div class="jn-container" id="app" hidden>
       <header class="jn-module-head" id="module-head"></header>
       <section class="jn-section" id="focus" aria-label="今日焦点"></section>
-      <section class="jn-section" id="hot" aria-label="热门资讯"></section>
-      <section class="jn-section" id="latest" aria-label="最新资讯"></section>
-      <section class="jn-section" id="related" aria-label="延伸阅读"></section>
+      <div class="jn-body-grid" id="body-grid">
+        <div class="jn-main-col" id="main-col">
+          <div class="jn-news-cols" id="news-cols"></div>
+          <section class="jn-section" id="related" aria-label="延伸阅读"></section>
+          <button type="button" class="jn-load-more" id="load-more">更多资讯 <span aria-hidden="true">→</span></button>
+        </div>
+        <aside class="jn-rail-col" id="rail-col" aria-label="热门排行"></aside>
+      </div>
     </div>
 
     <!-- 页脚 -->
@@ -48,17 +53,16 @@
           岗位大新闻
         </div>
         <div class="jn-footer-note">
-          一份属于年轻人的「未来就业市场数字报纸」<span class="jn-dot">·</span> 内容与数据均为示例<span class="jn-dot">·</span> NEWS / 042
+          内容与数据均为示例，不代表真实统计或新闻来源
         </div>
       </div>
     </footer>
   </main>
 
   <script src="../../js/api.js"></script>
-  <script src="../../js/cinema-bg.js?v=20260824mem"></script>
-  <script src="../../js/perf-guard.js?v=1"></script>
-  <script src="../../js/cinema-music.js?v=20260824mem"></script>
-  <script src="../../js/shell.js?v=20260824b"></script>
+  <script src="../../js/cinema-bg.js"></script>
+  <script src="../../js/cinema-music.js"></script>
+  <script src="../../js/shell.js?v=20260824"></script>
   <script src="js/data.js"></script>
   <script src="js/common.js"></script>
   <script src="js/home.js"></script>

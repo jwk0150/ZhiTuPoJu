@@ -11,7 +11,6 @@
   <link rel="stylesheet" href="../css/discovery-favs.css?v=1" />
   <link rel="stylesheet" href="../css/discovery-detail.css?v=85" />
   <link rel="stylesheet" href="../css/discovery-evolve.css?v=4" />
-  <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 </head>
 <body class="standalone-view dd-cockpit-page" data-page="discovery">
@@ -308,10 +307,27 @@
   <script src="../js/shell.js"></script>
   <script src="../js/discovery-mock.js?v=1"></script>
   <script src="../js/discovery-favs.js?v=1"></script>
-  <script src="../js/pages/discovery-detail.js?v=84"></script>
+  <script src="../js/pages/discovery-detail.js?v=85"></script>
   <script>
-    window.Shell && window.Shell.mount({ pageId: 'discovery', title: '岗位详情', subtitle: '新岗位发现' });
-    window.initDiscoveryDetail && window.initDiscoveryDetail();
+    function loadEcharts(cb) {
+      if (window.echarts) { cb(); return; }
+      if (window.__echartsLoading) { window.__echartsLoading.then(cb); return; }
+      window.__echartsLoading = new Promise(function (resolve, reject) {
+        var s = document.createElement('script');
+        s.src = 'https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js';
+        s.async = true;
+        s.onload = function () { resolve(window.echarts); cb(); };
+        s.onerror = function () { reject(new Error('echarts load failed')); };
+        document.head.appendChild(s);
+      });
+    }
+    function bootDiscoveryDetail() {
+      window.Shell && window.Shell.mount({ pageId: 'discovery', title: '岗位详情', subtitle: '新岗位发现' });
+      window.initDiscoveryDetail && window.initDiscoveryDetail();
+    }
+    window.addEventListener('DOMContentLoaded', function () {
+      loadEcharts(bootDiscoveryDetail);
+    });
   </script>
 </body>
 </html>

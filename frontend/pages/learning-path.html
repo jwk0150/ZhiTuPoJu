@@ -9,7 +9,10 @@
   <link rel="stylesheet" href="../css/components.css" />
   <link rel="stylesheet" href="../css/legacy-views.css" />
   <link rel="stylesheet" href="../css/page-polish.css" />
-  <script src="../trends-mock.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@antv/g6@4.8.24/dist/g6.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script src="../trends-mock.js"></script>
 </head>
 <body class="standalone-view" data-page="learningPath">
   <div id="app-shell"></div>
@@ -62,9 +65,8 @@
   </main>
   <script src="../js/api.js"></script>
   <script src="../js/runtime-core.js"></script>
-  <script src="../js/cinema-bg.js?v=20260824mem"></script>
-  <script src="../js/perf-guard.js?v=1"></script>
-  <script src="../js/cinema-music.js?v=20260824mem"></script>
+  <script src="../js/cinema-bg.js"></script>
+  <script src="../js/cinema-music.js"></script>
   <script src="../js/shell.js"></script>
   <script src="../js/pages/evolution.js"></script>
   <script>
@@ -77,23 +79,17 @@
         back.href = base + (base.indexOf('?') > -1 ? '&' : '?') + '_t=' + Date.now();
       }
     })();
-    function loadEcharts(cb) {
-      if (window.echarts) { cb(); return; }
-      if (window.__echartsLoading) { window.__echartsLoading.then(cb); return; }
-      window.__echartsLoading = new Promise(function (resolve) {
-        var s = document.createElement('script');
-        s.src = 'https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js';
-        s.async = true;
-        s.onload = function () { resolve(window.echarts); cb(); };
-        document.head.appendChild(s);
-      });
-    }
-    window.addEventListener('DOMContentLoaded', function () {
-      loadEcharts(function () {
+    (function () {
+      var _ready = function () {
         try { window.initEvolution && window.initEvolution(); } catch (e) { console.error('[initEvolution]', e); }
         try { window.initLearningPath && window.initLearningPath(); } catch (e) { console.error('[initLearningPath]', e); }
-      });
-    });
+      };
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', _ready);
+      } else {
+        _ready();
+      }
+    })();
   </script>
 </body>
 </html>

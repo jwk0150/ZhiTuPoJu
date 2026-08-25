@@ -5,7 +5,8 @@
  *   - 所有数字、趋势、来源均为「示例数据」，仅用于演示资讯中心的
  *     信息呈现方式，不代表任何真实统计或真实新闻来源。
  *   - 数据按接口拆分为：newsList / hotNews / latestNews / rankingList /
- *     relatedNews，方便后续逐一替换为真实接口，UI 层不依赖具体实现。
+ *     relatedNews / focusCards，方便后续逐一替换为真实接口，UI 层不依
+ *     赖具体实现。
  * ========================================================================= */
 (function () {
   'use strict';
@@ -13,10 +14,10 @@
   /* ---------- 分类体系 ---------- */
   var CATEGORIES = [
     { key: 'all',    label: '全部' },
-    { key: 'change', label: '岗位变化', color: '#D9B56A' },
-    { key: 'career', label: '新职业',   color: '#37C8FF' },
-    { key: 'trend',  label: '行业趋势', color: '#24D8C7' },
-    { key: 'policy', label: '政策资讯', color: '#FF8A80' }
+    { key: 'change', label: '岗位变化', color: '#B8914A' },
+    { key: 'career', label: '新职业',   color: '#5BA3C6' },
+    { key: 'trend',  label: '行业趋势', color: '#5FB8A8' },
+    { key: 'policy', label: '政策资讯', color: '#C87B7B' }
   ];
 
   function catByKey(key) {
@@ -29,8 +30,7 @@
   /* ---------- 页面元信息 ---------- */
   var META = {
     date: '2026.08.22',
-    time: '15:30',
-    live: true
+    time: '15:30'
   };
 
   /* ---------- 岗位新闻列表（正文 / 详情页数据源） ---------- */
@@ -38,12 +38,11 @@
     {
       id: 'n001',
       category: 'change',
-      flag: '🔥 热点',
+      flag: '热点',
       title: 'AI相关岗位需求正在重塑人才市场',
       summary: '企业对AI理解能力、业务能力与协同创新能力的人才需求显著提升，复合型人才成为新的关注重点。',
       date: '2026.08.21',
       readCount: 28000,
-      growth: 18.6,
       readTime: '3分钟',
       cover: 'network',
       tags: ['AI产品经理', '智能体开发员', '数据分析师'],
@@ -70,14 +69,13 @@
     {
       id: 'n002',
       category: 'career',
-      flag: '🆕 新职业',
+      flag: '新职业',
       title: '智能体开发岗位正在兴起',
       summary: '从客服到办公，AI智能体加速落地，负责设计、开发与编排智能体的岗位快速增长。',
-      date: '2026.08.21',
-      readCount: 19000,
-      growth: 25.3,
+      date: '2026.08.20',
+      readCount: 16000,
       readTime: '2分钟',
-      cover: 'robot',
+      cover: 'chip',
       tags: ['智能体开发员', '提示工程', '流程编排'],
       content: [
         { h: '发生了什么？', p: [
@@ -101,12 +99,11 @@
     {
       id: 'n003',
       category: 'change',
-      flag: '💼 岗位变化',
+      flag: '岗位变化',
       title: 'AI产品经理岗位需求持续增长',
       summary: '企业更关注复合型人才能力，AI产品经理成为跨行业出现的热门岗位。',
       date: '2026.08.20',
       readCount: 21000,
-      growth: 18.6,
       readTime: '3分钟',
       cover: 'grid',
       tags: ['AI产品经理', '产品设计', '业务理解'],
@@ -132,12 +129,11 @@
     {
       id: 'n004',
       category: 'trend',
-      flag: '📈 行业趋势',
+      flag: '行业趋势',
       title: '新能源人才需求正在变化',
       summary: '电池、储能、碳管理等方向对「技术 + 行业」复合型人才需求持续上升。',
-      date: '2026.08.20',
-      readCount: 16000,
-      growth: 12.4,
+      date: '2026.08.19',
+      readCount: 12000,
       readTime: '2分钟',
       cover: 'bars',
       tags: ['储能系统工程师', '电池材料工程师', '碳管理顾问'],
@@ -162,14 +158,13 @@
     {
       id: 'n005',
       category: 'career',
-      flag: '🆕 新职业',
+      flag: '新职业',
       title: '具身智能机器人应用技术员进入真实场景',
       summary: '仓储、制造、服务等场景引入机器人，调试与运维岗位随之升温。',
       date: '2026.08.19',
       readCount: 13000,
-      growth: 22.1,
       readTime: '3分钟',
-      cover: 'robot',
+      cover: 'gear',
       tags: ['具身智能机器人应用技术员', '机器人运维', '自动化'],
       content: [
         { h: '发生了什么？', p: [
@@ -192,12 +187,11 @@
     {
       id: 'n006',
       category: 'trend',
-      flag: '📈 行业趋势',
+      flag: '行业趋势',
       title: '企业AI人才需求从「会AI」转向「用AI做事」',
       summary: '企业对AI人才的定义正从纯技术能力，转向用AI解决实际业务问题的复合能力。',
       date: '2026.08.19',
       readCount: 17000,
-      growth: 15.2,
       readTime: '2分钟',
       cover: 'network',
       tags: ['AI应用工程师', '业务理解', '工程能力'],
@@ -222,12 +216,11 @@
     {
       id: 'n007',
       category: 'change',
-      flag: '💼 岗位变化',
+      flag: '岗位变化',
       title: '数据分析师的能力边界正在扩展',
       summary: '数据驱动型岗位持续受关注，数据分析师正从「取数做表」走向「业务洞察」。',
       date: '2026.08.18',
       readCount: 12000,
-      growth: 9.8,
       readTime: '2分钟',
       cover: 'data',
       tags: ['数据分析师', 'SQL', '业务洞察'],
@@ -252,12 +245,11 @@
     {
       id: 'n008',
       category: 'policy',
-      flag: '📰 政策资讯',
+      flag: '政策资讯',
       title: '多地发布数字技能人才培育政策',
       summary: '多个地区围绕数字技能人才推出培育与补贴政策，为相关岗位供给提供支撑。',
       date: '2026.08.18',
       readCount: 9000,
-      growth: 6.4,
       readTime: '2分钟',
       cover: 'doc',
       tags: ['数字技能', '人才培育', '政策'],
@@ -282,12 +274,11 @@
     {
       id: 'n009',
       category: 'trend',
-      flag: '📈 行业趋势',
+      flag: '行业趋势',
       title: '智能制造领域技能结构正在变化',
       summary: '产线岗位技能要求正向「设备运维 + 数据读取」方向迁移。',
       date: '2026.08.17',
       readCount: 11000,
-      growth: 8.9,
       readTime: '2分钟',
       cover: 'grid',
       tags: ['工业机器人运维工程师', 'PLC', '设备运维'],
@@ -312,12 +303,11 @@
     {
       id: 'n010',
       category: 'career',
-      flag: '🆕 新职业',
+      flag: '新职业',
       title: '数字化相关新岗位正在出现',
       summary: '围绕数据、智能与连接，一批此前不存在的岗位形态进入招聘市场。',
       date: '2026.08.17',
       readCount: 14000,
-      growth: 14.5,
       readTime: '2分钟',
       cover: 'data',
       tags: ['数字产品运营', '数字化', '新职业'],
@@ -341,40 +331,44 @@
     }
   ];
 
-  /* ---------- 热门排行 TOP5 ---------- */
+  /* ---------- 焦点区右侧卡片（3 条） ---------- */
+  var FOCUS_CARDS = ['n002', 'n004', 'n008'];
+
+  /* ---------- 热门排行（按阅读量排序，TOP10） ---------- */
   var RANKING = [
-    { id: 'n001', title: 'AI相关岗位需求正在重塑人才市场', growth: 18.6 },
-    { id: 'n002', title: '智能体开发岗位正在兴起',       growth: 25.3 },
-    { id: 'n004', title: '新能源人才需求正在变化',       growth: 12.4 },
-    { id: 'n003', title: 'AI产品经理岗位需求持续增长',   growth: 18.6 },
-    { id: 'n005', title: '具身智能机器人应用技术员进入真实场景', growth: 22.1 }
+    'n001', 'n003', 'n006', 'n002', 'n010',
+    'n005', 'n004', 'n007', 'n009', 'n008'
   ];
 
   /* ---------- 热门资讯（编号列表） ---------- */
   var HOT = [
-    { id: 'n003', category: 'change', title: 'AI产品经理岗位需求持续增长',       summary: '企业更关注复合型人才能力。',       date: '2026.08.20', readCount: 21000, growth: 18.6 },
-    { id: 'n002', category: 'career', title: '智能体开发岗位正在兴起',           summary: 'AI智能体正在进入更多应用场景。',   date: '2026.08.21', readCount: 19000, growth: 25.3 },
-    { id: 'n004', category: 'trend',  title: '新能源人才需求正在变化',           summary: '「技术 + 行业」复合人才更受青睐。', date: '2026.08.20', readCount: 16000, growth: 12.4 },
-    { id: 'n007', category: 'change', title: '数据分析师的能力边界正在扩展',     summary: '从「取数做表」走向「业务洞察」。',   date: '2026.08.18', readCount: 12000, growth: 9.8 },
-    { id: 'n006', category: 'trend',  title: '企业AI人才需求从「会AI」转向「用AI做事」', summary: '业务型AI人才变得稀缺。', date: '2026.08.19', readCount: 17000, growth: 15.2 }
+    { id: 'n003', category: 'change', title: 'AI产品经理岗位需求持续增长',       summary: '企业更关注复合型人才能力。',       date: '2026.08.20', readCount: 21000 },
+    { id: 'n002', category: 'career', title: '智能体开发岗位正在兴起',           summary: 'AI智能体正在进入更多应用场景。',   date: '2026.08.21', readCount: 19000 },
+    { id: 'n004', category: 'trend',  title: '新能源人才需求正在变化',           summary: '「技术 + 行业」复合人才更受青睐。', date: '2026.08.20', readCount: 16000 },
+    { id: 'n007', category: 'change', title: '数据分析师的能力边界正在扩展',     summary: '从「取数做表」走向「业务洞察」。',   date: '2026.08.18', readCount: 12000 },
+    { id: 'n006', category: 'trend',  title: '企业AI人才需求从「会AI」转向「用AI做事」', summary: '业务型AI人才变得稀缺。', date: '2026.08.19', readCount: 17000 }
   ];
 
-  /* ---------- 最新资讯（简洁列表） ---------- */
+  /* ---------- 最新资讯（简洁列表，支持分页） ---------- */
   var LATEST = [
-    { id: 'n008', category: 'policy', title: '多地发布数字技能人才培育政策',       readTime: '2分钟', readCount: 9000 },
-    { id: 'n009', category: 'trend',  title: '智能制造领域技能结构正在变化',       readTime: '2分钟', readCount: 11000 },
-    { id: 'n010', category: 'career', title: '数字化相关新岗位正在出现',           readTime: '2分钟', readCount: 14000 },
+    { id: 'n001', category: 'change', title: 'AI相关岗位需求正在重塑人才市场',       readTime: '3分钟', readCount: 28000 },
+    { id: 'n002', category: 'career', title: '智能体开发岗位正在兴起',               readTime: '2分钟', readCount: 16000 },
+    { id: 'n003', category: 'change', title: 'AI产品经理岗位需求持续增长',           readTime: '3分钟', readCount: 21000 },
+    { id: 'n004', category: 'trend',  title: '新能源人才需求正在变化',               readTime: '2分钟', readCount: 12000 },
+    { id: 'n006', category: 'trend',  title: '企业AI人才需求从「会AI」转向「用AI做事」', readTime: '2分钟', readCount: 17000 },
     { id: 'n005', category: 'career', title: '具身智能机器人应用技术员进入真实场景', readTime: '3分钟', readCount: 13000 },
-    { id: 'n001', category: 'change', title: 'AI相关岗位需求正在重塑人才市场',     readTime: '3分钟', readCount: 28000 },
-    { id: 'n003', category: 'change', title: 'AI产品经理岗位需求持续增长',         readTime: '3分钟', readCount: 21000 }
+    { id: 'n007', category: 'change', title: '数据分析师的能力边界正在扩展',         readTime: '2分钟', readCount: 12000 },
+    { id: 'n008', category: 'policy', title: '多地发布数字技能人才培育政策',         readTime: '2分钟', readCount: 9000 },
+    { id: 'n009', category: 'trend',  title: '智能制造领域技能结构正在变化',         readTime: '2分钟', readCount: 11000 },
+    { id: 'n010', category: 'career', title: '数字化相关新岗位正在出现',             readTime: '2分钟', readCount: 14000 }
   ];
 
   /* ---------- 延伸阅读（5 篇） ---------- */
   var RELATED = [
     { id: 'n006', title: 'AI时代需要什么样的人才？',   readCount: 17000, cover: 'network' },
-    { id: 'n002', title: '未来5年增长最快的岗位',       readCount: 19000, cover: 'robot' },
+    { id: 'n002', title: '未来5年增长最快的岗位',       readCount: 19000, cover: 'chip' },
     { id: 'n003', title: '企业最看重的核心能力',       readCount: 21000, cover: 'grid' },
-    { id: 'n005', title: '机器人正在走进哪些工作场景？', readCount: 13000, cover: 'robot' },
+    { id: 'n005', title: '机器人正在走进哪些工作场景？', readCount: 13000, cover: 'gear' },
     { id: 'n007', title: '数据岗位的未来在哪里？',     readCount: 12000, cover: 'data' }
   ];
 
@@ -399,6 +393,7 @@
     CATEGORIES: CATEGORIES,
     META: META,
     newsList: NEWS,
+    focusCards: FOCUS_CARDS,
     rankingList: RANKING,
     hotNews: HOT,
     latestNews: LATEST,

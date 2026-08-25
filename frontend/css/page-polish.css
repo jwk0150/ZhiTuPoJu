@@ -2276,11 +2276,12 @@ body[data-page="insight"] #view-evolution .evo-important-card .evo-vs-text {
 body[data-page="insight"] #view-evolution .evo-compare-select {
   appearance: none;
   -webkit-appearance: none;
-  background: rgba(31, 200, 217, 0.12);
-  border: 1px solid rgba(31, 200, 217, 0.4);
-  color: #0e2a3a;
+  background: rgba(31, 200, 217, 0.18);
+  border: 1px solid rgba(31, 200, 217, 0.55);
+  color: #ffffff;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
+  text-shadow: 0 0 6px rgba(31, 200, 217, 0.55);
   padding: 2px 22px 2px 8px;
   border-radius: 6px;
   cursor: pointer;

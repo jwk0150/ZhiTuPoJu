@@ -1,9 +1,9 @@
 /* =========================================================================
  * 岗位大新闻 · 首页逻辑
  * -------------------------------------------------------------------------
- * 渲染：模块标题 / 今日焦点（轮播 + TOP5）/ 热门资讯 / 最新资讯（筛选）/
- *       延伸阅读
- * 交互：轮播切换 / 分类筛选 / 收藏 / 点击进入详情
+ * 渲染：模块标题 / 今日焦点（主卡片 + 右侧焦点卡片）/
+ *       三栏（热门资讯 / 最新资讯 / 热门排行）/ 延伸阅读
+ * 交互：分类筛选 / 收藏 / 点击进入详情
  * ========================================================================= */
 (function () {
   'use strict';
@@ -14,26 +14,31 @@
 
   var state = {
     latestCategory: 'all',
-    slide: 0
+    latestPage: 1,
+    focusIndex: 0
   };
 
-  /* ---------- 工具 ---------- */
-  function hexToRgba(hex, a) {
-    var h = String(hex || '#37C8FF').replace('#', '');
-    if (h.length === 3) h = h.split('').map(function (c) { return c + c; }).join('');
-    return 'rgba(' + parseInt(h.slice(0, 2), 16) + ',' + parseInt(h.slice(2, 4), 16) + ',' + parseInt(h.slice(4, 6), 16) + ',' + a + ')';
-  }
+  var LATEST_PER_PAGE = 5;
+  var LATEST_AUTO_MS = 4500;
+  var latestTimer = null;
+  var latestHover = false;
 
+  var FOCUS_AUTO_MS = 5000;
+  var focusTimer = null;
+  var focusHover = false;
+  var FOCUS_GROUPS = buildFocusGroups();
+
+  /* ---------- 工具 ---------- */
   function catTag(key) {
     var c = D.catByKey(key);
-    return '<span class="jn-cat-tag" style="color:' + c.color + ';background:' + hexToRgba(c.color, 0.13) + '">' + esc(c.label) + '</span>';
+    return '<span class="jn-cat-tag" style="color:' + esc(c.color) + ';border-color:' + esc(c.color) + '">' + esc(c.label) + '</span>';
   }
 
-  function sectionHead(title, sub) {
+  function sectionHead(title, sub, more) {
     return (
       '<div class="jn-section-head">' +
-        '<h2 class="jn-section-title">' + title + '</h2>' +
-        (sub ? '<span class="jn-section-count">' + sub + '</span>' : '') +
+        '<h2 class="jn-section-title">' + title + (sub ? '<span class="jn-section-count">' + sub + '</span>' : '') + '</h2>' +
+        (more ? '<a class="jn-more" href="#">更多 <span aria-hidden="true">→</span></a>' : '') +
       '</div>'
     );
   }
@@ -43,122 +48,140 @@
     var M = D.META;
     document.getElementById('module-head').innerHTML =
       '<div class="jn-module-head-left">' +
-        '<div class="jn-module-kicker"><span class="jn-kicker-line"></span>未来职业市场 · 数字情报中心</div>' +
         '<h1 class="jn-module-title">岗位大新闻</h1>' +
         '<p class="jn-module-sub">洞察岗位变化，把握职业趋势</p>' +
       '</div>' +
       '<div class="jn-module-head-right">' +
         '<span class="jn-module-update">更新时间 <b>' + esc(M.date) + ' ' + esc(M.time) + '</b></span>' +
-        '<span class="jn-module-live"><i aria-hidden="true"></i>实时更新</span>' +
       '</div>';
   }
 
-  /* ---------- 今日焦点：主轮播 ---------- */
-  function slideHtml(n, i) {
+  /* ---------- 今日焦点：分组（主卡 + 3 侧卡） ---------- */
+  function buildFocusGroups() {
+    var list = D.newsList;
+    var groups = [];
+    for (var i = 0; i < list.length; i += 4) {
+      var main = list[i];
+      var side = [];
+      for (var k = 1; k <= 3; k++) {
+        var idx = i + k;
+        if (idx >= list.length) idx -= list.length; /* 末尾循环补齐 */
+        side.push(list[idx]);
+      }
+      groups.push({ main: main, side: side });
+    }
+    return groups;
+  }
+
+  /* ---------- 今日焦点：主卡片 ---------- */
+  function featureCardHtml(n) {
     return (
-      '<article class="jn-slide' + (i === state.slide ? ' is-active' : '') + '" data-go="' + n.id + '" data-slide="' + i + '">' +
-        '<div class="jn-slide-body">' +
-          '<span class="jn-slide-flag">' + esc(n.flag) + '</span>' +
-          '<h3 class="jn-slide-title">' + esc(n.title) + '</h3>' +
-          '<p class="jn-slide-summary">' + esc(n.summary) + '</p>' +
-          '<div class="jn-slide-meta">' +
-            '<span class="jn-slide-date">' + esc(n.date) + '</span>' +
-            '<span class="jn-slide-read">' + JN.fmtRead(n.readCount) + '阅读</span>' +
-            JN.trendBadge(n.growth) +
+      '<article class="jn-feature-card" data-go="' + n.id + '">' +
+        '<div class="jn-feature-body">' +
+          '<span class="jn-feature-flag">' + esc(n.flag) + '</span>' +
+          '<h3 class="jn-feature-title">' + esc(n.title) + '</h3>' +
+          '<p class="jn-feature-summary">' + esc(n.summary) + '</p>' +
+          '<div class="jn-feature-meta">' +
+            '<span>' + esc(n.date) + '</span>' +
+            '<span class="jn-feature-read">' + JN.fmtRead(n.readCount) + '阅读</span>' +
           '</div>' +
-          '<button type="button" class="jn-btn-gold" aria-label="阅读详情">阅读详情 <span aria-hidden="true">→</span></button>' +
+          '<button type="button" class="jn-btn-accent">阅读详情 <span aria-hidden="true">→</span></button>' +
         '</div>' +
-        '<div class="jn-slide-visual">' + JN.artVisual(n.cover) + '</div>' +
+        '<div class="jn-feature-visual">' + JN.artVisual(n.cover) + '</div>' +
       '</article>'
     );
   }
 
-  function carouselHtml() {
-    var slides = D.newsList.slice(0, 4);
-    var dots = slides.map(function (_, i) {
-      return '<button type="button" class="jn-dot' + (i === state.slide ? ' is-active' : '') + '" data-dot="' + i + '" aria-label="第 ' + (i + 1) + ' 条"></button>';
-    }).join('');
+  /* ---------- 今日焦点：右侧焦点小卡片 ---------- */
+  function focusMiniHtml(n) {
     return (
-      '<div class="jn-carousel">' +
-        '<div class="jn-carousel-viewport">' + slides.map(slideHtml).join('') + '</div>' +
-        '<div class="jn-carousel-bar">' +
-          '<button type="button" class="jn-carousel-arrow" data-carousel="prev" aria-label="上一条">' +
-            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>' +
-          '</button>' +
-          '<div class="jn-carousel-dots">' + dots + '</div>' +
-          '<button type="button" class="jn-carousel-arrow" data-carousel="next" aria-label="下一条">' +
-            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>' +
-          '</button>' +
+      '<article class="jn-focus-mini" data-go="' + n.id + '">' +
+        '<div class="jn-focus-mini-body">' +
+          catTag(n.category) +
+          '<h3 class="jn-focus-mini-title">' + esc(n.title) + '</h3>' +
+          '<div class="jn-focus-mini-meta">' +
+            '<span>' + esc(n.date) + '</span>' +
+            '<span>' + JN.fmtRead(n.readCount) + '阅读</span>' +
+          '</div>' +
         '</div>' +
-      '</div>'
-    );
-  }
-
-  /* ---------- 今日焦点：热门排行 TOP5 ---------- */
-  function rankingGrowth(g) {
-    var gi = JN.growthInfo(g);
-    var arrow = gi.dir === 'up' ? '↑' : (gi.dir === 'down' ? '↓' : '→');
-    return '<span class="jn-ranking-growth is-' + gi.dir + '">' + arrow + esc(gi.text) + '</span>';
-  }
-
-  function rankingHtml() {
-    var items = D.rankingList.map(function (r, i) {
-      return (
-        '<li class="jn-ranking-item" data-go="' + r.id + '">' +
-          '<span class="jn-ranking-num">0' + (i + 1) + '</span>' +
-          '<span class="jn-ranking-title">' + esc(r.title) + '</span>' +
-          rankingGrowth(r.growth) +
-        '</li>'
-      );
-    }).join('');
-    return (
-      '<aside class="jn-ranking">' +
-        '<div class="jn-ranking-head">' +
-          '<span class="jn-ranking-head-label">热门排行</span>' +
-          '<span class="jn-ranking-head-top">TOP 5</span>' +
-        '</div>' +
-        '<ol class="jn-ranking-list">' + items + '</ol>' +
-      '</aside>'
+        '<div class="jn-focus-mini-visual">' + JN.artVisual(n.cover) + '</div>' +
+      '</article>'
     );
   }
 
   function renderFocus() {
+    var g = FOCUS_GROUPS[state.focusIndex];
+    var sideNews = g.side;
+
     document.getElementById('focus').innerHTML =
       '<div class="jn-section-head">' +
         '<h2 class="jn-section-title">今日焦点</h2>' +
         '<span class="jn-section-count">5条值得关注的岗位大新闻</span>' +
       '</div>' +
       '<div class="jn-focus-grid">' +
-        carouselHtml() +
-        rankingHtml() +
-      '</div>';
+        featureCardHtml(g.main) +
+        '<div class="jn-focus-side">' + sideNews.map(focusMiniHtml).join('') + '</div>' +
+      '</div>' +
+      focusPagerHtml();
   }
 
-  /* ---------- 热门资讯 ---------- */
-  function hotItemHtml(h, i) {
-    var art = D.findNews(h.id);
+  function focusPagerHtml() {
+    var pages = FOCUS_GROUPS.length;
+    if (pages <= 1) return '';
+    var dots = [];
+    for (var i = 1; i <= pages; i++) {
+      dots.push(
+        '<button type="button" class="jn-pager-dot' + (i - 1 === state.focusIndex ? ' is-active' : '') + '" data-focus="' + i + '">' + i + '</button>'
+      );
+    }
     return (
-      '<article class="jn-hot-item" data-go="' + h.id + '">' +
-        '<span class="jn-hot-num">0' + (i + 1) + '</span>' +
-        '<div class="jn-hot-thumb">' + JN.artVisual(art ? art.cover : 'grid') + '</div>' +
-        '<div class="jn-hot-body">' +
-          '<div class="jn-hot-top">' + catTag(h.category) + '<span class="jn-hot-date">' + esc(h.date) + '</span></div>' +
-          '<h3 class="jn-hot-title">' + esc(h.title) + '</h3>' +
-          '<p class="jn-hot-summary">' + esc(h.summary) + '</p>' +
-        '</div>' +
-        '<div class="jn-hot-side">' +
-          JN.favButton(h.id, 'is-static') +
-          '<span class="jn-hot-growth">' + rankingGrowth(h.growth) + '</span>' +
+      '<div class="jn-pager jn-pager--focus">' +
+        '<button type="button" class="jn-pager-btn" data-focus="prev" aria-label="上一组">‹</button>' +
+        '<div class="jn-pager-dots">' + dots.join('') + '</div>' +
+        '<button type="button" class="jn-pager-btn" data-focus="next" aria-label="下一组">›</button>' +
+      '</div>'
+    );
+  }
+
+  /* ---------- 今日焦点：自动轮播 ---------- */
+  function startFocusCarousel() {
+    stopFocusCarousel();
+    focusTimer = setInterval(function () {
+      if (FOCUS_GROUPS.length <= 1) return;
+      state.focusIndex = (state.focusIndex + 1) % FOCUS_GROUPS.length;
+      renderFocus();
+    }, FOCUS_AUTO_MS);
+  }
+
+  function stopFocusCarousel() {
+    if (focusTimer) { clearInterval(focusTimer); focusTimer = null; }
+  }
+
+  /* ---------- 资讯行（热门 / 最新 统一结构，保证两栏对齐） ---------- */
+  function newsRowHtml(n, rank) {
+    if (!n) return '';
+    return (
+      '<article class="jn-news-row" data-go="' + n.id + '">' +
+        (rank ? '<span class="jn-news-rank">' + (rank < 10 ? '0' + rank : rank) + '</span>' : '') +
+        '<div class="jn-news-thumb">' + JN.artVisual(n.cover) + '</div>' +
+        '<div class="jn-news-body">' +
+          catTag(n.category) +
+          '<h3 class="jn-news-title">' + esc(n.title) + '</h3>' +
+          '<div class="jn-news-meta">' +
+            '<span>' + esc(n.readTime || n.date) + '</span>' +
+            '<span class="jn-news-read">' + JN.fmtRead(n.readCount) + '阅读</span>' +
+          '</div>' +
         '</div>' +
       '</article>'
     );
   }
 
   function renderHot() {
-    var items = D.hotNews.map(function (h, i) { return hotItemHtml(h, i); }).join('');
-    document.getElementById('hot').innerHTML =
-      sectionHead('热门资讯', '大家正在关注这些岗位变化') +
-      '<div class="jn-hot-list">' + items + '</div>';
+    var items = D.hotNews.map(function (h, i) {
+      return newsRowHtml(D.findNews(h.id), i + 1);
+    }).join('');
+    return sectionHead('热门资讯', '', false) +
+      '<div class="jn-news-list">' + items + '</div>';
   }
 
   /* ---------- 最新资讯 ---------- */
@@ -173,34 +196,108 @@
     return D.latestNews.filter(function (n) { return n.category === state.latestCategory; });
   }
 
+  function latestTotalPages(list) {
+    return Math.max(1, Math.ceil(list.length / LATEST_PER_PAGE));
+  }
+
   function latestItemHtml(n) {
-    var art = D.findNews(n.id);
-    return (
-      '<article class="jn-latest-item" data-go="' + n.id + '">' +
-        '<div class="jn-latest-thumb">' + JN.artVisual(art ? art.cover : 'grid') + '</div>' +
-        '<div class="jn-latest-body">' +
-          catTag(n.category) +
-          '<h3 class="jn-latest-title">' + esc(n.title) + '</h3>' +
-        '</div>' +
-        '<div class="jn-latest-meta">' +
-          '<span>' + esc(n.readTime) + '</span>' +
-          '<span class="jn-latest-read">' + JN.fmtRead(n.readCount) + '阅读</span>' +
-        '</div>' +
-      '</article>'
-    );
+    return newsRowHtml(D.findNews(n.id), null);
   }
 
   function renderLatest() {
     var list = latestFiltered();
-    var html = sectionHead('最新资讯', '实时更新 · 保持阅读节奏') +
+    var pages = latestTotalPages(list);
+    if (state.latestPage > pages) state.latestPage = pages;
+    if (state.latestPage < 1) state.latestPage = 1;
+
+    var items = list.slice((state.latestPage - 1) * LATEST_PER_PAGE, state.latestPage * LATEST_PER_PAGE);
+    var html = sectionHead('最新资讯', '', false) +
       '<div class="jn-filter-tabs">' + latestTabsHtml() + '</div>';
 
-    if (list.length === 0) {
+    if (items.length === 0) {
       html += '<div class="jn-state jn-state--compact">该分类下暂时没有资讯，稍后再来看看。</div>';
     } else {
-      html += '<div class="jn-latest-list">' + list.map(latestItemHtml).join('') + '</div>';
+      html += '<div class="jn-news-list">' + items.map(latestItemHtml).join('') + '</div>';
     }
-    document.getElementById('latest').innerHTML = html;
+    html += pagerHtml(pages);
+    return html;
+  }
+
+  function pagerHtml(pages) {
+    if (pages <= 1) return '';
+    var dots = [];
+    for (var i = 1; i <= pages; i++) {
+      dots.push(
+        '<button type="button" class="jn-pager-dot' + (i === state.latestPage ? ' is-active' : '') + '" data-page="' + i + '">' + i + '</button>'
+      );
+    }
+    return (
+      '<div class="jn-pager">' +
+        '<button type="button" class="jn-pager-btn" data-page="prev" aria-label="上一页">‹</button>' +
+        '<div class="jn-pager-dots">' + dots.join('') + '</div>' +
+        '<button type="button" class="jn-pager-btn" data-page="next" aria-label="下一页">›</button>' +
+      '</div>'
+    );
+  }
+
+  function updateLatestPage() {
+    var col = document.getElementById('jn-latest-col');
+    if (col) col.innerHTML = renderLatest();
+  }
+
+  /* ---------- 热门排行（右栏，TOP10） ---------- */
+  function renderRanking() {
+    var items = D.rankingList.map(function (id, i) {
+      var n = D.findNews(id);
+      return (
+        '<li class="jn-rank-item' + (i < 3 ? ' is-top' : '') + '" data-go="' + id + '">' +
+          '<span class="jn-rank-num">' + (i + 1) + '</span>' +
+          '<span class="jn-rank-title">' + esc(n ? n.title : id) + '</span>' +
+          '<span class="jn-rank-read">' + (n ? JN.fmtRead(n.readCount) : '') + '</span>' +
+        '</li>'
+      );
+    }).join('');
+    return (
+      '<div class="jn-rail-head">' +
+        '<h2 class="jn-section-title">热门排行</h2>' +
+        '<span class="jn-rail-sub">阅读热度 · TOP ' + D.rankingList.length + '</span>' +
+      '</div>' +
+      '<ol class="jn-rank-list">' + items + '</ol>'
+    );
+  }
+
+  /* ---------- 主体：左双栏（热门 + 最新） + 右排行 ---------- */
+  function renderNewsCols() {
+    document.getElementById('news-cols').innerHTML =
+      '<div class="jn-triple-col jn-triple-col--hot">' + renderHot() + '</div>' +
+      '<div class="jn-triple-col jn-triple-col--latest" id="jn-latest-col">' + renderLatest() + '</div>';
+
+    var latestCol = document.getElementById('jn-latest-col');
+    if (latestCol) {
+      latestCol.addEventListener('mouseenter', function () { latestHover = true; stopLatestCarousel(); });
+      latestCol.addEventListener('mouseleave', function () { latestHover = false; startLatestCarousel(); });
+    }
+    startLatestCarousel();
+  }
+
+  function renderRail() {
+    var rail = document.getElementById('rail-col');
+    if (rail) rail.innerHTML = '<div class="jn-rail">' + renderRanking() + '</div>';
+  }
+
+  /* ---------- 最新资讯：自动轮播 ---------- */
+  function startLatestCarousel() {
+    stopLatestCarousel();
+    latestTimer = setInterval(function () {
+      var pages = latestTotalPages(latestFiltered());
+      if (pages <= 1) return;
+      state.latestPage = state.latestPage >= pages ? 1 : state.latestPage + 1;
+      updateLatestPage();
+    }, LATEST_AUTO_MS);
+  }
+
+  function stopLatestCarousel() {
+    if (latestTimer) { clearInterval(latestTimer); latestTimer = null; }
   }
 
   /* ---------- 延伸阅读 ---------- */
@@ -216,53 +313,56 @@
 
   function renderRelated() {
     document.getElementById('related').innerHTML =
-      sectionHead('延伸阅读', '换个角度，继续了解就业市场') +
+      sectionHead('延伸阅读', '换个角度，继续了解就业市场', true) +
       '<div class="jn-readmore-grid">' + D.relatedNews.map(relatedItemHtml).join('') + '</div>';
   }
 
-  /* ---------- 轮播交互 ---------- */
-  function updateCarousel() {
-    var slides = JN.$$('.jn-slide');
-    var dots = JN.$$('.jn-dot');
-    slides.forEach(function (s, i) { s.classList.toggle('is-active', i === state.slide); });
-    dots.forEach(function (d, i) { d.classList.toggle('is-active', i === state.slide); });
-  }
-
-  function goSlide(dir) {
-    var total = D.newsList.slice(0, 4).length;
-    if (dir === 'next') state.slide = (state.slide + 1) % total;
-    else state.slide = (state.slide - 1 + total) % total;
-    updateCarousel();
-  }
-
-  function bindCarousel() {
-    var root = document.getElementById('focus');
+  /* ---------- 分类筛选 / 翻页交互 ---------- */
+  function bindFilter() {
+    var root = document.getElementById('news-cols');
     if (!root) return;
     root.addEventListener('click', function (e) {
-      var el = e.target;
-      if (!el || !el.closest) return;
-      var arrow = el.closest('[data-carousel]');
-      if (arrow) {
-        goSlide(arrow.getAttribute('data-carousel'));
+      var tab = e.target.closest ? e.target.closest('[data-filter]') : null;
+      if (tab) {
+        state.latestCategory = tab.getAttribute('data-filter');
+        state.latestPage = 1;
+        renderNewsCols();
         return;
       }
-      var dot = el.closest('[data-dot]');
-      if (dot) {
-        state.slide = parseInt(dot.getAttribute('data-dot'), 10);
-        updateCarousel();
-      }
+      var p = e.target.closest ? e.target.closest('[data-page]') : null;
+      if (!p) return;
+      var pages = latestTotalPages(latestFiltered());
+      var cur = state.latestPage;
+      var val = p.getAttribute('data-page');
+      if (val === 'prev') cur -= 1;
+      else if (val === 'next') cur += 1;
+      else cur = parseInt(val, 10);
+      if (cur < 1) cur = pages;
+      if (cur > pages) cur = 1;
+      state.latestPage = cur;
+      updateLatestPage();
+      if (!latestHover) startLatestCarousel();
     });
   }
 
-  /* ---------- 分类筛选交互 ---------- */
-  function bindFilter() {
-    var root = document.getElementById('latest');
+  /* ---------- 今日焦点：翻页交互 ---------- */
+  function bindFocusPager() {
+    var root = document.getElementById('focus');
     if (!root) return;
     root.addEventListener('click', function (e) {
-      var tab = e.target && e.target.closest ? e.target.closest('[data-filter]') : null;
-      if (!tab) return;
-      state.latestCategory = tab.getAttribute('data-filter');
-      renderLatest();
+      var p = e.target.closest ? e.target.closest('[data-focus]') : null;
+      if (!p) return;
+      var pages = FOCUS_GROUPS.length;
+      var val = p.getAttribute('data-focus');
+      var cur = state.focusIndex;
+      if (val === 'prev') cur -= 1;
+      else if (val === 'next') cur += 1;
+      else cur = parseInt(val, 10) - 1;
+      if (cur < 0) cur = pages - 1;
+      if (cur > pages - 1) cur = 0;
+      state.focusIndex = cur;
+      renderFocus();
+      if (!focusHover) startFocusCarousel();
     });
   }
 
@@ -272,9 +372,21 @@
       var el = e.target;
       if (!el || !el.closest) return;
       if (el.closest('[data-fav]')) return;
+      if (el.closest('[data-more]')) {
+        JN.toast('更多资讯即将上线', 'info');
+        return;
+      }
       var go = el.closest('[data-go]');
       if (!go) return;
       location.href = 'detail.html?id=' + encodeURIComponent(go.getAttribute('data-go'));
+    });
+  }
+
+  function bindLoadMore() {
+    var btn = document.getElementById('load-more');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      JN.toast('更多资讯即将上线', 'info');
     });
   }
 
@@ -282,22 +394,30 @@
   function renderAll() {
     renderModuleHead();
     renderFocus();
-    renderHot();
-    renderLatest();
+    renderNewsCols();
+    renderRail();
     renderRelated();
   }
 
   function init() {
-    bindCarousel();
     bindFilter();
+    bindFocusPager();
     bindNavigation();
-    // 短暂展示 Loading 骨架，再渲染内容（演示 Loading → Success 状态）
+    bindLoadMore();
+
+    var focusEl = document.getElementById('focus');
+    if (focusEl) {
+      focusEl.addEventListener('mouseenter', function () { focusHover = true; stopFocusCarousel(); });
+      focusEl.addEventListener('mouseleave', function () { focusHover = false; startFocusCarousel(); });
+    }
+
     setTimeout(function () {
       var loading = document.getElementById('app-loading');
       var app = document.getElementById('app');
       if (loading) loading.style.display = 'none';
       if (app) app.hidden = false;
       renderAll();
+      startFocusCarousel();
     }, 420);
   }
 
