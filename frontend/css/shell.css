@@ -167,17 +167,19 @@ body:has(#cinema-bg) .topnav {
 }
 
 .nav-item {
+  position: relative;
   display: inline-flex;
   align-items: center;
   gap: 6px;
   padding: 7px 14px;
-  border-radius: 8px;
+  border-radius: 10px;
+  border: 1px solid transparent;
   color: var(--text-secondary);
   font-size: 14px;
   font-weight: 500;
   white-space: nowrap;
   text-decoration: none;
-  transition: color 0.2s, background 0.2s;
+  transition: color 0.2s, background 0.2s, border-color 0.2s, box-shadow 0.2s;
 }
 
 .nav-item svg {
@@ -191,13 +193,20 @@ body:has(#cinema-bg) .topnav {
   background: rgba(255, 255, 255, 0.05);
 }
 
+/* 当前模块：玻璃高亮 */
 .nav-item.active {
   color: var(--brand-gold-bright);
   font-weight: 600;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.03));
+  border-color: rgba(236, 201, 132, 0.35);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .nav-item.active svg {
   color: var(--brand-gold);
+  filter: drop-shadow(0 0 6px rgba(240, 180, 41, 0.45));
 }
 
 .topnav-user {

@@ -1319,7 +1319,7 @@
             localStorage.setItem('zhitu_user', JSON.stringify({
         username: 'developer', role: 'dev', loginTime: Date.now()
             }));
-            window.location.href = 'pages/home.html';
+            window.location.href = 'pages/resume.html';
         }
 
         async function handleLogin() {
@@ -1346,7 +1346,7 @@
                 if (result.code === 0) {
                     localStorage.setItem('zhitu_user', JSON.stringify(result.data));
           btn.innerHTML = '<span>登录成功</span>';
-          setTimeout(() => { window.location.href = 'pages/home.html'; }, 400);
+          setTimeout(() => { window.location.href = 'pages/resume.html'; }, 400);
                 } else {
                     btn.disabled = false;
           btn.innerHTML = original;

@@ -173,10 +173,8 @@ html.embed-mode body{overflow:auto}
 .filter-option:hover{background:var(--bg-page);color:var(--text-dark)}
 .filter-option input{accent-color:var(--primary);cursor:pointer}
 .filter-count{margin-left:auto;font-size:11px;color:var(--text-muted);font-family:var(--font-mono),monospace}
-.graph-canvas{background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none;border-radius:var(--radius-lg);position:relative;overflow:hidden;border:1px solid transparent;box-shadow:none;margin-left:0}
-/* 地图层：融入页面背景，无透明背板；岗位分析/技术脑图层：保留透明背板 */
-.graph-canvas.canvas-panel{background:rgba(14,20,16,.45);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(212,175,55,.3);box-shadow:0 8px 32px rgba(10,8,2,.24)}
-.graph-toolbar{position:absolute;top:64px;left:16px;right:16px;display:flex;justify-content:space-between;align-items:center;z-index:5;pointer-events:none}
+.graph-canvas{background:radial-gradient(ellipse at 30% 20%,#12352f 0%,#0B1220 55%,#070d16 100%);border-radius:var(--radius-lg);position:relative;overflow:hidden;border:1px solid rgba(45,212,191,.15)}
+.graph-toolbar{position:absolute;top:16px;left:16px;right:16px;display:flex;justify-content:space-between;align-items:center;z-index:5;pointer-events:none}
 .graph-toolbar>*{pointer-events:auto}
 .graph-search{background:rgba(255,255,255,.08);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:8px 12px 8px 36px;color:#fff;font-size:13px;width:280px}
 .graph-search::placeholder{color:rgba(255,255,255,.5)}
@@ -191,7 +189,7 @@ html.embed-mode body{overflow:auto}
 .legend-dot{width:10px;height:10px;border-radius:50%}
 .graph-stats{position:absolute;top:70px;right:16px;background:rgba(10,14,39,.85);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:12px 14px;color:#fff;font-size:11px;font-family:var(--font-mono),monospace;line-height:1.8}
 .graph-stats .v{color:var(--accent-cyan);font-weight:600}
-.graph-detail{background:#FAF3E2;border-radius:var(--radius-lg);border:1px solid rgba(184,134,11,.25);box-shadow:0 4px 20px rgba(80,60,10,.08);overflow-y:auto}
+.graph-detail{background:#fff;border-radius:var(--radius-lg);border:1px solid var(--border-dark);overflow-y:auto}
 .detail-empty{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--text-muted);padding:40px 20px;text-align:center}
 .detail-empty svg{width:64px;height:64px;opacity:.3;margin-bottom:14px}
 .detail-empty h4{font-size:14px;color:var(--text-dark-secondary);font-weight:500}
@@ -840,7 +838,7 @@ body.disc-lock .content{overflow-y:auto!important;padding:20px 24px 32px!importa
 .tab-item:hover{color:var(--text-dark)}
 .tab-item.active{color:var(--primary);border-bottom-color:var(--primary);font-weight:600}
 .live-indicator{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--accent-mint);font-family:var(--font-mono),monospace;font-weight:600}
-.toast{position:fixed;top:50%;left:50%;right:auto;bottom:auto;transform:translate(-50%,-50%);padding:12px 22px;color:#fff;border-radius:999px;font-size:14px;font-weight:600;line-height:1.35;z-index:10050;width:max-content;max-width:min(86vw,520px);height:auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-shadow:0 12px 40px rgba(0,0,0,.35);pointer-events:none}
+.toast{position:fixed;top:80px;right:30px;padding:12px 20px;color:#fff;border-radius:10px;font-size:13px;font-weight:600;z-index:200;box-shadow:0 10px 30px rgba(0,0,0,.2);animation:slideUp .3s ease}
 .filter-pill{padding:6px 12px;border-radius:20px;border:1px solid var(--border-dark);background:#fff;font-size:12px;color:var(--text-dark-secondary);cursor:pointer;transition:all .2s;user-select:none}
 .filter-pill:hover{border-color:var(--primary);color:var(--primary)}
 .filter-pill.active{background:var(--gradient-primary);color:#fff;border:none;box-shadow:0 2px 8px rgba(13,148,136,.3)}
@@ -1054,28 +1052,21 @@ body.disc-lock .content{overflow-y:auto!important;padding:20px 24px 32px!importa
 /* 数字人才地图样式 (ZhiTuPoJu) */
 .talent-map-layer{position:absolute;top:0;left:0;right:0;bottom:0;background:transparent}
 .talent-province-header{padding:10px 0 16px;border-bottom:1px solid rgba(255,255,255,.08)}
-.talent-province-header h2{font-size:20px;color:#F0C75C;margin-bottom:8px}
+.talent-province-header h2{font-size:20px;color:#00d4ff;margin-bottom:8px}
 .talent-province-stats{display:flex;gap:24px;color:rgba(255,255,255,.7);font-size:13px}
-.talent-province-stats span{color:#F0C75C;font-weight:600}
+.talent-province-stats span{color:#00d4ff;font-weight:600}
 #talent-province-jobs{display:flex;flex-direction:column;gap:10px;margin-top:16px}
-/* 岗位卡片：单行横向信息流（名称→薪资→热度→类别→技术→TOP→数量→操作），响应式压缩、统一高度 */
-.talent-job-card{display:flex;align-items:center;gap:16px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:16px 18px;cursor:pointer;transition:all .2s;min-width:0}
-.talent-job-card:hover{border-color:rgba(240,199,92,.6);background:rgba(212,175,55,.1);transform:translateY(-1px)}
-/* 一级信息：岗位名称（第一视觉层级） */
-.talent-job-name{font-size:19px;font-weight:700;color:#F0C75C;letter-spacing:.3px;line-height:1.3;flex:0 1 auto;min-width:96px;max-width:320px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 10px rgba(212,175,55,.3)}
-/* 二级信息：薪资 / 岗位数量 */
-.talent-job-salary{font-size:15px;color:#7ED6A9;font-weight:650;font-family:var(--font-mono),monospace;white-space:nowrap;flex-shrink:0}
-.talent-job-count{font-size:14.5px;color:#F0C75C;font-family:var(--font-mono),monospace;font-weight:600;white-space:nowrap;flex-shrink:0}
-/* 三级信息：热度 / 岗位类别 */
-.talent-job-hot{font-size:13.5px;color:rgba(255,255,255,.6);white-space:nowrap;flex-shrink:0}
-.talent-job-category{font-size:12.5px;color:rgba(212,175,55,.95);border:1px solid rgba(212,175,55,.35);border-radius:6px;padding:2px 9px;font-weight:500;white-space:nowrap;flex-shrink:0}
-/* 四级信息：技术标签（占据中部弹性空间，空间不足时自动压缩） */
-.talent-job-skills{display:flex;flex-wrap:wrap;align-items:center;align-content:center;gap:7px 6px;flex:1 1 0;min-width:150px;justify-content:flex-start}
-.talent-job-skill{font-size:12.5px;padding:3px 10px;border-radius:6px;background:rgba(212,175,55,.12);border:1px solid rgba(212,175,55,.28);color:#FFE2A0;white-space:nowrap}
-/* 五级信息：TOP排名 / 操作按钮（固定右侧，保持稳定） */
-.talent-job-top{font-size:12px;font-weight:700;color:#F0C75C;background:rgba(212,175,55,.14);border:1px solid rgba(212,175,55,.4);border-radius:7px;padding:3px 10px;flex-shrink:0;font-family:var(--font-mono),monospace;white-space:nowrap}
-.talent-job-btn{font-size:13px;font-weight:600;padding:9px 16px;border-radius:9px;border:1px solid rgba(212,175,55,.45);background:rgba(212,175,55,.14);color:#F0C75C;cursor:pointer;transition:all .2s;white-space:nowrap;flex-shrink:0}
-.talent-job-btn:hover{background:rgba(212,175,55,.3);border-color:#F0C75C;color:#FFE9B0}
+.talent-job-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:14px 16px;cursor:pointer;transition:all .2s}
+.talent-job-card:hover{border-color:rgba(0,212,255,.4);background:rgba(0,212,255,.06)}
+.talent-job-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.talent-job-name{font-size:15px;font-weight:600;color:#fff}
+.talent-job-count{font-size:12px;color:var(--accent-cyan);font-family:var(--font-mono),monospace}
+.talent-job-meta{font-size:12px;color:rgba(255,255,255,.5);display:flex;gap:12px}
+.talent-job-skills{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.talent-job-skill{font-size:11px;padding:2px 8px;border-radius:4px;background:rgba(0,212,255,.1);color:#00d4ff}
+.talent-job-card-footer{display:flex;justify-content:space-between;align-items:center;margin-top:10px;padding-top:8px;border-top:1px solid rgba(255,255,255,.06)}
+.talent-job-btn{font-size:11px;padding:4px 12px;border-radius:6px;border:1px solid rgba(0,212,255,.3);background:rgba(0,212,255,.08);color:#00d4ff;cursor:pointer;transition:all .2s}
+.talent-job-btn:hover{background:rgba(0,212,255,.2);border-color:#00d4ff}
 /* 学习路径 + 新增技能详情样式 (ZhiTuPoJu1) */
 .lp-layout{display:grid;grid-template-columns:260px 1fr;gap:16px;align-items:start}
 .lp-sidebar{position:sticky;top:16px}
@@ -1263,8 +1254,8 @@ body.disc-lock .content{overflow-y:auto!important;padding:20px 24px 32px!importa
 .trend-lifecycle-signal .sig-dot.down{background:#f97316}
 .trend-lifecycle-signal .sig-dot.neutral{background:#7C3AED}
 .trend-lifecycle-signal .sig-val{font-weight:600;color:var(--text-dark);font-family:var(--font-mono)}
-.trend-lifecycle-toast{position:fixed;top:50%;left:50%;right:auto;bottom:auto;background:var(--gradient-primary);color:#fff;padding:12px 22px;border-radius:999px;font-size:14px;font-weight:600;line-height:1.35;z-index:10050;opacity:0;transform:translate(-50%,-50%);transition:opacity .22s;pointer-events:none;width:max-content;max-width:min(86vw,520px);height:auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-shadow:0 12px 40px rgba(0,0,0,.35)}
-.trend-lifecycle-toast.show{opacity:1;transform:translate(-50%,-50%)}
+.trend-lifecycle-toast{position:fixed;top:20px;right:20px;background:var(--gradient-primary);color:#fff;padding:10px 18px;border-radius:10px;font-size:13px;font-weight:600;z-index:3000;opacity:0;transform:translateY(-10px);transition:all .25s;pointer-events:none;box-shadow:0 8px 24px rgba(13,148,136,.35)}
+.trend-lifecycle-toast.show{opacity:1;transform:translateY(0)}
 
 /* ===== Trend Analysis Phase 3 - Emerging & Declining Jobs ===== */
 .trend-jobs-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-bottom:22px}
@@ -1572,29 +1563,28 @@ body.disc-lock .content{overflow-y:auto!important;padding:20px 24px 32px!importa
 .trend-ai-anim{opacity:0;transform:translateY(14px)}
 
 @media(max-width:1280px){.trend-ai-body{grid-template-columns:1fr}.trend-ai-side{border-left:none;border-top:1px solid rgba(255,255,255,.06)}.trend-ai-factors{grid-template-columns:1fr}}
-.graph-layout{display:grid;grid-template-columns:1fr 310px;gap:10px;height:calc(100vh - var(--header-h) - 40px - 42px);min-height:520px}
+.graph-layout{display:grid;grid-template-columns:1fr 310px;gap:12px;height:calc(100vh - var(--header-h) - 48px - 60px);min-height:500px}
 .graph-filter{background:#fff;border-radius:var(--radius-lg);border:1px solid var(--border-dark);padding:18px;overflow-y:auto}
 /* 左侧边缘筛选触发标签 */
-.graph-filter-edge-tab{position:absolute;top:50%;left:0;transform:translateY(-50%);z-index:10;display:flex;align-items:center;gap:5px;height:56px;padding:0 9px 0 6px;background:rgba(212,175,55,.22);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.1);border-left:none;border-radius:0 10px 10px 0;color:rgba(255,235,180,.85);font-size:14px;font-weight:600;cursor:pointer;transition:left .3s cubic-bezier(.4,0,.2,1),background .25s,padding .25s;overflow:hidden;user-select:none}
-.graph-filter-edge-tab:hover{background:rgba(212,175,55,.45);border-color:rgba(255,214,102,.6);color:#fff;padding:0 13px 0 6px}
-.graph-filter-edge-tab .tab-label{max-width:0;overflow:hidden;white-space:nowrap;font-size:13px;opacity:0;transition:max-width .28s cubic-bezier(.4,0,.2,1),opacity .2s}
-.graph-filter-edge-tab:hover .tab-label{max-width:58px;opacity:1}
-.graph-filter-edge-tab.moved{left:362px;border-left:1px solid rgba(255,255,255,.1);border-radius:0 10px 10px 0}
-/* 悬浮筛选抽屉面板（靠边 + 稍大 + 半透明深色 + 金色强调 + 圆角） */
-.graph-filter-float-panel{position:absolute;top:66px;left:0;z-index:9;width:352px;max-height:calc(100% - 82px);background:rgba(16,24,20,.78);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid rgba(212,175,55,.38);border-radius:16px;box-shadow:0 14px 44px rgba(8,12,8,.5);padding:24px 22px 18px;display:flex;flex-direction:column;gap:18px;transform:translateX(-14px);opacity:0;pointer-events:none;transition:all .3s cubic-bezier(.4,0,.2,1);overflow-y:auto}
+.graph-filter-edge-tab{position:absolute;top:50%;left:0;transform:translateY(-50%);z-index:10;display:flex;align-items:center;gap:4px;height:52px;padding:0 7px 0 5px;background:rgba(13,148,136,.2);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.1);border-left:none;border-radius:0 8px 8px 0;color:rgba(255,255,255,.7);font-size:13px;font-weight:600;cursor:pointer;transition:left .3s cubic-bezier(.4,0,.2,1),background .25s,padding .25s;overflow:hidden;user-select:none}
+.graph-filter-edge-tab:hover{background:rgba(13,148,136,.42);border-color:var(--primary-light);color:#fff;padding:0 11px 0 5px}
+.graph-filter-edge-tab .tab-label{max-width:0;overflow:hidden;white-space:nowrap;font-size:12px;opacity:0;transition:max-width .28s cubic-bezier(.4,0,.2,1),opacity .2s}
+.graph-filter-edge-tab:hover .tab-label{max-width:50px;opacity:1}
+.graph-filter-edge-tab.moved{left:296px;border-left:1px solid rgba(255,255,255,.1);border-radius:0 8px 8px 0}
+/* 悬浮筛选抽屉面板 */
+.graph-filter-float-panel{position:absolute;top:20px;left:20px;z-index:9;width:280px;max-height:calc(100% - 40px);background:rgba(255,255,255,.97);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.25);border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.2);padding:18px 16px 14px;display:flex;flex-direction:column;gap:14px;transform:translateX(-12px);opacity:0;pointer-events:none;transition:all .3s cubic-bezier(.4,0,.2,1);overflow-y:auto}
 .graph-filter-float-panel.open{transform:translateX(0);opacity:1;pointer-events:auto}
-.graph-filter-float-panel .filter-panel-title{font-size:16px;font-weight:700;color:#F0C75C;padding-bottom:14px;border-bottom:1px solid rgba(212,175,55,.25);display:flex;align-items:center;justify-content:space-between;gap:8px}
-.graph-filter-float-panel .filter-panel-title::before{content:'';width:3px;height:18px;background:#D9A92E;border-radius:2px;flex-shrink:0}
-.graph-filter-float-panel .filter-panel-close{width:32px;height:32px;border-radius:8px;border:1px solid rgba(212,175,55,.4);background:rgba(212,175,55,.1);color:#E8C878;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:17px;line-height:1;transition:all .2s;flex-shrink:0}
-.graph-filter-float-panel .filter-panel-close:hover{background:rgba(239,68,68,.16);color:#FCA5A5;border-color:rgba(239,68,68,.3)}
-.graph-filter-float-panel .filter-group-vert{display:flex;flex-direction:column;gap:8px}
-.graph-filter-float-panel .filter-group-vert label{font-size:15px;color:rgba(255,235,190,.95);font-weight:600;white-space:nowrap}
-.graph-filter-float-panel .filter-group-vert select{font-size:15px;padding:12px 34px 12px 14px;border:1px solid rgba(212,175,55,.35);border-radius:10px;background:rgba(30,42,34,.75);color:#FFEDC2;text-align:center;text-align-last:center;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23E8C878' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;cursor:pointer;transition:all .2s}
-.graph-filter-float-panel .filter-group-vert select:focus{border-color:#D9A92E;box-shadow:0 0 0 3px rgba(217,169,46,.18);outline:none}
-.graph-filter-float-panel .filter-panel-actions{display:flex;flex-direction:column;align-items:center;gap:12px;padding-top:14px;border-top:1px solid rgba(212,175,55,.25)}
-.graph-filter-float-panel .filter-panel-actions .btn{width:100%;justify-content:center;background:rgba(212,175,55,.16);border-color:rgba(212,175,55,.45);color:#F0C75C}
-.graph-filter-float-panel .filter-panel-actions .btn:hover{background:rgba(212,175,55,.3);color:#FFE9B0}
-.graph-filter-float-panel .filter-hint{font-size:13px;color:rgba(255,235,190,.55);text-align:center;line-height:1.5}
+.graph-filter-float-panel .filter-panel-title{font-size:14px;font-weight:700;color:var(--text-dark);padding-bottom:12px;border-bottom:1px solid var(--border-dark);display:flex;align-items:center;justify-content:space-between;gap:8px}
+.graph-filter-float-panel .filter-panel-title::before{content:'';width:3px;height:16px;background:var(--primary);border-radius:2px;flex-shrink:0}
+.graph-filter-float-panel .filter-panel-close{width:26px;height:26px;border-radius:6px;border:1px solid var(--border-dark);background:var(--bg-page);color:var(--text-muted);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;line-height:1;transition:all .2s;flex-shrink:0}
+.graph-filter-float-panel .filter-panel-close:hover{background:rgba(239,68,68,.08);color:#ef4444;border-color:rgba(239,68,68,.25)}
+.graph-filter-float-panel .filter-group-vert{display:flex;flex-direction:column;gap:4px}
+.graph-filter-float-panel .filter-group-vert label{font-size:13px;color:var(--text-dark-secondary);font-weight:600;white-space:nowrap}
+.graph-filter-float-panel .filter-group-vert select{font-size:13px;padding:9px 30px 9px 10px;border:1px solid var(--border-dark);border-radius:8px;background:var(--bg-page);color:var(--text-dark);text-align:center;text-align-last:center;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;cursor:pointer;transition:all .2s}
+.graph-filter-float-panel .filter-group-vert select:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(13,148,136,.1);outline:none}
+.graph-filter-float-panel .filter-panel-actions{display:flex;flex-direction:column;align-items:center;gap:8px;padding-top:10px;border-top:1px solid var(--border-dark)}
+.graph-filter-float-panel .filter-panel-actions .btn{width:100%;justify-content:center}
+.graph-filter-float-panel .filter-hint{font-size:11px;color:var(--text-muted);text-align:center;line-height:1.5}
 .filter-title{font-size:13px;font-weight:600;color:var(--text-dark);margin-bottom:12px;display:flex;align-items:center;justify-content:space-between}
 .filter-group{margin-bottom:20px}
 .filter-group-title{font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;font-weight:600}
@@ -1602,10 +1592,8 @@ body.disc-lock .content{overflow-y:auto!important;padding:20px 24px 32px!importa
 .filter-option:hover{background:var(--bg-page);color:var(--text-dark)}
 .filter-option input{accent-color:var(--primary);cursor:pointer}
 .filter-count{margin-left:auto;font-size:11px;color:var(--text-muted);font-family:var(--font-mono),monospace}
-.graph-canvas{background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none;border-radius:var(--radius-lg);position:relative;overflow:hidden;border:1px solid transparent;box-shadow:none;margin-left:0}
-/* 地图层：融入页面背景，无透明背板；岗位分析/技术脑图层：保留透明背板 */
-.graph-canvas.canvas-panel{background:rgba(14,20,16,.45);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(212,175,55,.3);box-shadow:0 8px 32px rgba(10,8,2,.24)}
-.graph-toolbar{position:absolute;top:64px;left:16px;right:16px;display:flex;justify-content:space-between;align-items:center;z-index:5;pointer-events:none}
+.graph-canvas{background:radial-gradient(ellipse at 30% 20%,#12352f 0%,#0B1220 55%,#070d16 100%);border-radius:var(--radius-lg);position:relative;overflow:hidden;border:1px solid rgba(45,212,191,.15)}
+.graph-toolbar{position:absolute;top:16px;left:16px;right:16px;display:flex;justify-content:space-between;align-items:center;z-index:5;pointer-events:none}
 .graph-toolbar>*{pointer-events:auto}
 .graph-search{background:rgba(255,255,255,.08);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:8px 12px 8px 36px;color:#fff;font-size:13px;width:280px}
 .graph-search::placeholder{color:rgba(255,255,255,.5)}
@@ -1613,60 +1601,48 @@ body.disc-lock .content{overflow-y:auto!important;padding:20px 24px 32px!importa
 .graph-search-wrap svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:14px;height:14px;color:rgba(255,255,255,.5)}
 .graph-actions{display:flex;gap:6px}
 .graph-btn{background:rgba(255,255,255,.08);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.15);color:#fff;width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s}
-.graph-btn:hover{background:rgba(212,175,55,.35);border-color:rgba(255,214,102,.6)}
+.graph-btn:hover{background:rgba(13,148,136,.3);border-color:var(--primary-light)}
 .graph-btn svg{width:16px;height:16px}
 /* 图按钮在白色详情面板中的覆盖 */
-#talent-detail-province .graph-btn{color:#4A3A12;background:rgba(212,175,55,.12);border-color:rgba(212,175,55,.3);width:auto;height:auto;padding:6px 12px;font-size:13px}
-#talent-detail-province .graph-btn:hover{background:rgba(212,175,55,.22);border-color:#B8860B}
+#talent-detail-province .graph-btn{color:var(--text-dark);background:rgba(13,148,136,.06);border-color:rgba(13,148,136,.2);width:auto;height:auto;padding:6px 12px;font-size:13px}
+#talent-detail-province .graph-btn:hover{background:rgba(13,148,136,.1);border-color:#0d9488}
 /* 港澳局部放大框 */
-.ganga-zoom-box{position:absolute;bottom:20px;right:20px;z-index:8;background:rgba(250,243,226,.9);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(212,175,55,.45);border-radius:12px;padding:14px 16px;min-width:162px;box-shadow:0 8px 24px rgba(90,60,10,.16);transition:opacity .3s}
-.ganga-zoom-title{font-size:11px;color:#8F6B0E;margin-bottom:12px;font-weight:500;letter-spacing:1px;text-align:center}
+.ganga-zoom-box{position:absolute;bottom:20px;right:20px;z-index:8;background:rgba(10,18,39,.9);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(0,212,255,.22);border-radius:12px;padding:14px 16px;min-width:162px;box-shadow:0 0 24px rgba(0,212,255,.06),inset 0 1px 0 rgba(255,255,255,.04);transition:opacity .3s}
+.ganga-zoom-title{font-size:11px;color:rgba(0,212,255,.65);margin-bottom:12px;font-weight:500;letter-spacing:1px;text-align:center}
 .ganga-zoom-province{display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;cursor:pointer;transition:all .2s;margin-bottom:6px;border:1px solid transparent}
-.ganga-zoom-province:hover{background:rgba(212,175,55,.14);border-color:rgba(212,175,55,.35)}
-.ganga-zoom-province.active{background:rgba(212,175,55,.2);border-color:rgba(212,175,55,.5)}
+.ganga-zoom-province:hover{background:rgba(0,212,255,.1);border-color:rgba(0,212,255,.25)}
+.ganga-zoom-province.active{background:rgba(0,212,255,.12);border-color:rgba(0,212,255,.35)}
 .ganga-zoom-province:last-child{margin-bottom:0}
-.ganga-zoom-name{font-size:12px;color:#4A3A12;font-weight:600;white-space:nowrap;min-width:30px}
-.ganga-zoom-bar-wrap{flex:1;height:5px;background:rgba(120,90,20,.18);border-radius:3px;overflow:hidden}
-.ganga-zoom-bar{height:100%;background:linear-gradient(90deg,rgba(212,175,55,.7),#D9A92E);border-radius:3px;transition:width .5s cubic-bezier(.4,0,.2,1)}
-.ganga-zoom-data{font-size:12px;color:#6B5B2E;font-family:var(--font-mono),monospace;white-space:nowrap;min-width:48px;text-align:right}
+.ganga-zoom-name{font-size:12px;color:#fff;font-weight:600;white-space:nowrap;min-width:30px}
+.ganga-zoom-bar-wrap{flex:1;height:5px;background:rgba(255,255,255,.07);border-radius:3px;overflow:hidden}
+.ganga-zoom-bar{height:100%;background:linear-gradient(90deg,rgba(0,212,255,.55),#0d9488);border-radius:3px;transition:width .5s cubic-bezier(.4,0,.2,1)}
+.ganga-zoom-data{font-size:12px;color:rgba(255,255,255,.8);font-family:var(--font-mono),monospace;white-space:nowrap;min-width:48px;text-align:right}
 /* 引导线 SVG 层 */
 .ganga-guide-svg{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:7}
-.ganga-guide-svg path{stroke:rgba(212,175,55,.4);stroke-width:1;stroke-dasharray:3 4;fill:none}
-.ganga-guide-svg circle.ganga-dot{fill:rgba(255,214,102,.6);stroke:rgba(212,175,55,.3);stroke-width:1}
+.ganga-guide-svg path{stroke:rgba(0,212,255,.28);stroke-width:1;stroke-dasharray:3 4;fill:none}
+.ganga-guide-svg circle.ganga-dot{fill:rgba(0,212,255,.45);stroke:rgba(0,212,255,.25);stroke-width:1}
 /* 省份飞入过渡叠加层 */
 .talent-flyin-overlay{position:absolute;inset:0;z-index:8;pointer-events:none;
     background:radial-gradient(ellipse at center,transparent 0%,rgba(7,13,22,.45) 60%,rgba(7,13,22,.85) 100%);
     backdrop-filter:blur(0px);-webkit-backdrop-filter:blur(0px);
     opacity:0;transition:opacity .35s ease,backdrop-filter .35s ease,-webkit-backdrop-filter .35s ease}
 .talent-flyin-overlay.active{opacity:1;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
-.graph-legend{position:absolute;bottom:16px;left:16px;background:rgba(28,22,8,.82);backdrop-filter:blur(10px);border:1px solid rgba(212,175,55,.35);border-radius:10px;padding:12px 14px;color:rgba(255,247,224,.9);font-size:12px;display:flex;gap:16px;flex-wrap:wrap;box-shadow:0 6px 20px rgba(0,0,0,.25)}
+.graph-legend{position:absolute;bottom:16px;left:16px;background:rgba(10,14,39,.85);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:12px 14px;color:#fff;font-size:12px;display:flex;gap:16px;flex-wrap:wrap}
 .legend-item{display:flex;align-items:center;gap:6px}
 .legend-dot{width:10px;height:10px;border-radius:50%}
 .graph-toolbar-left{display:flex;align-items:center;gap:6px}
-.graph-city-label{color:#F0C75C;font-size:14px;font-weight:600;letter-spacing:0.5px}
-/* 图谱类型切换气泡（浅蓝半透明，选中态高亮） */
-.graph-mode-toggle{display:flex;gap:8px;margin-left:14px}
-.graph-mode-bubble{font-size:12.5px;font-weight:600;letter-spacing:.5px;padding:6px 16px;border-radius:999px;border:1px solid rgba(147,197,253,.35);background:rgba(96,165,250,.1);color:rgba(191,219,254,.85);cursor:pointer;transition:all .22s ease;white-space:nowrap;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
-.graph-mode-bubble:hover{background:rgba(96,165,250,.2);border-color:rgba(147,197,253,.6);color:#DBEAFE;transform:translateY(-1px)}
-.graph-mode-bubble.active{background:rgba(96,165,250,.28);border-color:rgba(147,197,253,.85);color:#EFF6FF;box-shadow:0 0 14px rgba(96,165,250,.4),inset 0 0 10px rgba(147,197,253,.15)}
-/* 图谱切换平滑过渡（淡出/淡入 + 轻微缩放） */
-#talent-graph-container{transition:opacity .24s ease,transform .24s ease}
-#talent-graph-container.graph-fading{opacity:0;transform:scale(.985)}
-/* 右侧岗位 Hover 详情面板 */
-.talent-job-detail-name{font-size:20px;font-weight:700;color:#B8860B;letter-spacing:.3px;margin-bottom:2px;text-shadow:0 1px 8px rgba(212,175,55,.18)}
-.talent-job-detail-sub{font-size:12px;color:var(--text-muted);margin-bottom:14px}
-.talent-job-detail-skills{display:flex;flex-wrap:wrap;gap:6px}
+.graph-city-label{color:#fff;font-size:14px;font-weight:600;letter-spacing:0.5px}
 /* 技术详情内容样式（渲染在右侧详情面板时使用） */
 .tech-detail-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border-dark)}
 .tech-detail-name{font-size:20px;font-weight:700;color:var(--text-dark)}
 .tech-detail-hot{display:flex;align-items:center;gap:2px}
 .tech-detail-hot-star{color:var(--accent-amber);font-size:14px}
 .tech-detail-section{margin-bottom:16px}
-.tech-detail-section-title{font-size:12px;font-weight:600;color:#8F6B0E;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;display:flex;align-items:center;gap:6px}
-.tech-detail-section-title::before{content:'';display:inline-block;width:3px;height:14px;background:#D9A92E;border-radius:2px}
+.tech-detail-section-title{font-size:12px;font-weight:600;color:#0d9488;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.tech-detail-section-title::before{content:'';display:inline-block;width:3px;height:14px;background:#0d9488;border-radius:2px}
 .tech-detail-text{font-size:13px;color:var(--text-dark-secondary);line-height:1.76}
 .tech-detail-tag-list{display:flex;flex-wrap:wrap;gap:6px}
-.tech-detail-tag{font-size:12px;padding:4px 10px;border-radius:6px;background:rgba(212,175,55,.12);color:#8F6B0E;border:1px solid rgba(212,175,55,.28);white-space:nowrap}
+.tech-detail-tag{font-size:12px;padding:4px 10px;border-radius:6px;background:rgba(13,148,136,.08);color:#0d9488;border:1px solid rgba(13,148,136,.15);white-space:nowrap}
 .tech-detail-path{display:flex;align-items:center;flex-wrap:wrap;gap:4px;font-size:12px}
 .tech-detail-path-item{background:rgba(99,102,241,.1);color:#5b63d3;padding:3px 8px;border-radius:5px}
 .tech-detail-path-arrow{color:var(--text-muted)}
@@ -1679,7 +1655,7 @@ body.disc-lock .content{overflow-y:auto!important;padding:20px 24px 32px!importa
 .tech-node-tooltip{position:absolute;pointer-events:none;background:rgba(10,14,39,.95);border:1px solid rgba(45,212,191,.3);border-radius:8px;padding:8px 14px;color:#fff;font-size:13px;font-weight:500;white-space:nowrap;z-index:100;box-shadow:0 4px 20px rgba(0,0,0,.4)}
 .graph-stats{position:absolute;top:70px;right:16px;background:rgba(10,14,39,.85);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:12px 14px;color:#fff;font-size:11px;font-family:var(--font-mono),monospace;line-height:1.8}
 .graph-stats .v{color:var(--accent-cyan);font-weight:600}
-.graph-detail{background:#FAF3E2;border-radius:var(--radius-lg);border:1px solid rgba(184,134,11,.25);box-shadow:0 4px 20px rgba(80,60,10,.08);overflow-y:auto}
+.graph-detail{background:#fff;border-radius:var(--radius-lg);border:1px solid var(--border-dark);overflow-y:auto}
 /* 省份详情面板滑入动画 */
 @keyframes panelSlideIn{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}
 #talent-detail-province{animation-fill-mode:forwards}
@@ -1764,28 +1740,21 @@ body.disc-lock .content{overflow-y:auto!important;padding:20px 24px 32px!importa
 /* 数字人才地图样式 (ZhiTuPoJu) */
 .talent-map-layer{position:absolute;top:0;left:0;right:0;bottom:0;background:transparent}
 .talent-province-header{padding:10px 0 16px;border-bottom:1px solid rgba(255,255,255,.08)}
-.talent-province-header h2{font-size:20px;color:#F0C75C;margin-bottom:8px}
+.talent-province-header h2{font-size:20px;color:#00d4ff;margin-bottom:8px}
 .talent-province-stats{display:flex;gap:24px;color:rgba(255,255,255,.7);font-size:13px}
-.talent-province-stats span{color:#F0C75C;font-weight:600}
+.talent-province-stats span{color:#00d4ff;font-weight:600}
 #talent-province-jobs{display:flex;flex-direction:column;gap:10px;margin-top:16px}
-/* 岗位卡片：单行横向信息流（名称→薪资→热度→类别→技术→TOP→数量→操作），响应式压缩、统一高度 */
-.talent-job-card{display:flex;align-items:center;gap:16px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:16px 18px;cursor:pointer;transition:all .2s;min-width:0}
-.talent-job-card:hover{border-color:rgba(240,199,92,.6);background:rgba(212,175,55,.1);transform:translateY(-1px)}
-/* 一级信息：岗位名称（第一视觉层级） */
-.talent-job-name{font-size:19px;font-weight:700;color:#F0C75C;letter-spacing:.3px;line-height:1.3;flex:0 1 auto;min-width:96px;max-width:320px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 10px rgba(212,175,55,.3)}
-/* 二级信息：薪资 / 岗位数量 */
-.talent-job-salary{font-size:15px;color:#7ED6A9;font-weight:650;font-family:var(--font-mono),monospace;white-space:nowrap;flex-shrink:0}
-.talent-job-count{font-size:14.5px;color:#F0C75C;font-family:var(--font-mono),monospace;font-weight:600;white-space:nowrap;flex-shrink:0}
-/* 三级信息：热度 / 岗位类别 */
-.talent-job-hot{font-size:13.5px;color:rgba(255,255,255,.6);white-space:nowrap;flex-shrink:0}
-.talent-job-category{font-size:12.5px;color:rgba(212,175,55,.95);border:1px solid rgba(212,175,55,.35);border-radius:6px;padding:2px 9px;font-weight:500;white-space:nowrap;flex-shrink:0}
-/* 四级信息：技术标签（占据中部弹性空间，空间不足时自动压缩） */
-.talent-job-skills{display:flex;flex-wrap:wrap;align-items:center;align-content:center;gap:7px 6px;flex:1 1 0;min-width:150px;justify-content:flex-start}
-.talent-job-skill{font-size:12.5px;padding:3px 10px;border-radius:6px;background:rgba(212,175,55,.12);border:1px solid rgba(212,175,55,.28);color:#FFE2A0;white-space:nowrap}
-/* 五级信息：TOP排名 / 操作按钮（固定右侧，保持稳定） */
-.talent-job-top{font-size:12px;font-weight:700;color:#F0C75C;background:rgba(212,175,55,.14);border:1px solid rgba(212,175,55,.4);border-radius:7px;padding:3px 10px;flex-shrink:0;font-family:var(--font-mono),monospace;white-space:nowrap}
-.talent-job-btn{font-size:13px;font-weight:600;padding:9px 16px;border-radius:9px;border:1px solid rgba(212,175,55,.45);background:rgba(212,175,55,.14);color:#F0C75C;cursor:pointer;transition:all .2s;white-space:nowrap;flex-shrink:0}
-.talent-job-btn:hover{background:rgba(212,175,55,.3);border-color:#F0C75C;color:#FFE9B0}
+.talent-job-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:14px 16px;cursor:pointer;transition:all .2s}
+.talent-job-card:hover{border-color:rgba(0,212,255,.4);background:rgba(0,212,255,.06)}
+.talent-job-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.talent-job-name{font-size:15px;font-weight:600;color:#fff}
+.talent-job-count{font-size:12px;color:var(--accent-cyan);font-family:var(--font-mono),monospace}
+.talent-job-meta{font-size:12px;color:rgba(255,255,255,.5);display:flex;gap:12px}
+.talent-job-skills{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.talent-job-skill{font-size:11px;padding:2px 8px;border-radius:4px;background:rgba(0,212,255,.1);color:#00d4ff}
+.talent-job-card-footer{display:flex;justify-content:space-between;align-items:center;margin-top:10px;padding-top:8px;border-top:1px solid rgba(255,255,255,.06)}
+.talent-job-btn{font-size:11px;padding:4px 12px;border-radius:6px;border:1px solid rgba(0,212,255,.3);background:rgba(0,212,255,.08);color:#00d4ff;cursor:pointer;transition:all .2s}
+.talent-job-btn:hover{background:rgba(0,212,255,.2);border-color:#00d4ff}
 /* 学习路径 + 新增技能详情样式 (ZhiTuPoJu1) */
 .lp-layout{display:grid;grid-template-columns:260px 1fr;gap:16px;align-items:start}
 .lp-sidebar{position:sticky;top:16px}
@@ -2155,8 +2124,6 @@ body.standalone-view { overflow: auto !important; }
 body.standalone-view .view { display: block !important; animation: none !important; }
 body.standalone-view .page-main { padding: 0; }
 body.standalone-view #page-main > .view { min-height: calc(100vh - var(--topbar-h, 60px)); }
-/* 数字人才地图页：左侧安全间距（标题/副标题/返回按钮/内容面板/岗位卡片统一左对齐线，约24~40px） */
-body.standalone-view[data-page="map"] .page-main { padding: 0 clamp(22px, 2.5vw, 36px) !important; }
 
 /* ============== Career archive matching flow ============== */
 #match-hall{padding:0;background:#f5f7fb;overflow:auto}
@@ -2279,289 +2246,3 @@ body.match-view-active .content{padding:0;overflow:hidden}
 body.match-view-active #view-match.active{height:calc(100vh - 52px);width:100vw}
 .career-shell{padding:16px}.career-head{flex-direction:column}.career-head-actions{width:100%}.career-head-actions .career-btn{width:100%}.career-stepper{grid-template-columns:1fr 1fr;width:100%}.career-step:nth-child(2){border-right:0}.career-step:nth-child(-n+2){border-bottom:1px solid var(--border-dark)}.career-archive-layout{grid-template-columns:1fr}.career-archive-main{grid-template-columns:1fr}.career-version-column{padding:16px}.career-detail-column{padding:16px}.career-mode-grid{grid-template-columns:1fr}.career-hero-stats{display:none}.career-intent-body{padding:18px}.career-intent-top{align-items:flex-start}.career-result-context{padding:12px 14px}.career-result-switch{width:100%}
 }
-
-/* ===== 地图右侧详情面板：杏仁白 + 金色系强调 + 深色文字（仅数字人才地图页） ===== */
-.graph-detail h3{color:#3A2E0E !important}
-#talent-prov-detail-sub{color:#6B5B2E !important}
-.graph-detail .detail-empty{color:#8A7A55}
-.graph-detail .detail-empty h4{color:#3A2E0E}
-.graph-detail .detail-empty p{color:#6B5B2E}
-.graph-detail .detail-stat{background:rgba(255,251,240,.85);border:1px solid rgba(212,175,55,.35);box-shadow:0 4px 14px rgba(120,90,20,.08)}
-.graph-detail .detail-stat-label{color:#6B5B2E}
-.graph-detail .detail-stat-value{color:#3A2E0E}
-.graph-detail .detail-section-title{color:#4A3A12}
-.graph-detail .detail-rel-item{background:rgba(255,252,242,.7);border:1px solid rgba(212,175,55,.3)}
-.graph-detail .detail-rel-item .name{color:#4A3A12}
-.graph-detail .detail-rel-item .rel{color:#6B5B2E}
-#talent-detail-hover .talent-hover-skill{background:rgba(212,175,55,.14);color:#8F6B0E;border:1px solid rgba(212,175,55,.3)}
-#talent-detail-hover .talent-hover-pct-head{color:#6B5B2E}
-#talent-detail-hover .talent-hover-pct-head b{color:#3A2E0E}
-#talent-detail-hover .talent-hover-bar{background:rgba(90,70,20,.14)}
-#talent-detail-hover .talent-hover-bar>div{background:linear-gradient(90deg,#D9A92E,#F0C75C)}
-
-/* ===== 地图左上角统一返回操作区（仅数字人才地图页） ===== */
-/* left:0 与页面标题/内容面板保持统一左侧对齐线（页面级留白由 .page-main 统一提供） */
-#talent-back-zone{position:absolute;top:12px;left:0;z-index:8;display:flex;align-items:center;gap:12px}
-/* 统一返回按钮：浅蓝透明气泡 + 香槟金字体（地图/岗位/脑图页通用） */
-#talent-back-zone .btn{
-    margin:0;flex-shrink:0;
-    background:rgba(175,214,242,.32);
-    backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
-    border:1px solid rgba(255,255,255,.48);
-    color:#F0C75C;font-weight:600;font-size:17px;
-    padding:13px 28px;border-radius:15px;
-    box-shadow:0 4px 18px rgba(0,0,0,.22),0 0 14px rgba(173,210,240,.18);
-    transition:all .25s;cursor:pointer;display:flex;align-items:center;gap:7px;
-}
-#talent-back-zone .btn svg{width:18px;height:18px}
-#talent-back-zone .btn:hover{background:rgba(190,222,245,.5);border-color:rgba(255,255,255,.68);color:#FFE9B0;box-shadow:0 6px 22px rgba(0,0,0,.26),0 0 18px rgba(173,210,240,.26);transform:translateY(-2px)}
-#talent-back-zone .graph-btn{
-    margin:0;flex-shrink:0;
-    background:rgba(175,214,242,.32);
-    backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
-    border:1px solid rgba(255,255,255,.48);
-    color:#F0C75C;width:50px;height:50px;border-radius:14px;
-    box-shadow:0 4px 18px rgba(0,0,0,.22),0 0 14px rgba(173,210,240,.18);
-    display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .25s;
-}
-#talent-back-zone .graph-btn svg{width:22px;height:22px}
-#talent-back-zone .graph-btn:hover{background:rgba(190,222,245,.5);border-color:rgba(255,255,255,.68);color:#FFE9B0;box-shadow:0 6px 22px rgba(0,0,0,.26),0 0 18px rgba(173,210,240,.26);transform:translateY(-2px)}
-
-/* ===== 地图层柔和金色环境光晕（仅数字人才地图页，围绕地图主体扩散，不覆盖地图彩色） ===== */
-#talent-layer-map{
-    background:radial-gradient(56% 56% at 52% 48%, rgba(222,190,120,.16) 0%, rgba(222,190,120,.06) 52%, rgba(222,190,120,0) 74%);
-}
-
-/* ============================================================
- * 我的能力 —— 能力问卷 + 个人能力图谱（深色科技感，技术名称保持可读）
- * ============================================================ */
-.ability-modal-mask{
-    position:fixed;inset:0;z-index:9990;
-    display:flex;align-items:center;justify-content:center;
-    background:rgba(3,7,18,.78);
-    backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
-    animation:abilityMaskIn .25s ease;
-}
-@keyframes abilityMaskIn{from{opacity:0}to{opacity:1}}
-.ability-modal{
-    width:calc(100vw - 40px);
-    height:calc(100vh - 24px);
-    max-width:1880px;
-    display:flex;flex-direction:column;
-    background:linear-gradient(160deg,rgba(15,22,44,.96),rgba(8,12,28,.98));
-    border:1px solid rgba(212,175,55,.28);
-    border-radius:18px;
-    box-shadow:0 24px 80px rgba(0,0,0,.6),0 0 60px rgba(99,102,241,.12),inset 0 1px 0 rgba(255,255,255,.06);
-    overflow:hidden;
-    animation:abilityModalIn .3s cubic-bezier(.2,.8,.3,1);
-}
-@keyframes abilityModalIn{from{opacity:0;transform:translateY(18px) scale(.97)}to{opacity:1;transform:none}}
-.ability-modal-head{
-    display:flex;align-items:center;justify-content:space-between;
-    padding:12px 20px;
-    border-bottom:1px solid rgba(212,175,55,.18);
-    background:rgba(255,255,255,.02);
-    flex-shrink:0;
-}
-.ability-modal-title{display:flex;align-items:center;gap:10px;color:#FFE9B0;font-size:17px;font-weight:700;letter-spacing:.5px}
-.ability-modal-title svg{width:20px;height:20px;color:#F0C75C;filter:drop-shadow(0 0 6px rgba(212,175,55,.6))}
-.ability-modal-close{
-    width:32px;height:32px;border-radius:8px;border:1px solid rgba(255,255,255,.14);
-    background:rgba(255,255,255,.05);color:rgba(255,255,255,.75);font-size:14px;cursor:pointer;
-    display:flex;align-items:center;justify-content:center;transition:all .2s;
-}
-.ability-modal-close:hover{background:rgba(255,80,80,.18);border-color:rgba(255,120,120,.5);color:#fff}
-.ability-modal-body{flex:1;min-height:0;position:relative;display:flex;flex-direction:column}
-
-/* 通用状态（loading / error / empty） */
-.ability-state{
-    flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;
-    color:rgba(255,255,255,.85);padding:30px;text-align:center;
-}
-.ability-loading-ring{
-    width:44px;height:44px;border-radius:50%;
-    border:3px solid rgba(212,175,55,.18);border-top-color:#F0C75C;
-    animation:abilitySpin .8s linear infinite;
-    box-shadow:0 0 24px rgba(212,175,55,.25);
-}
-@keyframes abilitySpin{to{transform:rotate(360deg)}}
-.ability-state-title{font-size:17px;font-weight:700;color:#FFE9B0;line-height:1.6}
-.ability-state-text{font-size:13px;color:rgba(255,255,255,.55);line-height:1.8}
-.ability-state-icon{font-size:34px;color:#F59E0B}
-.ability-empty-icon svg{width:52px;height:52px;color:#F0C75C;filter:drop-shadow(0 0 12px rgba(212,175,55,.5))}
-
-/* 能力问卷 */
-.ability-survey{display:flex;flex-direction:column;flex:1;min-height:0;position:relative}
-.ability-survey-head{
-    display:flex;align-items:center;justify-content:space-between;
-    padding:10px 20px;flex-shrink:0;
-    border-bottom:1px solid rgba(255,255,255,.06);
-}
-.ability-survey-tip{font-size:15px;font-weight:700;color:#fff}
-.ability-survey-sub{display:block;margin-top:2px;font-size:12px;font-weight:400;color:rgba(255,255,255,.45)}
-.ability-survey-count{
-    font-size:13px;color:rgba(255,255,255,.7);padding:6px 14px;white-space:nowrap;
-    border:1px solid rgba(212,175,55,.35);border-radius:20px;
-    background:rgba(212,175,55,.1);
-}
-.ability-survey-count b{color:#FFE9B0;font-size:15px}
-.ability-survey-body{
-    flex:1;min-height:0;overflow-y:auto;padding:12px 20px;
-    display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;
-    align-content:stretch;
-}
-.ability-cat-block{
-    display:flex;flex-direction:column;min-width:0;
-    background:rgba(255,255,255,.03);
-    border:1px solid rgba(255,255,255,.09);
-    border-radius:12px;padding:10px 12px;
-    transition:border-color .2s,box-shadow .2s;
-}
-.ability-cat-block:hover{border-color:rgba(240,199,92,.35);box-shadow:0 0 16px rgba(212,175,55,.08)}
-.ability-cat-title{
-    font-size:14px;font-weight:700;color:var(--cat-color,#8B8B9E);
-    margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,.08);
-    display:flex;align-items:center;gap:6px;flex-shrink:0;
-}
-.ability-cat-title::before{content:'◆';font-size:10px;opacity:.9}
-.ability-cat-techs{
-    display:flex;flex-wrap:wrap;gap:7px;align-content:flex-start;flex:1;
-}
-.ability-tech-chip{
-    position:relative;padding:7px 13px 7px 30px;
-    font-size:14px;font-weight:500;color:rgba(255,255,255,.88);
-    background:rgba(255,255,255,.05);
-    border:1px solid rgba(255,255,255,.13);
-    border-radius:8px;cursor:pointer;user-select:none;white-space:nowrap;
-    transition:all .18s ease;
-}
-.ability-tech-chip::before{
-    content:'';position:absolute;left:10px;top:50%;transform:translateY(-50%);
-    width:11px;height:11px;border-radius:50%;
-    border:1.5px solid rgba(255,255,255,.35);
-    background:transparent;transition:all .18s ease;
-}
-.ability-tech-chip:hover{border-color:rgba(240,199,92,.55);box-shadow:0 0 10px rgba(240,199,92,.18);transform:translateY(-1px)}
-.ability-tech-chip.selected{
-    color:#fff;font-weight:700;
-    background:linear-gradient(135deg,var(--cat-color,#8B8B9E),rgba(20,18,15,.9));
-    border-color:var(--cat-color,#8B8B9E);
-    box-shadow:0 0 12px -2px var(--cat-color,#8B8B9E),0 0 22px -6px var(--cat-color,#8B8B9E),inset 0 0 6px rgba(255,255,255,.12);
-}
-.ability-tech-chip.selected::before{border-color:#fff;background:#fff;box-shadow:0 0 6px rgba(255,255,255,.8)}
-.ability-tech-chip.selected::after{
-    content:'✓';position:absolute;left:9px;top:50%;transform:translateY(-50%);
-    color:#1B2238;font-size:9px;font-weight:900;
-}
-.ability-survey-foot{
-    flex-shrink:0;display:flex;align-items:center;justify-content:flex-end;gap:12px;
-    padding:10px 20px;
-    border-top:1px solid rgba(255,255,255,.06);
-    background:rgba(255,255,255,.02);
-}
-.ability-confirm-btn{min-width:210px;justify-content:center}
-/* 重置按钮：低强调警示色，半透明背景 + 发光边框，与深色科技感统一 */
-.ability-reset-btn{
-    min-width:96px;justify-content:center;position:relative;
-    color:#E8A66B;
-    background:rgba(232,166,107,.07);
-    border:1px solid rgba(232,166,107,.32);
-    box-shadow:0 0 12px -4px rgba(232,166,107,.35),inset 0 0 8px rgba(232,166,107,.05);
-    transition:all .2s ease;
-}
-.ability-reset-btn::before{
-    content:'↻';margin-right:5px;display:inline-block;font-size:14px;line-height:1;
-    transition:transform .45s cubic-bezier(.3,.7,.3,1);
-}
-.ability-reset-btn:hover{
-    color:#FFD9A8;
-    background:rgba(232,166,107,.14);
-    border-color:rgba(240,150,80,.65);
-    box-shadow:0 0 16px -2px rgba(232,166,107,.5);
-    transform:translateY(-1px);
-}
-.ability-reset-btn:hover::before{transform:rotate(180deg)}
-.ability-reset-btn:active{transform:scale(.96)}
-/* 重置二次确认层：覆盖当前问卷，轻量提示，不刷新页面 */
-.ability-reset-confirm{
-    position:absolute;inset:0;z-index:20;
-    display:flex;align-items:center;justify-content:center;
-    background:rgba(3,7,18,.55);
-    backdrop-filter:blur(3px);
-    opacity:0;pointer-events:none;
-    transition:opacity .2s ease;
-    border-radius:16px;
-}
-.ability-reset-confirm.show{opacity:1;pointer-events:auto}
-.ability-reset-confirm-box{
-    width:360px;max-width:calc(100% - 40px);
-    padding:26px 28px 24px;text-align:center;
-    background:linear-gradient(180deg,rgba(30,28,38,.97),rgba(14,16,26,.97));
-    border:1px solid rgba(212,175,55,.35);border-radius:16px;
-    box-shadow:0 18px 50px rgba(0,0,0,.55),0 0 30px -8px rgba(212,175,55,.35),inset 0 1px 0 rgba(255,255,255,.06);
-    transform:translateY(10px) scale(.97);
-    transition:transform .22s cubic-bezier(.2,.8,.3,1);
-}
-.ability-reset-confirm.show .ability-reset-confirm-box{transform:none}
-.ability-reset-confirm-title{font-size:17px;font-weight:700;color:#FFE9B0;letter-spacing:.5px}
-.ability-reset-confirm-text{margin-top:10px;font-size:13px;line-height:1.7;color:rgba(255,255,255,.68)}
-.ability-reset-confirm-btns{display:flex;justify-content:center;gap:12px;margin-top:22px}
-.ability-reset-confirm-box .btn{
-    min-width:96px;justify-content:center;
-    color:rgba(255,255,255,.78);
-    background:rgba(255,255,255,.06);
-    border:1px solid rgba(255,255,255,.16);
-}
-.ability-reset-confirm-box .btn:hover{color:#fff;border-color:rgba(255,255,255,.35);background:rgba(255,255,255,.1)}
-.ability-reset-confirm-ok{
-    min-width:112px;justify-content:center;
-    color:#FFD9A8;
-    background:linear-gradient(135deg,rgba(212,150,60,.28),rgba(170,100,30,.18));
-    border:1px solid rgba(240,160,70,.5);
-    box-shadow:0 0 14px -4px rgba(240,160,70,.5);
-    transition:all .2s ease;
-}
-.ability-reset-confirm-ok:hover{
-    color:#fff;
-    background:linear-gradient(135deg,rgba(232,160,66,.42),rgba(180,108,34,.3));
-    border-color:rgba(255,180,90,.8);
-    box-shadow:0 0 20px -2px rgba(240,160,70,.6);
-    transform:translateY(-1px);
-}
-.ability-reset-confirm-ok:active{transform:scale(.96)}
-/* 中尺寸桌面（1600×900 等）：压缩间距与内边距，尽力保持一屏（13px 为原基础字号，未进一步缩小） */
-@media (max-width:1650px){
-    .ability-modal{width:calc(100vw - 24px);height:calc(100vh - 16px)}
-    .ability-survey-head{padding:8px 16px}
-    .ability-survey-body{padding:10px 14px;gap:10px}
-    .ability-cat-block{padding:8px 10px}
-    .ability-cat-title{margin-bottom:6px;padding-bottom:5px}
-    .ability-cat-techs{gap:6px}
-    .ability-tech-chip{padding:6px 11px 6px 26px;font-size:13px}
-    .ability-survey-foot{padding:8px 16px}
-}
-/* 小尺寸（1366×768 及以下）：进一步压缩边距，保留滚动兜底（内容不被裁切） */
-@media (max-width:1200px){
-    .ability-survey-body{padding:8px 12px;gap:8px}
-    .ability-cat-block{padding:6px 8px;border-radius:10px}
-    .ability-tech-chip{padding:5px 10px 5px 24px;font-size:13px}
-    .ability-cat-techs{gap:5px}
-    .ability-confirm-btn{min-width:170px}
-}
-
-/* 个人能力图谱 */
-.ability-graph-page{display:flex;flex-direction:column;flex:1;min-height:0}
-.ability-graph-bar{
-    display:flex;align-items:center;justify-content:space-between;
-    padding:12px 20px;flex-shrink:0;
-    border-bottom:1px solid rgba(255,255,255,.06);
-}
-.ability-graph-title{font-size:15px;font-weight:700;color:#FFE9B0}
-.ability-graph-actions{display:flex;align-items:center;gap:10px}
-.ability-graph-wrap{flex:1;min-height:0;position:relative;overflow:hidden}
-.ability-graph-foot{
-    display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;
-    padding:10px 20px;flex-shrink:0;
-    border-top:1px solid rgba(255,255,255,.06);
-}
-.ability-graph-summary{font-size:12px;color:rgba(255,255,255,.5)}

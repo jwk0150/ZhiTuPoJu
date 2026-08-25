@@ -167,8 +167,13 @@
 .dh-panel-body {
   display: flex;
   align-items: flex-end;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 12px;
+}
+
+.dh-spark,
+.dh-mini-spark {
+  display: none !important;
 }
 
 .dh-panel-metrics {
@@ -196,13 +201,6 @@
 .dh-panel.is-real .dh-metric-val { color: #e8c988; }
 .dh-panel.is-pred .dh-metric-val { color: #d4b98a; }
 .dh-metric-val.is-up { font-size: 18px; }
-
-.dh-spark {
-  width: 120px;
-  height: 40px;
-  flex-shrink: 0;
-  opacity: 0.9;
-}
 
 /* —— 工具栏 —— */
 .dh-toolbar {
@@ -518,14 +516,35 @@
 
 .dh-skills .skill-chip,
 #view-discovery .dh-card .skill-chip {
-  padding: 2px 7px !important;
+  padding: 3px 10px !important;
   font-size: 11px !important;
-  border-radius: 2px !important;
-  background: rgba(255, 255, 255, 0.05) !important;
-  border: 1px solid var(--dh-line-soft) !important;
-  color: var(--text-secondary) !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.03em;
+  border-radius: 999px !important;
+  background: linear-gradient(180deg, rgba(236, 201, 132, 0.22), rgba(212, 176, 122, 0.12)) !important;
+  border: 1px solid rgba(236, 201, 132, 0.55) !important;
+  color: #f5d99a !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 0 10px rgba(212, 176, 122, 0.12);
   opacity: 1 !important;
   animation: none !important;
+}
+
+#view-discovery .dh-card.is-real .skill-chip,
+#view-discovery .dh-card.is-forecast .skill-chip {
+  background: linear-gradient(180deg, rgba(236, 201, 132, 0.22), rgba(212, 176, 122, 0.12)) !important;
+  border-color: rgba(236, 201, 132, 0.55) !important;
+  color: #f5d99a !important;
+}
+
+#view-discovery .dh-card:hover .skill-chip {
+  background: linear-gradient(180deg, rgba(236, 201, 132, 0.32), rgba(212, 176, 122, 0.18)) !important;
+  border-color: rgba(245, 217, 154, 0.72) !important;
+  color: #ffe8b8 !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    0 0 14px rgba(212, 176, 122, 0.2);
 }
 
 .dh-trend {
@@ -548,12 +567,6 @@
 
 .dh-trend .up { color: #d4b98a; }
 .dh-card.is-forecast .dh-trend .up { color: #d4b98a; }
-
-.dh-mini-spark {
-  width: 48px;
-  height: 16px;
-  margin-left: auto;
-}
 
 .dh-insight-line {
   margin: 0;

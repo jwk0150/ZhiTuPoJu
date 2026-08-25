@@ -19,7 +19,7 @@
 
   function catTag(key) {
     var c = D.catByKey(key);
-    return '<span class="jn-cat-tag" style="color:' + c.color + ';background:' + hexToRgba(c.color, 0.13) + '">' + esc(c.label) + '</span>';
+    return '<span class="jn-cat-tag" style="color:' + c.color + ';border-color:' + c.color + '">' + esc(c.label) + '</span>';
   }
 
   function currentId() {
@@ -199,7 +199,7 @@
         '<div class="jn-state-title">' + esc(msg || '资讯未找到或加载失败') + '</div>' +
         '<p class="jn-state-desc">这条资讯可能已被移除，或链接有误。</p>' +
         '<div class="jn-state-actions">' +
-          '<a class="jn-btn-gold" href="index.html">返回首页</a>' +
+          '<a class="jn-btn-accent" href="index.html">返回首页</a>' +
         '</div>' +
       '</div>';
   }

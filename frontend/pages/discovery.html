@@ -10,7 +10,7 @@
   <link rel="stylesheet" href="../css/legacy-views.css?v=50" />
   <link rel="stylesheet" href="../css/page-polish.css?v=50" />
   <link rel="stylesheet" href="../css/discovery-favs.css?v=1" />
-  <link rel="stylesheet" href="../css/discovery-workbench.css?v=12" />
+  <link rel="stylesheet" href="../css/discovery-workbench.css?v=no-spark-gold" />
   <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 </head>
@@ -68,16 +68,6 @@
             <strong class="dh-metric-val is-up" id="kpi-discovered-trend">+32%</strong>
           </div>
         </div>
-        <svg class="dh-spark is-real" viewBox="0 0 120 40" preserveAspectRatio="none" aria-hidden="true">
-          <defs>
-            <linearGradient id="dh-area-real" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="#d4b07a" stop-opacity=".28"/>
-              <stop offset="100%" stop-color="#d4b07a" stop-opacity="0"/>
-            </linearGradient>
-          </defs>
-          <path class="area" d="M0,28 C12,26 22,22 34,18 C48,12 58,20 72,14 C86,8 100,12 120,6 L120,40 L0,40 Z" fill="url(#dh-area-real)"/>
-          <path class="line" d="M0,28 C12,26 22,22 34,18 C48,12 58,20 72,14 C86,8 100,12 120,6" fill="none" stroke="#d4b07a" stroke-width="1.5"/>
-        </svg>
       </div>
     </button>
 
@@ -101,16 +91,6 @@
             <strong class="dh-metric-val is-up" id="kpi-forecast-trend">+28%</strong>
           </div>
         </div>
-        <svg class="dh-spark is-pred" viewBox="0 0 120 40" preserveAspectRatio="none" aria-hidden="true">
-          <defs>
-            <linearGradient id="dh-area-pred" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="#c4a574" stop-opacity=".28"/>
-              <stop offset="100%" stop-color="#c4a574" stop-opacity="0"/>
-            </linearGradient>
-          </defs>
-          <path class="area" d="M0,30 C14,28 24,24 38,20 C52,15 64,22 78,16 C94,9 108,12 120,7 L120,40 L0,40 Z" fill="url(#dh-area-pred)"/>
-          <path class="line" d="M0,30 C14,28 24,24 38,20 C52,15 64,22 78,16 C94,9 108,12 120,7" fill="none" stroke="#c4a574" stroke-width="1.5"/>
-        </svg>
       </div>
       <span id="kpi-adopted" hidden>0</span>
       <span id="kpi-pending-trend" hidden>+18%</span>
