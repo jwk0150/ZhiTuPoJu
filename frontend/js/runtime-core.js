@@ -29,12 +29,12 @@ window.Utils = {
         const t = document.createElement('div');
         const colors = { mint: '#10b981', pink: '#f72585', cyan: '#2DD4BF', amber: '#f59e0b', coral: '#ef4444', success: '#10b981', error: '#ef4444', info: '#3b82f6' };
         t.className = 'toast';
-        t.style.cssText = 'position:fixed;right:20px;bottom:20px;z-index:9999;padding:12px 16px;border-radius:10px;color:#fff;font:500 13px sans-serif;box-shadow:0 8px 24px rgba(0,0,0,.2)';
+        t.style.cssText = 'position:fixed;right:16px;top:16px;z-index:9999;padding:7px 12px;border-radius:5px;color:#fff;font:500 12px sans-serif;box-shadow:0 4px 14px rgba(0,0,0,.18)';
         t.style.background = colors[type] || colors.mint;
         t.textContent = msg;
         document.body.appendChild(t);
-        setTimeout(() => { t.style.opacity = '0'; t.style.transition = 'all .3s'; }, 2500);
-        setTimeout(() => t.remove(), 2900);
+        setTimeout(() => { t.style.opacity = '0'; t.style.transition = 'all .3s'; }, 2000);
+        setTimeout(() => t.remove(), 2400);
     }
 };
 window.showToast = window.Utils.showToast;

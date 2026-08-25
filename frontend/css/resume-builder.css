@@ -1,0 +1,1937 @@
+/* ============================================================
+ * AI 简历生成器 · 未来生态都市终端 · 视觉系统
+ * 主色：深青绿 / 深墨蓝 / 植物绿 / 暖金
+ * 原则：半透明终端、工业克制、低对比、电影感
+ * ============================================================ */
+
+:root {
+  /* ============== 主背景 ============== */
+  --bg-base: #0A1B20;
+  --bg-deep: #071418;
+  --bg-deeper: #040E10;
+
+  /* ============== 深青绿色系 ============== */
+  --teal-deep: #123337;
+  --teal-mid: #285652;
+  --teal-dark: #10252A;
+  --teal-shadow: #163538;
+  --teal-x: #0C1E23;
+
+  /* ============== 植物绿 ============== */
+  --leaf-deep: #607C58;
+  --leaf-mid: #7E9D78;
+  --leaf-light: #829C79;
+  --leaf-soft: #98AE78;
+
+  /* ============== 暖金 ============== */
+  --gold: #D9B66F;
+  --gold-bright: #E6C982;
+  --gold-dark: #947B4C;
+  --gold-glow: rgba(217, 182, 111, 0.35);
+  --gold-wash: rgba(217, 182, 111, 0.10);
+  --gold-wash-soft: rgba(217, 182, 111, 0.06);
+
+  /* ============== 环境浅色 ============== */
+  --mist: #D9DDD2;
+  --mist-dim: #AAB5AC;
+  --mist-mid: #C8CFC5;
+  --mist-strong: #E3E5DB;
+
+  /* ============== 深色文字 ============== */
+  --ink-deep: #091316;
+  --ink-paper: #ECE8DE;
+  --ink-paper-warm: #D7DDD4;
+
+  /* ============== 边框 ============== */
+  --line-soft: rgba(213, 220, 211, 0.12);
+  --line-mid: rgba(217, 182, 111, 0.18);
+  --line-strong: rgba(217, 182, 111, 0.35);
+  --line-cool: rgba(180, 205, 190, 0.12);
+  --line-emph: rgba(217, 182, 111, 0.45);
+
+  /* ============== 表层面板 ============== */
+  --surface: rgba(7, 20, 23, 0.56);
+  --surface-deep: rgba(3, 16, 19, 0.78);
+  --surface-warm: rgba(7, 20, 23, 0.42);
+  --surface-input: rgba(3, 16, 19, 0.38);
+  --surface-input-focus: rgba(4, 18, 21, 0.56);
+
+  /* ============== 字号 ============== */
+  --fz-h1: 30px;
+  --fz-h2: 22px;
+  --fz-h3: 17px;
+  --fz-body: 14.5px;
+  --fz-small: 13px;
+  --fz-label: 12.5px;
+  --fz-micro: 11.5px;
+
+  /* ============== 圆角 ============== */
+  --r-sm: 4px;
+  --r-md: 6px;
+  --r-lg: 8px;
+
+  /* ============== 阴影 ============== */
+  --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.18);
+  --shadow-deep: 0 18px 48px rgba(0, 0, 0, 0.32);
+  --shadow-inset: inset 0 -1px 0 rgba(217, 182, 111, 0.35);
+
+  /* ============== 字体 ============== */
+  --font-cn: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-en: "Outfit", "DM Sans", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "SF Mono", Menlo, monospace;
+
+  /* ============== 缓动 ============== */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-soft: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* ============== 间距 ============== */
+  --gap: 14px;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  background: var(--bg-base);
+  color: var(--ink-paper-warm);
+  font-family: var(--font-cn);
+  font-size: var(--fz-body);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
+  min-height: 100vh;
+}
+
+::selection { background: rgba(217, 182, 111, 0.30); color: var(--ink-paper); }
+
+/* ============================================================
+ * 全局滚动条
+ * ============================================================ */
+*::-webkit-scrollbar { width: 6px; height: 6px; }
+*::-webkit-scrollbar-track { background: transparent; }
+*::-webkit-scrollbar-thumb {
+  background: rgba(217, 182, 111, 0.20);
+  border-radius: 4px;
+}
+*::-webkit-scrollbar-thumb:hover { background: rgba(217, 182, 111, 0.35); }
+* { scrollbar-width: thin; scrollbar-color: rgba(217, 182, 111, 0.20) transparent; }
+
+/* ============================================================
+ * 1. 环境背景层 - 未来生态都市
+ * ============================================================ */
+.rb-env {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  background:
+    radial-gradient(120% 80% at 8% 18%, rgba(40, 86, 82, 0.32) 0%, transparent 55%),
+    radial-gradient(110% 70% at 100% 100%, rgba(18, 51, 55, 0.55) 0%, transparent 60%),
+    radial-gradient(70% 60% at 50% 0%, rgba(96, 124, 88, 0.18) 0%, transparent 70%),
+    linear-gradient(180deg, #0A1B20 0%, #071418 60%, #040E10 100%);
+}
+
+/* 远景 SVG 城市（通过 CSS 内嵌 SVG 模拟） */
+.rb-env-bg {
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1920 1080' preserveAspectRatio='xMidYMid slice'><defs><linearGradient id='sky' x1='0' y1='0' x2='0' y2='1'><stop offset='0%' stop-color='%23163538'/><stop offset='50%' stop-color='%2310252A'/><stop offset='100%' stop-color='%230A1B20'/></linearGradient><linearGradient id='sun' x1='0' y1='0' x2='0' y2='1'><stop offset='0%' stop-color='%23E6C982' stop-opacity='0.45'/><stop offset='100%' stop-color='%23E6C982' stop-opacity='0'/></linearGradient><radialGradient id='moon' cx='50%25' cy='50%25' r='50%25'><stop offset='0%' stop-color='%23E6C982' stop-opacity='0.85'/><stop offset='100%' stop-color='%23E6C982' stop-opacity='0'/></radialGradient><linearGradient id='bld' x1='0' y1='0' x2='0' y2='1'><stop offset='0%' stop-color='%23285652'/><stop offset='100%' stop-color='%23102330'/></linearGradient><linearGradient id='water' x1='0' y1='0' x2='0' y2='1'><stop offset='0%' stop-color='%23123438' stop-opacity='0.85'/><stop offset='100%' stop-color='%23071418' stop-opacity='1'/></linearGradient><linearGradient id='tree' x1='0' y1='0' x2='0' y2='1'><stop offset='0%' stop-color='%23607C58' stop-opacity='0.7'/><stop offset='100%' stop-color='%23285652' stop-opacity='0.3'/></linearGradient></defs><rect width='1920' height='1080' fill='url(%23sky)'/><circle cx='1380' cy='220' r='180' fill='url(%23moon)'/><ellipse cx='1380' cy='420' rx='900' ry='120' fill='url(%23sun)'/><g opacity='0.85'><rect x='100' y='540' width='80' height='280' fill='url(%23bld)'/><rect x='200' y='480' width='110' height='340' fill='url(%23bld)'/><rect x='340' y='420' width='90' height='400' fill='url(%23bld)'/><rect x='460' y='500' width='70' height='320' fill='url(%23bld)'/><rect x='560' y='380' width='140' height='440' fill='url(%23bld)'/><rect x='740' y='460' width='90' height='360' fill='url(%23bld)'/><rect x='860' y='420' width='110' height='400' fill='url(%23bld)'/><rect x='1000' y='500' width='80' height='320' fill='url(%23bld)'/><rect x='1120' y='380' width='100' height='440' fill='url(%23bld)'/><rect x='1260' y='460' width='90' height='360' fill='url(%23bld)'/><rect x='1380' y='320' width='160' height='500' fill='url(%23bld)'/><rect x='1570' y='500' width='80' height='320' fill='url(%23bld)'/><rect x='1680' y='460' width='110' height='360' fill='url(%23bld)'/><rect x='1820' y='540' width='80' height='280' fill='url(%23bld)'/></g><g opacity='0.4'><rect x='170' y='560' width='6' height='240' fill='%23D9B66F'/><rect x='250' y='500' width='6' height='300' fill='%23D9B66F'/><rect x='380' y='440' width='6' height='360' fill='%23D9B66F'/><rect x='480' y='520' width='6' height='280' fill='%23D9B66F'/><rect x='610' y='400' width='6' height='400' fill='%23D9B66F'/><rect x='780' y='480' width='6' height='320' fill='%23D9B66F'/><rect x='900' y='440' width='6' height='360' fill='%23D9B66F'/><rect x='1030' y='520' width='6' height='280' fill='%23D9B66F'/><rect x='1160' y='400' width='6' height='400' fill='%23D9B66F'/><rect x='1290' y='480' width='6' height='320' fill='%23D9B66F'/><rect x='1440' y='340' width='6' height='460' fill='%23D9B66F'/><rect x='1600' y='520' width='6' height='280' fill='%23D9B66F'/><rect x='1720' y='480' width='6' height='320' fill='%23D9B66F'/><rect x='1850' y='560' width='6' height='240' fill='%23D9B66F'/></g><g><path d='M0 720 L240 720 L260 760 L380 760 L400 720 L520 720 L540 760 L720 760 L740 720 L880 720 L900 760 L1080 760 L1100 720 L1240 720 L1260 760 L1440 760 L1460 720 L1600 720 L1620 760 L1800 760 L1820 720 L1920 720 L1920 1080 L0 1080 Z' fill='url(%23water)'/></g><g opacity='0.85'><ellipse cx='280' cy='760' rx='70' ry='40' fill='url(%23tree)'/><ellipse cx='900' cy='760' rx='90' ry='50' fill='url(%23tree)'/><ellipse cx='1480' cy='760' rx='100' ry='60' fill='url(%23tree)'/></g><g opacity='0.7'><path d='M150 720 Q170 700 190 720 Q210 700 230 720 Q250 700 270 720 L270 760 L150 760 Z' fill='%23607C58'/><path d='M820 700 Q835 680 850 700 Q865 680 880 700 Q895 680 910 700 Q925 680 940 700 L940 760 L820 760 Z' fill='%23607C58'/><path d='M1400 680 Q1420 660 1440 680 Q1460 660 1480 680 Q1500 660 1520 680 L1520 760 L1400 760 Z' fill='%23607C58'/></g><g opacity='0.4'><circle cx='400' cy='100' r='1' fill='%23E3E5DB'/><circle cx='700' cy='80' r='1.2' fill='%23E3E5DB'/><circle cx='1200' cy='140' r='1' fill='%23E3E5DB'/><circle cx='1500' cy='180' r='1.4' fill='%23E3E5DB'/><circle cx='280' cy='160' r='1' fill='%23E3E5DB'/><circle cx='900' cy='50' r='1' fill='%23E3E5DB'/><circle cx='1700' cy='90' r='1' fill='%23E3E5DB'/></g></svg>");
+  background-size: cover;
+  background-position: center 60%;
+  background-repeat: no-repeat;
+  opacity: 0.95;
+  filter: saturate(0.85) brightness(0.9);
+}
+
+/* 水面反光 */
+.rb-env-water-reflect {
+  position: absolute;
+  left: 0; right: 0;
+  bottom: 0;
+  height: 36%;
+  background:
+    linear-gradient(180deg, transparent 0%, rgba(217, 182, 111, 0.05) 50%, transparent 100%),
+    radial-gradient(60% 50% at 50% 100%, rgba(217, 182, 111, 0.08) 0%, transparent 70%);
+  animation: waterShimmer 8s ease-in-out infinite;
+}
+@keyframes waterShimmer {
+  0%, 100% { opacity: 0.6; transform: translateY(0) scaleY(1); }
+  50% { opacity: 1; transform: translateY(-4px) scaleY(1.04); }
+}
+
+/* 远景雾气层 */
+.rb-env-mist {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, transparent 30%, rgba(7, 20, 23, 0.35) 65%, rgba(4, 14, 17, 0.78) 100%),
+    linear-gradient(90deg, rgba(4, 14, 17, 0.48) 0%, rgba(4, 14, 17, 0.16) 50%, rgba(4, 14, 17, 0.62) 100%);
+}
+
+/* 漂浮粒子 */
+.rb-env-particles {
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 12% 22%, rgba(217, 182, 111, 0.30) 0%, transparent 0.5%),
+    radial-gradient(circle at 28% 58%, rgba(217, 182, 111, 0.22) 0%, transparent 0.5%),
+    radial-gradient(circle at 64% 36%, rgba(217, 182, 111, 0.28) 0%, transparent 0.5%),
+    radial-gradient(circle at 82% 72%, rgba(217, 182, 111, 0.18) 0%, transparent 0.5%),
+    radial-gradient(circle at 48% 88%, rgba(217, 182, 111, 0.22) 0%, transparent 0.5%);
+  animation: particlesFloat 22s linear infinite;
+}
+@keyframes particlesFloat {
+  0% { background-position: 0 0, 0 0, 0 0, 0 0, 0 0; opacity: 0.7; }
+  50% { opacity: 1; }
+  100% { background-position: 80px -120px, -60px -180px, 100px -260px, -80px -200px, 60px -340px; opacity: 0.6; }
+}
+
+/* 扫描线（终端感） */
+.rb-env-scanline {
+  position: absolute;
+  left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(217, 182, 111, 0.30), transparent);
+  animation: scanlineMove 12s ease-in-out infinite;
+  opacity: 0.4;
+}
+@keyframes scanlineMove {
+  0% { top: 0%; }
+  100% { top: 100%; }
+}
+
+/* 整体光照渐变 */
+.rb-env-glow {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(40% 30% at 75% 30%, rgba(217, 182, 111, 0.07) 0%, transparent 70%),
+    radial-gradient(60% 40% at 25% 80%, rgba(40, 86, 82, 0.18) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* ============================================================
+ * 2. 主应用布局
+ * ============================================================ */
+.rb-app {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  height: 100vh;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+/* ============================================================
+ * 2.1 左侧插图叙事区
+ * ============================================================ */
+.rb-left {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 56px 44px;
+  background: #050D10; /* JS 不工作时兜底色 */
+  border-right: 1px solid rgba(217, 182, 111, 0.10);
+}
+
+/* ============================================================
+ * 左侧栏：当前步骤插图占满整列
+ * ============================================================ */
+/* 全列背景图：JS 根据当前步骤切换 background-image */
+.rb-left-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-color: #07181C;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  transition: opacity 0.5s ease, transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  opacity: 1;
+  transform: scale(1.0);
+  filter: saturate(1.10) brightness(0.85) contrast(1.05);
+  will-change: opacity, transform, background-image;
+}
+/* 切换瞬间短暂淡出 + 轻微放大，让两张图之间过渡柔和 */
+.rb-left-bg.is-switching {
+  opacity: 0;
+  transform: scale(1.045);
+}
+
+/* 暗色蒙层，确保前景文字始终可读 */
+.rb-left-veil {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    radial-gradient(120% 80% at 50% 50%, transparent 0%, rgba(4, 14, 17, 0.22) 55%, rgba(4, 14, 17, 0.65) 100%),
+    linear-gradient(180deg, rgba(4, 14, 17, 0.55) 0%, rgba(4, 14, 17, 0.10) 30%, rgba(4, 14, 17, 0.32) 65%, rgba(4, 14, 17, 0.90) 100%);
+}
+
+/* 把头部 / 底部块拉到背景层之上 */
+.rb-left-head,
+.rb-left-bottom {
+  position: relative;
+  z-index: 2;
+}
+
+/* 底部组合块：文案 + 元信息统一贴左下角 */
+.rb-left-bottom {
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+  width: 100%;
+}
+
+/* 左下角文案块 */
+.rb-left-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 500px;
+}
+
+/* 步骤副标：STEP 01 · NEXUS */
+.rb-left-step-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.22em;
+  color: var(--gold-bright);
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  opacity: 0.95;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.55);
+}
+.rb-left-step-eyebrow::before {
+  content: '';
+  display: inline-block;
+  width: 32px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-bright));
+}
+
+.rb-left-head {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.rb-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--gold-bright);
+  font-size: 12.5px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+.rb-brand-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--gold-bright);
+  box-shadow: 0 0 0 3px rgba(217, 182, 111, 0.20), 0 0 12px rgba(217, 182, 111, 0.45);
+  animation: pulse 2.4s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 0.8; }
+  50% { opacity: 1; }
+}
+
+.rb-left-status {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  color: var(--mist-dim);
+  font-size: 11.5px;
+  letter-spacing: 0.08em;
+}
+.rb-left-status .dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--leaf-mid);
+  box-shadow: 0 0 8px rgba(126, 157, 120, 0.60);
+  animation: pulse 2s ease-in-out infinite;
+}
+.rb-left-status b { color: var(--mist-strong); font-weight: 500; }
+
+/* 左侧中央插图叙事容器 */
+.rb-left-illus {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 28px;
+  max-width: 460px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* 旧的左栏插图小框 / 角线装饰 / 时间戳 — 已被 .rb-left-bg 整列背景取代，隐藏避免多余的渐变边框 */
+.rb-illus-svg,
+.rb-illus-frame,
+.rb-illus-stamp {
+  display: none !important;
+}
+.rb-illus-frame::before,
+.rb-illus-frame::after { content: none; }
+
+/* 左侧文字主标题（在整列背景图上左下展示） */
+.rb-left-title {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 480px;
+}
+.rb-left-title h1 {
+  font-size: 50px;
+  line-height: 1.06;
+  margin: 0;
+  color: var(--ink-paper);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-shadow: 0 2px 24px rgba(0, 0, 0, 0.55);
+}
+.rb-left-title h1 em {
+  font-style: normal;
+  color: var(--gold-bright);
+  border-bottom: 1px solid rgba(217, 182, 111, 0.45);
+  padding-bottom: 1px;
+}
+.rb-left-title p {
+  font-size: 13.5px;
+  color: rgba(227, 229, 219, 0.85);
+  line-height: 1.75;
+  margin: 0;
+  letter-spacing: 0.02em;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.55);
+  max-width: 420px;
+}
+
+.rb-left-meta {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  font-size: 11.5px;
+  color: var(--mist-dim);
+  letter-spacing: 0.06em;
+}
+.rb-left-meta b { color: var(--mist-strong); font-weight: 500; font-variant-numeric: tabular-nums; }
+
+/* ============================================================
+ * 2.2 右侧工作区
+ * ============================================================ */
+.rb-right {
+  position: relative;
+  display: grid;
+  grid-template-rows: 72px 1fr 76px;
+  height: 100vh;
+  overflow: hidden;
+  background:
+    linear-gradient(180deg, rgba(10, 27, 32, 0.72) 0%, rgba(7, 20, 23, 0.55) 100%);
+}
+
+/* ============================================================
+ * 3. 顶部步骤导航
+ * ============================================================ */
+.rb-topnav {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0 24px;
+  background: rgba(6, 18, 21, 0.72);
+  border-bottom: 1px solid rgba(217, 182, 111, 0.12);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  position: relative;
+  z-index: 5;
+}
+
+.rb-topnav-steps {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+}
+.rb-topnav-steps::-webkit-scrollbar { display: none; }
+
+.rb-step {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 10px;
+  height: 100%;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  color: rgba(217, 221, 210, 0.30);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  position: relative;
+  transition: color 0.25s var(--ease-out);
+  font-family: var(--font-cn);
+  font-weight: 400;
+  flex-shrink: 0;
+}
+.rb-step:hover { color: rgba(217, 221, 210, 0.55); }
+.rb-step-num {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.85;
+}
+.rb-step-label { letter-spacing: 0.06em; }
+
+.rb-step.is-done { color: var(--leaf-mid); }
+.rb-step.is-done .rb-step-check { font-size: 11px; }
+
+.rb-step.is-active {
+  color: var(--mist-strong);
+  background: rgba(217, 182, 111, 0.08);
+  box-shadow: inset 0 -1px 0 rgba(217, 182, 111, 0.55);
+}
+.rb-step.is-active .rb-step-num { color: var(--gold-bright); }
+
+.rb-step:disabled,
+.rb-step[aria-disabled="true"] {
+  cursor: not-allowed;
+  color: rgba(217, 221, 210, 0.18);
+}
+
+.rb-topnav-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.rb-topnav-actions .rb-btn-save {
+  padding: 7px 12px;
+  font-size: 12px;
+}
+
+.rb-btn-save {
+  background: rgba(7, 20, 23, 0.42);
+  border: 1px solid rgba(217, 182, 111, 0.25);
+  color: var(--mist-mid);
+  padding: 8px 16px;
+  border-radius: var(--r-md);
+  font-size: 12.5px;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  font-family: var(--font-cn);
+  transition: all 0.25s var(--ease-out);
+}
+.rb-btn-save:hover {
+  border-color: rgba(217, 182, 111, 0.55);
+  color: var(--gold-bright);
+}
+
+/* ============================================================
+ * 4. 中间主工作区
+ * ============================================================ */
+.rb-main {
+  position: relative;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 28px 32px 40px;
+}
+
+.rb-stage {
+  max-width: 920px;
+  margin: 0 auto;
+  position: relative;
+}
+
+/* 步骤过渡 */
+.rb-stage > .rb-step-view {
+  display: none;
+  animation: rbFadeIn 0.45s var(--ease-out);
+}
+.rb-stage > .rb-step-view.is-active { display: block; }
+@keyframes rbFadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.rb-step-head {
+  margin-bottom: 36px;
+}
+.rb-step-head h2 {
+  font-size: 30px;
+  font-weight: 500;
+  margin: 0 0 12px;
+  color: var(--ink-paper);
+  letter-spacing: 0.04em;
+}
+.rb-step-head p {
+  margin: 0;
+  font-size: 14.5px;
+  color: var(--mist-dim);
+  letter-spacing: 0.02em;
+  max-width: 720px;
+}
+
+/* ============================================================
+ * 5. 步骤 01：基础信息
+ * ============================================================ */
+.rb-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.rb-fields-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px 28px;
+}
+.rb-fields-row.is-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.rb-fields-row.is-1 { grid-template-columns: 1fr; }
+
+.rb-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 18px 0;
+  border-top: 1px solid var(--line-cool);
+  position: relative;
+}
+.rb-field:first-child { border-top: 0; padding-top: 12px; }
+
+.rb-field-row .rb-field { border-top: 0; padding: 0; }
+
+.rb-field label {
+  font-size: 12px;
+  color: var(--mist-dim);
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+.rb-field-input {
+  display: flex;
+  align-items: center;
+  height: 44px;
+  padding: 0 14px;
+  background: var(--surface-input);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--r-md);
+  transition: all 0.25s var(--ease-out);
+}
+.rb-field-input:focus-within {
+  background: var(--surface-input-focus);
+  border-color: rgba(217, 182, 111, 0.55);
+  box-shadow: 0 0 0 3px rgba(217, 182, 111, 0.06);
+}
+.rb-field-input input,
+.rb-field-input select,
+.rb-field-input textarea {
+  flex: 1;
+  background: transparent;
+  border: 0;
+  outline: 0;
+  color: var(--ink-paper-warm);
+  font-family: var(--font-cn);
+  font-size: 14.5px;
+  letter-spacing: 0.02em;
+  width: 100%;
+  height: 100%;
+}
+.rb-field-input input::placeholder,
+.rb-field-input textarea::placeholder { color: rgba(217, 221, 210, 0.35); }
+.rb-field-input select { cursor: pointer; appearance: none; padding-right: 8px; }
+.rb-field-input select option { background: #0A1B20; color: var(--ink-paper-warm); }
+
+.rb-field-texarea-wrap {
+  display: flex;
+  align-items: flex-start;
+  padding: 12px 14px;
+  min-height: 96px;
+  background: var(--surface-input);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--r-md);
+  transition: all 0.25s var(--ease-out);
+}
+.rb-field-texarea-wrap:focus-within {
+  background: var(--surface-input-focus);
+  border-color: rgba(217, 182, 111, 0.55);
+}
+.rb-field-texarea-wrap textarea {
+  flex: 1;
+  background: transparent;
+  border: 0;
+  outline: 0;
+  color: var(--ink-paper-warm);
+  font-family: var(--font-cn);
+  font-size: 14.5px;
+  letter-spacing: 0.02em;
+  resize: vertical;
+  min-height: 72px;
+}
+
+.rb-ai-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 28px;
+  padding: 14px 16px;
+  background: rgba(4, 18, 21, 0.45);
+  border: 1px solid rgba(217, 182, 111, 0.15);
+  border-radius: var(--r-md);
+}
+.rb-ai-bar-info { display: flex; flex-direction: column; gap: 4px; }
+.rb-ai-bar-info b { font-size: 13px; color: var(--ink-paper-warm); font-weight: 500; letter-spacing: 0.04em; }
+.rb-ai-bar-info span { font-size: 11.5px; color: var(--mist-dim); letter-spacing: 0.04em; }
+
+/* ============================================================
+ * 6. 通用按钮
+ * ============================================================ */
+.rb-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 38px;
+  padding: 0 18px;
+  border-radius: var(--r-md);
+  font-family: var(--font-cn);
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: all 0.25s var(--ease-out);
+  font-weight: 500;
+  white-space: nowrap;
+}
+.rb-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.rb-btn-primary {
+  background: #17393A;
+  color: var(--gold-bright);
+  border: 1px solid rgba(217, 182, 111, 0.36);
+}
+.rb-btn-primary:not(:disabled):hover {
+  background: #234B49;
+  border-color: var(--gold-bright);
+  transform: translateY(-1px);
+}
+
+.rb-btn-ghost {
+  background: rgba(4, 18, 21, 0.36);
+  color: var(--mist-mid);
+  border: 1px solid rgba(221, 225, 218, 0.18);
+}
+.rb-btn-ghost:not(:disabled):hover {
+  border-color: rgba(217, 182, 111, 0.45);
+  color: var(--gold-bright);
+}
+
+.rb-btn-ai {
+  background: rgba(217, 182, 111, 0.10);
+  color: var(--gold-bright);
+  border: 1px solid rgba(217, 182, 111, 0.42);
+}
+.rb-btn-ai:not(:disabled):hover {
+  background: rgba(217, 182, 111, 0.16);
+  border-color: var(--gold-bright);
+}
+
+.rb-btn-link {
+  background: transparent;
+  border: 0;
+  color: var(--mist-mid);
+  cursor: pointer;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  font-family: var(--font-cn);
+}
+.rb-btn-link:hover { color: var(--gold-bright); }
+
+/* AI 操作状态 */
+.rb-btn-ai .rb-ai-icon { color: var(--gold-bright); font-size: 11px; }
+.rb-btn-ai.is-loading .rb-ai-icon { animation: rbSpin 1.4s linear infinite; }
+@keyframes rbSpin { to { transform: rotate(360deg); } }
+.rb-btn-ai.is-done .rb-ai-icon { color: var(--leaf-mid); }
+
+/* ============================================================
+ * 7. 步骤 02：求职方向
+ * ============================================================ */
+.rb-profile-card {
+  padding: 22px 24px;
+  background: rgba(3, 16, 19, 0.42);
+  border-left: 2px solid rgba(217, 182, 111, 0.65);
+  margin-bottom: 36px;
+}
+.rb-profile-card-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--gold-bright);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.rb-profile-card p {
+  margin: 0;
+  font-size: 14.5px;
+  color: var(--ink-paper-warm);
+  line-height: 1.7;
+  letter-spacing: 0.02em;
+}
+.rb-profile-card p em {
+  font-style: normal;
+  color: var(--gold-bright);
+}
+
+.rb-section-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 32px 0 18px;
+  font-size: 13.5px;
+  color: var(--mist-strong);
+  letter-spacing: 0.08em;
+  font-weight: 500;
+}
+.rb-section-title::before {
+  content: '';
+  width: 18px; height: 1px;
+  background: var(--gold);
+}
+.rb-section-title small {
+  font-size: 11.5px;
+  color: var(--mist-dim);
+  letter-spacing: 0.04em;
+  font-weight: 400;
+}
+
+.rb-positions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.rb-position {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 18px;
+  background: rgba(4, 18, 21, 0.36);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--r-md);
+  cursor: pointer;
+  transition: all 0.25s var(--ease-out);
+  font-family: var(--font-cn);
+  text-align: left;
+  color: var(--ink-paper-warm);
+}
+.rb-position:hover {
+  border-color: rgba(217, 182, 111, 0.35);
+  background: rgba(4, 18, 21, 0.55);
+}
+.rb-position.is-on {
+  background: rgba(217, 182, 111, 0.08);
+  border-color: rgba(217, 182, 111, 0.52);
+}
+.rb-position-dot {
+  width: 14px; height: 14px;
+  border: 1px solid rgba(217, 221, 210, 0.30);
+  border-radius: 50%;
+  flex-shrink: 0;
+  position: relative;
+  transition: all 0.25s var(--ease-out);
+}
+.rb-position.is-on .rb-position-dot {
+  border-color: var(--gold);
+  background: var(--gold);
+}
+.rb-position.is-on .rb-position-dot::after {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border-radius: 50%;
+  background: var(--bg-deep);
+}
+.rb-position-name {
+  font-size: 13.5px;
+  letter-spacing: 0.04em;
+  flex: 1;
+}
+.rb-position-meta {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--mist-dim);
+  letter-spacing: 0.06em;
+}
+
+/* ============================================================
+ * 8. 步骤 03：经历补充
+ * ============================================================ */
+.rb-choice-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 28px;
+}
+.rb-choice-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 18px 20px;
+  background: rgba(4, 18, 21, 0.36);
+  border: 1px solid rgba(217, 182, 111, 0.20);
+  border-radius: var(--r-md);
+  cursor: pointer;
+  transition: all 0.25s var(--ease-out);
+  font-family: var(--font-cn);
+  color: var(--ink-paper-warm);
+  text-align: left;
+}
+.rb-choice-btn:hover {
+  border-color: rgba(217, 182, 111, 0.55);
+  background: rgba(217, 182, 111, 0.06);
+  transform: translateY(-1px);
+}
+.rb-choice-btn b {
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+}
+.rb-choice-btn span {
+  font-size: 12px;
+  color: var(--mist-dim);
+  letter-spacing: 0.04em;
+}
+.rb-choice-num {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--gold-bright);
+  letter-spacing: 0.10em;
+}
+
+.rb-ai-input-block {
+  margin-bottom: 24px;
+  padding: 18px;
+  background: rgba(3, 16, 19, 0.42);
+  border: 1px solid rgba(217, 182, 111, 0.20);
+  border-radius: var(--r-md);
+  display: none;
+}
+.rb-ai-input-block.is-on { display: block; }
+.rb-ai-input-block textarea {
+  width: 100%;
+  min-height: 96px;
+  background: transparent;
+  border: 0;
+  outline: 0;
+  color: var(--ink-paper-warm);
+  font-family: var(--font-cn);
+  font-size: 14px;
+  letter-spacing: 0.02em;
+  resize: vertical;
+}
+.rb-ai-input-block textarea::placeholder { color: rgba(217, 221, 210, 0.35); }
+.rb-ai-input-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px; }
+
+.rb-exp-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.rb-exp {
+  padding: 28px 0;
+  border-top: 1px solid var(--line-cool);
+}
+.rb-exp:first-child { border-top: 0; padding-top: 0; }
+
+.rb-exp-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+.rb-exp-title {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+}
+.rb-exp-title-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--gold-bright);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.rb-exp-title b {
+  font-size: 17px;
+  color: var(--ink-paper);
+  font-weight: 500;
+  letter-spacing: 0.03em;
+}
+.rb-exp-controls { display: flex; gap: 6px; }
+.rb-icon-btn {
+  width: 30px; height: 30px;
+  background: rgba(4, 18, 21, 0.45);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--r-sm);
+  color: var(--mist-dim);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+  transition: all 0.25s var(--ease-out);
+}
+.rb-icon-btn:hover {
+  border-color: rgba(217, 182, 111, 0.45);
+  color: var(--gold-bright);
+}
+.rb-icon-btn:disabled { cursor: not-allowed; opacity: 0.30; }
+
+.rb-exp-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+.rb-exp-row + .rb-exp-row { margin-top: 16px; }
+.rb-exp-full { margin-top: 16px; }
+.rb-exp-actions { display: flex; justify-content: space-between; margin-top: 20px; }
+
+.rb-add-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 18px;
+  padding: 12px 18px;
+  background: transparent;
+  border: 1px dashed rgba(217, 182, 111, 0.30);
+  border-radius: var(--r-md);
+  color: var(--mist-mid);
+  font-family: var(--font-cn);
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: all 0.25s var(--ease-out);
+}
+.rb-add-btn:hover {
+  border-color: rgba(217, 182, 111, 0.55);
+  color: var(--gold-bright);
+  background: rgba(217, 182, 111, 0.04);
+}
+
+/* ============================================================
+ * 9. 步骤 04：STAR 结构化
+ * ============================================================ */
+.rb-star-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 0;
+  gap: 18px;
+}
+.rb-star-ring {
+  width: 36px; height: 36px;
+  border: 1.5px solid rgba(217, 182, 111, 0.18);
+  border-top-color: var(--gold-bright);
+  border-radius: 50%;
+  animation: rbSpin 1.4s linear infinite;
+}
+.rb-star-loading-text {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13.5px;
+  color: var(--mist-mid);
+  letter-spacing: 0.06em;
+}
+.rb-star-loading-text::before {
+  content: '';
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--gold-bright);
+  box-shadow: 0 0 8px rgba(217, 182, 111, 0.50);
+  animation: pulse 1.6s ease-in-out infinite;
+}
+
+.rb-star-list {
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+}
+.rb-star-block {
+  border-top: 1px solid var(--line-cool);
+  padding-top: 28px;
+}
+.rb-star-block-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--gold-bright);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.rb-star-block h3 {
+  font-size: 17px;
+  margin: 0 0 24px;
+  color: var(--ink-paper);
+  font-weight: 500;
+  letter-spacing: 0.03em;
+}
+.rb-star-row {
+  display: grid;
+  grid-template-columns: 60px 1fr;
+  gap: 24px;
+  padding: 18px 0;
+  border-top: 1px solid var(--line-soft);
+  align-items: flex-start;
+}
+.rb-star-row:first-of-type { border-top: 0; padding-top: 0; }
+.rb-star-letter {
+  font-size: 30px;
+  font-weight: 600;
+  color: var(--gold-bright);
+  font-family: var(--font-en);
+  line-height: 1;
+  letter-spacing: 0.05em;
+}
+.rb-star-content {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.rb-star-content-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--gold-bright);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.rb-star-content-eyebrow small {
+  color: var(--mist-dim);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  font-weight: 400;
+}
+.rb-star-content-label {
+  font-size: 12px;
+  color: var(--mist-dim);
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+.rb-star-content-input {
+  padding: 10px 14px;
+  background: var(--surface-input);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--r-sm);
+  transition: all 0.25s var(--ease-out);
+}
+.rb-star-content-input:focus-within {
+  background: var(--surface-input-focus);
+  border-color: rgba(217, 182, 111, 0.55);
+}
+.rb-star-content-input textarea {
+  width: 100%;
+  min-height: 60px;
+  background: transparent;
+  border: 0; outline: 0;
+  color: var(--ink-paper-warm);
+  font-family: var(--font-cn);
+  font-size: 13.5px;
+  line-height: 1.6;
+  resize: vertical;
+}
+
+/* ============================================================
+ * 10. 步骤 05：软件信息
+ * ============================================================ */
+.rb-soft-skills {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.rb-soft-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 18px 0;
+  border-top: 1px solid var(--line-cool);
+}
+.rb-soft-row-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.rb-soft-row label {
+  font-size: 12px;
+  color: var(--mist-dim);
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+.rb-tags-input {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 10px 12px;
+  background: var(--surface-input);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--r-md);
+  min-height: 44px;
+  align-items: center;
+}
+.rb-tags-input:focus-within {
+  background: var(--surface-input-focus);
+  border-color: rgba(217, 182, 111, 0.55);
+}
+.rb-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: rgba(217, 182, 111, 0.10);
+  border: 1px solid rgba(217, 182, 111, 0.30);
+  border-radius: var(--r-sm);
+  font-size: 12px;
+  color: var(--gold-bright);
+  letter-spacing: 0.04em;
+}
+.rb-tag-remove {
+  cursor: pointer;
+  color: rgba(217, 182, 111, 0.55);
+  font-size: 11px;
+  background: none;
+  border: 0;
+  padding: 0;
+  margin-left: 4px;
+}
+.rb-tag-remove:hover { color: var(--gold-bright); }
+.rb-tags-input input {
+  flex: 1;
+  min-width: 80px;
+  background: transparent;
+  border: 0;
+  outline: 0;
+  color: var(--ink-paper-warm);
+  font-family: var(--font-cn);
+  font-size: 13px;
+}
+
+/* ============================================================
+ * 11. 步骤 06：证件照
+ * ============================================================ */
+.rb-photo-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 7fr);
+  gap: 36px;
+  align-items: start;
+}
+.rb-photo-frame {
+  position: relative;
+  aspect-ratio: 3 / 4;
+  background: rgba(4, 18, 21, 0.50);
+  border: 1px solid rgba(217, 182, 111, 0.28);
+  border-radius: var(--r-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.25s var(--ease-out);
+}
+.rb-photo-frame:hover {
+  border-color: rgba(217, 182, 111, 0.55);
+}
+.rb-photo-frame::before,
+.rb-photo-frame::after {
+  content: '';
+  position: absolute;
+  width: 18px; height: 18px;
+  border: 1.5px solid rgba(217, 182, 111, 0.45);
+}
+.rb-photo-frame::before { top: 8px; left: 8px; border-right: 0; border-bottom: 0; }
+.rb-photo-frame::after { bottom: 8px; right: 8px; border-left: 0; border-top: 0; }
+
+.rb-photo-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  color: var(--mist-dim);
+  font-size: 13px;
+  letter-spacing: 0.06em;
+}
+.rb-photo-empty svg { width: 36px; height: 36px; opacity: 0.45; }
+
+.rb-photo-image {
+  position: absolute;
+  inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+}
+
+.rb-photo-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(4, 14, 17, 0.75);
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: var(--ink-paper);
+  z-index: 2;
+}
+.rb-photo-frame.is-uploading .rb-photo-overlay { display: flex; }
+.rb-photo-overlay-text {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--gold-bright);
+}
+.rb-photo-overlay-pct {
+  font-family: var(--font-mono);
+  font-size: 32px;
+  font-weight: 600;
+  color: var(--gold-bright);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+.rb-photo-progress {
+  width: 60%;
+  height: 2px;
+  background: rgba(217, 182, 111, 0.18);
+  border-radius: 1px;
+  overflow: hidden;
+}
+.rb-photo-progress-fill {
+  height: 100%;
+  background: var(--gold-bright);
+  transition: width 0.25s linear;
+}
+
+.rb-photo-tip {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--gold-bright);
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  position: absolute;
+  top: 8px; right: 8px;
+  z-index: 1;
+  opacity: 0.65;
+}
+
+.rb-photo-actions { display: flex; flex-direction: column; gap: 12px; }
+
+.rb-photo-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  background: rgba(3, 16, 19, 0.42);
+  border: 1px solid var(--line-cool);
+  border-radius: var(--r-md);
+}
+.rb-photo-info-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12.5px;
+  letter-spacing: 0.04em;
+}
+.rb-photo-info-row span { color: var(--mist-dim); }
+.rb-photo-info-row b { color: var(--ink-paper-warm); font-weight: 500; }
+
+/* ============================================================
+ * 12. 步骤 07：精简润色
+ * ============================================================ */
+.rb-polish-state {
+  margin-bottom: 28px;
+  padding: 22px 0;
+  border-top: 1px solid var(--line-cool);
+  border-bottom: 1px solid var(--line-cool);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.rb-polish-state-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--gold-bright);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.rb-polish-state b {
+  font-size: 16px;
+  color: var(--ink-paper);
+  letter-spacing: 0.03em;
+  font-weight: 500;
+  margin-left: 12px;
+}
+.rb-polish-state-icon {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  color: var(--mist-mid);
+}
+.rb-polish-state-icon .icon-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--gold-bright);
+  animation: pulse 1.6s ease-in-out infinite;
+}
+.rb-polish-state-icon.is-done .icon-dot { background: var(--leaf-mid); animation: none; }
+.rb-polish-state-icon.is-done { color: var(--leaf-mid); }
+
+.rb-polish-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.rb-polish-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 0;
+  border-top: 1px solid var(--line-cool);
+}
+.rb-polish-item:first-child { border-top: 0; }
+.rb-polish-item-name {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.rb-polish-item-name-num {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--gold-bright);
+  letter-spacing: 0.10em;
+  font-variant-numeric: tabular-nums;
+}
+.rb-polish-item-name b {
+  font-size: 14.5px;
+  color: var(--ink-paper-warm);
+  letter-spacing: 0.04em;
+  font-weight: 500;
+}
+.rb-polish-item-desc {
+  font-size: 12px;
+  color: var(--mist-dim);
+  letter-spacing: 0.04em;
+  margin-top: 2px;
+}
+.rb-polish-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+}
+.rb-polish-status .dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--leaf-mid);
+  box-shadow: 0 0 6px rgba(126, 157, 120, 0.50);
+}
+.rb-polish-status.is-processing .dot {
+  background: var(--gold-bright);
+  animation: pulse 1s ease-in-out infinite;
+  box-shadow: 0 0 6px rgba(217, 182, 111, 0.50);
+}
+.rb-polish-status.is-processing { color: var(--gold-bright); }
+.rb-polish-status.is-ready { color: var(--leaf-mid); }
+.rb-polish-status.is-pending .dot { background: rgba(217, 221, 210, 0.30); box-shadow: none; }
+.rb-polish-status.is-pending { color: rgba(217, 221, 210, 0.30); }
+
+/* ============================================================
+ * 13. 步骤 08：生成与导出
+ * ============================================================ */
+.rb-include {
+  padding: 22px 24px;
+  background: rgba(3, 16, 19, 0.36);
+  border-radius: var(--r-md);
+  border: 1px solid var(--line-cool);
+  margin-bottom: 28px;
+}
+.rb-include-head {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--gold-bright);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+.rb-include-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.rb-include-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13.5px;
+  padding: 6px 0;
+  border-top: 1px dashed rgba(180, 205, 190, 0.10);
+}
+.rb-include-row:first-child { border-top: 0; }
+.rb-include-row span { color: var(--mist-dim); letter-spacing: 0.06em; }
+.rb-include-row b { color: var(--ink-paper-warm); font-weight: 500; }
+
+.rb-check {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 22px 24px;
+  background: rgba(3, 16, 19, 0.36);
+  border-radius: var(--r-md);
+  border: 1px solid var(--line-cool);
+  margin-bottom: 32px;
+}
+.rb-check-head {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--gold-bright);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+.rb-check-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.rb-check-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px 0;
+}
+.rb-check-mark {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.rb-check-mark.is-ok { background: var(--leaf-mid); color: var(--bg-deep); }
+.rb-check-mark.is-warn { background: var(--gold); color: var(--bg-deep); }
+.rb-check-item b { font-size: 13px; color: var(--ink-paper-warm); letter-spacing: 0.03em; font-weight: 500; }
+.rb-check-item small {
+  display: block;
+  font-size: 12px;
+  color: var(--mist-dim);
+  margin-top: 2px;
+  letter-spacing: 0.04em;
+}
+
+.rb-generate-stage { display: none; }
+.rb-generate-stage.is-on { display: block; }
+.rb-progress-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 22px 24px;
+  background: rgba(3, 16, 19, 0.42);
+  border: 1px solid rgba(217, 182, 111, 0.20);
+  border-radius: var(--r-md);
+}
+.rb-progress-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 0;
+  border-top: 1px solid var(--line-soft);
+}
+.rb-progress-row:first-child { border-top: 0; }
+.rb-progress-row-num {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--gold-bright);
+  letter-spacing: 0.08em;
+  font-variant-numeric: tabular-nums;
+  width: 36px;
+}
+.rb-progress-row b {
+  font-size: 13.5px;
+  color: var(--ink-paper-warm);
+  letter-spacing: 0.03em;
+  flex: 1;
+  font-weight: 500;
+}
+.rb-progress-row-mark {
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px;
+}
+.rb-progress-row-mark.is-current { background: rgba(217, 182, 111, 0.12); border: 1px solid var(--gold); color: var(--gold-bright); animation: pulse 1.4s ease-in-out infinite; }
+.rb-progress-row-mark.is-done { background: var(--leaf-mid); color: var(--bg-deep); }
+.rb-progress-row-mark.is-pending { background: transparent; border: 1px solid rgba(217, 221, 210, 0.20); }
+.rb-progress-row.is-done b { color: var(--leaf-mid); }
+.rb-progress-row.is-current b { color: var(--gold-bright); }
+.rb-progress-row.is-pending b { color: rgba(217, 221, 210, 0.35); }
+
+/* 生成成功 */
+.rb-success {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 40px 0;
+  text-align: center;
+}
+.rb-success.is-on { display: flex; }
+.rb-success-mark {
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  border: 1px solid rgba(217, 182, 111, 0.42);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+  color: var(--leaf-mid);
+  margin-bottom: 12px;
+}
+.rb-success h3 {
+  font-size: 24px;
+  margin: 0;
+  color: var(--ink-paper);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+}
+.rb-success p {
+  font-size: 13.5px;
+  color: var(--mist-dim);
+  margin: 0;
+  letter-spacing: 0.04em;
+  max-width: 480px;
+}
+
+/* ============================================================
+ * 14. 简历预览（A4 比例 210:297）
+ * ============================================================ */
+.rb-paper-stage {
+  display: none;
+  margin-top: 36px;
+  padding-top: 36px;
+  border-top: 1px solid var(--line-cool);
+}
+.rb-paper-stage.is-on { display: block; }
+.rb-paper-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 22px;
+}
+.rb-paper-head h4 {
+  font-size: 15px;
+  margin: 0;
+  color: var(--ink-paper);
+  letter-spacing: 0.06em;
+  font-weight: 500;
+}
+.rb-paper-head-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.rb-paper {
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  aspect-ratio: 210 / 297;
+  background: #ECE8DE;
+  color: #2A2A24;
+  padding: 40px 44px;
+  border-radius: var(--r-md);
+  box-shadow: var(--shadow-deep);
+  font-family: "Noto Serif SC", "Songti SC", serif;
+  font-size: 11.5px;
+  line-height: 1.7;
+  position: relative;
+  overflow: hidden;
+}
+.rb-paper::before {
+  content: '';
+  position: absolute;
+  top: 28px; left: 28px; right: 28px; bottom: 28px;
+  border: 1px solid rgba(217, 182, 111, 0.30);
+  pointer-events: none;
+}
+.rb-paper-content {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 1fr 80px;
+  gap: 20px;
+  height: 100%;
+}
+.rb-paper-main { display: flex; flex-direction: column; gap: 14px; }
+.rb-paper-side { display: flex; flex-direction: column; gap: 12px; }
+
+.rb-paper-name {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1B1B16;
+  letter-spacing: 0.08em;
+  font-family: "Noto Sans SC", sans-serif;
+}
+.rb-paper-target {
+  font-size: 11.5px;
+  color: #947B4C;
+  letter-spacing: 0.10em;
+  margin-top: 2px;
+}
+.rb-paper-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-size: 10.5px;
+  color: #5A5042;
+  margin-top: 8px;
+}
+.rb-paper-meta span::before {
+  content: '';
+  display: inline-block;
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  background: #947B4C;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+.rb-paper-section {
+  border-top: 1px solid rgba(180, 124, 70, 0.20);
+  padding-top: 8px;
+}
+.rb-paper-section h5 {
+  font-size: 12px;
+  margin: 0 0 8px;
+  color: #947B4C;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-family: "Noto Sans SC", sans-serif;
+  font-weight: 600;
+}
+.rb-paper-section p {
+  margin: 0 0 4px;
+  color: #2A2A24;
+  font-size: 11px;
+  line-height: 1.7;
+}
+.rb-paper-section .exp-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 4px;
+}
+.rb-paper-section .exp-head b {
+  font-size: 11.5px;
+  color: #1B1B16;
+  font-weight: 600;
+}
+.rb-paper-section .exp-head span {
+  font-size: 10.5px;
+  color: #947B4C;
+  font-family: "Noto Sans SC", sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+.rb-paper-photo {
+  width: 80px;
+  height: 106px;
+  background: linear-gradient(135deg, #C5C3B6, #9E9C8F);
+  border: 1px solid rgba(180, 124, 70, 0.20);
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ECE8DE;
+  font-size: 10px;
+  overflow: hidden;
+  align-self: flex-start;
+}
+.rb-paper-photo img { width: 100%; height: 100%; object-fit: cover; }
+
+.rb-paper-skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  font-size: 10.5px;
+}
+.rb-paper-skills span {
+  padding: 1px 8px;
+  background: rgba(180, 124, 70, 0.08);
+  border: 1px solid rgba(180, 124, 70, 0.18);
+  border-radius: 2px;
+  color: #5A4F3C;
+}
+
+/* ============================================================
+ * 15. 底部固定操作栏
+ * ============================================================ */
+.rb-bottombar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  background: rgba(5, 17, 20, 0.82);
+  border-top: 1px solid rgba(217, 182, 111, 0.14);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  position: relative;
+  z-index: 5;
+  gap: 16px;
+}
+
+.rb-bottombar-info {
+  font-size: 11.5px;
+  color: var(--mist-dim);
+  letter-spacing: 0.10em;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.rb-bottombar-info b {
+  color: var(--ink-paper-warm);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+.rb-bottombar-info .dot {
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  background: var(--gold-bright);
+  opacity: 0.55;
+}
+
+.rb-bottombar-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.rb-step-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 18px;
+  background: transparent;
+  color: rgba(220, 224, 216, 0.70);
+  border: 1px solid rgba(220, 224, 216, 0.20);
+  border-radius: var(--r-md);
+  cursor: pointer;
+  font-family: var(--font-cn);
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  transition: all 0.25s var(--ease-out);
+}
+.rb-step-back:hover {
+  border-color: rgba(217, 182, 111, 0.45);
+  color: var(--gold-bright);
+}
+.rb-step-back:disabled {
+  cursor: not-allowed;
+  opacity: 0.35;
+}
+
+.rb-step-next {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 22px;
+  background: #17393A;
+  color: var(--gold-bright);
+  border: 1px solid rgba(217, 182, 111, 0.36);
+  border-radius: var(--r-md);
+  cursor: pointer;
+  font-family: var(--font-cn);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  transition: all 0.25s var(--ease-out);
+}
+.rb-step-next:hover:not(:disabled) {
+  background: #234B49;
+  border-color: var(--gold-bright);
+  transform: translateY(-1px);
+}
+.rb-step-next:disabled {
+  background: rgba(40, 86, 82, 0.32);
+  color: rgba(217, 221, 210, 0.40);
+  border-color: rgba(217, 221, 210, 0.10);
+  cursor: not-allowed;
+}
+
+/* ============================================================
+ * 16. Toast
+ * ============================================================ */
+.rb-toast {
+  position: fixed;
+  bottom: 100px; left: 50%;
+  transform: translateX(-50%) translateY(40px);
+  z-index: 99;
+  padding: 12px 20px;
+  background: rgba(7, 20, 23, 0.92);
+  border: 1px solid rgba(217, 182, 111, 0.30);
+  border-radius: var(--r-md);
+  color: var(--ink-paper);
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  opacity: 0;
+  transition: all 0.4s var(--ease-out);
+  pointer-events: none;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
+}
+.rb-toast.is-on { opacity: 1; transform: translateX(-50%) translateY(0); }
+.rb-toast b { color: var(--gold-bright); font-weight: 500; }
+
+/* ============================================================
+ * 17. 简历库入口
+ * ============================================================ */
+.rb-link-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* ============================================================
+ * 18. 响应式（仅桌面）
+ * ============================================================ */
+@media (max-width: 1280px) {
+  .rb-left { padding: 40px 32px; }
+  .rb-left-title h1 { font-size: 32px; }
+  .rb-app { grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); }
+}
+
+@media (max-width: 1100px) {
+  .rb-left { display: none; }
+  .rb-app { grid-template-columns: 1fr; }
+}
+

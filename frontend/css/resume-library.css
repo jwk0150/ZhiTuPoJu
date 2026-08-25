@@ -1,0 +1,298 @@
+/* ============================================================
+ * 简历库 · 未来生态都市终端（复用 resume-builder 视觉语言）
+ * ============================================================ */
+
+body.rbl-body {
+  overflow: auto;
+}
+
+/* ============ 顶部导航 ============ */
+.rbl-topnav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 36px;
+  background: rgba(6, 18, 21, 0.72);
+  border-bottom: 1px solid rgba(217, 182, 111, 0.12);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 20;
+}
+.rbl-topnav-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--gold-bright);
+  font-size: 12.5px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+.rbl-topnav-brand .dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--gold-bright);
+  box-shadow: 0 0 0 3px rgba(217, 182, 111, 0.20), 0 0 12px rgba(217, 182, 111, 0.45);
+  animation: pulse 2.4s ease-in-out infinite;
+}
+.rbl-topnav-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.rbl-topnav-count {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--mist-dim);
+  letter-spacing: 0.08em;
+  margin-right: 8px;
+}
+.rbl-topnav-count b {
+  color: var(--gold-bright);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ============ 主体 ============ */
+.rbl-main {
+  padding: 108px 36px 60px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.rbl-head {
+  margin-bottom: 36px;
+}
+.rbl-head h1 {
+  font-size: 30px;
+  font-weight: 500;
+  margin: 0 0 12px;
+  color: var(--ink-paper);
+  letter-spacing: 0.04em;
+}
+.rbl-head p {
+  margin: 0;
+  font-size: 14.5px;
+  color: var(--mist-dim);
+  letter-spacing: 0.02em;
+  max-width: 720px;
+}
+
+/* ============ 列表 ============ */
+.rbl-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+.rbl-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 22px 22px 18px;
+  background: rgba(7, 20, 23, 0.56);
+  border: 1px solid rgba(217, 182, 111, 0.18);
+  border-radius: var(--r-md);
+  cursor: pointer;
+  transition: all 0.25s var(--ease-out);
+  overflow: hidden;
+}
+.rbl-card:hover {
+  border-color: rgba(217, 182, 111, 0.45);
+  background: rgba(7, 20, 23, 0.72);
+  transform: translateY(-2px);
+}
+.rbl-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.rbl-card-name {
+  font-size: 17px;
+  color: var(--ink-paper);
+  font-weight: 500;
+  letter-spacing: 0.03em;
+}
+.rbl-card-id {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--gold-bright);
+  letter-spacing: 0.10em;
+  opacity: 0.75;
+  margin-top: 3px;
+}
+.rbl-card-photo {
+  width: 46px; height: 60px;
+  border-radius: 2px;
+  border: 1px solid rgba(217, 182, 111, 0.25);
+  background: linear-gradient(135deg, rgba(40, 86, 82, 0.35), rgba(7, 20, 23, 0.8));
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+  color: var(--mist-dim);
+  font-size: 9px;
+  letter-spacing: 0.10em;
+}
+.rbl-card-photo img { width: 100%; height: 100%; object-fit: cover; }
+
+.rbl-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.rbl-tag {
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: var(--r-sm);
+  border: 1px solid rgba(217, 182, 111, 0.25);
+  color: var(--gold-bright);
+  background: rgba(217, 182, 111, 0.06);
+  letter-spacing: 0.04em;
+}
+.rbl-tag--leaf {
+  border-color: rgba(126, 157, 120, 0.30);
+  color: var(--leaf-mid);
+  background: rgba(126, 157, 120, 0.06);
+}
+
+.rbl-card-summary {
+  font-size: 12.5px;
+  color: var(--mist-dim);
+  line-height: 1.6;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.rbl-card-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 12px;
+  border-top: 1px solid rgba(180, 205, 190, 0.10);
+  font-size: 11px;
+  color: var(--mist-dim);
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+.rbl-card-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+.rbl-card-actions .rb-btn {
+  height: 30px;
+  padding: 0 12px;
+  font-size: 12px;
+  flex: 1;
+  justify-content: center;
+}
+.rbl-card-actions .rb-btn--danger {
+  background: rgba(120, 40, 40, 0.25);
+  color: rgba(217, 150, 150, 0.9);
+  border: 1px solid rgba(200, 80, 80, 0.3);
+}
+.rbl-card-actions .rb-btn--danger:hover {
+  border-color: rgba(200, 80, 80, 0.6);
+  color: #E8B4B4;
+}
+
+/* ============ 空状态 ============ */
+.rbl-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 90px 0;
+  text-align: center;
+}
+.rbl-empty-mark {
+  width: 54px; height: 54px;
+  border-radius: 50%;
+  border: 1px solid rgba(217, 182, 111, 0.30);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+  color: var(--gold-bright);
+}
+.rbl-empty h3 {
+  font-size: 18px;
+  margin: 0;
+  color: var(--ink-paper);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}
+.rbl-empty p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--mist-dim);
+  letter-spacing: 0.03em;
+}
+
+/* ============ 详情预览浮层 ============ */
+.rbl-detail-mask {
+  position: fixed;
+  inset: 0;
+  background: rgba(4, 14, 17, 0.72);
+  z-index: 50;
+  backdrop-filter: blur(4px);
+}
+.rbl-detail {
+  position: fixed;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(860px, 94vw);
+  max-height: 90vh;
+  overflow-y: auto;
+  background: rgba(6, 18, 21, 0.92);
+  border: 1px solid rgba(217, 182, 111, 0.25);
+  border-radius: var(--r-md);
+  z-index: 51;
+  padding: 28px;
+  box-shadow: var(--shadow-deep);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(217, 182, 111, 0.20) transparent;
+}
+.rbl-detail-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 22px;
+}
+.rbl-detail-head h3 {
+  margin: 0;
+  font-size: 16px;
+  color: var(--ink-paper);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}
+.rbl-detail-close {
+  background: none;
+  border: 1px solid rgba(217, 221, 210, 0.18);
+  border-radius: var(--r-sm);
+  color: var(--mist-dim);
+  width: 30px; height: 30px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.25s var(--ease-out);
+}
+.rbl-detail-close:hover {
+  border-color: rgba(217, 182, 111, 0.45);
+  color: var(--gold-bright);
+}
+.rbl-detail-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 20px;
+  justify-content: flex-end;
+}
+.rbl-detail .rb-paper {
+  max-width: 620px;
+  font-size: 10.5px;
+  padding: 30px 34px;
+}
+.rbl-detail .rb-paper-content { gap: 14px; }
