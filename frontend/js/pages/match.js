@@ -585,14 +585,14 @@
   function initMatch() {
     if (window.__matchInit) return;
     window.__matchInit = true;
-    // 演示态默认注入一份本地简历与匹配结果，页面无需后端也能完整展示。
+    // 刚进入时无简历：等待用户选择「从本地上传」或「从简历库选择」
     const demoState = window.matchState;
-    demoState.file = { name: '张三_Java后端开发.txt', size: 18642, type: 'text/plain' };
-    demoState.fileName = '张三_Java后端开发.txt';
-    demoState.fileSize = 18642;
-    demoState.result = structuredClone(MOCK_RESULT);
-    demoState.selectedJobId = MOCK_RESULT.matches[0].job.id;
-    demoState.resumeSections = buildDefaultResumeSections();
+    demoState.file = null;
+    demoState.fileName = '';
+    demoState.fileSize = 0;
+    demoState.result = null;
+    demoState.selectedJobId = null;
+    demoState.resumeSections = null;
     demoState.activeSection = 'basic';
     bindGlobal();
     bindEntry();
@@ -696,23 +696,35 @@
       ['dragleave', 'drop'].forEach((ev) => up.addEventListener(ev, (e) => { e.preventDefault(); up.classList.remove('is-drag'); }));
       up.addEventListener('drop', (e) => { const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]; if (f) loadFile(f); });
     }
-    const sample = $('md-sample-resume');
-    if (sample) sample.addEventListener('click', (e) => { e.stopPropagation(); loadSample(); });
+    // 简化的简历入口按钮已移除（如有遗留 HTML 自动跳过）
+    const libClose = $('lib-pick-close');
+    if (libClose) libClose.addEventListener('click', closeLibraryPicker);
+    const libMask = $('lib-pick-mask');
+    if (libMask) libMask.addEventListener('click', closeLibraryPicker);
     const start = $('md-start-match');
     if (start) start.addEventListener('click', () => {
-      if (!window.matchState.file) { window.showToast('请先上传简历', 'amber'); $('resume-file-input').click(); return; }
+      if (!window.matchState.file) { window.showToast('请先导入简历', 'amber'); openReupModal(); return; }
       setView('match');
     });
     // 顶部"开始匹配"按钮（用户要求放在右上角）
     const startTop = $('md-start-match-top');
     if (startTop) startTop.addEventListener('click', () => {
-      if (!window.matchState.file) { window.showToast('请先上传简历', 'amber'); $('resume-file-input').click(); return; }
+      if (!window.matchState.file) { window.showToast('请先导入简历', 'amber'); openReupModal(); return; }
       setView('match');
     });
     const view = $('md-view-resume');
     if (view) view.addEventListener('click', viewResume);
     const change = $('md-change-resume');
-    if (change) change.addEventListener('click', () => $('resume-file-input').click());
+    if (change) change.addEventListener('click', openReupModal);
+    // 重新选择浮层
+    const reupClose = $('reup-close');
+    if (reupClose) reupClose.addEventListener('click', closeReupModal);
+    const reupMask = $('reup-mask');
+    if (reupMask) reupMask.addEventListener('click', closeReupModal);
+    const reupLocal = $('reup-local');
+    if (reupLocal) reupLocal.addEventListener('click', () => { closeReupModal(); $('resume-file-input').click(); });
+    const reupLibrary = $('reup-library');
+    if (reupLibrary) reupLibrary.addEventListener('click', () => { closeReupModal(); openLibraryPicker(); });
     bindResumeAnalyze();
     bindDiffModal();
   }
@@ -1051,10 +1063,177 @@
       loadFile(new File([blob], '张三_Java后端开发.txt', { type: 'text/plain' }));
     }).catch(() => window.showToast('示例简历加载失败', 'amber'));
   }
+
+  /* ============================================================
+   * 从简历库导入（读 rb_resume_library_v1）
+   * ============================================================ */
+  const LIB_KEY = 'rb_resume_library_v1';
+
+  function loadLibraryItems() {
+    try {
+      const raw = localStorage.getItem(LIB_KEY);
+      const arr = raw ? JSON.parse(raw) : [];
+      return Array.isArray(arr) ? arr : [];
+    } catch (_) { return []; }
+  }
+
+  function openLibraryPicker() {
+    const modal = $('lib-pick-modal');
+    if (!modal) return;
+    const lib = loadLibraryItems();
+    const list = $('lib-pick-list');
+    const empty = $('lib-pick-empty');
+    if (!list) return;
+    list.innerHTML = '';
+    if (lib.length === 0) {
+      if (empty) empty.hidden = false;
+    } else {
+      if (empty) empty.hidden = true;
+      lib.forEach((item, i) => {
+        const el = document.createElement('button');
+        el.type = 'button';
+        el.className = 'lib-item';
+        const photoHtml = item.photo
+          ? `<img src="${item.photo}" alt="" />`
+          : (item.name ? item.name.slice(0, 1) : '档');
+        el.innerHTML = `
+          <span class="lib-item-avatar">${photoHtml}</span>
+          <span class="lib-item-main">
+            <span class="lib-item-name">${escapeHtml(item.name || '未命名简历')}</span>
+            <span class="lib-item-meta">
+              <span class="gold">${escapeHtml(item.position || '未选择方向')}</span>
+              <span>${item.expCount || 0} 段经历</span>
+              <span>${(item.skills || []).length} 个技能</span>
+            </span>
+          </span>
+          <span class="lib-item-date">${escapeHtml(item.createdAt || '')}</span>
+          <span class="lib-item-arrow">→</span>
+        `;
+        el.addEventListener('click', () => { importFromLibrary(item); closeLibraryPicker(); });
+        list.appendChild(el);
+      });
+    }
+    modal.hidden = false;
+  }
+
+  function closeLibraryPicker() {
+    const modal = $('lib-pick-modal');
+    if (modal) modal.hidden = true;
+  }
+
+  /* 重新选择简历 · 弹窗 */
+  function openReupModal() {
+    const modal = $('reup-modal');
+    if (modal) modal.hidden = false;
+  }
+  function closeReupModal() {
+    const modal = $('reup-modal');
+    if (modal) modal.hidden = true;
+  }
+
+  /* 把简历库档案转换为匹配工作台的 resumeSections */
+  function libraryItemToSections(item) {
+    const defs = buildDefaultResumeSections();
+    const sections = defs.map((d) => ({ ...d, content: '' }));
+    const d = item && item.data ? item.data : (item || {});
+    const b = d.basicInfo || {};
+    const profile = d.profile || {};
+    const byId = {};
+    sections.forEach((s) => { byId[s.id] = s; });
+
+    // 个人信息
+    const basicLines = [];
+    if (b.name) basicLines.push(b.name);
+    if (b.phone) basicLines.push('电话：' + b.phone);
+    if (b.email) basicLines.push('邮箱：' + b.email);
+    if (b.city) basicLines.push('所在城市：' + b.city);
+    byId.basic.content = basicLines.join('\n');
+
+    // 教育经历
+    if (b.school || b.major) {
+      const edu = [];
+      if (b.school) edu.push(b.school + (b.major ? ' · ' + b.major : '') + (b.degree ? ' · ' + b.degree : ''));
+      if (b.graduate) edu.push(b.graduate + ' 毕业');
+      byId.education.content = edu.join('\n');
+    }
+
+    // 项目经历：优先 STAR 结构化结果，其次原始经历
+    const stars = d.starExperiences || [];
+    if (stars.length) {
+      byId.projects.content = stars.map((s, i) =>
+        `${i + 1}. ${s.title || ('经历' + (i + 1))}：${s.S || ''} ${s.T || ''} ${s.A || ''} ${s.R || ''}`
+      ).join('\n');
+    } else {
+      const exps = d.experiences || [];
+      if (exps.length) {
+        byId.projects.content = exps.map((e, i) =>
+          `${i + 1}. ${e.title || ('经历' + (i + 1))}${e.time ? '（' + e.time + '）' : ''}：${e.brief || ''}${e.result ? ' 成果：' + e.result : ''}`
+        ).join('\n');
+      }
+    }
+
+    // 专业技能
+    if (profile.skills && profile.skills.length) byId.skills.content = profile.skills.join('、');
+
+    // 自我评价
+    if (profile.summary) byId.summary.content = profile.summary;
+
+    // 补齐为空的内容
+    sections.forEach((s) => {
+      if (!s.content.trim()) {
+        const def = defs.find((x) => x.id === s.id);
+        s.content = def ? def.content : '';
+      }
+    });
+    return sections;
+  }
+
+  /* 应用导入：设置 matchState 并渲染 */
+  function importFromLibrary(item) {
+    const st = window.matchState;
+    st.file = { _fromLibrary: true, libId: item.id || '' };
+    st.fileName = (item.name || '简历库简历') + '.txt';
+    st.fileSize = 0;
+    st.resumeSections = libraryItemToSections(item);
+    st.activeSection = 'basic';
+    st.result = null;
+    st.selectedJobId = null;
+    // 预填匹配偏好：投递方向来自库中档案
+    const posName = item.position;
+    if (posName && posName !== '未选择方向') {
+      st.preferences.direction = posName;
+    }
+    renderResume();
+    window.showToast('已从简历库导入「' + (item.name || '') + '」', 'teal');
+  }
   function viewResume() {
     const st = window.matchState;
     if (st.file && st.file instanceof File) {
       const url = URL.createObjectURL(st.file); window.open(url, '_blank'); setTimeout(() => URL.revokeObjectURL(url), 60000);
+    } else if (st.file && st.file._fromLibrary && st.resumeSections) {
+      // 简历库导入：用 A4 纸张样式渲染预览
+      const w = window.open('', '_blank');
+      if (!w) { window.showToast('请允许弹窗以预览简历', 'amber'); return; }
+      const secById = {};
+      st.resumeSections.forEach((s) => { secById[s.id] = s.content || ''; });
+      w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>简历预览</title><style>
+        body { margin: 0; padding: 24px; background: #ddd; font-family: "Noto Serif SC", serif; }
+        .paper { width: 210mm; min-height: 297mm; margin: 0 auto; background: #ECE8DE; color: #2A2A24;
+          padding: 18mm 20mm; box-sizing: border-box; box-shadow: 0 0 12px rgba(0,0,0,.15); }
+        .paper h1 { font-size: 22px; margin: 0 0 2px; color: #1B1B16; letter-spacing: .08em; }
+        .paper .sub { color: #947B4C; font-size: 11.5px; letter-spacing: .1em; margin-bottom: 8px; }
+        .paper h5 { font-size: 12px; color: #947B4C; letter-spacing: .18em; border-top: 1px solid rgba(180,124,70,.2); padding-top: 8px; margin: 12px 0 6px; }
+        .paper p { margin: 0 0 4px; font-size: 11px; line-height: 1.7; white-space: pre-wrap; }
+      </style></head><body><div class="paper">
+        <h1>${escapeHtml((st.resumeSections[0] && st.resumeSections[0].content.split('\n')[0]) || '')}</h1>
+        <div class="sub">求职方向 · ${escapeHtml(st.preferences.direction || '—')}</div>
+        <h5>个人信息</h5><p>${escapeHtml(secById.basic || '')}</p>
+        <h5>教育经历</h5><p>${escapeHtml(secById.education || '')}</p>
+        <h5>项目经历</h5><p>${escapeHtml(secById.projects || '')}</p>
+        <h5>专业技能</h5><p>${escapeHtml(secById.skills || '')}</p>
+        <h5>自我评价</h5><p>${escapeHtml(secById.summary || '')}</p>
+      </div></body></html>`);
+      w.document.close();
     } else window.showToast('该简历暂不支持预览', 'amber');
   }
 

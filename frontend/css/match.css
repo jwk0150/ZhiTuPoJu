@@ -3551,3 +3551,98 @@ mark.hl-good.is-adopted { background: rgba(47,170,106,.1); color: #7f9c8c; text-
   .jd-decision-steps { flex-direction: column; align-items: stretch; }
   .jd-decision-arrow { text-align: center; }
 }
+
+/* ============================================================
+ * 从简历库导入 · 上传卡与选择浮层
+ * ============================================================ */
+/* 简历入口已移除（仅靠顶部"开始匹配"与悬浮窗触发导入） */
+
+/* 浮层 */
+.lib-modal { position: fixed; inset: 0; z-index: 120; display: flex; align-items: center; justify-content: center; }
+.lib-modal[hidden] { display: none !important; }
+.lib-mask { position: absolute; inset: 0; background: rgba(4, 8, 12, .72); backdrop-filter: blur(4px); }
+.lib-dialog {
+  position: relative; width: min(680px, 92vw); max-height: 80vh; display: flex; flex-direction: column;
+  background: linear-gradient(168deg, rgba(14, 26, 38, .96), rgba(7, 12, 19, .97));
+  border: 1px solid rgba(31, 200, 217, .22);
+  border-radius: 14px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, .6), inset 0 1px 0 rgba(255, 255, 255, .06);
+  animation: lib-in .3s cubic-bezier(.2, .8, .3, 1) both;
+}
+@keyframes lib-in { from { opacity: 0; transform: translateY(14px) scale(.97); } to { opacity: 1; transform: none; } }
+.lib-head {
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;
+  padding: 20px 22px 14px;
+}
+.lib-title { margin: 4px 0 0; font-size: 18px; font-weight: 700; color: var(--ink); }
+.lib-sub { margin: 5px 0 0; font-size: 12px; color: var(--ink-faint); }
+.lib-close {
+  flex: 0 0 auto; width: 30px; height: 30px; border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, .12); background: rgba(255, 255, 255, .05);
+  color: var(--ink-soft); cursor: pointer; transition: all .15s;
+}
+.lib-close:hover { border-color: rgba(200, 76, 90, .5); color: #f0b8c2; }
+
+.lib-list {
+  flex: 1 1 auto; overflow-y: auto; padding: 4px 22px 22px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.lib-item {
+  display: flex; align-items: center; gap: 14px;
+  padding: 13px 14px; border-radius: 11px;
+  background: rgba(255, 255, 255, .035); border: 1px solid rgba(255, 255, 255, .09);
+  cursor: pointer; transition: all .16s;
+  text-align: left; font-family: inherit; color: inherit;
+}
+.lib-item:hover { border-color: rgba(31, 200, 217, .45); background: rgba(31, 200, 217, .07); transform: translateY(-1px); }
+.lib-item-avatar {
+  width: 34px; height: 44px; flex: 0 0 auto; border-radius: 4px; overflow: hidden;
+  background: linear-gradient(150deg, #2a3f52, #16242f);
+  display: grid; place-items: center; color: var(--ink-faint); font-size: 9px; letter-spacing: .06em;
+  border: 1px solid rgba(255, 255, 255, .1);
+}
+.lib-item-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.lib-item-main { flex: 1 1 auto; min-width: 0; }
+.lib-item-name { font-size: 13.5px; font-weight: 700; color: var(--ink); }
+.lib-item-meta { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+.lib-item-meta span {
+  font-size: 10px; color: var(--signal); font-weight: 600;
+  background: var(--signal-dim); border: 1px solid rgba(31, 200, 217, .25);
+  padding: 1px 8px; border-radius: 999px;
+}
+.lib-item-meta span.gold { color: var(--accent-gold); background: rgba(240, 180, 41, .08); border-color: rgba(240, 180, 41, .28); }
+.lib-item-date { flex: 0 0 auto; font-size: 10.5px; color: var(--ink-faint); font-variant-numeric: tabular-nums; }
+.lib-item-arrow { color: var(--ink-faint); font-size: 14px; transition: transform .16s; }
+.lib-item:hover .lib-item-arrow { transform: translateX(3px); color: var(--signal); }
+
+.lib-empty { padding: 40px 22px 50px; text-align: center; }
+.lib-empty p { margin: 0; font-size: 15px; font-weight: 700; color: var(--ink); }
+.lib-empty span { display: block; margin-top: 6px; font-size: 12px; color: var(--ink-faint); }
+
+/* 重新选择简历浮层 */
+.reup-modal { position: fixed; inset: 0; z-index: 120; display: flex; align-items: center; justify-content: center; }
+.reup-modal[hidden] { display: none !important; }
+.reup-mask { position: absolute; inset: 0; background: rgba(4, 8, 12, .72); backdrop-filter: blur(4px); }
+.reup-dialog {
+  position: relative; width: min(480px, 92vw); display: flex; flex-direction: column;
+  background: linear-gradient(168deg, rgba(14, 26, 38, .96), rgba(7, 12, 19, .97));
+  border: 1px solid rgba(31, 200, 217, .22);
+  border-radius: 14px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, .6), inset 0 1px 0 rgba(255, 255, 255, .06);
+  animation: reup-in .25s cubic-bezier(.2, .8, .3, 1) both;
+}
+@keyframes reup-in { from { opacity: 0; transform: translateY(10px) scale(.97); } to { opacity: 1; transform: none; } }
+.reup-head {
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;
+  padding: 22px 22px 18px;
+}
+.reup-title { margin: 4px 0 0; font-size: 18px; font-weight: 700; color: var(--ink); }
+.reup-sub { margin: 6px 0 0; font-size: 12px; color: var(--ink-faint); }
+.reup-close {
+  flex: 0 0 auto; width: 30px; height: 30px; border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, .12); background: rgba(255, 255, 255, .05);
+  color: var(--ink-soft); cursor: pointer; transition: all .15s;
+}
+.reup-close:hover { border-color: rgba(200, 76, 90, .5); color: #f0b8c2; }
+.reup-actions { display: flex; gap: 12px; padding: 4px 22px 22px; flex-wrap: wrap; }
+.reup-btn { display: inline-flex; align-items: center; gap: 8px; padding: 11px 20px; font-size: 13px; font-weight: 600; }
