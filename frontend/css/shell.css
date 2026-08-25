@@ -1,4 +1,5 @@
 /* 深色电影风 shell —— 顶部导航 + 深色玻璃 chrome */
+@import url('./toast.css?v=20260824toast');
 
 *,
 *::before,
@@ -192,7 +193,7 @@ body:has(#cinema-bg) .topnav {
   background: rgba(255, 255, 255, 0.05);
 }
 
-/* 当前模块：玻璃高亮效果 */
+/* 当前模块：玻璃高亮 */
 .nav-item.active {
   color: var(--brand-gold-bright);
   font-weight: 600;

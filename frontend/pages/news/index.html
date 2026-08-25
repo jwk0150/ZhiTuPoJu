@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>岗位大新闻 · 未来职业资讯中心</title>
+  <meta name="description" content="洞察岗位变化，把握职业趋势 —— 面向年轻人的未来职业资讯中心。" />
+  <link rel="stylesheet" href="../../css/tokens.css?v=49" />
+  <link rel="stylesheet" href="../../css/shell.css?v=49" />
+  <link rel="stylesheet" href="../../css/components.css?v=49" />
+  <link rel="stylesheet" href="css/news.css" />
+</head>
+<body data-page="news">
+  <div id="app-shell"></div>
+  <main class="page-main jn-page" id="page-main">
+    <!-- Loading 骨架 -->
+    <div class="jn-container" id="app-loading" aria-hidden="true">
+      <div class="jn-skeleton" style="height:118px;border-radius:18px;margin-top:26px"></div>
+      <div style="display:grid;grid-template-columns:1.55fr 1fr;gap:22px;margin-top:20px">
+        <div class="jn-skeleton" style="height:384px;border-radius:22px"></div>
+        <div class="jn-skeleton" style="height:384px;border-radius:22px"></div>
+      </div>
+      <div class="jn-skeleton" style="height:96px;border-radius:18px;margin-top:20px"></div>
+      <div class="jn-skeleton" style="height:96px;border-radius:18px;margin-top:14px"></div>
+    </div>
+
+    <!-- 内容 -->
+    <div class="jn-container" id="app" hidden>
+      <header class="jn-module-head" id="module-head"></header>
+      <section class="jn-section" id="focus" aria-label="今日焦点"></section>
+      <div class="jn-body-grid" id="body-grid">
+        <div class="jn-main-col" id="main-col">
+          <div class="jn-news-cols" id="news-cols"></div>
+          <section class="jn-section" id="related" aria-label="延伸阅读"></section>
+          <button type="button" class="jn-load-more" id="load-more">更多资讯 <span aria-hidden="true">→</span></button>
+        </div>
+        <aside class="jn-rail-col" id="rail-col" aria-label="热门排行"></aside>
+      </div>
+    </div>
+
+    <!-- 页脚 -->
+    <footer class="jn-footer">
+      <div class="jn-container jn-footer-inner">
+        <div class="jn-footer-brand">
+          <span class="jn-logo" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 6.5C4 5.1 5.1 4 6.5 4h11C18.9 4 20 5.1 20 6.5V19a1 1 0 0 1-1 1H6.5A2.5 2.5 0 0 1 4 17.5v-11Z"/>
+              <path d="M4 8.5h16"/>
+              <path d="M8 13h5M8 16h7"/>
+              <circle cx="17" cy="11.5" r="1.7" fill="currentColor" stroke="none"/>
+            </svg>
+          </span>
+          岗位大新闻
+        </div>
+        <div class="jn-footer-note">
+          内容与数据均为示例，不代表真实统计或新闻来源
+        </div>
+      </div>
+    </footer>
+  </main>
+
+  <script src="../../js/api.js"></script>
+  <script src="../../js/cinema-bg.js"></script>
+  <script src="../../js/cinema-music.js"></script>
+  <script src="../../js/shell.js?v=20260824"></script>
+  <script src="js/data.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/home.js"></script>
+  <script>
+    window.Shell && window.Shell.mount({ pageId: 'news', title: '岗位大新闻', subtitle: '洞察岗位变化，把握职业趋势' });
+  </script>
+</body>
+</html>

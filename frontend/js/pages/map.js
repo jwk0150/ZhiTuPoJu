@@ -28,6 +28,53 @@ talentMapState = {
     cityDetailData: null,    // 城市详情API缓存
 };
 
+/* G6 按需加载：地图首屏只依赖 echarts，进入图谱再拉 G6 */
+window.ensureG6 = function() {
+    if (window.G6 && window.G6.Graph) return Promise.resolve(window.G6);
+    if (window.__g6Loading) return window.__g6Loading;
+    window.__g6Loading = new Promise(function(resolve, reject) {
+        var s = document.createElement('script');
+        s.src = 'https://cdn.jsdelivr.net/npm/@antv/g6@4.8.24/dist/g6.min.js';
+        s.async = true;
+        s.onload = function() {
+            window.__g6Loading = null;
+            if (window.G6 && window.G6.Graph) resolve(window.G6);
+            else reject(new Error('G6 loaded but Graph missing'));
+        };
+        s.onerror = function() {
+            window.__g6Loading = null;
+            reject(new Error('G6 CDN load failed'));
+        };
+        document.head.appendChild(s);
+    });
+    return window.__g6Loading;
+};
+
+window.destroyTalentMap = function() {
+    try {
+        if (talentMapState.breathTimer) {
+            clearInterval(talentMapState.breathTimer);
+            talentMapState.breathTimer = null;
+        }
+        if (talentMapState.mapChart) {
+            talentMapState.mapChart.dispose();
+            talentMapState.mapChart = null;
+        }
+        if (talentMapState.jobGraphInstance) {
+            talentMapState.jobGraphInstance.destroy();
+            talentMapState.jobGraphInstance = null;
+        }
+        if (window.talentAbilityState && window.talentAbilityState.graph) {
+            try { window.talentAbilityState.graph.destroy(); } catch (e) {}
+            window.talentAbilityState.graph = null;
+        }
+    } catch (e) {}
+};
+
+window.addEventListener('pagehide', function() {
+    if (typeof window.destroyTalentMap === 'function') window.destroyTalentMap();
+});
+
 // GeoJSON 完整名 → 数据简称
 const GEO_TO_SHORT = {
     '北京市':'北京','天津市':'天津','上海市':'上海','重庆市':'重庆',
@@ -275,11 +322,37 @@ function talentComputeCityView(geoJson) {
 }
 
 // API 基础路径
-const API_BASE = (window.API_BASE || ((location.hostname === '127.0.0.1' || location.hostname === 'localhost') ? 'http://127.0.0.1:5000' : location.origin)) + '/api';
+const API_BASE = (window.resolveApiBase ? window.resolveApiBase() : (window.API_BASE || location.origin)) + '/api';
+
+function talentFetchJson(url, timeoutMs) {
+    var ms = timeoutMs || 4000;
+    var ctrl = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+    var timer = ctrl ? setTimeout(function () { try { ctrl.abort(); } catch (e) {} }, ms) : null;
+    return fetch(url, ctrl ? { signal: ctrl.signal } : undefined)
+        .then(function (res) {
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            return res.json();
+        })
+        .finally(function () { if (timer) clearTimeout(timer); });
+}
+
+function talentPrefetchGeo() {
+    if (talentMapState.geoJSON || talentMapState._geoLoading) return talentMapState._geoLoading;
+    talentMapState._geoLoading = fetch('../assets/china-geo.json')
+        .then(function (r) { return r.json(); })
+        .then(function (geo) { talentMapState.geoJSON = geo; return geo; })
+        .catch(function (e) {
+            console.warn('[TalentMap] GeoJSON预加载失败', e);
+            return null;
+        })
+        .finally(function () { talentMapState._geoLoading = null; });
+    return talentMapState._geoLoading;
+}
 
 // ============== 初始化 ==============
 window.initTalentMap = async function() {
     window.bindTalentMapEvents();
+    talentPrefetchGeo();
     if (!talentMapState.dataLoaded) {
         await window.talentLoadData();
     }
@@ -331,33 +404,39 @@ window.talentLoadData = async function() {
     if (filt.education) url += 'education=' + encodeURIComponent(filt.education) + '&';
     if (filt.experience) url += 'experience=' + encodeURIComponent(filt.experience) + '&';
 
-    // 并行请求：省份数据 + 筛选选项
     var provincesOk = false;
-    try {
-        const res = await fetch(url);
-        const json = await res.json();
-        const d = json.data || json;
-        talentMapState.allProvinces = d.provinces || [];
-        talentMapState.dataLoaded = true;
-        // 省份下拉框为全国省级行政区列表，仅初始化一次（不被筛选结果过滤）
-        if (d.regions && d.regions.length) window.talentInitProvinceOptions(d.regions);
-        window.updateTalentStats();
-        console.log('[TalentMap] 加载完成：' + talentMapState.allProvinces.length + ' 个省份');
-        provincesOk = true;
-    } catch (e) {
-        console.warn('[TalentMap] 省份API失败，使用Mock', e);
-        window.talentUseMock();
+    var results = await Promise.allSettled([
+        talentFetchJson(url, 4000),
+        talentFetchJson(API_BASE + '/map/filters', 4000)
+    ]);
+
+    if (results[0].status === 'fulfilled') {
+        try {
+            const d = results[0].value.data || results[0].value;
+            talentMapState.allProvinces = d.provinces || [];
+            talentMapState.dataLoaded = true;
+            if (d.regions && d.regions.length) window.talentInitProvinceOptions(d.regions);
+            window.updateTalentStats();
+            console.log('[TalentMap] 加载完成：' + talentMapState.allProvinces.length + ' 个省份');
+            provincesOk = true;
+        } catch (e) {
+            console.warn('[TalentMap] 省份数据解析失败，使用Mock', e);
+        }
+    } else {
+        console.warn('[TalentMap] 省份API失败，使用Mock', results[0].reason);
     }
 
-    // 独立请求筛选选项（确保省份下拉框始终有数据）
-    try {
-        var fRes = await fetch(API_BASE + '/map/filters');
-        var fJson = await fRes.json();
-        var fd = fJson.data || fJson;
-        if (fd.regions && fd.regions.length) window.talentInitProvinceOptions(fd.regions);
-    } catch(e) {
-        console.warn('[TalentMap] 筛选选项API失败，使用省份名作为省份选项', e);
-        // 兜底：从省份名称提取省份选项
+    if (!provincesOk) window.talentUseMock();
+
+    if (results[1].status === 'fulfilled') {
+        try {
+            var fd = results[1].value.data || results[1].value;
+            if (fd.regions && fd.regions.length) window.talentInitProvinceOptions(fd.regions);
+        } catch (e) {
+            console.warn('[TalentMap] 筛选选项解析失败', e);
+        }
+    } else {
+        console.warn('[TalentMap] 筛选选项API失败，使用省份名作为省份选项', results[1].reason);
         if (!provincesOk || talentMapState.allProvinces.length > 0) {
             var regions = talentMapState.allProvinces.map(function(p) { return p.name; });
             window.talentInitProvinceOptions(regions);
@@ -1497,8 +1576,12 @@ window.renderChinaMap = async function() {
     // 加载 GeoJSON
     if (!talentMapState.geoJSON) {
         try {
-            const res = await fetch('../assets/china-geo.json');
-            talentMapState.geoJSON = await res.json();
+            if (talentMapState._geoLoading) {
+                await talentMapState._geoLoading;
+            } else {
+                const res = await fetch('../assets/china-geo.json');
+                talentMapState.geoJSON = await res.json();
+            }
         } catch (e) {
             console.warn('[TalentMap] GeoJSON加载失败', e);
             talentMapState.geoJSON = null;
@@ -2409,6 +2492,12 @@ window.renderCityTechGraph = async function(cityName, jobName, keepMode, viewMod
     if (talentMapState.jobGraphInstance) {
         try { talentMapState.jobGraphInstance.destroy(); } catch(e) {}
         talentMapState.jobGraphInstance = null;
+    }
+    try {
+        await window.ensureG6();
+    } catch (e) {
+        container.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#fff;font-size:14px">图谱库加载失败，请检查网络后重试</div>';
+        return;
     }
     if (typeof G6 === 'undefined' || !G6.Graph) {
         container.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#fff;font-size:14px">G6图谱库加载中，请稍后重试...</div>';
@@ -3667,7 +3756,12 @@ function talentAbilityRenderGraph() {
     html.push('</div>');
     body.innerHTML = html.join('');
     // 等弹窗布局完成后量取容器尺寸
-    setTimeout(function() { talentAbilityBuildGraph(); }, 80);
+    setTimeout(function() {
+        window.ensureG6().then(function() { talentAbilityBuildGraph(); }).catch(function() {
+            var c = document.getElementById('ability-graph-container');
+            if (c) c.innerHTML = '<div style="padding:24px;color:#fff;text-align:center">图谱库加载失败，请检查网络后重试</div>';
+        });
+    }, 80);
 }
 
 function talentAbilityBuildGraph() {

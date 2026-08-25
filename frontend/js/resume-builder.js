@@ -20,12 +20,7 @@
     jobDirection: {
       positions: []
     },
-    experiences: [{
-      id: 0,
-      type: '', time: '', title: '',
-      org: '', role: '',
-      brief: '', result: ''
-    }],
+    experiences: [],
     starExperiences: [],
     profile: {
       personality: '',
@@ -51,16 +46,10 @@
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) {
         const obj = JSON.parse(raw);
-        // 一次性清理旧版本累积的多余经历，只保留第一条（已清理过则跳过）
-        if (Array.isArray(obj.experiences) && obj.experiences.length > 1 && !obj._expClean) {
-          obj.experiences = obj.experiences.slice(0, 1);
-          obj._expClean = true;
-          try { localStorage.setItem(STORAGE_KEY, JSON.stringify(obj)); } catch (_) {}
-        }
         return Object.assign({}, defaultState, obj, {
           basicInfo: Object.assign({}, defaultState.basicInfo, obj.basicInfo || {}),
           jobDirection: Object.assign({}, defaultState.jobDirection, obj.jobDirection || { positions: [] }),
-          experiences: obj.experiences && obj.experiences.length ? obj.experiences : defaultState.experiences.slice(),
+          experiences: obj.experiences || [],
           starExperiences: obj.starExperiences || [],
           profile: Object.assign({}, defaultState.profile, obj.profile || {}, { skills: (obj.profile && obj.profile.skills) || [] }),
           photo: obj.photo || null,
@@ -91,16 +80,14 @@
         else if (k === 'style' && typeof attrs[k] === 'object') Object.assign(node.style, attrs[k]);
         else if (k.startsWith('on') && typeof attrs[k] === 'function') node.addEventListener(k.slice(2).toLowerCase(), attrs[k]);
         else if (k === 'dataset') Object.assign(node.dataset, attrs[k]);
-        else if (attrs[k] != null) node.setAttribute(k, attrs[k]);
+        else node.setAttribute(k, attrs[k]);
       });
     }
-    const appendChild = (c) => {
+    children.forEach(c => {
       if (c == null || c === false) return;
-      if (Array.isArray(c)) { c.forEach(appendChild); return; }
       if (typeof c === 'string' || typeof c === 'number') node.appendChild(document.createTextNode(String(c)));
       else node.appendChild(c);
-    };
-    children.forEach(appendChild);
+    });
     return node;
   }
 
@@ -532,10 +519,7 @@
       brief,
       result
     };
-    // 若存在一条全空的初始经历，则替换它；否则追加新经历
-    const emptyIdx = state.experiences.findIndex(e => e && !e.type && !e.time && !e.org && !e.role && !e.brief && !e.result && !e.title);
-    if (emptyIdx >= 0) state.experiences[emptyIdx] = newExp;
-    else state.experiences.push(newExp);
+    state.experiences.push(newExp);
     saveState();
 
     btn.classList.remove('is-loading');
@@ -952,7 +936,7 @@
 
     state.generated = true;
     saveState();
-    await saveToLibrary();
+    saveToLibrary();
     succ.classList.add('is-on');
     paper.classList.add('is-on');
     paintPaper();
@@ -964,40 +948,9 @@
   /* ============== 14.5 简历库 ============== */
   const LIB_STORAGE_KEY = 'rb_resume_library_v1';
 
-  /** 压缩 base64 图片，防止 localStorage 配额超限 */
-  function compressImage(dataUrl, maxW) {
-    maxW = maxW || 300;
-    return new Promise((resolve) => {
-      try {
-        const img = new Image();
-        img.onload = () => {
-          try {
-            const ratio = Math.min(1, maxW / img.width);
-            const canvas = document.createElement('canvas');
-            canvas.width = Math.max(1, Math.round(img.width * ratio));
-            canvas.height = Math.max(1, Math.round(img.height * ratio));
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-            resolve(canvas.toDataURL('image/jpeg', 0.82));
-          } catch (_) { resolve(dataUrl); }
-        };
-        img.onerror = () => resolve(dataUrl);
-        img.src = dataUrl;
-      } catch (_) { resolve(dataUrl); }
-    });
-  }
-
-  async function saveToLibrary() {
+  function saveToLibrary() {
     try {
       const lib = loadLibrary();
-      // 照片超过 200KB 则压缩，避免超出 localStorage 配额
-      let photoData = state.photo ? state.photo.data : null;
-      if (photoData && photoData.length > 200 * 1024) {
-        photoData = await compressImage(photoData);
-      }
-      const data = JSON.parse(JSON.stringify(state));
-      if (data.photo && photoData) data.photo.data = photoData;
-
       const item = {
         id: 'RB-' + Date.now().toString().slice(-8),
         name: state.basicInfo.name || '未命名简历',
@@ -1006,36 +959,15 @@
         summary: state.profile.summary || '',
         skills: state.profile.skills.slice(),
         expCount: state.starExperiences.length,
-        photo: photoData,
-        data
+        photo: state.photo ? state.photo.data : null,
+        data: JSON.parse(JSON.stringify(state))
       };
       // 同 id 去重更新；否则插入到最前
       const idx = lib.findIndex(r => r.id === item.id);
       if (idx >= 0) lib[idx] = item; else lib.unshift(item);
       localStorage.setItem(LIB_STORAGE_KEY, JSON.stringify(lib));
     } catch (err) {
-      // 兜底：去掉照片再存一次，保证简历文字内容一定能进库
-      console.warn('saveToLibrary fail (retry without photo):', err);
-      try {
-        const lib = loadLibrary();
-        const data = JSON.parse(JSON.stringify(state));
-        delete data.photo;
-        const item = {
-          id: 'RB-' + Date.now().toString().slice(-8),
-          name: state.basicInfo.name || '未命名简历',
-          position: (state.jobDirection.positions[0] && POSITION_LIST.find(p => p.id === state.jobDirection.positions[0]).name) || '未选择方向',
-          createdAt: new Date().toLocaleString('zh-CN', { hour12: false }),
-          summary: state.profile.summary || '',
-          skills: state.profile.skills.slice(),
-          expCount: state.starExperiences.length,
-          photo: null,
-          data
-        };
-        lib.unshift(item);
-        localStorage.setItem(LIB_STORAGE_KEY, JSON.stringify(lib));
-      } catch (e2) {
-        console.warn('saveToLibrary retry fail:', e2);
-      }
+      console.warn('saveToLibrary fail:', err);
     }
   }
 
@@ -1166,11 +1098,8 @@
   function bindEvents() {
     $('#rb-step-back').addEventListener('click', prevStep);
     $('#rb-step-next').addEventListener('click', nextStep);
-    $('#rb-go-home').addEventListener('click', () => {
-      saveState();
-      toast('✓ 进度已暂存');
-      setTimeout(() => { window.location.href = 'home.html'; }, 500);
-    });
+    $('#rb-go-home').addEventListener('click', () => { saveState(); window.location.href = 'home.html'; });
+    $('#rb-save-exit').addEventListener('click', () => { saveState(); toast('✓ 已暂存，可在下次进入时继续'); });
 
     // 步骤 1
     $('#rb-ai-basic').addEventListener('click', aiAutofillBasic);

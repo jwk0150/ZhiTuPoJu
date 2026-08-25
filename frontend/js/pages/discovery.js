@@ -936,12 +936,9 @@ window.renderDiscoveryList = function(opts) {
         const ctx = (j.industry || '互联网') + ' · ' + (j.category || j.direction || '综合');
         const chips = skills.map((s) => '<span class="skill-chip">' + s + '</span>').join('')
             + (more ? '<span class="skill-chip">+' + more + '</span>' : '');
-        const spark = isForecast
-            ? '<svg class="dh-mini-spark" viewBox="0 0 48 16" aria-hidden="true"><path d="M0,12 C8,11 14,9 20,8 C28,6 34,9 40,5 C44,3 46,4 48,2" fill="none" stroke="#c4a574" stroke-width="1.4"/></svg>'
-            : '<svg class="dh-mini-spark" viewBox="0 0 48 16" aria-hidden="true"><path d="M0,11 C8,10 14,8 22,6 C30,4 36,8 42,4 C45,2 47,3 48,2" fill="none" stroke="#c4a574" stroke-width="1.4"/></svg>';
         const trend = isForecast
-            ? '<div class="dh-trend"><span class="heat">置信 ' + conf + '%</span><span>窗口 ' + eta + ' 月</span>' + spark + '</div>'
-            : '<div class="dh-trend"><span class="heat">热度 ' + conf + '</span><span class="up">↑ ' + growth + '%</span><span>' + firstSeen + '</span>' + spark + '</div>';
+            ? '<div class="dh-trend"><span class="heat">置信 ' + conf + '%</span><span>窗口 ' + eta + ' 月</span></div>'
+            : '<div class="dh-trend"><span class="heat">热度 ' + conf + '</span><span class="up">↑ ' + growth + '%</span><span>' + firstSeen + '</span></div>';
         const tag = isForecast
             ? '<span class="dh-tag is-pred">未来预测</span>'
             : '<span class="dh-tag is-real">真实发现</span>';

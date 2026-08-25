@@ -3,12 +3,25 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
   <title>执图破局 · 岗位洞察</title>
-  <link rel="stylesheet" href="../css/tokens.css?v=48" />
-  <link rel="stylesheet" href="../css/shell.css?v=48" />
-  <link rel="stylesheet" href="../css/components.css?v=48" />
-  <link rel="stylesheet" href="../css/legacy-views.css?v=48" />
-  <link rel="stylesheet" href="../css/page-polish.css?v=48" />
+  <script>
+    // 版本锁定：旧缓存页面自动重定向到最新版本，确保不会再回到未拆分的旧页面
+    (function () {
+      var q = location.search || '';
+      if (q.indexOf('v=2') === -1) {
+        var sep = q ? '&' : '?';
+        location.replace(location.pathname + q + sep + 'v=2' + location.hash);
+      }
+    })();
+  </script>
+  <link rel="stylesheet" href="../css/tokens.css" />
+  <link rel="stylesheet" href="../css/shell.css" />
+  <link rel="stylesheet" href="../css/components.css" />
+  <link rel="stylesheet" href="../css/legacy-views.css" />
+  <link rel="stylesheet" href="../css/page-polish.css" />
   <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@antv/g6@4.8.24/dist/g6.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
@@ -17,10 +30,6 @@
 <body class="standalone-view" data-page="insight">
   <div id="app-shell"></div>
   <main class="page-main" id="page-main">
-    <div class="hub-tabs" data-hub="insight">
-      <button type="button" class="hub-tab active" data-hub-tab="evolution">能力演化</button>
-      <button type="button" class="hub-tab" data-hub-tab="trends">宏观趋势</button>
-    </div>
     <div class="hub-panel active" data-hub-panel="evolution">
 <section class="view active" id="view-evolution">
 <div class="page-header">
@@ -29,531 +38,131 @@
 <div class="subtitle">基于时序图谱，识别技能新增、删除与修改，追踪岗位能力结构变化</div>
 </div>
 <div class="page-actions">
-<button class="btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>重新分析</button>
-<button class="btn btn-primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/></svg>导出报告</button>
+  <span class="evo-job-name" id="evo-current-job">Java 开发工程师</span>
+  <span class="evo-job-badge">· 能力动态更新</span>
 </div>
 </div>
-<div class="evo-layout">
-<div class="evo-list" id="evo-list"></div>
-<div>
-<div class="evo-summary">
-<div class="evo-stat"><div class="evo-stat-icon add"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div><div><div class="evo-stat-val" id="evo-add-count">0</div><div class="evo-stat-label">新增技能</div></div></div>
-<div class="evo-stat"><div class="evo-stat-icon remove"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/></svg></div><div><div class="evo-stat-val" id="evo-remove-count">0</div><div class="evo-stat-label">删除技能</div></div></div>
-<div class="evo-stat"><div class="evo-stat-icon modify"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></div><div><div class="evo-stat-val" id="evo-modify-count">0</div><div class="evo-stat-label">修改技能</div></div></div>
-</div>
-<div class="timeline-slider">
-<div class="timeline-head">
-<div class="timeline-head-label">时间轴 · 选择观察点</div>
-<div class="timeline-head-now">当前：<strong id="evo-current-time">2026-01</strong></div>
-</div>
-<div class="slider-track" id="evo-slider"><div class="slider-thumb" id="evo-thumb"></div></div>
-<div class="slider-marks"><span>2026-01</span><span>03</span><span>05</span><span>07</span><span>09</span><span>11</span><span>2026-12</span></div>
-</div>
-<div class="row cols-12">
-<div class="card"><div class="card-header"><div class="card-title">技能需求演化</div><span class="tag">近12个月</span></div><div class="card-body"><div class="chart" id="chart-evo-trend"></div></div></div>
-<div class="card"><div class="card-header"><div class="card-title">技能热度变化 TOP10</div><span class="tag tag-cyan"><span class="live-dot"></span>实时</span></div><div class="card-body"><div class="chart" id="chart-evo-bar"></div></div></div>
-</div>
-<div class="card">
-<div class="card-header"><div class="card-title">详细变更清单</div>
-<div class="card-tools"><span class="filter-pill active" data-evo-filter="all">全部</span><span class="filter-pill" data-evo-filter="added">新增</span><span class="filter-pill" data-evo-filter="modified">修改</span><span class="filter-pill" data-evo-filter="removed">删除</span></div>
-</div>
-<div class="card-body"><div class="change-list" id="evo-change-list"></div></div>
-</div>
-</div>
-</section>
-
-<section class="view" id="view-learningPath">
-<div class="page-header">
-<button class="btn" onclick="window.switchView('evolution')">← 返回演化分析</button>
-<div class="page-title-block">
-<h1>学习路径建议</h1>
-<div class="subtitle">基于岗位能力演化趋势，分阶段推荐最优学习路径</div>
-</div>
-</div>
-<div class="lp-layout">
-<aside class="card lp-sidebar">
-<div class="card-header"><div class="card-title">岗位选择</div></div>
-<div class="card-body">
-<input type="text" class="input" id="lp-search" placeholder="搜索岗位名称">
-<div class="lp-job-list" id="lp-job-list"></div>
-</div>
-</aside>
-<div class="lp-main">
-<div class="lp-top-row">
-<div class="card lp-steps-card">
-<div class="card-body">
-<div class="lp-steps" id="lp-steps"></div>
-</div>
-</div>
-<div class="card lp-effect-card">
-<div class="card-header"><div class="card-title">学习效果预估</div></div>
-<div class="card-body">
-<div class="lp-effect">
-<div class="lp-effect-pct"><strong id="lp-effect-pct">86</strong><span>%</span></div>
-<div class="lp-effect-label">掌握以上技能后<br>能力提升</div>
-<div class="lp-chart" id="lp-effect-chart"></div>
-<div class="lp-stars" id="lp-stars">★★★★☆</div>
-<div class="lp-effect-sub">岗位竞争力</div>
-</div>
-</div>
-</div>
-</div>
-<div class="card lp-detail-card">
-<div class="card-header"><div class="card-title">路径详情</div></div>
-<div class="card-body">
-<div class="lp-detail" id="lp-detail"></div>
-</div>
-</div>
-</div>
-</div>
-</section>
-<section class="view" id="view-newSkill">
-<div class="page-header">
-<button class="btn" onclick="window.switchView('evolution')">← 返回演化分析</button>
-<div class="page-title-block">
-<h1>新增技能详情</h1>
-<div class="subtitle">基于岗位能力演化趋势，深入分析新增技能的影响、趋势与关联</div>
-</div>
-</div>
-<div class="ns-layout">
-<aside class="card ns-sidebar">
-<div class="card-header"><div class="card-title">岗位选择</div></div>
-<div class="card-body">
-<input type="text" class="input" id="ns-search" placeholder="搜索岗位名称">
-<div class="lp-job-list" id="ns-job-list"></div>
-</div>
-</aside>
-<div class="ns-main">
-<div class="card ns-header-card">
-<div class="card-body">
-<div class="ns-skill-head">
-<div class="ns-skill-info">
-<span class="new-badge">NEW</span>
-<span class="ns-skill-name" id="ns-skill-name">—</span>
-<span class="ns-skill-meta" id="ns-skill-meta">版本 — · 首次出现 — · 数据来源 —</span>
-</div>
-<button class="btn btn-primary" onclick="window.exportNewSkillReport()">导出报告</button>
-</div>
-</div>
-</div>
-
-<div class="ns-stats-row">
-<div class="card ns-stat-card">
-<div class="card-body">
-<div class="ns-stat-label">增长率（近3月）</div>
-<div class="ns-stat-val ns-stat-up" id="ns-growth-val">+0%</div>
-<div class="ns-mini-chart" id="ns-growth-chart"></div>
-</div>
-</div>
-<div class="card ns-stat-card">
-<div class="card-body">
-<div class="ns-stat-label">影响等级</div>
-<div class="ns-stat-val ns-stars" id="ns-impact-stars">★★☆☆☆</div>
-<div class="ns-stat-sub" id="ns-impact-label">—</div>
-</div>
-</div>
-<div class="card ns-stat-card">
-<div class="card-body">
-<div class="ns-stat-label">需求占比</div>
-<div class="ns-stat-val" id="ns-ratio-val">0%</div>
-<div class="ns-stat-sub">目前岗位需求占比</div>
-</div>
-</div>
-<div class="card ns-stat-card">
-<div class="card-body">
-<div class="ns-stat-label">出源频率</div>
-<div class="ns-stat-val" id="ns-freq-val">0 条JD</div>
-<div class="ns-stat-sub">高频活跃性</div>
-</div>
-</div>
-</div>
-
-<div class="ns-charts-row">
-<div class="card">
-<div class="card-header"><div class="card-title">需求趋势</div></div>
-<div class="card-body"><div class="chart" id="ns-trend-chart"></div></div>
-</div>
-<div class="ns-right-col">
-<div class="card">
-<div class="card-header"><div class="card-title">关联技能</div></div>
-<div class="card-body"><div class="ns-related-tags" id="ns-related"></div></div>
-</div>
-<div class="card">
-<div class="card-header"><div class="card-title">典型JD示例</div></div>
-<div class="card-body"><ul class="ns-jd-list" id="ns-jd-examples"></ul></div>
-</div>
-</div>
-</div>
-
-<div class="card">
-<div class="card-header"><div class="card-title">AI分析解读</div></div>
-<div class="card-body"><div class="ns-ai-body" id="ns-ai-body">—</div></div>
-</div>
-</div>
-</div>
-</section>
+<div class="evo-new-layout">
+  <!-- 左主区 -->
+  <div class="evo-new-main">
+    <!-- 能力变化时间轴（双线图） -->
+    <div class="card evo-timeline-card">
+      <div class="card-header">
+        <div class="card-title">能力变化时间轴</div>
+        <div class="evo-timeline-range" id="evo-timeline-range">
+          <span class="range-pill active" data-range="6">近 6 个月</span>
+          <span class="range-pill" data-range="3">近 3 个月</span>
+          <span class="range-pill" data-range="12">近 1 年</span>
+          <span class="range-pill" data-range="all">全部</span>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="evo-timeline-legend">
+          <span class="legend-item"><i class="dot dot-cyan"></i>能力总数</span>
+          <span class="legend-item"><i class="dot dot-amber"></i>新生变化的能力</span>
+        </div>
+        <div class="chart evo-timeline-chart" id="chart-evo-timeline"></div>
+      </div>
     </div>
-    <div class="hub-panel" data-hub-panel="trends">
-<section class="view" id="view-analysis">
-<div class="trend-dashboard">
-<!-- Hero Header -->
-<div class="trend-hero">
-<div class="trend-hero-left">
-<div class="trend-hero-tag">宏观趋势</div>
-<h1 class="trend-hero-title">岗位市场趋势洞察</h1>
-<div class="trend-hero-sub">AI 驱动的兴衰研判与未来推演，帮助把握岗位与技能方向</div>
-</div>
-<div class="trend-hero-right">
-<div class="trend-status-row">
-<div class="trend-status-item"><span class="trend-status-dot green"></span> 数据已连接</div>
-<div class="trend-status-item"><span class="trend-status-dot purple"></span> AI 引擎在线</div>
-</div>
-<div class="trend-update-time">最近更新 <span class="time-val" id="trend-update-time">2026.08.12 16:18</span></div>
-<button class="trend-btn-start" id="trend-start-btn" onclick="window.startTrendAnalysis()">
-<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-开始趋势分析
-</button>
-</div>
-</div>
-
-<!-- KPI Row -->
-<div class="trend-kpi-grid">
-<div class="trend-kpi-card kpi-emerging">
-<div class="trend-kpi-head">
-<span class="trend-kpi-label">新兴岗位</span>
-<div class="trend-kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
-</div>
-<div class="trend-kpi-body">
-<span class="trend-kpi-value" id="kpi-emerging">0</span>
-</div>
-<div class="trend-kpi-foot">
-<span class="trend-kpi-change up" id="kpi-emerging-change">+24.6%</span>
-<span class="trend-kpi-sub">岗位需求增长 · 正在兴起</span>
-</div>
-</div>
-
-<div class="trend-kpi-card kpi-declining">
-<div class="trend-kpi-head">
-<span class="trend-kpi-label">衰退岗位</span>
-<div class="trend-kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></svg></div>
-</div>
-<div class="trend-kpi-body">
-<span class="trend-kpi-value" id="kpi-declining">0</span>
-</div>
-<div class="trend-kpi-foot">
-<span class="trend-kpi-change down" id="kpi-declining-change">-8.3%</span>
-<span class="trend-kpi-sub">岗位需求收缩 · 正在衰退</span>
-</div>
-</div>
-
-<div class="trend-kpi-card kpi-stable">
-<div class="trend-kpi-head">
-<span class="trend-kpi-label">稳定岗位</span>
-<div class="trend-kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><polyline points="8 8 12 4 16 8"/><polyline points="16 16 12 20 8 16"/></svg></div>
-</div>
-<div class="trend-kpi-body">
-<span class="trend-kpi-value" id="kpi-stable">0</span>
-</div>
-<div class="trend-kpi-foot">
-<span class="trend-kpi-change up" id="kpi-stable-change">+3.2%</span>
-<span class="trend-kpi-sub">趋势相对稳定 · 稳定岗位</span>
-</div>
-</div>
-
-<div class="trend-kpi-card kpi-confidence">
-<div class="trend-kpi-head">
-<span class="trend-kpi-label">AI 置信度</span>
-<div class="trend-kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
-</div>
-<div class="trend-kpi-body">
-<span class="trend-kpi-value" id="kpi-confidence">0</span><span class="trend-kpi-unit">%</span>
-</div>
-<div class="trend-kpi-foot">
-<span class="trend-kpi-change high" id="kpi-confidence-change">HIGH</span>
-<span class="trend-kpi-sub">AI预测可信度</span>
-</div>
-</div>
-</div>
-
-<!-- Phase 2: Job Lifecycle Trend Map -->
-<div class="trend-lifecycle-module">
-<div class="trend-lifecycle-header">
-<div class="trend-lifecycle-title-group">
-<div class="trend-lifecycle-title">岗位生命周期趋势地图</div>
-<div class="trend-lifecycle-sub">JOB LIFECYCLE MAP · 基于岗位需求变化与趋势指数，识别岗位生命周期状态</div>
-</div>
-<div class="trend-lifecycle-legend" id="lifecycle-legend">
-<div class="trend-lifecycle-legend-item"><span class="trend-lifecycle-legend-dot lc-emerging"></span> 快速增长</div>
-<div class="trend-lifecycle-legend-item"><span class="trend-lifecycle-legend-dot lc-growth"></span> 持续增长</div>
-<div class="trend-lifecycle-legend-item"><span class="trend-lifecycle-legend-dot lc-stable"></span> 相对稳定</div>
-<div class="trend-lifecycle-legend-item"><span class="trend-lifecycle-legend-dot lc-declining"></span> 需求收缩</div>
-</div>
-</div>
-<div class="trend-lifecycle-body">
-<div class="trend-lifecycle-signal" id="lifecycle-signal">
-<div class="sig-label">TREND SIGNAL</div>
-<div class="sig-row"><span style="color:var(--text-dark-secondary)">检测岗位</span><span class="sig-val">10</span></div>
-<div class="sig-row"><span class="sig-dot up"></span><span style="color:var(--text-dark-secondary)">增长岗位</span><span class="sig-val">4</span></div>
-<div class="sig-row"><span class="sig-dot down"></span><span style="color:var(--text-dark-secondary)">收缩岗位</span><span class="sig-val">4</span></div>
-<div class="sig-row"><span class="sig-dot neutral"></span><span style="color:var(--text-dark-secondary)">稳定岗位</span><span class="sig-val">2</span></div>
-</div>
-<div class="trend-lifecycle-chart" id="chart-lifecycle-scatter"></div>
-</div>
-</div>
-<!-- Toast for job selection -->
-<div class="trend-lifecycle-toast" id="lifecycle-toast"></div>
-
-<!-- Phase 3: Emerging & Declining Jobs -->
-<div class="trend-jobs-grid" id="trend-jobs-grid">
-<!-- Left: Emerging Jobs -->
-<div class="trend-jobs-section" id="emerging-section">
-<div class="trend-jobs-section-header">
-<div>
-<div class="trend-jobs-section-title"><span class="emoji">🔥</span> 正在兴起</div>
-<div class="trend-jobs-section-sub">EMERGING JOBS · 招聘需求与技能信号持续增强</div>
-</div>
-<div class="trend-jobs-section-stat positive" id="emerging-avg-stat">↑ +--.-%</div>
-</div>
-<div class="trend-jobs-cards" id="emerging-cards"></div>
-</div>
-<!-- Right: Declining Jobs -->
-<div class="trend-jobs-section" id="declining-section">
-<div class="trend-jobs-section-header">
-<div>
-<div class="trend-jobs-section-title"><span class="emoji">⚠</span> 正在衰退</div>
-<div class="trend-jobs-section-sub">DECLINING JOBS · 招聘需求收缩与自动化替代风险增加</div>
-</div>
-<div class="trend-jobs-section-stat negative" id="declining-avg-stat">↓ --.-%</div>
-</div>
-<div class="trend-jobs-cards" id="declining-cards"></div>
-</div>
-</div>
-
-<!-- Phase 3: Job Trend Drawer -->
-<div class="trend-drawer-overlay" id="trend-drawer-overlay" onclick="window.closeJobTrendDrawer()"></div>
-<div class="trend-drawer-panel" id="trend-drawer-panel">
-<div class="trend-drawer-panel-inner" id="trend-drawer-content"></div>
-</div>
-
-<!-- Phase 4: Career Transition & Skill Evolution -->
-<div class="trend-career-module" id="career-transition-module">
-<!-- Header -->
-<div class="trend-career-header">
-<div class="trend-career-title-row">
-<div style="display:flex;flex-direction:column;gap:3px">
-<div class="trend-career-title">职业迁移与技能演化</div>
-<div class="trend-career-sub">CAREER TRANSITION & SKILL EVOLUTION · 追踪传统岗位向新兴岗位迁移过程中发生的技能结构变化</div>
-</div>
-<div class="trend-career-stats" id="career-stats">
-<div class="trend-career-stat"><div class="trend-career-stat-val" id="cs-paths">12</div><div class="trend-career-stat-label">CAREER PATHS</div></div>
-<div class="trend-career-stat"><div class="trend-career-stat-val" id="cs-skills">36</div><div class="trend-career-stat-label">SKILL SHIFTS</div></div>
-<div class="trend-career-stat"><div class="trend-career-stat-val highlight" id="cs-high">5</div><div class="trend-career-stat-label">HIGH POTENTIAL</div></div>
-</div>
-</div>
-</div>
-<!-- Category Filter -->
-<div class="trend-career-filter" id="career-filter-bar">
-<button class="trend-career-filter-tab active" data-cat="all" onclick="window.filterCareerCategory('all', this)">全部</button>
-<button class="trend-career-filter-tab" data-cat="tech" onclick="window.filterCareerCategory('tech', this)">技术岗位</button>
-<button class="trend-career-filter-tab" data-cat="data" onclick="window.filterCareerCategory('data', this)">数据岗位</button>
-<button class="trend-career-filter-tab" data-cat="ops" onclick="window.filterCareerCategory('ops', this)">运营岗位</button>
-<button class="trend-career-filter-tab" data-cat="mgmt" onclick="window.filterCareerCategory('mgmt', this)">管理岗位</button>
-</div>
-<!-- Body: Graph + Detail -->
-<div class="trend-career-body">
-<!-- Left: G6 Graph -->
-<div class="trend-career-graph-wrap">
-<div class="trend-career-graph" id="career-graph-container"></div>
-<div class="trend-career-graph-hint">TRADITIONAL ──→ EMERGING · 点击迁移连线查看详情</div>
-</div>
-<!-- Right: Detail Panel -->
-<div class="trend-career-detail" id="career-detail-panel">
-<div class="trend-career-detail-empty" id="career-detail-empty">
-<div class="trend-career-detail-empty-icon">← →</div>
-<div class="trend-career-detail-empty-text">请选择一条职业迁移路径</div>
-<div class="trend-career-detail-empty-hint">点击图谱中的连线或下方热门迁移</div>
-</div>
-<div class="trend-career-detail-inner" id="career-detail-inner" style="display:none"></div>
-</div>
-</div>
-<!-- Hot Transitions -->
-<div class="trend-career-hot-wrap">
-<span class="trend-career-hot-label">🔥 HOT TRANSITIONS</span>
-<div class="trend-career-hot-list" id="career-hot-list"></div>
-</div>
-<!-- Footer -->
-<div class="trend-career-footer">
-<div class="trend-career-footer-summary">
-<span class="trend-career-footer-summary-dot"></span>
-当前检测到：传统岗位正在向"专业能力 + AI能力"的复合型岗位结构迁移
-</div>
-<div style="display:flex;align-items:center;gap:12px;font-size:10px;color:var(--text-muted);font-family:var(--font-mono)">
-<span id="career-footer-paths">12 条主要迁移路径</span>
-<span style="opacity:.3">·</span>
-<span id="career-footer-shifts">36 项技能变化</span>
-<span style="opacity:.3">·</span>
-<span id="career-footer-high">5 个高潜力迁移方向</span>
-</div>
-</div>
-</div>
-
-<!-- Phase 5: Future Trend Forecast -->
-<div class="trend-forecast-module" id="forecast-module">
-<div class="trend-forecast-header">
-<div class="trend-forecast-title-group">
-<div class="trend-forecast-title">未来趋势预测</div>
-<div class="trend-forecast-sub">FUTURE TREND FORECAST · 基于岗位需求、技能演化与市场信号，推演未来岗位发展方向</div>
-</div>
-<div class="trend-forecast-periods" id="forecast-periods">
-<button class="trend-forecast-period-btn" data-months="6">6个月</button>
-<button class="trend-forecast-period-btn" data-months="12">12个月</button>
-<button class="trend-forecast-period-btn active" data-months="18">18个月</button>
-</div>
-</div>
-<div class="trend-forecast-body">
-<div class="trend-forecast-chart-wrap">
-<div class="trend-forecast-chart" id="chart-forecast-trend"></div>
-</div>
-<div class="trend-forecast-rank-panel" id="forecast-rank-panel">
-<div class="trend-forecast-rank-title">TOP FUTURE JOBS<br>未来潜力岗位</div>
-<div id="forecast-rank-list"></div>
-</div>
-</div>
-<div class="trend-forecast-signal" id="forecast-signal">
-<div class="trend-forecast-signal-stats">
-<span style="font-weight:600;color:var(--text-dark);font-size:11px">FORECAST SIGNAL · 未来18个月</span>
-<span class="trend-forecast-signal-stat"><span class="trend-forecast-signal-dot high"></span> 高增长 <b>3</b></span>
-<span class="trend-forecast-signal-stat"><span class="trend-forecast-signal-dot stable"></span> 稳定 <b>1</b></span>
-<span class="trend-forecast-signal-stat"><span class="trend-forecast-signal-dot low"></span> 收缩 <b>1</b></span>
-</div>
-<div class="trend-forecast-signal-text">
-主要趋势：AI Agent、大模型应用与具身智能相关岗位预计保持较高增长
-</div>
-</div>
-<div class="trend-forecast-footer">
-<span class="trend-forecast-footer-label">FORECAST MODEL</span>
-<span>岗位需求趋势 · 技能演化 · 市场信号</span>
-<span class="trend-forecast-footer-note">Prototype Forecast</span>
-</div>
-</div>
-
-<!-- Phase 6: AI Trend Intelligence -->
-<div class="trend-ai-module" id="trend-ai-module">
-<!-- Header -->
-<div class="trend-ai-header">
-<div class="trend-ai-title-group">
-<div class="trend-ai-title"><span class="trend-ai-title-dot"></span>AI 综合研判</div>
-<div class="trend-ai-sub">基于多维度数据交叉分析 · AI趋势洞察引擎</div>
-</div>
-<div class="trend-ai-status">
-<div class="trend-ai-status-item"><span class="trend-ai-status-dot"></span>分析引擎就绪</div>
-<span class="trend-ai-status-tag">MOCK ANALYSIS</span>
-</div>
-</div>
-<!-- Body: two-column -->
-<div class="trend-ai-body">
-<!-- LEFT: Main Analysis -->
-<div class="trend-ai-main">
-<!-- AI Score Banner -->
-<div class="trend-ai-score-banner trend-ai-anim" id="ai-score-banner">
-<div class="trend-ai-score-ring">
-<svg width="64" height="64" viewBox="0 0 64 64"><circle cx="32" cy="32" r="28" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="4"/><circle id="ai-score-circle" cx="32" cy="32" r="28" fill="none" stroke="#2DD4BF" stroke-width="4" stroke-dasharray="0 176" stroke-linecap="round"/></svg>
-<div class="trend-ai-score-text"><span class="trend-ai-score-num" id="ai-score-num">--</span><span class="trend-ai-score-label">综合评分</span></div>
-</div>
-<div class="trend-ai-score-info">
-<div class="trend-ai-score-title" id="ai-score-title">趋势整体积极，结构性机会涌现</div>
-<div class="trend-ai-score-desc" id="ai-score-desc">当前人才市场处于数字化转型深化期，新兴技术岗位增长强劲，传统职能岗位面临结构性调整压力</div>
-</div>
-<span class="trend-ai-score-badge" id="ai-score-badge">积极趋势</span>
-</div>
-
-<!-- Section 01: 市场变化格局 -->
-<div class="trend-ai-section trend-ai-anim" id="ai-section-market">
-<div class="trend-ai-section-header" onclick="window.toggleInsightSection(&apos;market&apos;)">
-<span class="trend-ai-section-num">01</span><span class="trend-ai-section-label">市场变化格局</span><span class="trend-ai-section-arrow" id="ai-arrow-market">▾</span>
-</div>
-<div class="trend-ai-section-body" id="ai-body-market"><div class="trend-ai-section-body-inner"><div class="content-text" id="ai-content-market"></div></div></div>
-</div>
-
-<!-- Section 02: 核心驱动因素 -->
-<div class="trend-ai-section trend-ai-anim" id="ai-section-factors">
-<div class="trend-ai-section-header" onclick="window.toggleInsightSection(&apos;factors&apos;)">
-<span class="trend-ai-section-num">02</span><span class="trend-ai-section-label">核心驱动因素</span><span class="trend-ai-section-arrow" id="ai-arrow-factors">▾</span>
-</div>
-<div class="trend-ai-section-body" id="ai-body-factors"><div class="trend-ai-section-body-inner"><div class="trend-ai-factors" id="ai-factors-grid"></div></div></div>
-</div>
-
-<!-- Section 03: 未来展望 -->
-<div class="trend-ai-section trend-ai-anim" id="ai-section-outlook">
-<div class="trend-ai-section-header" onclick="window.toggleInsightSection(&apos;outlook&apos;)">
-<span class="trend-ai-section-num">03</span><span class="trend-ai-section-label">未来展望</span><span class="trend-ai-section-arrow" id="ai-arrow-outlook">▾</span>
-</div>
-<div class="trend-ai-section-body" id="ai-body-outlook"><div class="trend-ai-section-body-inner"><div class="content-text" id="ai-content-outlook"></div></div></div>
-</div>
-
-<!-- Section 04: 核心建议 -->
-<div class="trend-ai-section trend-ai-anim" id="ai-section-recommend">
-<div class="trend-ai-section-header" onclick="window.toggleInsightSection(&apos;recommend&apos;)">
-<span class="trend-ai-section-num">04</span><span class="trend-ai-section-label">核心建议</span><span class="trend-ai-section-arrow" id="ai-arrow-recommend">▾</span>
-</div>
-<div class="trend-ai-section-body" id="ai-body-recommend"><div class="trend-ai-section-body-inner"><div class="trend-ai-steps" id="ai-steps-list"></div></div></div>
-</div>
-
-<!-- Bottom: TOP OPPORTUNITY & TOP RISK -->
-<div style="display:flex;gap:10px;flex-wrap:wrap">
-<div class="trend-ai-top-section trend-ai-anim" style="flex:1;min-width:200px">
-<div class="trend-ai-top-title">🎯 TOP OPPORTUNITY</div>
-<div id="ai-top-opportunities"></div>
-</div>
-<div class="trend-ai-top-section trend-ai-anim" style="flex:1;min-width:200px">
-<div class="trend-ai-top-title">⚠️ TOP RISK</div>
-<div id="ai-top-risks"></div>
-</div>
-</div>
-</div>
-
-<!-- RIGHT: Signal Panel -->
-<div class="trend-ai-side">
-<div class="trend-ai-signal-header">📡 TREND SIGNALS</div>
-<div id="ai-signal-cards"></div>
-
-<div class="trend-ai-conf-box trend-ai-anim" id="ai-conf-box">
-<div class="trend-ai-conf-title">综合置信度</div>
-<div class="trend-ai-conf-val" id="ai-conf-num">--<span class="trend-ai-conf-sub">%</span></div>
-<div class="trend-ai-conf-label" id="ai-conf-label">高置信度 · 可辅助决策</div>
-<div class="trend-ai-conf-bar"><div class="trend-ai-conf-bar-fill" id="ai-conf-bar-fill"></div></div>
-</div>
-
-<div class="trend-ai-basis trend-ai-anim">
-<div class="trend-ai-basis-title">📋 ANALYSIS BASIS</div>
-<div id="ai-basis-list"></div>
-</div>
-</div>
-</div>
-
-<!-- Footer -->
-<div class="trend-ai-footer">
-<div class="trend-ai-footer-left">
-<span id="ai-meta-model">MODEL: AI Trend Insight Engine v1.0</span>
-<span style="opacity:.5">·</span>
-<span id="ai-meta-timestamp"></span>
-</div>
-<div class="trend-ai-footer-right">
-<button class="trend-ai-btn" onclick="window.regenerateAIInsight()" title="重新生成分析">
-<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 8a7 7 0 0 1 13.2-4M15 8a7 7 0 0 1-13.2 4"/><path d="M15 1v4h-4M1 15v-4h4"/></svg>
-重新分析
-</button>
-</div>
-</div>
-</div>
-
-<!-- Footer -->
-<div class="trend-footer-bar">
-<span class="trend-footer-label">DATA SOURCES</span>
-<span class="trend-footer-sources">51JOB · 智联招聘 · 岗位发现数据库 · AI Forecast Engine</span>
-</div>
+    <!-- 本期重要变化 -->
+    <div class="card evo-important-card">
+      <div class="card-header">
+        <div class="card-title"><span id="evo-important-period">2026-08</span> 本期重点变化</div>
+        <div class="card-head-right">
+          <span class="evo-vs-text">与</span>
+          <select id="evo-compare-select" class="evo-compare-select" aria-label="选择对比月份"></select>
+          <span class="evo-vs-text">相比</span>
+        </div>
+      </div>
+      <div class="card-body">
+        <!-- 状态层 -->
+        <div class="evo-important-loading" id="evo-important-loading" style="display:none;">
+          <div class="evo-spinner"></div><span>正在分析岗位能力演化趋势…</span>
+        </div>
+        <div class="evo-important-empty" id="evo-important-empty" style="display:none;">
+          <div class="evo-empty-ico">○</div>
+          <div>当前时间范围暂无重点能力变化</div>
+        </div>
+        <div class="evo-important-error" id="evo-important-error" style="display:none;">
+          <div class="evo-error-ico">!</div>
+          <div>数据加载失败，请稍后重试</div>
+          <button class="evo-error-retry" id="evo-important-retry">重新加载</button>
+        </div>
+        <!-- 三组：新增/修改/删除 -->
+        <div class="evo-groups" id="evo-groups" style="display:none;">
+          <div class="evo-group evo-group-add">
+            <div class="evo-group-side">
+              <div class="evo-group-icon ico-add">+</div>
+              <div class="evo-group-name">新增能力<br><span class="evo-group-name-en" id="evo-group-add-count">0 项</span></div>
+            </div>
+            <div class="evo-group-table" id="evo-group-add">
+              <div class="evo-table-header">
+                <div class="evo-table-cell col-name">能力</div>
+                <div class="evo-table-cell col-type">类型</div>
+                <div class="evo-table-cell col-imp">重要性</div>
+                <div class="evo-table-cell col-reason">变化原因</div>
+              </div>
+            </div>
+          </div>
+          <div class="evo-group evo-group-mod">
+            <div class="evo-group-side">
+              <div class="evo-group-icon ico-edit">✓</div>
+              <div class="evo-group-name">修改能力<br><span class="evo-group-name-en" id="evo-group-mod-count">0 项</span></div>
+            </div>
+            <div class="evo-group-table" id="evo-group-mod">
+              <div class="evo-table-header">
+                <div class="evo-table-cell col-name">能力</div>
+                <div class="evo-table-cell col-type">类型</div>
+                <div class="evo-table-cell col-imp">重要性</div>
+                <div class="evo-table-cell col-reason">变化原因</div>
+              </div>
+            </div>
+          </div>
+          <div class="evo-group evo-group-del">
+            <div class="evo-group-side">
+              <div class="evo-group-icon ico-del">−</div>
+              <div class="evo-group-name">删除能力<br><span class="evo-group-name-en" id="evo-group-del-count">0 项</span></div>
+            </div>
+            <div class="evo-group-table" id="evo-group-del">
+              <div class="evo-table-header">
+                <div class="evo-table-cell col-name">能力</div>
+                <div class="evo-table-cell col-type">类型</div>
+                <div class="evo-table-cell col-imp">重要性</div>
+                <div class="evo-table-cell col-reason">变化原因</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- 重要性图例 -->
+      </div>
+    </div>
+  </div>
+  <!-- 右侧栏 -->
+  <div class="evo-new-side">
+    <div class="card evo-insight-card">
+      <div class="card-header"><div class="card-title"><i class="ico-spark"></i>核心洞察</div></div>
+      <div class="card-body">
+        <div class="evo-insight-list" id="evo-insight-list">
+          <!-- 由 JS 渲染：现象 → 原因 → 趋势/结论 -->
+        </div>
+      </div>
+    </div>
+    <div class="card evo-source-card">
+      <div class="card-header">
+        <div class="card-title"><i class="ico-db"></i>数据来源</div>
+        <a class="evo-view-all" id="evo-source-expand" href="javascript:void(0)">展开全部 ▸</a>
+      </div>
+      <div class="card-body">
+        <div class="evo-source-sub" id="evo-source-sub">多源数据综合分析</div>
+        <div class="evo-source-list" id="evo-source-list">
+          <!-- 由 JS 渲染 -->
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 </section>
+
     </div>
   </main>
   <script src="../js/api.js"></script>
@@ -561,24 +170,28 @@
   <script src="../js/cinema-bg.js"></script>
   <script src="../js/cinema-music.js"></script>
   <script src="../js/shell.js"></script>
-  <script src="../js/pages/evolution.js"></script>
-  <script src="../js/pages/analysis.js"></script>
-  <script src="../js/pages/hub-tabs.js"></script>
+  <script src="../js/pages/evolution.js?v=2026082313"></script>
   <script>
-    window.Shell && window.Shell.mount({ pageId: 'insight', title: '岗位洞察', subtitle: '能力演化与宏观趋势' });
-    window.initHubTabs && window.initHubTabs({
-      root: '[data-hub=insight]',
-      onChange: function (tab) {
-        if (tab === 'evolution') {
-          window.initEvolution && window.initEvolution();
-        } else if (tab === 'trends') {
-          var view = document.getElementById('view-analysis');
-          if (view) view.classList.add('active');
-          window.initAnalysis && window.initAnalysis();
-        }
-      },
-      initial: (new URLSearchParams(location.search).get('tab') === 'trends') ? 'trends' : 'evolution'
-    });
+    window.Shell && window.Shell.mount({ pageId: 'insight', title: '岗位洞察', subtitle: '能力动态演化' });
+    // 页面加载后预渲染演化视图内容
+    (function () {
+      var _ready = function () {
+        try { window.initEvolution && window.initEvolution(); } catch (e) { console.error('[initEvolution]', e); }
+        // 演化页 → 独立页面的跳转入口（与 shell 统一路径）
+        try {
+          var hrefs = window.PAGE_HREF || {};
+          var lp = document.getElementById('evo-jump-learning');
+          var ns = document.getElementById('evo-jump-newskill');
+          if (lp && hrefs.learningPath) lp.href = hrefs.learningPath;
+          if (ns && hrefs.newSkill) ns.href = hrefs.newSkill;
+        } catch (e) {}
+      };
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', _ready);
+      } else {
+        _ready();
+      }
+    })();
   </script>
 </body>
 </html>

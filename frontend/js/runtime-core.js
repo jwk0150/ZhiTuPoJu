@@ -1,5 +1,8 @@
 /* Shared runtime extracted for standalone pages */
-window.API_BASE = window.API_BASE || ((location.hostname === '127.0.0.1' || location.hostname === 'localhost') ? 'http://127.0.0.1:5000' : location.origin);
+window.API_BASE = window.API_BASE || ((location.hostname === '127.0.0.1' || location.hostname === 'localhost') ? 'http://127.0.0.1:8000' : location.origin);
+window.resolveApiBase = window.resolveApiBase || function () {
+  return window.API_BASE || ((location.hostname === '127.0.0.1' || location.hostname === 'localhost') ? 'http://127.0.0.1:8000' : location.origin);
+};
 window.Utils = {
     rand: (min, max) => Math.floor(Math.random() * (max - min + 1)) + min,
     pick: arr => arr[Math.floor(Math.random() * arr.length)],
@@ -26,15 +29,35 @@ window.Utils = {
         step();
     },
     showToast: (msg, type = 'mint') => {
-        const t = document.createElement('div');
-        const colors = { mint: '#10b981', pink: '#f72585', cyan: '#2DD4BF', amber: '#f59e0b', coral: '#ef4444', success: '#10b981', error: '#ef4444', info: '#3b82f6' };
-        t.className = 'toast';
-        t.style.cssText = 'position:fixed;right:16px;top:16px;z-index:9999;padding:7px 12px;border-radius:5px;color:#fff;font:500 12px sans-serif;box-shadow:0 4px 14px rgba(0,0,0,.18)';
-        t.style.background = colors[type] || colors.mint;
-        t.textContent = msg;
-        document.body.appendChild(t);
-        setTimeout(() => { t.style.opacity = '0'; t.style.transition = 'all .3s'; }, 2000);
-        setTimeout(() => t.remove(), 2400);
+        const tone = String(type || 'mint');
+        const colors = {
+            mint: { bg: 'rgba(16,185,129,.94)', fg: '#fff' },
+            teal: { bg: 'rgba(45,212,191,.94)', fg: '#06201c' },
+            cyan: { bg: 'rgba(45,212,191,.94)', fg: '#06201c' },
+            amber: { bg: 'rgba(245,158,11,.96)', fg: '#1a1205' },
+            pink: { bg: 'rgba(247,37,133,.94)', fg: '#fff' },
+            coral: { bg: 'rgba(239,68,68,.94)', fg: '#fff' },
+            success: { bg: 'rgba(16,185,129,.94)', fg: '#fff' },
+            error: { bg: 'rgba(239,68,68,.94)', fg: '#fff' },
+            info: { bg: 'rgba(59,130,246,.94)', fg: '#fff' }
+        };
+        const c = colors[tone] || colors.mint;
+        let el = document.getElementById('zhitu-toast');
+        if (!el) {
+            el = document.createElement('div');
+            el.id = 'zhitu-toast';
+            el.setAttribute('role', 'status');
+            el.setAttribute('aria-live', 'polite');
+            document.body.appendChild(el);
+        }
+        el.className = 'zhitu-toast is-show';
+        el.textContent = String(msg || '');
+        el.style.background = c.bg;
+        el.style.color = c.fg;
+        clearTimeout(window.__zhituToastTimer);
+        window.__zhituToastTimer = setTimeout(() => {
+            el.classList.remove('is-show');
+        }, 2400);
     }
 };
 window.showToast = window.Utils.showToast;
@@ -99,17 +122,15 @@ window.viewNames = window.viewNames || {
   newSkill: '新增技能'
 };
 window.switchView = window.switchView || function (viewId) {
-  var map = {
-    evolution: 'view-evolution',
-    learningPath: 'view-learningPath',
-    newSkill: 'view-newSkill'
-  };
+  // 学习路径 / 新增技能已拆分为独立页面
+  if (viewId === 'learningPath') { location.href = 'learning-path.html'; return; }
+  if (viewId === 'newSkill') { location.href = 'new-skill.html'; return; }
+  if (viewId === 'evolution' || viewId === 'insight') { location.href = 'insight.html'; return; }
+  var map = { evolution: 'view-evolution' };
   var target = map[viewId] || ('view-' + viewId);
   document.querySelectorAll('#page-main section.view').forEach(function (v) {
     v.classList.toggle('active', v.id === target);
   });
-  if (viewId === 'learningPath' && window.initLearningPath) window.initLearningPath();
-  if (viewId === 'newSkill' && window.initNewSkill) window.initNewSkill();
   if (viewId === 'evolution' && window.initEvolution) window.initEvolution();
 };
 
