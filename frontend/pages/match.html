@@ -28,9 +28,7 @@
         <nav class="wks-progress" id="wks-progress" aria-label="诊断进度">
           <!-- 由 JS 渲染进度节点 -->
         </nav>
-        <div class="wks-topbar-actions">
-          <button class="btn-sm btn-sm--solid" id="md-start-match-top" type="button">开始匹配 →</button>
-        </div>
+        <!-- 顶部右侧的"开始匹配"已迁移到右侧工具栏（仅本页显示）-->
       </header>
 
       <!-- 左窄导航 -->
@@ -47,10 +45,7 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
           <span>岗位</span>
         </button>
-        <button class="wks-nav-item" data-nav="capability" type="button">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="6" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><circle cx="18" cy="6" r="3"/><path d="M9 6h6M6 9v6a3 3 0 0 0 3 3h6"/></svg>
-          <span>能力</span>
-        </button>
+        <!-- 能力节点已并入\"岗位 → 学习 → 面试\"通路（学习/面试构成循环），不在左侧单独显示 -->
         <button class="wks-nav-item" data-nav="learn" type="button">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
           <span>学习</span>
@@ -90,10 +85,7 @@
               <span class="rw-file-badge" id="rw-file-badge"></span>
             </div>
             <div class="rw-toolbar-filters">
-              <span class="rw-filter-label">投递目标</span>
-              <span class="chip is-on" data-filter="target">Java 后端开发</span>
-              <span class="rw-filter-label">重点企业</span>
-              <span class="chip" data-filter="company">全部</span>
+              <button class="btn-sm btn-sm--solid rw-start-match" id="md-start-match-top" type="button">开始匹配 →</button>
             </div>
           </div>
 

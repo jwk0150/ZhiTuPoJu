@@ -75,11 +75,13 @@
   const MAX_BYTES = 8 * 1024 * 1024;
   const DIRECTIONS = ['Java 后端开发', '数据开发', 'AI 应用开发', '测试开发', '前端开发'];
 
-  // 顶部进度节点
+  // 顶部进度节点（去掉了\"能力\"；\"学习\"与\"面试\"并联，表示可反复循环：学完面试，面试完再学）
   const PROGRESS_NODES = [
     { id: 'resume', label: '简历' }, { id: 'match', label: '匹配' }, { id: 'jobs', label: '岗位' },
-    { id: 'capability', label: '能力' }, { id: 'learn', label: '学习' }, { id: 'interview', label: '面试' }
+    { id: 'learn', label: '学习' }, { id: 'interview', label: '面试' }
   ];
+  // 学习 ↔ 面试 是循环关系：后面的连线是一个 \"双向循环\" 图标
+  const LOOP_PAIR_IDS = ['learn', 'interview'];
 
   /* 前端假数据：保证整条链路可预览 */
   const MOCK_RESULT = {
@@ -621,11 +623,10 @@
     qsa('.wks-nav-item').forEach((b) => b.addEventListener('click', () => {
       const nav = b.dataset.nav;
       if (nav === 'compare') { setView('compare'); return; }
-      // 导航映射到对应视图
-      const map = { resume: 'resume', match: 'match', jobs: 'jobs', capability: 'detail', learn: 'learn', interview: 'interview' };
+      // 导航映射到对应视图（已移除 capability 节点）
+      const map = { resume: 'resume', match: 'match', jobs: 'jobs', learn: 'learn', interview: 'interview' };
       // interview 需要已进入过分析，否则先跳 jobs
       if (nav === 'interview' && !window.matchState.result) { window.showToast('请先完成匹配分析', 'amber'); setView('jobs'); return; }
-      if (nav === 'capability' && !window.matchState.selectedJobId) { window.showToast('请先选择一个岗位', 'amber'); setView('jobs'); return; }
       if (nav === 'learn' && !window.matchState.selectedJobId) { window.showToast('请先选择岗位再生成学习路径', 'amber'); setView('jobs'); return; }
       setView(map[nav] || 'resume');
     }));
@@ -635,25 +636,56 @@
     const st = window.matchState;
     const box = $('wks-progress');
     if (!box) return;
-    // 计算已完成：根据 stage
+    // 计算已完成：根据 stage（去掉了 capability：简历=0, 匹配=1, 岗位=2, 学习=3, 面试=4）
     const order = PROGRESS_NODES.map((n) => n.id);
-    const stageOrder = { resume: 0, match: 1, jobs: 2, capability: 3, learn: 4, interview: 5 };
+    const stageOrder = { resume: 0, match: 1, jobs: 2, learn: 3, interview: 4 };
     const cur = stageOrder[st.stage] != null ? stageOrder[st.stage] : 0;
     box.innerHTML = PROGRESS_NODES.map((n, i) => {
       const state = i < cur ? 'is-done' : (i === cur ? 'is-active' : '');
       const dot = '<span class="wks-prog-dot"></span>';
-      const node = `<button class="wks-prog-node ${state}" data-prog="${n.id}" type="button">${dot}<span>${n.label}</span></button>`;
-      const line = i < PROGRESS_NODES.length - 1 ? `<span class="wks-prog-line ${i < cur ? 'is-filled' : ''}"></span>` : '';
+      const node = `<button class="wks-prog-node ${state}" data-prog="${n.id}" type="button">${dot}<span>${escapeHtml(n.label)}</span></button>`;
+      const nextNode = PROGRESS_NODES[i + 1];
+      // 学习 ↔ 面试 是循环关系：用专用的\"循环连接器\"取代普通连接线
+      let line = '';
+      if (nextNode) {
+        if (LOOP_PAIR_IDS.includes(n.id) && LOOP_PAIR_IDS.includes(nextNode.id)) {
+          const filledClass = (cur >= stageOrder[n.id] && cur >= stageOrder[nextNode.id]) ? 'is-filled' : '';
+          line = `<span class="wks-prog-loop ${filledClass}" data-loop="learn-interview" role="img" aria-label="学习与面试循环" title="学完面试 · 面试完再学">
+            <svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 9a8 8 0 0 0-14.5-2.5"/>
+              <polyline points="22 3 22 9 16 9"/>
+              <path d="M6 19a8 8 0 0 0 14.5 2.5"/>
+              <polyline points="6 25 6 19 12 19"/>
+            </svg>
+          </span>`;
+        } else {
+          line = `<span class="wks-prog-line ${i < cur ? 'is-filled' : ''}"></span>`;
+        }
+      }
       return node + line;
     }).join('');
     qsa('.wks-prog-node', box).forEach((b) => b.addEventListener('click', () => {
       const id = b.dataset.prog;
-      const map = { resume: 'resume', match: 'match', jobs: 'jobs', capability: 'detail', learn: 'learn', interview: 'interview' };
-      // 未完成节点提示
+      const map = { resume: 'resume', match: 'match', jobs: 'jobs', learn: 'learn', interview: 'interview' };
+      // 未完成节点提示（学习/面试可互跳，因为它们是循环关系）
       const idx = order.indexOf(id);
-      if (idx > cur) { window.showToast('请先完成前面的诊断步骤', 'amber'); return; }
+      const curId = order[cur];
+      const isLoopNode = LOOP_PAIR_IDS.includes(id);
+      const curIsLoop = LOOP_PAIR_IDS.includes(curId);
+      if (idx > cur && !(isLoopNode && curIsLoop)) {
+        window.showToast('请先完成前面的诊断步骤', 'amber');
+        return;
+      }
       setView(map[id]);
     }));
+    // 点击循环图标：在\"学习↔面试\"之间切换视图，传达\"可循环\"的语义
+    qsa('.wks-prog-loop', box).forEach((el) => {
+      el.addEventListener('click', () => {
+        if (st.stage === 'learn') setView('interview');
+        else if (st.stage === 'interview') setView('learn');
+        else setView('learn'); // 其它阶段默认进入学习
+      });
+    });
   }
 
   function setView(name) {
@@ -762,7 +794,8 @@
   }
 
   /* ---- 左：完整简历预览（纸质简历样式） ----
-   * 当前选中段落：对其内容做关键词高亮（hl-good.addable），点击可同步到简历
+   * 当前选中段落：仅做"段落高亮/框选"，不再做关键词高亮、点击同步到简历。
+   * 关键词同步功能已迁移到 AI 改写建议对比弹窗（rw-diff-modal）使用。
    */
   function renderResumePreview() {
     const box = $('rw-preview');
@@ -770,25 +803,6 @@
     const secs = getSections();
     const st = window.matchState;
     const activeId = st.activeSection;
-    const activeInsight = SECTION_INSIGHT[activeId];
-    // 只高亮当前段落的"建议补充词"，且只标原文中尚未出现的关键词
-    const suggestTerms = (activeInsight && activeInsight.suggestTerms) || [];
-
-    const markTerms = (text) => {
-      // 先 escape，再插入 mark 标记；已采纳的词标 .adopted
-      const adopted = st.adoptedSuggestTerms || {};
-      const adoptedForThis = adopted[activeId] || [];
-      let html = escapeHtml(text);
-      suggestTerms.forEach((term) => {
-        if (!term || !html.includes(escapeHtml(term))) return;
-        const isAdopted = adoptedForThis.includes(term);
-        const cls = isAdopted ? 'hl-good addable adopted' : 'hl-good addable';
-        const token = '\u0001T' + term + 'T\u0001';
-        html = html.split(escapeHtml(term)).join(token);
-        html = html.split(token).join('<mark class="' + cls + '" data-term="' + escapeHtml(term) + '">' + escapeHtml(term) + '</mark>');
-      });
-      return html;
-    };
 
     const basic = secs.find((s) => s.id === 'basic');
     const others = secs.filter((s) => s.id !== 'basic');
@@ -801,39 +815,17 @@
 
     box.innerHTML = `<div class="rw-paper">
       <div class="rw-paper-name">${escapeHtml(name)}</div>
-      ${title ? `<div class="rw-paper-title">${markTerms(title)}</div>` : ''}
-      ${contact.length ? `<div class="rw-paper-contact">${contact.map((c) => markTerms(c)).join(' · ')}</div>` : ''}
+      ${title ? `<div class="rw-paper-title">${escapeHtml(title)}</div>` : ''}
+      ${contact.length ? `<div class="rw-paper-contact">${contact.map((c) => escapeHtml(c)).join(' · ')}</div>` : ''}
       ${others.map((s) => {
-        const body = (s.content || '').replace(/\n/g, '<br>');
+        const body = escapeHtml(s.content || '').replace(/\n/g, '<br>');
         const isActive = s.id === activeId;
         return `<div class="rw-paper-section${isActive ? ' is-active' : ''}">
-          <div class="rw-paper-sec-title">${escapeHtml(s.label)}${isActive ? ' <span class="rw-paper-sec-hint">· 关键词可点击同步</span>' : ''}</div>
-          <div class="rw-paper-sec-body">${isActive ? markTerms(s.content || '') : escapeHtml(body)}</div>
+          <div class="rw-paper-sec-title">${escapeHtml(s.label)}</div>
+          <div class="rw-paper-sec-body">${body}</div>
         </div>`;
       }).join('')}
     </div>`;
-
-    // 绑定"点击高亮词 → 同步到简历"事件
-    qsa('mark.hl-good.addable', box).forEach((mk) => {
-      mk.addEventListener('click', () => {
-        const term = mk.dataset.term;
-        const sec = (window.matchState.resumeSections || []).find((x) => x.id === activeId);
-        if (!sec || !term) return;
-        // 把 term 加到该段 content 末尾（如已有则跳过）
-        if (sec.content && sec.content.includes(term)) {
-          showToast('该词已存在于「' + sec.label + '」', 'amber');
-          return;
-        }
-        sec.content = (sec.content ? sec.content + '\n· 补充：' + term : '· 补充：' + term);
-        // 记录已采纳
-        if (!window.matchState.adoptedSuggestTerms) window.matchState.adoptedSuggestTerms = {};
-        if (!window.matchState.adoptedSuggestTerms[activeId]) window.matchState.adoptedSuggestTerms[activeId] = [];
-        if (!window.matchState.adoptedSuggestTerms[activeId].includes(term)) window.matchState.adoptedSuggestTerms[activeId].push(term);
-        renderResumePreview();
-        renderResumeEditor();
-        showToast('已添加「' + term + '」到' + sec.label, 'teal');
-      });
-    });
   }
 
   /* ---- 纸质版简历渲染（可对关键词做 inline 高亮，用于标杆对比） ---- */
@@ -899,6 +891,16 @@
       renderResumeNav();
       renderResumeEditor();
       renderResumePreview();
+      // 让左侧简历预览对应段落平滑滚动到可视区中央，并加一个轻微的闪动效果
+      const secEl = document.querySelector('#rw-preview .rw-paper-section.is-active');
+      if (secEl && typeof secEl.scrollIntoView === 'function') {
+        try { secEl.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e) { secEl.scrollIntoView(); }
+        secEl.classList.remove('is-flash');
+        // 触发重排后重新加 class，确保动画再次播放
+        void secEl.offsetWidth;
+        secEl.classList.add('is-flash');
+        setTimeout(() => secEl.classList.remove('is-flash'), 1200);
+      }
     }));
   }
 
