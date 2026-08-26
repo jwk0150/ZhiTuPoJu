@@ -748,18 +748,20 @@
 
   /* ---------- 动态计算：各板块均来自 NEWS 池 ---------- */
 
-  /* 今日焦点：只取"今日"发布的高热度资讯，每 4 条一组（主卡 + 3 侧卡） */
+  /* 今日焦点：今日内部资讯 + 高热度行业快讯（外链）混合，每 4 条一组（主卡 + 3 侧卡） */
   function focusList() {
-    return NEWS.filter(function (n) { return n.date === META.date; }).sort(byRead);
+    var internal = NEWS.filter(function (n) { return n.date === META.date; }).sort(byRead);
+    var external = REAL_LATEST.slice().sort(byRead).slice(0, 4); /* 混入阅读量最高的 4 条行业快讯 */
+    return internal.concat(external).sort(byRead);
   }
 
-  /* 热门资讯：热度分 = 阅读量 + 重点标记加权，取前 5 */
+  /* 热门资讯：热度分 = 阅读量 + 重点标记加权，取前 6 */
   function hotNews() {
     return NEWS.slice().sort(function (a, b) {
       var sa = a.readCount + (a.flag === '热点' ? 8000 : 0);
       var sb = b.readCount + (b.flag === '热点' ? 8000 : 0);
       return sb - sa;
-    }).slice(0, 5);
+    }).slice(0, 6);
   }
 
   /* 行业快讯：真实外链新闻，按日期倒序 */

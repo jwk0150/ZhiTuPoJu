@@ -25,65 +25,91 @@
     </div>
 
     <!-- 内容 -->
-    <div class="jn-container" id="app" hidden>
-      <header class="jn-module-head" id="module-head"></header>
-      <section class="jn-section" id="focus" aria-label="今日焦点"></section>
-      <div class="jn-body-grid" id="body-grid">
-        <div class="jn-main-col" id="main-col">
-          <div class="jn-news-cols" id="news-cols"></div>
-          <div class="jn-search-results" id="search-results" hidden></div>
-          <section class="jn-section" id="related" aria-label="延伸阅读"></section>
-          <button type="button" class="jn-load-more" id="load-more">更多资讯 <span aria-hidden="true">→</span></button>
-        </div>
-        <aside class="jn-rail-col" id="rail-col" aria-label="搜索与热门排行">
-          <div class="jn-search" id="search-panel" aria-label="搜索与筛选">
-            <div class="jn-search-head">
-              <h2 class="jn-section-title">搜索 / 筛选</h2>
-            </div>
-            <div class="jn-search-field">
-              <label class="jn-search-label" for="search-kw">关键词</label>
-              <input type="text" id="search-kw" class="jn-search-input" placeholder="标题 / 机构 / 标签…" autocomplete="off" />
-            </div>
-            <div class="jn-search-field">
-              <label class="jn-search-label" for="search-date">发布日期</label>
-              <input type="date" id="search-date" class="jn-search-input jn-search-date" min="2026-08-10" max="2026-08-22" />
-            </div>
-            <div class="jn-search-field">
-              <span class="jn-search-label">排序方式</span>
-              <div class="jn-search-seg" role="group" aria-label="排序方式">
-                <button type="button" class="jn-search-seg-btn is-active" data-sort="date">最新优先</button>
-                <button type="button" class="jn-search-seg-btn" data-sort="hot">按热度</button>
-              </div>
-            </div>
-            <div class="jn-search-actions">
-              <button type="button" class="jn-search-btn" id="search-go">搜索</button>
-              <button type="button" class="jn-search-reset" id="search-reset">清除</button>
+    <div id="app" hidden>
+      <!-- 全屏滚动容器 -->
+      <div class="jn-fullpage" id="jn-fullpage">
+        <section class="jn-screen" id="screen-focus" data-label="今日焦点">
+          <div class="jn-screen-inner">
+            <div class="jn-update-pill" id="jn-topbar-update"></div>
+            <div id="focus"></div>
+            <div class="jn-scroll-hint" aria-hidden="true">
+              <span>滚动浏览</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M6 13l6 6 6-6"/></svg>
             </div>
           </div>
-          <div class="jn-rail" id="rail-inner"></div>
-        </aside>
+        </section>
+        <section class="jn-screen" id="screen-industry" data-label="行业快讯">
+          <div class="jn-screen-inner"><div id="latest-cols"></div></div>
+        </section>
+        <section class="jn-screen" id="screen-hot" data-label="热门资讯">
+          <div class="jn-screen-inner"><div id="hot-cols"></div></div>
+        </section>
+        <section class="jn-screen" id="screen-rank" data-label="热门排行">
+          <div class="jn-screen-inner"><div id="rank-cols"></div></div>
+        </section>
+        <section class="jn-screen" id="screen-related" data-label="延伸阅读">
+          <div class="jn-screen-inner">
+            <div id="related"></div>
+            <footer class="jn-footer jn-footer--inline">
+              <div class="jn-footer-brand">
+                <span class="jn-logo" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 6.5C4 5.1 5.1 4 6.5 4h11C18.9 4 20 5.1 20 6.5V19a1 1 0 0 1-1 1H6.5A2.5 2.5 0 0 1 4 17.5v-11Z"/>
+                    <path d="M4 8.5h16"/>
+                    <path d="M8 13h5M8 16h7"/>
+                    <circle cx="17" cy="11.5" r="1.7" fill="currentColor" stroke="none"/>
+                  </svg>
+                </span>
+                岗位大新闻
+              </div>
+              <div class="jn-footer-note">内容与数据均为示例，不代表真实统计或新闻来源</div>
+            </footer>
+          </div>
+        </section>
       </div>
-    </div>
 
-    <!-- 页脚 -->
-    <footer class="jn-footer">
-      <div class="jn-container jn-footer-inner">
-        <div class="jn-footer-brand">
-          <span class="jn-logo" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M4 6.5C4 5.1 5.1 4 6.5 4h11C18.9 4 20 5.1 20 6.5V19a1 1 0 0 1-1 1H6.5A2.5 2.5 0 0 1 4 17.5v-11Z"/>
-              <path d="M4 8.5h16"/>
-              <path d="M8 13h5M8 16h7"/>
-              <circle cx="17" cy="11.5" r="1.7" fill="currentColor" stroke="none"/>
-            </svg>
-          </span>
-          岗位大新闻
+      <!-- 右侧导航圆点 -->
+      <nav class="jn-dots" id="jn-dots" aria-label="页面导航"></nav>
+
+      <!-- 悬浮搜索触发 -->
+      <button type="button" class="jn-fab-search" id="search-toggle" aria-label="打开搜索">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        <span>搜索</span>
+      </button>
+
+      <!-- 搜索抽屉 -->
+      <div class="jn-search-drawer-mask" id="search-mask" hidden></div>
+      <aside class="jn-search-drawer" id="search-drawer" aria-label="搜索与筛选">
+        <div class="jn-search-drawer-head">
+          <h2 class="jn-section-title">搜索 / 筛选</h2>
+          <button type="button" class="jn-search-drawer-close" id="search-close" aria-label="关闭">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+          </button>
         </div>
-        <div class="jn-footer-note">
-          内容与数据均为示例，不代表真实统计或新闻来源
+        <div class="jn-search" id="search-panel">
+          <div class="jn-search-field">
+            <label class="jn-search-label" for="search-kw">关键词</label>
+            <input type="text" id="search-kw" class="jn-search-input" placeholder="标题 / 机构 / 标签…" autocomplete="off" />
+          </div>
+          <div class="jn-search-field">
+            <label class="jn-search-label" for="search-date">发布日期</label>
+            <input type="date" id="search-date" class="jn-search-input jn-search-date" min="2026-08-10" max="2026-08-22" />
+          </div>
+          <div class="jn-search-field">
+            <span class="jn-search-label">排序方式</span>
+            <div class="jn-search-seg" role="group" aria-label="排序方式">
+              <button type="button" class="jn-search-seg-btn is-active" data-sort="date">最新优先</button>
+              <button type="button" class="jn-search-seg-btn" data-sort="hot">按热度</button>
+            </div>
+          </div>
+          <div class="jn-search-actions">
+            <button type="button" class="jn-search-btn" id="search-go">搜索</button>
+            <button type="button" class="jn-search-reset" id="search-reset">清除</button>
+          </div>
         </div>
-      </div>
-    </footer>
+        <div class="jn-search-results" id="search-results"></div>
+      </aside>
+    </div>
   </main>
 
   <script src="../../js/api.js"></script>

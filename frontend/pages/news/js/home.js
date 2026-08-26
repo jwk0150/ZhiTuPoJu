@@ -23,17 +23,11 @@
   var focusHover = false;
   var FOCUS_GROUPS = buildFocusGroups();
 
-  /* ---------- 顶部模块标题 ---------- */
+  /* ---------- 顶部更新时间胶囊（全屏滚动版） ---------- */
   function renderModuleHead() {
     var M = D.META;
-    document.getElementById('module-head').innerHTML =
-      '<div class="jn-module-head-left">' +
-        '<h1 class="jn-module-title">岗位大新闻</h1>' +
-        '<p class="jn-module-sub">洞察岗位变化，把握职业趋势</p>' +
-      '</div>' +
-      '<div class="jn-module-head-right">' +
-        '<span class="jn-module-update">更新时间 <b>' + esc(M.date) + ' ' + esc(M.time) + '</b></span>' +
-      '</div>';
+    var el = document.getElementById('jn-topbar-update');
+    if (el) el.innerHTML = '更新于 <b>' + esc(M.date) + ' ' + esc(M.time) + '</b>';
   }
 
   /* ---------- 今日焦点：分组（主卡 + 3 侧卡） ---------- */
@@ -53,36 +47,45 @@
     return groups;
   }
 
-  /* ---------- 今日焦点：主卡片 ---------- */
+  /* ---------- 今日焦点：主卡片（兼容外链行业资讯） ---------- */
   function featureCardHtml(n) {
+    var isExt = !!n.external;
+    var attr = isExt ? ('data-url="' + esc(n.url) + '"') : ('data-go="' + n.id + '"');
+    var flag = n.flag || (isExt ? '行业快讯' : '');
+    var cover = n.cover || 'default';
+    var btnText = isExt ? '查看原文 <span aria-hidden="true">↗</span>' : '阅读详情 <span aria-hidden="true">→</span>';
     return (
-      '<article class="jn-feature-card" data-go="' + n.id + '">' +
+      '<article class="jn-feature-card' + (isExt ? ' jn-feature-card--ext' : '') + '" ' + attr + '>' +
         '<div class="jn-feature-body">' +
-          '<span class="jn-feature-flag">' + esc(n.flag) + '</span>' +
+          (flag ? '<span class="jn-feature-flag">' + esc(flag) + '</span>' : '') +
           '<h3 class="jn-feature-title">' + esc(n.title) + '</h3>' +
           '<p class="jn-feature-summary">' + esc(n.summary) + '</p>' +
           '<div class="jn-feature-meta">' +
             (n.source ? '<span class="jn-feature-source">' + esc(n.source) + '</span>' : '') +
-            '<span>' + esc(n.date) + '</span>' +
+            (isExt && n.host ? '<span class="jn-feature-host">' + esc(n.host) + '</span>' : '') +
+            (n.date ? '<span>' + esc(n.date) + '</span>' : '') +
             '<span class="jn-feature-read">' + JN.fmtRead(n.readCount) + '阅读</span>' +
           '</div>' +
-          '<button type="button" class="jn-btn-accent">阅读详情 <span aria-hidden="true">→</span></button>' +
+          '<button type="button" class="jn-btn-accent">' + btnText + '</button>' +
         '</div>' +
-        '<div class="jn-feature-visual">' + JN.artVisual(n.cover) + '</div>' +
+        '<div class="jn-feature-visual">' + JN.artVisual(cover) + '</div>' +
       '</article>'
     );
   }
 
-  /* ---------- 今日焦点：右侧焦点小卡片 ---------- */
+  /* ---------- 今日焦点：右侧焦点小卡片（兼容外链行业资讯） ---------- */
   function focusMiniHtml(n) {
+    var isExt = !!n.external;
+    var attr = isExt ? ('data-url="' + esc(n.url) + '"') : ('data-go="' + n.id + '"');
     return (
-      '<article class="jn-focus-mini" data-go="' + n.id + '">' +
+      '<article class="jn-focus-mini' + (isExt ? ' jn-focus-mini--ext' : '') + '" ' + attr + '>' +
         '<div class="jn-focus-mini-body">' +
           JN.catTag(n.category) +
           '<h3 class="jn-focus-mini-title">' + esc(n.title) + '</h3>' +
           '<div class="jn-focus-mini-meta">' +
             (n.source ? '<span class="jn-focus-mini-source">' + esc(n.source) + '</span>' : '') +
-            '<span>' + esc(n.date) + '</span>' +
+            (isExt && n.host ? '<span class="jn-focus-mini-host">' + esc(n.host) + '</span>' : '') +
+            (n.date ? '<span>' + esc(n.date) + '</span>' : '') +
             '<span>' + JN.fmtRead(n.readCount) + '阅读</span>' +
           '</div>' +
         '</div>' +
@@ -97,7 +100,7 @@
     document.getElementById('focus').innerHTML =
       '<div class="jn-section-head">' +
         '<h2 class="jn-section-title">今日焦点</h2>' +
-        '<span class="jn-section-count">5条值得关注的岗位大新闻</span>' +
+        '<span class="jn-section-count">' + D.focusList.length + '条焦点 · 含行业快讯</span>' +
       '</div>' +
       '<div class="jn-focus-grid">' +
         featureCardHtml(g.main) +
@@ -140,8 +143,8 @@
     var items = D.hotNews.map(function (h, i) {
       return JN.newsRowHtml(h, i + 1);
     }).join('');
-    return JN.sectionHead('热门资讯', '', false) +
-      '<div class="jn-news-list">' + items + '</div>';
+    return JN.sectionHead('热门资讯', '阅读热度 · 编辑精选', { href: 'all.html', text: '全部 <span aria-hidden="true">→</span>' }) +
+      '<div class="jn-news-grid">' + items + '</div>';
   }
 
   /* ---------- 行业快讯 ---------- */
@@ -157,7 +160,7 @@
   }
 
   function renderLatest() {
-    var list = latestFiltered();
+    var list = latestFiltered().slice(0, 6);
     var more = { href: 'industry.html', text: '全部 <span aria-hidden="true">→</span>' };
     var html = JN.sectionHead('行业快讯', '真实来源外链 · 整行点击跳转原文（新标签页打开）', more, true, 'industry.html') +
       '<div class="jn-filter-tabs">' + latestTabsHtml() + '</div>';
@@ -165,12 +168,12 @@
     if (list.length === 0) {
       html += '<div class="jn-state jn-state--compact">该分类下暂时没有资讯，稍后再来看看。</div>';
     } else {
-      html += '<div class="jn-news-list">' + list.map(function (n) { return JN.newsRowHtml(n, null); }).join('') + '</div>';
+      html += '<div class="jn-news-grid">' + list.map(function (n) { return JN.newsRowHtml(n, null); }).join('') + '</div>';
     }
     return html;
   }
 
-  /* ---------- 热门排行（右栏，TOP10） ---------- */
+  /* ---------- 热门排行（屏内，TOP10） ---------- */
   function renderRanking() {
     var items = D.rankingList.map(function (n, i) {
       return (
@@ -181,28 +184,11 @@
         '</li>'
       );
     }).join('');
-    return (
-      '<div class="jn-rail-head">' +
-        '<h2 class="jn-section-title">热门排行</h2>' +
-        '<span class="jn-rail-sub">阅读热度 · TOP ' + D.rankingList.length + '</span>' +
-      '</div>' +
-      '<ol class="jn-rank-list">' + items + '</ol>'
-    );
+    return JN.sectionHead('热门排行', '阅读热度 · TOP ' + D.rankingList.length, false) +
+      '<ol class="jn-rank-list">' + items + '</ol>';
   }
 
-  /* ---------- 主体：左双栏（热门 + 最新） + 右排行 ---------- */
-  function renderNewsCols() {
-    document.getElementById('news-cols').innerHTML =
-      '<div class="jn-triple-col jn-triple-col--hot">' + renderHot() + '</div>' +
-      '<div class="jn-triple-col jn-triple-col--latest" id="jn-latest-col">' + renderLatest() + '</div>';
-  }
-
-  function renderRail() {
-    var inner = document.getElementById('rail-inner');
-    if (inner) inner.innerHTML = renderRanking();
-  }
-
-  /* ---------- 搜索 / 筛选（右栏） ---------- */
+  /* ---------- 搜索 / 筛选（抽屉式） ---------- */
   function isSearchActive() {
     return !!(state.search.keyword.trim() || state.search.date.trim() || state.search.sort === 'hot');
   }
@@ -236,11 +222,7 @@
   function renderSearchResults() {
     var list = getSearchResults();
     var resultsEl = document.getElementById('search-results');
-    var colsEl = document.getElementById('news-cols');
-    var relatedEl = document.getElementById('related');
-    var loadBtn = document.getElementById('load-more');
     if (!resultsEl) return;
-
     var html = JN.sectionHead('搜索结果', list.length + ' 条匹配', false);
     if (list.length === 0) {
       html += '<div class="jn-state jn-state--compact">没有找到匹配的资讯，换个关键词或日期试试。</div>';
@@ -248,31 +230,34 @@
       html += '<div class="jn-news-list">' + list.map(function (n) { return JN.newsRowHtml(n, null); }).join('') + '</div>';
     }
     resultsEl.innerHTML = html;
-
-    /* 隐藏常规三栏，仅展示搜索结果（不销毁原节点，便于清除后还原） */
-    resultsEl.hidden = false;
-    if (colsEl) colsEl.style.display = 'none';
-    if (relatedEl) relatedEl.style.display = 'none';
-    if (loadBtn) loadBtn.style.display = 'none';
   }
 
-  /* 主体调度：搜索激活时显示结果，否则恢复常规三栏 */
-  function renderMain() {
-    var resultsEl = document.getElementById('search-results');
-    var colsEl = document.getElementById('news-cols');
-    var relatedEl = document.getElementById('related');
-    var loadBtn = document.getElementById('load-more');
+  function clearSearchResults() {
+    var el = document.getElementById('search-results');
+    if (el) el.innerHTML = '';
+  }
 
+  function openSearchDrawer() {
+    var d = document.getElementById('search-drawer');
+    var m = document.getElementById('search-mask');
+    if (d) d.classList.add('is-open');
+    if (m) m.hidden = false;
+  }
+  function closeSearchDrawer() {
+    var d = document.getElementById('search-drawer');
+    var m = document.getElementById('search-mask');
+    if (d) d.classList.remove('is-open');
+    if (m) m.hidden = true;
+  }
+
+  /* 主体调度：搜索激活时打开抽屉并展示结果；否则恢复常规浏览 */
+  function renderMain() {
     if (isSearchActive()) {
+      openSearchDrawer();
       renderSearchResults();
     } else {
-      /* 还原：恢复常规三栏，清空并隐藏搜索结果容器 */
-      if (resultsEl) { resultsEl.hidden = true; resultsEl.innerHTML = ''; }
-      if (colsEl) colsEl.style.display = '';
-      if (relatedEl) relatedEl.style.display = '';
-      if (loadBtn) loadBtn.style.display = '';
-      renderNewsCols();
-      renderRelated();
+      closeSearchDrawer();
+      clearSearchResults();
     }
   }
 
@@ -356,13 +341,13 @@
 
   /* ---------- 分类筛选交互 ---------- */
   function bindFilter() {
-    var root = document.getElementById('news-cols');
+    var root = document.getElementById('latest-cols');
     if (!root) return;
     root.addEventListener('click', function (e) {
       var tab = e.target.closest ? e.target.closest('[data-filter]') : null;
       if (!tab) return;
       state.latestCategory = tab.getAttribute('data-filter');
-      renderNewsCols();
+      document.getElementById('latest-cols').innerHTML = renderLatest();
     });
   }
 
@@ -395,12 +380,19 @@
     if (!focusHover) startFocusCarousel();
   }
 
-  /* ---------- 进入详情 ---------- */
+  /* ---------- 进入详情 / 外链 ---------- */
   function bindNavigation() {
     document.addEventListener('click', function (e) {
       var el = e.target;
       if (!el || !el.closest) return;
       if (el.closest('[data-fav]')) return;
+      /* 行业快讯等外链：整卡在新标签打开原文 */
+      var ext = el.closest('[data-url]');
+      if (ext) {
+        e.preventDefault();
+        window.open(ext.getAttribute('data-url'), '_blank', 'noopener');
+        return;
+      }
       if (el.closest('[data-more]')) {
         JN.toast('更多资讯即将上线', 'info');
         return;
@@ -411,28 +403,116 @@
     });
   }
 
-  function bindLoadMore() {
-    var btn = document.getElementById('load-more');
-    if (!btn) return;
-    btn.addEventListener('click', function () {
-      JN.toast('更多资讯即将上线', 'info');
-    });
-  }
-
   /* ---------- 启动 ---------- */
   function renderAll() {
     renderModuleHead();
     renderFocus();
-    renderMain();
-    renderRail();
+    document.getElementById('hot-cols').innerHTML = renderHot();
+    document.getElementById('latest-cols').innerHTML = renderLatest();
+    document.getElementById('rank-cols').innerHTML = renderRanking();
+    renderRelated();
+    initDots();
+  }
+
+  /* ---------- 全屏滚动：右侧导航圆点 ---------- */
+  function initDots() {
+    var fp = document.getElementById('jn-fullpage');
+    var dotsEl = document.getElementById('jn-dots');
+    if (!fp || !dotsEl) return;
+    var screens = Array.prototype.slice.call(fp.querySelectorAll('.jn-screen'));
+    dotsEl.innerHTML = screens.map(function (s, i) {
+      var label = s.getAttribute('data-label') || ('0' + (i + 1));
+      return '<button type="button" class="jn-dot' + (i === 0 ? ' is-active' : '') + '" data-i="' + i + '" aria-label="跳转到' + label + '">' +
+        '<span class="jn-dot-label">' + esc(label) + '</span></button>';
+    }).join('');
+
+    dotsEl.addEventListener('click', function (e) {
+      var d = e.target.closest ? e.target.closest('.jn-dot') : null;
+      if (!d) return;
+      var i = parseInt(d.getAttribute('data-i'), 10);
+      if (screens[i]) screens[i].scrollIntoView({ behavior: 'smooth' });
+    });
+
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) {
+          if (en.isIntersecting) {
+            var i = screens.indexOf(en.target);
+            if (i < 0) return;
+            var dots = dotsEl.querySelectorAll('.jn-dot');
+            for (var k = 0; k < dots.length; k++) dots[k].classList.toggle('is-active', k === i);
+          }
+        });
+      }, { root: fp, threshold: 0.55 });
+      screens.forEach(function (s) { io.observe(s); });
+    }
+  }
+
+  /* ---------- 全屏滚动：键盘上下翻屏 ---------- */
+  function bindKeyboard() {
+    document.addEventListener('keydown', function (e) {
+      if (e.target && /INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) return;
+      if (document.getElementById('search-drawer') && document.getElementById('search-drawer').classList.contains('is-open')) return;
+      var fp = document.getElementById('jn-fullpage');
+      if (!fp) return;
+      var screens = Array.prototype.slice.call(fp.querySelectorAll('.jn-screen'));
+      var cur = 0;
+      for (var i = 0; i < screens.length; i++) {
+        var r = screens[i].getBoundingClientRect();
+        if (r.top <= 2 && r.bottom > 2) { cur = i; break; }
+      }
+      if (e.key === 'ArrowDown' || e.key === 'PageDown') {
+        if (cur < screens.length - 1) { screens[cur + 1].scrollIntoView({ behavior: 'smooth' }); e.preventDefault(); }
+      } else if (e.key === 'ArrowUp' || e.key === 'PageUp') {
+        if (cur > 0) { screens[cur - 1].scrollIntoView({ behavior: 'smooth' }); e.preventDefault(); }
+      } else if (e.key === 'Home') {
+        screens[0].scrollIntoView({ behavior: 'smooth' }); e.preventDefault();
+      } else if (e.key === 'End') {
+        screens[screens.length - 1].scrollIntoView({ behavior: 'smooth' }); e.preventDefault();
+      }
+    });
+  }
+
+  /* ---------- 搜索抽屉开合 ---------- */
+  function bindSearchDrawer() {
+    var toggle = document.getElementById('search-toggle');
+    var close = document.getElementById('search-close');
+    var mask = document.getElementById('search-mask');
+    if (toggle) toggle.addEventListener('click', function () {
+      if (isSearchActive()) {
+        renderSearchResults();
+      } else {
+        var el = document.getElementById('search-results');
+        if (el) el.innerHTML = JN.sectionHead('全部资讯', D.newsList.length + ' 条', false) +
+          '<div class="jn-news-list">' + D.newsList.map(function (n) { return JN.newsRowHtml(n, null); }).join('') + '</div>';
+      }
+      openSearchDrawer();
+    });
+    if (close) close.addEventListener('click', closeSearchDrawer);
+    if (mask) mask.addEventListener('click', closeSearchDrawer);
+  }
+
+  /* ---------- 焦点轮播：仅当首屏可见时自动播放 ---------- */
+  function bindFocusVisibility() {
+    var fp = document.getElementById('jn-fullpage');
+    var fEl = document.getElementById('focus');
+    if (!fp || !fEl || !('IntersectionObserver' in window)) return;
+    var obs = new IntersectionObserver(function (es) {
+      es.forEach(function (e) {
+        if (e.isIntersecting) { if (!focusHover) startFocusCarousel(); }
+        else { stopFocusCarousel(); }
+      });
+    }, { root: fp, threshold: 0.4 });
+    obs.observe(fEl);
   }
 
   function init() {
     bindFilter();
     bindFocusPager();
     bindSearch();
+    bindSearchDrawer();
+    bindKeyboard();
     bindNavigation();
-    bindLoadMore();
 
     var focusEl = document.getElementById('focus');
     if (focusEl) {
@@ -447,6 +527,7 @@
       if (app) app.hidden = false;
       renderAll();
       startFocusCarousel();
+      bindFocusVisibility();
     }, 420);
   }
 
