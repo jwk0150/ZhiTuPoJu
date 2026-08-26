@@ -57,6 +57,7 @@
     recommendTab: 'now', jobTab: 'requirement',
     aipanelOpen: true, activeView: 'resume',
     activeSection: 'basic', resumeSections: null,
+    refineMode: false,
     interview: { index: 0, answers: [], questions: [] },
     whatif: {}, favJobs: {},
     _theater: null, _mediaStream: null, _recognition: null
@@ -75,11 +76,25 @@
   const MAX_BYTES = 8 * 1024 * 1024;
   const DIRECTIONS = ['Java 后端开发', '数据开发', 'AI 应用开发', '测试开发', '前端开发'];
 
-  // 顶部进度节点
+  // 顶部进度：唯一主路径导航（左栏已隐藏）
   const PROGRESS_NODES = [
-    { id: 'resume', label: '简历' }, { id: 'match', label: '匹配' }, { id: 'jobs', label: '岗位' },
-    { id: 'capability', label: '能力' }, { id: 'learn', label: '学习' }, { id: 'interview', label: '面试' }
+    { id: 'resume', label: '简历', hint: '确认简历后开始匹配' },
+    { id: 'match', label: '匹配', hint: '设定条件并运行匹配' },
+    { id: 'jobs', label: '岗位', hint: '挑选目标岗位' },
+    { id: 'learn', label: '学习', hint: '针对岗位补缺口' },
+    { id: 'interview', label: '面试', hint: '模拟面试演练' }
   ];
+  const LOOP_PAIR_IDS = ['learn', 'interview'];
+
+  const STEP_GUIDE = {
+    resume: { k: 'STEP 01 · 确认简历', t: '左侧预览，右侧 AI 改善建议；确认后开始匹配。可用「选择简历」从个人仓库更换。' },
+    match: { k: 'STEP 02 · 设定条件', t: '也可在此微调城市与方向后再运行匹配；细则可展开调整。' },
+    analysis: { k: '分析中', t: '正在对照简历与条件生成岗位清单…' },
+    jobs: { k: 'STEP 03 · 选岗决策', t: '点左侧岗位看匹配原因；选定后可去「学习」补缺口，或直接「面试」演练。' },
+    learn: { k: 'STEP 04 · 针对岗位提升', t: '围绕当前岗位补能力缺口；学完可切到面试演练，面完再回来学——可循环。' },
+    interview: { k: 'STEP 04 · 模拟面试', t: '针对当前岗位练问答；面完可回学习继续补强。' },
+    compare: { k: '对比视图', t: '对照标杆与能力差距，辅助决策。' }
+  };
 
   /* 前端假数据：保证整条链路可预览 */
   const MOCK_RESULT = {
@@ -553,9 +568,35 @@
     if (!sug) return;
     const newText = sug.versions[_diffVersion] || '';
     s.content = newText;
+    // 优化版本：基于当前仓库简历追加历史版本
+    try {
+      const st = window.matchState;
+      const sections = (st.resumeSections || []).map((x) => ({
+        id: x.id, label: x.label, content: x.content || '', ai_suggestion: x.ai_suggestion || ''
+      }));
+      const text = sections.map((sec) => '【' + sec.label + '】\n' + sec.content).join('\n\n');
+      const baseId = st.vaultResumeId;
+      if (window.ZhituVault && baseId && typeof window.ZhituVault.addOptimizedVersion === 'function') {
+        const updated = window.ZhituVault.addOptimizedVersion(baseId, {
+          source: 'optimize',
+          fileName: st.fileName,
+          sections: sections,
+          text: text,
+          versionLabel: 'AI 优化 · ' + (s.label || s.id)
+        });
+        if (updated) {
+          st.vaultVersionId = updated.currentVersionId;
+          window.ZhituVault.saveMatchResume(window.ZhituVault.toPayloadFromItem(updated));
+        }
+      } else {
+        persistMatchResumeFromState();
+      }
+    } catch (_) {
+      persistMatchResumeFromState();
+    }
     renderResume();
     closeDiffModal();
-    showToast('已采纳「' + (s.label || s.id) + '」的改写建议', 'teal');
+    showToast('已采纳「' + (s.label || s.id) + '」的改写建议，并写入仓库历史版本', 'teal');
   }
 
   function bindDiffModal() {
@@ -582,18 +623,113 @@
   }
 
   /* ---------------- 入口 ---------------- */
+  const MATCH_RESUME_KEY = 'zhitu_match_resume_v1';
+
+  function applyResumePayload(payload, meta) {
+    const st = window.matchState;
+    if (!payload || !Array.isArray(payload.sections) || !payload.sections.length) return false;
+    meta = meta || {};
+    st.file = {
+      name: payload.fileName || '简历.txt',
+      size: payload.size || 1,
+      type: 'text/plain',
+      fromWizard: payload.source === 'resume-builder' || payload.source === 'explore',
+      fromVault: true
+    };
+    st.fileName = payload.fileName || '简历.txt';
+    st.fileSize = payload.size || 1;
+    st.vaultResumeId = payload.id || meta.id || null;
+    st.vaultVersionId = payload.versionId || payload.currentVersionId || null;
+    st.resumeSections = payload.sections.map((s) => ({
+      id: s.id,
+      label: s.label,
+      content: s.content || '',
+      ai_suggestion: s.ai_suggestion || ''
+    }));
+    st.activeSection = 'basic';
+    st.refineMode = true; // 默认展示 AI 改善三栏
+    return true;
+  }
+
+  function loadDefaultResume() {
+    // 从仓库选用 / 开局刚生成：沿用桥接键
+    try {
+      const params = new URLSearchParams(location.search || '');
+      const fromVault = params.get('from') === 'warehouse';
+      const fromWizard = params.get('auto') === '1' || params.get('from') === 'wizard';
+      if (fromVault || fromWizard) {
+        if (window.ZhituVault && typeof window.ZhituVault.loadMatchResume === 'function') {
+          const obj = window.ZhituVault.loadMatchResume();
+          if (obj && applyResumePayload(obj)) return obj;
+        }
+        try {
+          const raw = localStorage.getItem(MATCH_RESUME_KEY);
+          if (raw) {
+            const obj = JSON.parse(raw);
+            if (obj && applyResumePayload(obj)) return obj;
+          }
+        } catch (_) {}
+      }
+    } catch (_) {}
+
+    // 前端演示默认：张三 · Java 后端（与 MOCK_RESULT / 岗位推荐对齐）
+    const sections = buildDefaultResumeSections();
+    const text = sections.map((s) => '【' + s.label + '】\n' + s.content).join('\n\n');
+    const payload = {
+      id: 'VR-demo-java',
+      source: 'demo',
+      fileName: '张三_Java后端开发.txt',
+      size: text.length,
+      sections: sections,
+      text: text,
+      updatedAt: Date.now()
+    };
+    applyResumePayload(payload);
+    // 标记非向导，便于标签显示
+    window.matchState.file.fromWizard = false;
+    window.matchState.file.fromDemo = true;
+    return payload;
+  }
+
+  function openVaultPicker() {
+    const href = new URL('warehouse.html', location.href);
+    href.searchParams.set('v', '20260826ai1');
+    href.searchParams.set('pick', '1');
+    href.searchParams.set('return', 'match');
+    location.href = href.href;
+  }
+
+  function hydrateMatchFavs() {
+    const map = (window.ZhituVault && window.ZhituVault.loadMatchFavs)
+      ? window.ZhituVault.loadMatchFavs()
+      : {};
+    const fav = {};
+    Object.keys(map || {}).forEach((k) => { fav[k] = true; });
+    window.matchState.favJobs = fav;
+  }
+
   function initMatch() {
     if (window.__matchInit) return;
     window.__matchInit = true;
-    // 演示态默认注入一份本地简历与匹配结果，页面无需后端也能完整展示。
-    const demoState = window.matchState;
-    demoState.file = { name: '张三_Java后端开发.txt', size: 18642, type: 'text/plain' };
-    demoState.fileName = '张三_Java后端开发.txt';
-    demoState.fileSize = 18642;
-    demoState.result = structuredClone(MOCK_RESULT);
-    demoState.selectedJobId = MOCK_RESULT.matches[0].job.id;
-    demoState.resumeSections = buildDefaultResumeSections();
-    demoState.activeSection = 'basic';
+    const st = window.matchState;
+    st.refineMode = true;
+    hydrateMatchFavs();
+    if (window.ZhituVault && typeof window.ZhituVault.ensureDemoResumes === 'function') {
+      try { window.ZhituVault.ensureDemoResumes(); } catch (_) {}
+    }
+    const loaded = loadDefaultResume();
+    if (!loaded) {
+      st.file = null;
+      st.fileName = '';
+      st.fileSize = 0;
+      st.resumeSections = null;
+      st.activeSection = 'basic';
+      st.vaultResumeId = null;
+      st.refineMode = false;
+    }
+    st.result = null;
+    st.selectedJobId = null;
+
     bindGlobal();
     bindEntry();
     bindMatchCond();
@@ -612,6 +748,18 @@
     setView('resume');
     const art = qs('.match-art-layer'); if (art) art.hidden = true;
     renderAIPanelResume();
+
+    // 开局生成后带 ?auto=1：自动跑完整匹配流程（前端 mock，不依赖后端）
+    try {
+      const params = new URLSearchParams(location.search || '');
+      const wantAuto = params.get('auto') === '1' || params.get('auto') === 'true';
+      if (wantAuto && st.file) {
+        setTimeout(() => {
+          if (window.showToast) window.showToast('正在根据开局简历自动匹配…', 'teal');
+          runMatch();
+        }, reduceMotion() ? 120 : 480);
+      }
+    } catch (_) {}
   }
 
   /* ============================================================
@@ -621,11 +769,10 @@
     qsa('.wks-nav-item').forEach((b) => b.addEventListener('click', () => {
       const nav = b.dataset.nav;
       if (nav === 'compare') { setView('compare'); return; }
-      // 导航映射到对应视图
-      const map = { resume: 'resume', match: 'match', jobs: 'jobs', capability: 'detail', learn: 'learn', interview: 'interview' };
+      // 导航映射到对应视图（已移除 capability 节点）
+      const map = { resume: 'resume', match: 'match', jobs: 'jobs', learn: 'learn', interview: 'interview' };
       // interview 需要已进入过分析，否则先跳 jobs
       if (nav === 'interview' && !window.matchState.result) { window.showToast('请先完成匹配分析', 'amber'); setView('jobs'); return; }
-      if (nav === 'capability' && !window.matchState.selectedJobId) { window.showToast('请先选择一个岗位', 'amber'); setView('jobs'); return; }
       if (nav === 'learn' && !window.matchState.selectedJobId) { window.showToast('请先选择岗位再生成学习路径', 'amber'); setView('jobs'); return; }
       setView(map[nav] || 'resume');
     }));
@@ -635,51 +782,99 @@
     const st = window.matchState;
     const box = $('wks-progress');
     if (!box) return;
-    // 计算已完成：根据 stage
+    // 计算已完成：根据 stage（去掉了 capability：简历=0, 匹配=1, 岗位=2, 学习=3, 面试=4）
     const order = PROGRESS_NODES.map((n) => n.id);
-    const stageOrder = { resume: 0, match: 1, jobs: 2, capability: 3, learn: 4, interview: 5 };
+    const stageOrder = { resume: 0, match: 1, jobs: 2, learn: 3, interview: 4 };
     const cur = stageOrder[st.stage] != null ? stageOrder[st.stage] : 0;
     box.innerHTML = PROGRESS_NODES.map((n, i) => {
       const state = i < cur ? 'is-done' : (i === cur ? 'is-active' : '');
       const dot = '<span class="wks-prog-dot"></span>';
-      const node = `<button class="wks-prog-node ${state}" data-prog="${n.id}" type="button">${dot}<span>${n.label}</span></button>`;
-      const line = i < PROGRESS_NODES.length - 1 ? `<span class="wks-prog-line ${i < cur ? 'is-filled' : ''}"></span>` : '';
+      const node = `<button class="wks-prog-node ${state}" data-prog="${n.id}" type="button" title="${escapeHtml(n.hint || n.label)}">${dot}<span>${escapeHtml(n.label)}</span></button>`;
+      const nextNode = PROGRESS_NODES[i + 1];
+      // 学习 ↔ 面试 是循环关系：用专用的\"循环连接器\"取代普通连接线
+      let line = '';
+      if (nextNode) {
+        if (LOOP_PAIR_IDS.includes(n.id) && LOOP_PAIR_IDS.includes(nextNode.id)) {
+          const filledClass = (cur >= stageOrder[n.id] && cur >= stageOrder[nextNode.id]) ? 'is-filled' : '';
+          line = `<span class="wks-prog-loop ${filledClass}" data-loop="learn-interview" role="img" aria-label="学习与面试循环" title="学完面试 · 面试完再学">
+            <svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 9a8 8 0 0 0-14.5-2.5"/>
+              <polyline points="22 3 22 9 16 9"/>
+              <path d="M6 19a8 8 0 0 0 14.5 2.5"/>
+              <polyline points="6 25 6 19 12 19"/>
+            </svg>
+          </span>`;
+        } else {
+          line = `<span class="wks-prog-line ${i < cur ? 'is-filled' : ''}"></span>`;
+        }
+      }
       return node + line;
     }).join('');
     qsa('.wks-prog-node', box).forEach((b) => b.addEventListener('click', () => {
       const id = b.dataset.prog;
-      const map = { resume: 'resume', match: 'match', jobs: 'jobs', capability: 'detail', learn: 'learn', interview: 'interview' };
-      // 未完成节点提示
+      const map = { resume: 'resume', match: 'match', jobs: 'jobs', learn: 'learn', interview: 'interview' };
+      // 未完成节点提示（学习/面试可互跳，因为它们是循环关系）
       const idx = order.indexOf(id);
-      if (idx > cur) { window.showToast('请先完成前面的诊断步骤', 'amber'); return; }
+      const curId = order[cur];
+      const isLoopNode = LOOP_PAIR_IDS.includes(id);
+      const curIsLoop = LOOP_PAIR_IDS.includes(curId);
+      if (idx > cur && !(isLoopNode && curIsLoop)) {
+        const need = PROGRESS_NODES[cur]; window.showToast(need && need.hint ? ('下一步：' + need.hint) : '请先完成前面的步骤', 'amber');
+        return;
+      }
       setView(map[id]);
     }));
+    // 点击循环图标：在\"学习↔面试\"之间切换视图，传达\"可循环\"的语义
+    qsa('.wks-prog-loop', box).forEach((el) => {
+      el.addEventListener('click', () => {
+        if (st.stage === 'learn') setView('interview');
+        else if (st.stage === 'interview') setView('learn');
+        else setView('learn'); // 其它阶段默认进入学习
+      });
+    });
+  }
+
+  function updateStepGuide(viewName) {
+    const g = STEP_GUIDE[viewName] || STEP_GUIDE.resume;
+    const viewId = viewName === 'interview' ? 'learn' : viewName;
+    const root = $('view-' + viewId) || document;
+    const local = root.querySelector ? root.querySelector('.wks-step-guide') : null;
+    if (local) {
+      const lk = local.querySelector('.wks-step-guide-k');
+      const lt = local.querySelector('.wks-step-guide-t');
+      if (lk) lk.textContent = g.k;
+      if (lt) lt.textContent = g.t;
+    }
+    const tEl = $('wks-step-guide-t');
+    if (tEl && viewName === 'resume') tEl.textContent = g.t;
   }
 
   function setView(name) {
-    if (name === 'detail') name = 'jobs'; // 兼容旧调用：详情已合并到 jobs 视图右栏
+    if (name === 'detail') name = 'jobs';
     const st = window.matchState;
     st.activeView = name;
     const views = ['resume', 'match', 'jobs', 'analysis', 'learn', 'compare'];
-    views.forEach((v) => { const el = $('view-' + v); if (el) { el.classList.toggle('is-active', v === name); el.hidden = (v !== name); } });
-    // view-resume 三栏工作台有自己的视觉，不展示艺术背景插图
+    const show = name === 'interview' ? 'learn' : name;
+    views.forEach((v) => {
+      const el = $('view-' + v);
+      if (el) { el.classList.toggle('is-active', v === show); el.hidden = (v !== show); }
+    });
     const art = qs('.match-art-layer');
-    if (art) art.hidden = (name === 'resume');
-    // 左导航高亮
-    const navMap = { resume: 'resume', match: 'match', jobs: 'jobs', learn: 'learn', compare: 'compare' };
+    if (art) art.hidden = (show === 'resume');
+    const navMap = { resume: 'resume', match: 'match', jobs: 'jobs', learn: 'learn', interview: 'interview', compare: 'compare' };
     qsa('.wks-nav-item').forEach((b) => b.classList.toggle('is-active', navMap[name] === b.dataset.nav));
-    // 同步 stage（用于进度）
     if (name === 'resume') st.stage = 'resume';
-    else if (name === 'match') st.stage = 'match';
+    else if (name === 'match' || name === 'analysis') st.stage = name === 'analysis' ? 'match' : 'match';
     else if (name === 'jobs') st.stage = 'jobs';
     else if (name === 'learn') st.stage = 'learn';
     else if (name === 'interview') st.stage = 'interview';
     renderProgress();
-    if (name === 'jobs') renderJobs();
-    if (name === 'match') renderCondWorkbench();
-    if (name === 'learn') renderLearning();
-    if (name === 'compare') renderCompare();
-    if (name === 'resume') renderResume();
+    updateStepGuide(name);
+    if (show === 'jobs') renderJobs();
+    if (show === 'match') renderCondWorkbench();
+    if (show === 'learn') renderLearning();
+    if (show === 'compare') renderCompare();
+    if (show === 'resume') renderResume();
   }
 
   /* ============================================================
@@ -690,7 +885,10 @@
     if (input) input.addEventListener('change', (e) => { const f = e.target.files && e.target.files[0]; if (f) loadFile(f); });
     const up = $('resume-upload-zone');
     if (up) {
-      up.addEventListener('click', () => $('resume-file-input').click());
+      up.addEventListener('click', (e) => {
+        if (e.target && e.target.closest && (e.target.closest('#md-sample-resume') || e.target.closest('#md-open-vault'))) return;
+        $('resume-file-input').click();
+      });
       up.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') $('resume-file-input').click(); });
       ['dragenter', 'dragover'].forEach((ev) => up.addEventListener(ev, (e) => { e.preventDefault(); up.classList.add('is-drag'); }));
       ['dragleave', 'drop'].forEach((ev) => up.addEventListener(ev, (e) => { e.preventDefault(); up.classList.remove('is-drag'); }));
@@ -698,16 +896,19 @@
     }
     const sample = $('md-sample-resume');
     if (sample) sample.addEventListener('click', (e) => { e.stopPropagation(); loadSample(); });
+    const openVaultBtn = $('md-open-vault');
+    if (openVaultBtn) openVaultBtn.addEventListener('click', (e) => { e.stopPropagation(); openVaultPicker(); });
+    const pickBtn = $('md-pick-resume');
+    if (pickBtn) pickBtn.addEventListener('click', openVaultPicker);
     const start = $('md-start-match');
     if (start) start.addEventListener('click', () => {
-      if (!window.matchState.file) { window.showToast('请先上传简历', 'amber'); $('resume-file-input').click(); return; }
-      setView('match');
+      if (!window.matchState.file) { window.showToast('请先上传或选择简历', 'amber'); $('resume-file-input').click(); return; }
+      runMatch();
     });
-    // 顶部"开始匹配"按钮（用户要求放在右上角）
     const startTop = $('md-start-match-top');
     if (startTop) startTop.addEventListener('click', () => {
-      if (!window.matchState.file) { window.showToast('请先上传简历', 'amber'); $('resume-file-input').click(); return; }
-      setView('match');
+      if (!window.matchState.file) { window.showToast('请先上传或选择简历', 'amber'); $('resume-file-input').click(); return; }
+      runMatch();
     });
     const view = $('md-view-resume');
     if (view) view.addEventListener('click', viewResume);
@@ -717,7 +918,24 @@
     bindDiffModal();
   }
 
-  function renderResume() {
+  function applyResumeLayoutMode() {
+    const st = window.matchState;
+    const grid = $('rw-grid') || document.querySelector('.rw-grid');
+    const nav = $('rw-col-nav');
+    const editor = $('rw-col-editor');
+    // 有简历时固定 AI 改善三栏；无「收起精修」
+    const refine = !!st.file;
+    st.refineMode = refine;
+    if (grid) {
+      grid.classList.toggle('is-preview', !refine);
+      grid.classList.toggle('is-refine', refine);
+      grid.hidden = false;
+    }
+    if (nav) nav.hidden = !refine;
+    if (editor) editor.hidden = !refine;
+  }
+
+function renderResume() {
     const st = window.matchState;
     const uploadCard = $('resume-upload-card');
     const headMetrics = $('resume-head-metrics');
@@ -726,34 +944,44 @@
     const generate = $('rw-generate');
     const fileBadge = $('rw-file-badge');
 
-    if (!st.resumeSections) st.resumeSections = buildDefaultResumeSections();
-
     if (st.file) {
+      if (!st.resumeSections || !st.resumeSections.length) {
+        st.resumeSections = buildDefaultResumeSections();
+      }
       if (uploadCard) uploadCard.hidden = true;
-      if (headMetrics) headMetrics.innerHTML = `<span class="mod-tag mod-tag--ok">解析完成</span>`;
+      if (headMetrics) {
+        let tag = '解析完成';
+        if (st.file.fromDemo) tag = '演示 · Java 后端';
+        else if (st.file.fromWizard) tag = '简历探索 · 初稿';
+        headMetrics.innerHTML = `<span class="mod-tag mod-tag--ok">${tag}</span>`;
+      }
       if (toolbar) toolbar.hidden = false;
       if (grid) grid.hidden = false;
       if (generate) generate.hidden = false;
-      const size = st.fileSize ? (st.fileSize / 1024 / 1024).toFixed(1) + 'MB' : '本地文件';
-      if (fileBadge) fileBadge.innerHTML = `<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>${escapeHtml(st.fileName)} · ${escapeHtml(size)}`;
+      const size = st.fileSize ? (st.fileSize > 2048 ? (st.fileSize / 1024 / 1024).toFixed(1) + 'MB' : st.fileSize + 'B') : '本地';
+      if (fileBadge) fileBadge.innerHTML = `<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>${escapeHtml(st.fileName || '简历')} · ${escapeHtml(size)}`;
     } else {
+      st.resumeSections = null;
       if (uploadCard) uploadCard.hidden = false;
       if (headMetrics) headMetrics.innerHTML = `<span class="mod-tag mod-tag--warn">待导入</span>`;
       if (toolbar) toolbar.hidden = true;
-      if (grid) grid.hidden = true;
+      if (grid) grid.hidden = false;
       if (generate) generate.hidden = true;
+      if (fileBadge) fileBadge.innerHTML = '';
     }
 
+    applyResumeLayoutMode();
     renderResumePreview();
-    renderResumeNav();
-    renderResumeEditor();
+    if (st.file) {
+      renderResumeNav();
+      renderResumeEditor();
+    }
     renderAIPanelResume();
   }
 
   function getSections() {
     const st = window.matchState;
-    if (!st.resumeSections) st.resumeSections = buildDefaultResumeSections();
-    return st.resumeSections;
+    return Array.isArray(st.resumeSections) ? st.resumeSections : [];
   }
   function getActiveSection() {
     const st = window.matchState;
@@ -762,7 +990,8 @@
   }
 
   /* ---- 左：完整简历预览（纸质简历样式） ----
-   * 当前选中段落：对其内容做关键词高亮（hl-good.addable），点击可同步到简历
+   * 当前选中段落：仅做"段落高亮/框选"，不再做关键词高亮、点击同步到简历。
+   * 关键词同步功能已迁移到 AI 改写建议对比弹窗（rw-diff-modal）使用。
    */
   function renderResumePreview() {
     const box = $('rw-preview');
@@ -770,25 +999,15 @@
     const secs = getSections();
     const st = window.matchState;
     const activeId = st.activeSection;
-    const activeInsight = SECTION_INSIGHT[activeId];
-    // 只高亮当前段落的"建议补充词"，且只标原文中尚未出现的关键词
-    const suggestTerms = (activeInsight && activeInsight.suggestTerms) || [];
 
-    const markTerms = (text) => {
-      // 先 escape，再插入 mark 标记；已采纳的词标 .adopted
-      const adopted = st.adoptedSuggestTerms || {};
-      const adoptedForThis = adopted[activeId] || [];
-      let html = escapeHtml(text);
-      suggestTerms.forEach((term) => {
-        if (!term || !html.includes(escapeHtml(term))) return;
-        const isAdopted = adoptedForThis.includes(term);
-        const cls = isAdopted ? 'hl-good addable adopted' : 'hl-good addable';
-        const token = '\u0001T' + term + 'T\u0001';
-        html = html.split(escapeHtml(term)).join(token);
-        html = html.split(token).join('<mark class="' + cls + '" data-term="' + escapeHtml(term) + '">' + escapeHtml(term) + '</mark>');
-      });
-      return html;
-    };
+    if (!st.file || !secs.length) {
+      box.innerHTML = `<div class="rw-paper rw-paper--empty">
+        <div class="rw-paper-name">暂无简历</div>
+        <div class="rw-paper-title">完成「简历向导」生成后将显示在这里</div>
+        <div class="rw-paper-contact">也可自行导入 PDF / DOC / TXT</div>
+      </div>`;
+      return;
+    }
 
     const basic = secs.find((s) => s.id === 'basic');
     const others = secs.filter((s) => s.id !== 'basic');
@@ -801,39 +1020,17 @@
 
     box.innerHTML = `<div class="rw-paper">
       <div class="rw-paper-name">${escapeHtml(name)}</div>
-      ${title ? `<div class="rw-paper-title">${markTerms(title)}</div>` : ''}
-      ${contact.length ? `<div class="rw-paper-contact">${contact.map((c) => markTerms(c)).join(' · ')}</div>` : ''}
+      ${title ? `<div class="rw-paper-title">${escapeHtml(title)}</div>` : ''}
+      ${contact.length ? `<div class="rw-paper-contact">${contact.map((c) => escapeHtml(c)).join(' · ')}</div>` : ''}
       ${others.map((s) => {
-        const body = (s.content || '').replace(/\n/g, '<br>');
+        const body = escapeHtml(s.content || '').replace(/\n/g, '<br>');
         const isActive = s.id === activeId;
         return `<div class="rw-paper-section${isActive ? ' is-active' : ''}">
-          <div class="rw-paper-sec-title">${escapeHtml(s.label)}${isActive ? ' <span class="rw-paper-sec-hint">· 关键词可点击同步</span>' : ''}</div>
-          <div class="rw-paper-sec-body">${isActive ? markTerms(s.content || '') : escapeHtml(body)}</div>
+          <div class="rw-paper-sec-title">${escapeHtml(s.label)}</div>
+          <div class="rw-paper-sec-body">${body}</div>
         </div>`;
       }).join('')}
     </div>`;
-
-    // 绑定"点击高亮词 → 同步到简历"事件
-    qsa('mark.hl-good.addable', box).forEach((mk) => {
-      mk.addEventListener('click', () => {
-        const term = mk.dataset.term;
-        const sec = (window.matchState.resumeSections || []).find((x) => x.id === activeId);
-        if (!sec || !term) return;
-        // 把 term 加到该段 content 末尾（如已有则跳过）
-        if (sec.content && sec.content.includes(term)) {
-          showToast('该词已存在于「' + sec.label + '」', 'amber');
-          return;
-        }
-        sec.content = (sec.content ? sec.content + '\n· 补充：' + term : '· 补充：' + term);
-        // 记录已采纳
-        if (!window.matchState.adoptedSuggestTerms) window.matchState.adoptedSuggestTerms = {};
-        if (!window.matchState.adoptedSuggestTerms[activeId]) window.matchState.adoptedSuggestTerms[activeId] = [];
-        if (!window.matchState.adoptedSuggestTerms[activeId].includes(term)) window.matchState.adoptedSuggestTerms[activeId].push(term);
-        renderResumePreview();
-        renderResumeEditor();
-        showToast('已添加「' + term + '」到' + sec.label, 'teal');
-      });
-    });
   }
 
   /* ---- 纸质版简历渲染（可对关键词做 inline 高亮，用于标杆对比） ---- */
@@ -899,6 +1096,16 @@
       renderResumeNav();
       renderResumeEditor();
       renderResumePreview();
+      // 让左侧简历预览对应段落平滑滚动到可视区中央，并加一个轻微的闪动效果
+      const secEl = document.querySelector('#rw-preview .rw-paper-section.is-active');
+      if (secEl && typeof secEl.scrollIntoView === 'function') {
+        try { secEl.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e) { secEl.scrollIntoView(); }
+        secEl.classList.remove('is-flash');
+        // 触发重排后重新加 class，确保动画再次播放
+        void secEl.offsetWidth;
+        secEl.classList.add('is-flash');
+        setTimeout(() => secEl.classList.remove('is-flash'), 1200);
+      }
     }));
   }
 
@@ -1004,16 +1211,43 @@
       reader.onload = () => {
         window.matchState.resumeSections = parseResumeText(String(reader.result || ''));
         window.matchState.activeSection = 'basic';
+        persistMatchResumeFromState();
         renderResume();
       };
-      reader.onerror = () => { window.matchState.resumeSections = buildDefaultResumeSections(); renderResume(); };
+      reader.onerror = () => {
+        window.matchState.resumeSections = buildDefaultResumeSections();
+        persistMatchResumeFromState();
+        renderResume();
+      };
       reader.readAsText(file, 'utf-8');
     } else {
       window.matchState.resumeSections = buildDefaultResumeSections();
       window.matchState.activeSection = 'basic';
+      persistMatchResumeFromState();
       renderResume();
     }
     window.showToast('简历已就绪', 'teal');
+  }
+
+  function persistMatchResumeFromState() {
+    try {
+      const st = window.matchState;
+      if (!st.resumeSections || !st.resumeSections.length) return;
+      const payload = {
+        id: 'VR-match-' + (st.fileName || 'import'),
+        source: st.file && st.file.fromWizard ? 'resume-builder' : 'match-edit',
+        updatedAt: Date.now(),
+        fileName: st.fileName || '导入简历.txt',
+        size: st.fileSize || 1,
+        sections: st.resumeSections,
+        text: st.resumeSections.map((s) => '【' + s.label + '】\n' + (s.content || '')).join('\n\n')
+      };
+      if (window.ZhituVault && typeof window.ZhituVault.saveMatchResume === 'function') {
+        window.ZhituVault.saveMatchResume(payload);
+      } else {
+        localStorage.setItem(MATCH_RESUME_KEY, JSON.stringify(payload));
+      }
+    } catch (_) {}
   }
 
   // 按【区块名】标题对简历文本做简单分块，未匹配的段落归入「个人信息」
@@ -1938,9 +2172,20 @@
     qsa('.job-fav', list).forEach((f) => f.addEventListener('click', (e) => {
       e.stopPropagation();
       const id = f.dataset.fav;
-      window.matchState.favJobs[id] = !window.matchState.favJobs[id];
-      f.classList.toggle('is-fav', window.matchState.favJobs[id]);
-      f.textContent = window.matchState.favJobs[id] ? '★' : '☆';
+      const res = window.matchState.result || MOCK_RESULT;
+      const hit = (res.matches || []).find((m) => m.job && String(m.job.id) === String(id));
+      const job = hit ? Object.assign({}, hit.job, { match_score: hit.score }) : { id: id };
+      let on = false;
+      if (window.ZhituVault && typeof window.ZhituVault.toggleMatchFav === 'function') {
+        on = window.ZhituVault.toggleMatchFav(job);
+        window.matchState.favJobs[id] = on;
+      } else {
+        window.matchState.favJobs[id] = !window.matchState.favJobs[id];
+        on = !!window.matchState.favJobs[id];
+      }
+      f.classList.toggle('is-fav', on);
+      f.textContent = on ? '★' : '☆';
+      if (window.showToast) window.showToast(on ? '已收藏到个人仓库' : '已取消收藏', on ? 'teal' : 'amber');
     }));
     // 按 selectedJobId 高亮（若在当前过滤列表中）
     const targetId = window.matchState.selectedJobId;
@@ -4124,6 +4369,7 @@
     if (lines.some((l) => l === sentence || l.includes(sentence) || sentence.includes(l))) return false;
     lines.push(sentence);
     sec.content = lines.join('\n');
+    persistMatchResumeFromState();
     return true;
   }
 

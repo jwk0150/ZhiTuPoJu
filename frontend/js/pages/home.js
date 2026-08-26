@@ -75,53 +75,63 @@
     }, 4200);
   }
 
-  if (typeof echarts !== 'undefined') {
+  function initTrendChart() {
+    if (typeof echarts === 'undefined') return false;
     const el = document.getElementById('home-trend-chart');
-    if (el) {
-      const chart = echarts.init(el);
-      chart.setOption({
-        animation: !reduce,
-        grid: { left: 36, right: 16, top: 24, bottom: 32 },
-        tooltip: {
-          trigger: 'axis',
-          backgroundColor: 'rgba(255,255,255,0.94)',
-          borderColor: '#D5E8F0',
-          textStyle: { color: '#14324A', fontSize: 12 }
-        },
-        xAxis: {
-          type: 'category',
-          boundaryGap: false,
-          data: ['05-01', '05-02', '05-03', '05-04', '05-05', '05-06', '05-07'],
-          axisLine: { lineStyle: { color: '#D5E8F0' } },
-          axisTick: { show: false },
-          axisLabel: { color: '#8AA0B2', fontSize: 11 }
-        },
-        yAxis: {
-          type: 'value',
-          splitLine: { lineStyle: { color: 'rgba(213,232,240,0.75)', type: 'dashed' } },
-          axisLabel: { color: '#8AA0B2', fontSize: 11 }
-        },
-        series: [{
-          name: '匹配量',
-          type: 'line',
-          smooth: true,
-          symbol: 'circle',
-          symbolSize: 7,
-          data: [820, 932, 901, 1034, 1190, 1280, 1420],
-          lineStyle: { width: 3, color: '#1EA8E8' },
-          itemStyle: { color: '#fff', borderColor: '#1EA8E8', borderWidth: 2 },
-          areaStyle: {
-            color: {
-              type: 'linear', x: 0, y: 0, x2: 0, y2: 1,
-              colorStops: [
-                { offset: 0, color: 'rgba(30,168,232,0.28)' },
-                { offset: 1, color: 'rgba(30,168,232,0.02)' }
-              ]
-            }
+    if (!el) return true;
+    if (window.echarts.getInstanceByDom && window.echarts.getInstanceByDom(el)) return true;
+    const chart = echarts.init(el);
+    chart.setOption({
+      animation: !reduce,
+      grid: { left: 36, right: 16, top: 24, bottom: 32 },
+      tooltip: {
+        trigger: 'axis',
+        backgroundColor: 'rgba(255,255,255,0.94)',
+        borderColor: '#D5E8F0',
+        textStyle: { color: '#14324A', fontSize: 12 }
+      },
+      xAxis: {
+        type: 'category',
+        boundaryGap: false,
+        data: ['05-01', '05-02', '05-03', '05-04', '05-05', '05-06', '05-07'],
+        axisLine: { lineStyle: { color: 'rgba(255,255,255,0.18)' } },
+        axisTick: { show: false },
+        axisLabel: { color: 'rgba(232,242,248,0.55)', fontSize: 11 }
+      },
+      yAxis: {
+        type: 'value',
+        splitLine: { lineStyle: { color: 'rgba(255,255,255,0.08)', type: 'dashed' } },
+        axisLabel: { color: 'rgba(232,242,248,0.55)', fontSize: 11 }
+      },
+      series: [{
+        name: '匹配量',
+        type: 'line',
+        smooth: true,
+        symbol: 'circle',
+        symbolSize: 7,
+        data: [820, 932, 901, 1034, 1190, 1280, 1420],
+        lineStyle: { width: 3, color: '#1EA8E8' },
+        itemStyle: { color: '#fff', borderColor: '#1EA8E8', borderWidth: 2 },
+        areaStyle: {
+          color: {
+            type: 'linear', x: 0, y: 0, x2: 0, y2: 1,
+            colorStops: [
+              { offset: 0, color: 'rgba(30,168,232,0.28)' },
+              { offset: 1, color: 'rgba(30,168,232,0.02)' }
+            ]
           }
-        }]
-      });
-      window.addEventListener('resize', function () { chart.resize(); });
-    }
+        }
+      }]
+    });
+    window.addEventListener('resize', function () { chart.resize(); });
+    return true;
+  }
+
+  if (!initTrendChart()) {
+    var tries = 0;
+    var timer = window.setInterval(function () {
+      tries += 1;
+      if (initTrendChart() || tries > 40) window.clearInterval(timer);
+    }, 50);
   }
 })();

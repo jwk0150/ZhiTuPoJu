@@ -83,20 +83,43 @@
 
   /* ---------- 收藏（前端 localStorage 状态） ---------- */
   var FAV_KEY = 'jobnews_favs';
+  var FAV_META_KEY = 'jobnews_fav_meta';
   function getFavs() {
     try {
       var raw = localStorage.getItem(FAV_KEY);
       return raw ? JSON.parse(raw) : [];
     } catch (e) { return []; }
   }
+  function getFavMeta() {
+    try {
+      var raw = localStorage.getItem(FAV_META_KEY);
+      var m = raw ? JSON.parse(raw) : {};
+      return m && typeof m === 'object' ? m : {};
+    } catch (e) { return {}; }
+  }
   function isFav(id) { return getFavs().indexOf(id) >= 0; }
-  function toggleFav(id) {
+  function toggleFav(id, meta) {
     var favs = getFavs();
     var idx = favs.indexOf(id);
     var added = false;
-    if (idx >= 0) { favs.splice(idx, 1); }
-    else { favs.push(id); added = true; }
-    try { localStorage.setItem(FAV_KEY, JSON.stringify(favs)); } catch (e) {}
+    var map = getFavMeta();
+    if (idx >= 0) {
+      favs.splice(idx, 1);
+      delete map[String(id)];
+    } else {
+      favs.push(id);
+      added = true;
+      if (meta && meta.title) {
+        map[String(id)] = {
+          title: String(meta.title),
+          savedAt: Date.now()
+        };
+      }
+    }
+    try {
+      localStorage.setItem(FAV_KEY, JSON.stringify(favs));
+      localStorage.setItem(FAV_META_KEY, JSON.stringify(map));
+    } catch (e) {}
     return added;
   }
 
@@ -118,7 +141,15 @@
     if (!btn) return;
     e.stopPropagation();
     var id = btn.getAttribute('data-id');
-    var added = toggleFav(id);
+    var title = btn.getAttribute('data-title') || '';
+    if (!title) {
+      var card = btn.closest('.jn-card, .jn-item, article, .jn-detail');
+      if (card) {
+        var tEl = card.querySelector('h1, h2, h3, .jn-title, .jn-card-title');
+        if (tEl) title = (tEl.textContent || '').trim();
+      }
+    }
+    var added = toggleFav(id, title ? { title: title } : null);
     btn.classList.toggle('is-on', added);
     toast(added ? '已收藏' : '已取消收藏', 'success');
   });

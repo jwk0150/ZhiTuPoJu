@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <title>执图破局 · 个人仓库</title>
+  <link rel="stylesheet" href="../css/tokens.css?v=20260826ai1" />
+  <link rel="stylesheet" href="../css/shell.css?v=20260826ai1" />
+  <link rel="stylesheet" href="../css/components.css?v=50" />
+  <link rel="stylesheet" href="../css/legacy-views.css?v=20260825soft" />
+  <link rel="stylesheet" href="../css/warehouse.css?v=20260826ai1" />
+</head>
+<body class="standalone-view" data-page="warehouse">
+  <div id="app-shell"></div>
+  <main class="page-main" id="page-main">
+    <section class="vault" id="view-warehouse" aria-label="个人仓库">
+      <div class="vault-ambient" aria-hidden="true"></div>
+
+      <header class="vault-hero enter" style="--d:.02s">
+        <p class="vault-kicker">PERSONAL VAULT</p>
+        <h1 class="vault-title">个人仓库</h1>
+        <p class="vault-lead" id="vault-lead">按用户隔离的全局收藏与简历档案：新闻、新岗位发现、人岗匹配，以及生成 / 优化 / 上传的简历（含历史版本）。</p>
+        <p class="vault-user" id="vault-user">当前用户 · —</p>
+      </header>
+
+      <nav class="vault-tabs enter" style="--d:.08s" role="tablist" aria-label="仓库分区">
+        <button type="button" class="vault-tab is-on" data-tab="favs" role="tab" aria-selected="true">收藏</button>
+        <button type="button" class="vault-tab" data-tab="resumes" role="tab" aria-selected="false">我的简历</button>
+      </nav>
+
+      <div class="vault-panel is-on enter" style="--d:.12s" data-panel="favs" role="tabpanel">
+        <div class="vault-lanes" id="vault-fav-lanes"></div>
+      </div>
+
+      <div class="vault-panel enter" style="--d:.12s" data-panel="resumes" role="tabpanel" hidden>
+        <div class="vault-resume-toolbar">
+          <p class="vault-hint" id="vault-resume-hint">开局向导、匹配优化与自行上传的简历都会落在这里，可展开历史版本。</p>
+          <div class="vault-resume-actions-bar">
+            <input type="file" id="vault-upload-input" accept=".txt,.pdf,.doc,.docx,text/plain" hidden />
+            <button type="button" class="vault-btn" id="vault-upload-btn">上传简历</button>
+            <a class="vault-cta" id="vault-go-resume" href="resume.html">去生成简历 →</a>
+          </div>
+        </div>
+        <div class="vault-resume-list" id="vault-resume-list"></div>
+      </div>
+    </section>
+  </main>
+
+  <script src="../js/api.js"></script>
+  <script src="../js/runtime-core.js"></script>
+  <script src="../js/cinema-bg.js"></script>
+  <script src="../js/user-vault.js?v=20260826demo1"></script>
+  <script src="../js/shell.js?v=20260826ai1"></script>
+  <script src="../js/pages/warehouse.js?v=20260826demo1"></script>
+  <script>
+    window.Shell && window.Shell.mount({ pageId: 'warehouse', title: '个人仓库', subtitle: '收藏 · 简历档案' });
+  </script>
+</body>
+</html>
