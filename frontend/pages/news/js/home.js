@@ -2,7 +2,7 @@
  * 岗位大新闻 · 首页逻辑
  * -------------------------------------------------------------------------
  * 渲染：模块标题 / 今日焦点（主卡片 + 右侧焦点卡片）/
- *       三栏（热门资讯 / 最新资讯 / 热门排行）/ 延伸阅读
+ *       三栏（热门资讯 / 行业快讯 / 热门排行）/ 延伸阅读
  * 交互：分类筛选 / 收藏 / 点击进入详情
  * ========================================================================= */
 (function () {
@@ -14,34 +14,14 @@
 
   var state = {
     latestCategory: 'all',
-    latestPage: 1,
-    focusIndex: 0
+    focusIndex: 0,
+    search: { keyword: '', date: '', sort: 'date' }
   };
-
-  var LATEST_PER_PAGE = 5;
-  var LATEST_AUTO_MS = 4500;
-  var latestTimer = null;
-  var latestHover = false;
 
   var FOCUS_AUTO_MS = 5000;
   var focusTimer = null;
   var focusHover = false;
   var FOCUS_GROUPS = buildFocusGroups();
-
-  /* ---------- 工具 ---------- */
-  function catTag(key) {
-    var c = D.catByKey(key);
-    return '<span class="jn-cat-tag" style="color:' + esc(c.color) + ';border-color:' + esc(c.color) + '">' + esc(c.label) + '</span>';
-  }
-
-  function sectionHead(title, sub, more) {
-    return (
-      '<div class="jn-section-head">' +
-        '<h2 class="jn-section-title">' + title + (sub ? '<span class="jn-section-count">' + sub + '</span>' : '') + '</h2>' +
-        (more ? '<a class="jn-more" href="#">更多 <span aria-hidden="true">→</span></a>' : '') +
-      '</div>'
-    );
-  }
 
   /* ---------- 顶部模块标题 ---------- */
   function renderModuleHead() {
@@ -58,7 +38,7 @@
 
   /* ---------- 今日焦点：分组（主卡 + 3 侧卡） ---------- */
   function buildFocusGroups() {
-    var list = D.newsList;
+    var list = D.focusList;
     var groups = [];
     for (var i = 0; i < list.length; i += 4) {
       var main = list[i];
@@ -82,6 +62,7 @@
           '<h3 class="jn-feature-title">' + esc(n.title) + '</h3>' +
           '<p class="jn-feature-summary">' + esc(n.summary) + '</p>' +
           '<div class="jn-feature-meta">' +
+            (n.source ? '<span class="jn-feature-source">' + esc(n.source) + '</span>' : '') +
             '<span>' + esc(n.date) + '</span>' +
             '<span class="jn-feature-read">' + JN.fmtRead(n.readCount) + '阅读</span>' +
           '</div>' +
@@ -97,14 +78,14 @@
     return (
       '<article class="jn-focus-mini" data-go="' + n.id + '">' +
         '<div class="jn-focus-mini-body">' +
-          catTag(n.category) +
+          JN.catTag(n.category) +
           '<h3 class="jn-focus-mini-title">' + esc(n.title) + '</h3>' +
           '<div class="jn-focus-mini-meta">' +
+            (n.source ? '<span class="jn-focus-mini-source">' + esc(n.source) + '</span>' : '') +
             '<span>' + esc(n.date) + '</span>' +
             '<span>' + JN.fmtRead(n.readCount) + '阅读</span>' +
           '</div>' +
         '</div>' +
-        '<div class="jn-focus-mini-visual">' + JN.artVisual(n.cover) + '</div>' +
       '</article>'
     );
   }
@@ -131,14 +112,12 @@
     var dots = [];
     for (var i = 1; i <= pages; i++) {
       dots.push(
-        '<button type="button" class="jn-pager-dot' + (i - 1 === state.focusIndex ? ' is-active' : '') + '" data-focus="' + i + '">' + i + '</button>'
+        '<button type="button" class="jn-pager-dot' + (i - 1 === state.focusIndex ? ' is-active' : '') + '" data-focus="' + i + '" aria-label="第 ' + i + ' 组"></button>'
       );
     }
     return (
       '<div class="jn-pager jn-pager--focus">' +
-        '<button type="button" class="jn-pager-btn" data-focus="prev" aria-label="上一组">‹</button>' +
         '<div class="jn-pager-dots">' + dots.join('') + '</div>' +
-        '<button type="button" class="jn-pager-btn" data-focus="next" aria-label="下一组">›</button>' +
       '</div>'
     );
   }
@@ -157,34 +136,15 @@
     if (focusTimer) { clearInterval(focusTimer); focusTimer = null; }
   }
 
-  /* ---------- 资讯行（热门 / 最新 统一结构，保证两栏对齐） ---------- */
-  function newsRowHtml(n, rank) {
-    if (!n) return '';
-    return (
-      '<article class="jn-news-row" data-go="' + n.id + '">' +
-        (rank ? '<span class="jn-news-rank">' + (rank < 10 ? '0' + rank : rank) + '</span>' : '') +
-        '<div class="jn-news-thumb">' + JN.artVisual(n.cover) + '</div>' +
-        '<div class="jn-news-body">' +
-          catTag(n.category) +
-          '<h3 class="jn-news-title">' + esc(n.title) + '</h3>' +
-          '<div class="jn-news-meta">' +
-            '<span>' + esc(n.readTime || n.date) + '</span>' +
-            '<span class="jn-news-read">' + JN.fmtRead(n.readCount) + '阅读</span>' +
-          '</div>' +
-        '</div>' +
-      '</article>'
-    );
-  }
-
   function renderHot() {
     var items = D.hotNews.map(function (h, i) {
-      return newsRowHtml(D.findNews(h.id), i + 1);
+      return JN.newsRowHtml(h, i + 1);
     }).join('');
-    return sectionHead('热门资讯', '', false) +
+    return JN.sectionHead('热门资讯', '', false) +
       '<div class="jn-news-list">' + items + '</div>';
   }
 
-  /* ---------- 最新资讯 ---------- */
+  /* ---------- 行业快讯 ---------- */
   function latestTabsHtml() {
     return D.CATEGORIES.map(function (c) {
       return '<button type="button" class="jn-filter-tab' + (c.key === state.latestCategory ? ' is-active' : '') + '" data-filter="' + c.key + '">' + esc(c.label) + '</button>';
@@ -196,64 +156,28 @@
     return D.latestNews.filter(function (n) { return n.category === state.latestCategory; });
   }
 
-  function latestTotalPages(list) {
-    return Math.max(1, Math.ceil(list.length / LATEST_PER_PAGE));
-  }
-
-  function latestItemHtml(n) {
-    return newsRowHtml(D.findNews(n.id), null);
-  }
-
   function renderLatest() {
     var list = latestFiltered();
-    var pages = latestTotalPages(list);
-    if (state.latestPage > pages) state.latestPage = pages;
-    if (state.latestPage < 1) state.latestPage = 1;
-
-    var items = list.slice((state.latestPage - 1) * LATEST_PER_PAGE, state.latestPage * LATEST_PER_PAGE);
-    var html = sectionHead('最新资讯', '', false) +
+    var more = { href: 'industry.html', text: '全部 <span aria-hidden="true">→</span>' };
+    var html = JN.sectionHead('行业快讯', '真实来源外链 · 整行点击跳转原文（新标签页打开）', more, true, 'industry.html') +
       '<div class="jn-filter-tabs">' + latestTabsHtml() + '</div>';
 
-    if (items.length === 0) {
+    if (list.length === 0) {
       html += '<div class="jn-state jn-state--compact">该分类下暂时没有资讯，稍后再来看看。</div>';
     } else {
-      html += '<div class="jn-news-list">' + items.map(latestItemHtml).join('') + '</div>';
+      html += '<div class="jn-news-list">' + list.map(function (n) { return JN.newsRowHtml(n, null); }).join('') + '</div>';
     }
-    html += pagerHtml(pages);
     return html;
-  }
-
-  function pagerHtml(pages) {
-    if (pages <= 1) return '';
-    var dots = [];
-    for (var i = 1; i <= pages; i++) {
-      dots.push(
-        '<button type="button" class="jn-pager-dot' + (i === state.latestPage ? ' is-active' : '') + '" data-page="' + i + '">' + i + '</button>'
-      );
-    }
-    return (
-      '<div class="jn-pager">' +
-        '<button type="button" class="jn-pager-btn" data-page="prev" aria-label="上一页">‹</button>' +
-        '<div class="jn-pager-dots">' + dots.join('') + '</div>' +
-        '<button type="button" class="jn-pager-btn" data-page="next" aria-label="下一页">›</button>' +
-      '</div>'
-    );
-  }
-
-  function updateLatestPage() {
-    var col = document.getElementById('jn-latest-col');
-    if (col) col.innerHTML = renderLatest();
   }
 
   /* ---------- 热门排行（右栏，TOP10） ---------- */
   function renderRanking() {
-    var items = D.rankingList.map(function (id, i) {
-      var n = D.findNews(id);
+    var items = D.rankingList.map(function (n, i) {
       return (
-        '<li class="jn-rank-item' + (i < 3 ? ' is-top' : '') + '" data-go="' + id + '">' +
+        '<li class="jn-rank-item' + (i < 3 ? ' is-top' : '') + '" data-go="' + n.id + '">' +
           '<span class="jn-rank-num">' + (i + 1) + '</span>' +
-          '<span class="jn-rank-title">' + esc(n ? n.title : id) + '</span>' +
-          '<span class="jn-rank-read">' + (n ? JN.fmtRead(n.readCount) : '') + '</span>' +
+          '<span class="jn-rank-title">' + esc(n.title) + '</span>' +
+          '<span class="jn-rank-read">' + JN.fmtRead(n.readCount) + '</span>' +
         '</li>'
       );
     }).join('');
@@ -271,99 +195,204 @@
     document.getElementById('news-cols').innerHTML =
       '<div class="jn-triple-col jn-triple-col--hot">' + renderHot() + '</div>' +
       '<div class="jn-triple-col jn-triple-col--latest" id="jn-latest-col">' + renderLatest() + '</div>';
-
-    var latestCol = document.getElementById('jn-latest-col');
-    if (latestCol) {
-      latestCol.addEventListener('mouseenter', function () { latestHover = true; stopLatestCarousel(); });
-      latestCol.addEventListener('mouseleave', function () { latestHover = false; startLatestCarousel(); });
-    }
-    startLatestCarousel();
   }
 
   function renderRail() {
-    var rail = document.getElementById('rail-col');
-    if (rail) rail.innerHTML = '<div class="jn-rail">' + renderRanking() + '</div>';
+    var inner = document.getElementById('rail-inner');
+    if (inner) inner.innerHTML = renderRanking();
   }
 
-  /* ---------- 最新资讯：自动轮播 ---------- */
-  function startLatestCarousel() {
-    stopLatestCarousel();
-    latestTimer = setInterval(function () {
-      var pages = latestTotalPages(latestFiltered());
-      if (pages <= 1) return;
-      state.latestPage = state.latestPage >= pages ? 1 : state.latestPage + 1;
-      updateLatestPage();
-    }, LATEST_AUTO_MS);
+  /* ---------- 搜索 / 筛选（右栏） ---------- */
+  function isSearchActive() {
+    return !!(state.search.keyword.trim() || state.search.date.trim() || state.search.sort === 'hot');
   }
 
-  function stopLatestCarousel() {
-    if (latestTimer) { clearInterval(latestTimer); latestTimer = null; }
+  function getSearchResults() {
+    var kw = state.search.keyword.trim().toLowerCase();
+    var dateNorm = state.search.date.trim().replace(/-/g, '.');
+    var list = D.newsList.slice();
+
+    if (kw) {
+      list = list.filter(function (n) {
+        var c = D.catByKey(n.category);
+        var hay = [n.title, n.summary, n.source, (n.tags || []).join(' '), c ? c.label : ''].join(' ').toLowerCase();
+        return hay.indexOf(kw) !== -1;
+      });
+    }
+    if (dateNorm) {
+      list = list.filter(function (n) { return n.date === dateNorm; });
+    }
+    if (state.search.sort === 'hot') {
+      list.sort(function (a, b) { return b.readCount - a.readCount; });
+    } else {
+      list.sort(function (a, b) {
+        if (a.date === b.date) return b.readCount - a.readCount;
+        return a.date < b.date ? 1 : -1;
+      });
+    }
+    return list;
+  }
+
+  function renderSearchResults() {
+    var list = getSearchResults();
+    var resultsEl = document.getElementById('search-results');
+    var colsEl = document.getElementById('news-cols');
+    var relatedEl = document.getElementById('related');
+    var loadBtn = document.getElementById('load-more');
+    if (!resultsEl) return;
+
+    var html = JN.sectionHead('搜索结果', list.length + ' 条匹配', false);
+    if (list.length === 0) {
+      html += '<div class="jn-state jn-state--compact">没有找到匹配的资讯，换个关键词或日期试试。</div>';
+    } else {
+      html += '<div class="jn-news-list">' + list.map(function (n) { return JN.newsRowHtml(n, null); }).join('') + '</div>';
+    }
+    resultsEl.innerHTML = html;
+
+    /* 隐藏常规三栏，仅展示搜索结果（不销毁原节点，便于清除后还原） */
+    resultsEl.hidden = false;
+    if (colsEl) colsEl.style.display = 'none';
+    if (relatedEl) relatedEl.style.display = 'none';
+    if (loadBtn) loadBtn.style.display = 'none';
+  }
+
+  /* 主体调度：搜索激活时显示结果，否则恢复常规三栏 */
+  function renderMain() {
+    var resultsEl = document.getElementById('search-results');
+    var colsEl = document.getElementById('news-cols');
+    var relatedEl = document.getElementById('related');
+    var loadBtn = document.getElementById('load-more');
+
+    if (isSearchActive()) {
+      renderSearchResults();
+    } else {
+      /* 还原：恢复常规三栏，清空并隐藏搜索结果容器 */
+      if (resultsEl) { resultsEl.hidden = true; resultsEl.innerHTML = ''; }
+      if (colsEl) colsEl.style.display = '';
+      if (relatedEl) relatedEl.style.display = '';
+      if (loadBtn) loadBtn.style.display = '';
+      renderNewsCols();
+      renderRelated();
+    }
+  }
+
+  function updateSearchUI() {
+    var panel = document.getElementById('search-panel');
+    if (!panel) return;
+    panel.classList.toggle('is-active', isSearchActive());
+  }
+
+  function bindSearch() {
+    var panel = document.getElementById('search-panel');
+    if (!panel) return;
+    var kwEl = document.getElementById('search-kw');
+    var dateEl = document.getElementById('search-date');
+    var goBtn = document.getElementById('search-go');
+    var resetBtn = document.getElementById('search-reset');
+
+    function syncSeg() {
+      var btns = panel.querySelectorAll('[data-sort]');
+      for (var i = 0; i < btns.length; i++) {
+        btns[i].classList.toggle('is-active', btns[i].getAttribute('data-sort') === state.search.sort);
+      }
+    }
+
+    kwEl.addEventListener('input', function () {
+      state.search.keyword = kwEl.value;
+      renderMain();
+      updateSearchUI();
+    });
+    dateEl.addEventListener('change', function () {
+      state.search.date = dateEl.value;
+      renderMain();
+      updateSearchUI();
+    });
+    panel.addEventListener('click', function (e) {
+      var seg = e.target.closest ? e.target.closest('[data-sort]') : null;
+      if (seg) {
+        state.search.sort = seg.getAttribute('data-sort');
+        syncSeg();
+        renderMain();
+        updateSearchUI();
+      }
+    });
+    goBtn.addEventListener('click', function () {
+      state.search.keyword = kwEl.value;
+      state.search.date = dateEl.value;
+      renderMain();
+      updateSearchUI();
+    });
+    resetBtn.addEventListener('click', function () {
+      state.search.keyword = '';
+      state.search.date = '';
+      state.search.sort = 'date';
+      kwEl.value = '';
+      dateEl.value = '';
+      syncSeg();
+      renderMain();
+      updateSearchUI();
+    });
   }
 
   /* ---------- 延伸阅读 ---------- */
   function relatedItemHtml(r) {
     return (
       '<article class="jn-readmore-item" data-go="' + r.id + '">' +
-        '<div class="jn-readmore-thumb">' + JN.artVisual(r.cover) + '</div>' +
+        (r.source ? '<span class="jn-readmore-source">' + esc(r.source) + '</span>' : '') +
         '<h3 class="jn-readmore-title">' + esc(r.title) + '</h3>' +
-        '<span class="jn-readmore-read">' + JN.fmtRead(r.readCount) + '阅读</span>' +
+        '<div class="jn-readmore-foot">' +
+          '<span>' + esc(r.date) + '</span>' +
+          '<span class="jn-readmore-read">' + JN.fmtRead(r.readCount) + '阅读</span>' +
+        '</div>' +
       '</article>'
     );
   }
 
   function renderRelated() {
     document.getElementById('related').innerHTML =
-      sectionHead('延伸阅读', '换个角度，继续了解就业市场', true) +
+      JN.sectionHead('延伸阅读', '换个角度，继续了解就业市场', true) +
       '<div class="jn-readmore-grid">' + D.relatedNews.map(relatedItemHtml).join('') + '</div>';
   }
 
-  /* ---------- 分类筛选 / 翻页交互 ---------- */
+  /* ---------- 分类筛选交互 ---------- */
   function bindFilter() {
     var root = document.getElementById('news-cols');
     if (!root) return;
     root.addEventListener('click', function (e) {
       var tab = e.target.closest ? e.target.closest('[data-filter]') : null;
-      if (tab) {
-        state.latestCategory = tab.getAttribute('data-filter');
-        state.latestPage = 1;
-        renderNewsCols();
-        return;
-      }
-      var p = e.target.closest ? e.target.closest('[data-page]') : null;
-      if (!p) return;
-      var pages = latestTotalPages(latestFiltered());
-      var cur = state.latestPage;
-      var val = p.getAttribute('data-page');
-      if (val === 'prev') cur -= 1;
-      else if (val === 'next') cur += 1;
-      else cur = parseInt(val, 10);
-      if (cur < 1) cur = pages;
-      if (cur > pages) cur = 1;
-      state.latestPage = cur;
-      updateLatestPage();
-      if (!latestHover) startLatestCarousel();
+      if (!tab) return;
+      state.latestCategory = tab.getAttribute('data-filter');
+      renderNewsCols();
     });
   }
 
-  /* ---------- 今日焦点：翻页交互 ---------- */
+  /* ---------- 今日焦点：翻页交互（点击/悬停圆点翻页） ---------- */
   function bindFocusPager() {
     var root = document.getElementById('focus');
     if (!root) return;
     root.addEventListener('click', function (e) {
-      var p = e.target.closest ? e.target.closest('[data-focus]') : null;
+      var p = e.target.closest ? e.target.closest('.jn-pager-dot') : null;
       if (!p) return;
-      var pages = FOCUS_GROUPS.length;
-      var val = p.getAttribute('data-focus');
-      var cur = state.focusIndex;
-      if (val === 'prev') cur -= 1;
-      else if (val === 'next') cur += 1;
-      else cur = parseInt(val, 10) - 1;
-      if (cur < 0) cur = pages - 1;
-      if (cur > pages - 1) cur = 0;
-      state.focusIndex = cur;
-      renderFocus();
-      if (!focusHover) startFocusCarousel();
+      goFocusPage(p.getAttribute('data-focus'));
     });
+
+    /* 鼠标放到圆点上即翻页（mouseenter 不冒泡，需捕获阶段） */
+    root.addEventListener('mouseenter', function (e) {
+      var p = e.target.closest ? e.target.closest('.jn-pager-dot') : null;
+      if (!p) return;
+      goFocusPage(p.getAttribute('data-focus'));
+    }, true);
+  }
+
+  function goFocusPage(val) {
+    var pages = FOCUS_GROUPS.length;
+    var cur = parseInt(val, 10) - 1;
+    if (cur < 0) cur = 0;
+    if (cur > pages - 1) cur = pages - 1;
+    if (cur === state.focusIndex) return;
+    state.focusIndex = cur;
+    renderFocus();
+    if (!focusHover) startFocusCarousel();
   }
 
   /* ---------- 进入详情 ---------- */
@@ -394,14 +423,14 @@
   function renderAll() {
     renderModuleHead();
     renderFocus();
-    renderNewsCols();
+    renderMain();
     renderRail();
-    renderRelated();
   }
 
   function init() {
     bindFilter();
     bindFocusPager();
+    bindSearch();
     bindNavigation();
     bindLoadMore();
 
