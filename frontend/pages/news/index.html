@@ -29,21 +29,11 @@
       <header class="jn-module-head" id="module-head"></header>
       <section class="jn-section" id="focus" aria-label="今日焦点"></section>
       <div class="jn-body-grid" id="body-grid">
-        <nav class="jn-nav-col" id="nav-col" aria-label="内容导航">
-          <div class="jn-nav-head">资讯分类</div>
-          <a class="jn-nav-item is-active" href="#" data-tab="hot">
-            <span class="jn-nav-icon">🔥</span>
-            <span class="jn-nav-label">热门资讯</span>
-          </a>
-          <a class="jn-nav-item" href="#" data-tab="latest">
-            <span class="jn-nav-icon">⚡</span>
-            <span class="jn-nav-label">行业快讯</span>
-          </a>
-        </nav>
-        <div class="jn-content-col" id="content-col">
+        <div class="jn-main-col" id="main-col">
+          <div class="jn-news-cols" id="news-cols"></div>
           <div class="jn-search-results" id="search-results" hidden></div>
-          <div id="tab-content"></div>
-          <div id="tab-pager"></div>
+          <section class="jn-section" id="related" aria-label="延伸阅读"></section>
+          <button type="button" class="jn-load-more" id="load-more">更多资讯 <span aria-hidden="true">→</span></button>
         </div>
         <aside class="jn-rail-col" id="rail-col" aria-label="搜索与热门排行">
           <div class="jn-search" id="search-panel" aria-label="搜索与筛选">
