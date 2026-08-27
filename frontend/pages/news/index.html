@@ -28,13 +28,35 @@
     <div id="app" hidden>
       <!-- 全屏滚动容器 -->
       <div class="jn-fullpage" id="jn-fullpage">
-        <section class="jn-screen" id="screen-focus" data-label="今日焦点">
+        <section class="jn-screen jn-screen--hero" id="screen-focus" data-label="岗位头版">
           <div class="jn-screen-inner">
-            <div class="jn-update-pill" id="jn-topbar-update"></div>
-            <div id="focus"></div>
-            <div class="jn-scroll-hint" aria-hidden="true">
-              <span>滚动浏览</span>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M6 13l6 6 6-6"/></svg>
+            <!-- 杂志式页头 -->
+            <header class="jn-hero-header">
+              <div class="jn-hero-brand">
+                <span class="jn-hero-logo" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 6.5C4 5.1 5.1 4 6.5 4h11C18.9 4 20 5.1 20 6.5V19a1 1 0 0 1-1 1H6.5A2.5 2.5 0 0 1 4 17.5v-11Z"/>
+                    <path d="M4 8.5h16"/>
+                    <path d="M8 13h5M8 16h7"/>
+                    <circle cx="17" cy="11.5" r="1.7" fill="currentColor" stroke="none"/>
+                  </svg>
+                </span>
+                <span class="jn-hero-brand-name">岗位大新闻</span>
+                <span class="jn-hero-brand-en">JOB NEWS</span>
+              </div>
+              <div class="jn-hero-update" id="jn-topbar-update"></div>
+              <a class="jn-hero-all" href="all.html">全部焦点 <span aria-hidden="true">→</span></a>
+            </header>
+
+            <!-- 主内容区：由 home.js 渲染 -->
+            <div id="focus" class="jn-hero-main"></div>
+
+            <!-- 滚动提示 -->
+            <div class="jn-hero-scroll" aria-hidden="true">
+              <span>向下滚动 探索更多岗位趋势</span>
+              <span class="jn-hero-scroll-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M6 13l6 6 6-6"/></svg>
+              </span>
             </div>
           </div>
         </section>

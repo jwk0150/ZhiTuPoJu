@@ -1,9 +1,8 @@
 /* =========================================================================
  * 岗位大新闻 · 首页逻辑
  * -------------------------------------------------------------------------
- * 渲染：模块标题 / 今日焦点（主卡片 + 右侧焦点卡片）/
- *       三栏（热门资讯 / 行业快讯 / 热门排行）/ 延伸阅读
- * 交互：分类筛选 / 收藏 / 点击进入详情
+ * 第一屏：数字杂志式 Hero（标题 / 大数据 / 视觉 / 编辑列表 / 头版新闻）
+ * 第二~五屏：热门资讯 / 行业快讯 / 热门排行 / 延伸阅读（保持原样）
  * ========================================================================= */
 (function () {
   'use strict';
@@ -14,130 +13,188 @@
 
   var state = {
     latestCategory: 'all',
-    focusIndex: 0,
     search: { keyword: '', date: '', sort: 'date' }
   };
 
-  var FOCUS_AUTO_MS = 5000;
-  var focusTimer = null;
-  var focusHover = false;
-  var FOCUS_GROUPS = buildFocusGroups();
-
-  /* ---------- 顶部更新时间胶囊（全屏滚动版） ---------- */
+  /* ---------- 顶部更新时间胶囊（Hero 页头中央） ---------- */
   function renderModuleHead() {
     var M = D.META;
     var el = document.getElementById('jn-topbar-update');
     if (el) el.innerHTML = '更新于 <b>' + esc(M.date) + ' ' + esc(M.time) + '</b>';
   }
 
-  /* ---------- 今日焦点：分组（主卡 + 3 侧卡） ---------- */
-  function buildFocusGroups() {
-    var list = D.focusList;
-    var groups = [];
-    for (var i = 0; i < list.length; i += 4) {
-      var main = list[i];
-      var side = [];
-      for (var k = 1; k <= 3; k++) {
-        var idx = i + k;
-        if (idx >= list.length) idx -= list.length; /* 末尾循环补齐 */
-        side.push(list[idx]);
-      }
-      groups.push({ main: main, side: side });
+  /* ============================================================
+   * 第一屏 · 杂志式 Hero
+   * ============================================================ */
+
+  /* 编辑部精选 4 条：与第二张图内容一一对应 */
+  var HERO_EDITORIAL = [
+    { id: 'r007', cat: '行业趋势', catCls: 'is-teal' },
+    { id: 'n007', cat: '政策资讯', catCls: 'is-rose' },
+    { id: 'n002', cat: '新职业',   catCls: 'is-blue' },
+    { id: 'n015', cat: '市场洞察', catCls: 'is-violet' }
+  ];
+
+  function findById(list, id) {
+    for (var i = 0; i < list.length; i++) if (list[i].id === id) return list[i];
+    return null;
+  }
+
+  /* 头版封面新闻：腾讯 2026 校招（flag = 热点、阅读量最高） */
+  function pickHeadline() {
+    var n = findById(D.focusList, 'n001');
+    if (n) return n;
+    /* 退化：取 flag=热点 或阅读量最高的一条 */
+    for (var i = 0; i < D.focusList.length; i++) {
+      if (D.focusList[i].flag === '热点') return D.focusList[i];
     }
-    return groups;
+    return D.focusList[0];
   }
 
-  /* ---------- 今日焦点：主卡片（兼容外链行业资讯） ---------- */
-  function featureCardHtml(n) {
-    var isExt = !!n.external;
-    var attr = isExt ? ('data-url="' + esc(n.url) + '"') : ('data-go="' + n.id + '"');
-    var flag = n.flag || (isExt ? '行业快讯' : '');
-    var cover = n.cover || 'default';
-    var btnText = isExt ? '查看原文 <span aria-hidden="true">↗</span>' : '阅读详情 <span aria-hidden="true">→</span>';
-    return (
-      '<article class="jn-feature-card' + (isExt ? ' jn-feature-card--ext' : '') + '" ' + attr + '>' +
-        '<div class="jn-feature-body">' +
-          (flag ? '<span class="jn-feature-flag">' + esc(flag) + '</span>' : '') +
-          '<h3 class="jn-feature-title">' + esc(n.title) + '</h3>' +
-          '<p class="jn-feature-summary">' + esc(n.summary) + '</p>' +
-          '<div class="jn-feature-meta">' +
-            (n.source ? '<span class="jn-feature-source">' + esc(n.source) + '</span>' : '') +
-            (isExt && n.host ? '<span class="jn-feature-host">' + esc(n.host) + '</span>' : '') +
-            (n.date ? '<span>' + esc(n.date) + '</span>' : '') +
-            '<span class="jn-feature-read">' + JN.fmtRead(n.readCount) + '阅读</span>' +
+  function statsHtml() {
+    var items = [
+      { label: 'AI相关岗位需求', val: 218, suffix: '%', note: '同比增长', dec: 0 },
+      { label: '企业人才需求缺口', val: 285, suffix: '万+', note: '预计2026年', dec: 0 },
+      { label: '平均薪资涨幅', val: 26.7, suffix: '%', note: '高于整体行业', dec: 1 }
+    ];
+    return items.map(function (s) {
+      return (
+        '<div class="jn-stat">' +
+          '<div class="jn-stat-label">' + esc(s.label) + '</div>' +
+          '<div class="jn-stat-value">' +
+            '<span class="jn-stat-num" data-count="' + s.val + '" data-decimals="' + s.dec + '">0</span>' +
+            '<span class="jn-stat-suffix">' + esc(s.suffix) + '</span>' +
           '</div>' +
-          '<button type="button" class="jn-btn-accent">' + btnText + '</button>' +
+          '<div class="jn-stat-note">' + esc(s.note) + '</div>' +
+        '</div>'
+      );
+    }).join('');
+  }
+
+  function tagsHtml() {
+    var tags = ['AI产品经理', '智能体开发', '大模型工程师', '数据分析师', '数字化转型'];
+    return tags.map(function (t, i) {
+      return '<a class="jn-hero-tag' + (i === 0 ? ' is-gold' : '') + '" href="all.html?tag=' + encodeURIComponent(t) + '">' + esc(t) + '</a>';
+    }).join('');
+  }
+
+  function headlinerHtml(head) {
+    var isExt = !!head.external;
+    var attr = isExt
+      ? ('data-url="' + esc(head.url) + '"')
+      : ('data-go="' + esc(head.id) + '"');
+    return (
+      '<article class="jn-hero-headliner jn-hero-anim" style="--d:.58s" ' + attr + '>' +
+        '<span class="jn-hero-headliner-flag">热点</span>' +
+        '<div class="jn-hero-headliner-body">' +
+          '<h3 class="jn-hero-headliner-title">' + esc(head.title) + '</h3>' +
+          '<div class="jn-hero-headliner-meta">' +
+            '<span class="jn-hero-headliner-source">' + esc(head.source) + '</span>' +
+            '<span>' + esc(head.date) + '</span>' +
+            '<span>' + JN.fmtRead(head.readCount) + '阅读</span>' +
+          '</div>' +
+          '<div class="jn-hero-headliner-cta">查看完整报道 <span aria-hidden="true">→</span></div>' +
         '</div>' +
-        '<div class="jn-feature-visual">' + JN.artVisual(cover) + '</div>' +
       '</article>'
     );
   }
 
-  /* ---------- 今日焦点：右侧焦点小卡片（兼容外链行业资讯） ---------- */
-  function focusMiniHtml(n) {
-    var isExt = !!n.external;
-    var attr = isExt ? ('data-url="' + esc(n.url) + '"') : ('data-go="' + n.id + '"');
-    return (
-      '<article class="jn-focus-mini' + (isExt ? ' jn-focus-mini--ext' : '') + '" ' + attr + '>' +
-        '<div class="jn-focus-mini-body">' +
-          JN.catTag(n.category) +
-          '<h3 class="jn-focus-mini-title">' + esc(n.title) + '</h3>' +
-          '<div class="jn-focus-mini-meta">' +
-            (n.source ? '<span class="jn-focus-mini-source">' + esc(n.source) + '</span>' : '') +
-            (isExt && n.host ? '<span class="jn-focus-mini-host">' + esc(n.host) + '</span>' : '') +
-            (n.date ? '<span>' + esc(n.date) + '</span>' : '') +
-            '<span>' + JN.fmtRead(n.readCount) + '阅读</span>' +
+  function editorialHtml() {
+    var pool = D.focusList.concat(D.newsList);
+    return HERO_EDITORIAL.map(function (p, i) {
+      var n = findById(pool, p.id);
+      if (!n) return '';
+      var isExt = !!n.external;
+      var attr = isExt
+        ? ('data-url="' + esc(n.url) + '"')
+        : ('data-go="' + esc(n.id) + '"');
+      var hostHtml = n.host ? '<span class="jn-hero-edit-host">' + esc(n.host) + '</span>' : '';
+      return (
+        '<article class="jn-hero-edit-item jn-hero-anim" style="--d:' + (0.55 + i * 0.08).toFixed(2) + 's" ' + attr + '>' +
+          '<div class="jn-hero-edit-num">' + ('0' + (i + 1)) + '</div>' +
+          '<div class="jn-hero-edit-body">' +
+            '<div class="jn-hero-edit-cat ' + p.catCls + '">' + esc(p.cat) + '</div>' +
+            '<h4 class="jn-hero-edit-title">' + esc(n.title) + '</h4>' +
+            '<div class="jn-hero-edit-meta">' +
+              '<span class="jn-hero-edit-source">' + esc(n.source) + '</span>' +
+              hostHtml +
+              '<span>' + esc(n.date) + '</span>' +
+              '<span>' + JN.fmtRead(n.readCount) + '阅读</span>' +
+            '</div>' +
           '</div>' +
-        '</div>' +
-      '</article>'
-    );
+        '</article>'
+      );
+    }).join('');
   }
 
   function renderFocus() {
-    var g = FOCUS_GROUPS[state.focusIndex];
-    var sideNews = g.side;
+    var root = document.getElementById('focus');
+    if (!root) return;
+    var head = pickHeadline();
 
-    document.getElementById('focus').innerHTML =
-      '<div class="jn-section-head">' +
-        '<h2 class="jn-section-title">今日焦点</h2>' +
-        '<span class="jn-section-count">' + D.focusList.length + '条焦点 · 含行业快讯</span>' +
-      '</div>' +
-      '<div class="jn-focus-grid">' +
-        featureCardHtml(g.main) +
-        '<div class="jn-focus-side">' + sideNews.map(focusMiniHtml).join('') + '</div>' +
-      '</div>' +
-      focusPagerHtml();
-  }
+    var leftCol =
+      '<div class="jn-hero-left">' +
+        '<div class="jn-hero-eyebrow jn-hero-anim" style="--d:.05s">2026 岗位变化观察</div>' +
+        '<h1 class="jn-hero-title jn-hero-anim" style="--d:.15s">' +
+          '<span class="jn-hero-title-line">AI浪潮重塑</span>' +
+          '<span class="jn-hero-title-line">就业格局</span>' +
+          '<span class="jn-hero-subtitle">新岗位爆发式增长</span>' +
+        '</h1>' +
+        '<p class="jn-hero-desc jn-hero-anim" style="--d:.25s">2026 校招新趋势：AI 产品经理、智能体开发等岗位需求激增，企业人才标准正在被重新定义。</p>' +
+        '<div class="jn-hero-stats jn-hero-anim" style="--d:.32s">' + statsHtml() + '</div>' +
+        '<div class="jn-hero-actions jn-hero-anim" style="--d:.42s">' +
+          '<a class="jn-hero-btn-primary" href="detail.html?id=' + esc(head.id) + '">查看完整报告 <span aria-hidden="true">→</span></a>' +
+          '<button type="button" class="jn-hero-btn-secondary" id="hero-play">' +
+            '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>' +
+            '<span>3分钟速览</span>' +
+          '</button>' +
+        '</div>' +
+        '<div class="jn-hero-tags jn-hero-anim" style="--d:.5s">' +
+          '<span class="jn-hero-tags-label">热门岗位</span>' +
+          '<div class="jn-hero-tags-list">' + tagsHtml() + '</div>' +
+        '</div>' +
+        headlinerHtml(head) +
+      '</div>';
 
-  function focusPagerHtml() {
-    var pages = FOCUS_GROUPS.length;
-    if (pages <= 1) return '';
-    var dots = [];
-    for (var i = 1; i <= pages; i++) {
-      dots.push(
-        '<button type="button" class="jn-pager-dot' + (i - 1 === state.focusIndex ? ' is-active' : '') + '" data-focus="' + i + '" aria-label="第 ' + i + ' 组"></button>'
-      );
+    var visual =
+      '<div class="jn-hero-visual jn-hero-anim" style="--d:.2s">' +
+        '<img class="jn-hero-visual-img" src="../../assets/news/hero-magazine.png" alt="未来城市职业入口" />' +
+        '<span class="jn-hero-visual-tag">本期封面</span>' +
+        '<div class="jn-hero-visual-caption">' +
+          '<span>VOL.01</span>' +
+          '<span class="jn-dotline"></span>' +
+          '<span>FUTURE CAREER MEDIA</span>' +
+        '</div>' +
+      '</div>';
+
+    var editorialCol =
+      '<aside class="jn-hero-editorial jn-hero-anim" style="--d:.35s">' +
+        '<div class="jn-hero-editorial-head">' +
+          '<div class="jn-hero-editorial-title">编辑部精选</div>' +
+          '<div class="jn-hero-editorial-sub">04 STORIES</div>' +
+        '</div>' +
+        editorialHtml() +
+      '</aside>';
+
+    root.innerHTML = leftCol + visual + editorialCol;
+
+    /* 数据数字 count-up */
+    JN.animateDataValues(root);
+
+    /* 3 分钟速览：平滑滚到下一屏（行业快讯） */
+    var play = document.getElementById('hero-play');
+    if (play) {
+      play.addEventListener('click', function () {
+        var next = document.getElementById('screen-industry');
+        if (next && next.scrollIntoView) next.scrollIntoView({ behavior: 'smooth' });
+        else JN.toast('即将上线', 'info');
+      });
     }
-    return (
-      '<div class="jn-pager jn-pager--focus">' +
-        '<div class="jn-pager-dots">' + dots.join('') + '</div>' +
-      '</div>'
-    );
   }
 
-  /* ---------- 今日焦点：自动轮播 ---------- */
-  function startFocusCarousel() {
-    stopFocusCarousel();
-    focusTimer = setInterval(function () {
-      if (FOCUS_GROUPS.length <= 1) return;
-      state.focusIndex = (state.focusIndex + 1) % FOCUS_GROUPS.length;
-      renderFocus();
-    }, FOCUS_AUTO_MS);
-  }
-
-  function stopFocusCarousel() {
-    if (focusTimer) { clearInterval(focusTimer); focusTimer = null; }
-  }
+  /* ============================================================
+   * 第二~五屏：热门资讯 / 行业快讯 / 热门排行 / 延伸阅读（保持原样）
+   * ============================================================ */
 
   function renderHot() {
     var items = D.hotNews.map(function (h, i) {
@@ -250,7 +307,6 @@
     if (m) m.hidden = true;
   }
 
-  /* 主体调度：搜索激活时打开抽屉并展示结果；否则恢复常规浏览 */
   function renderMain() {
     if (isSearchActive()) {
       openSearchDrawer();
@@ -339,7 +395,7 @@
       '<div class="jn-readmore-grid">' + D.relatedNews.map(relatedItemHtml).join('') + '</div>';
   }
 
-  /* ---------- 分类筛选交互 ---------- */
+  /* ---------- 分类筛选交互（行业快讯） ---------- */
   function bindFilter() {
     var root = document.getElementById('latest-cols');
     if (!root) return;
@@ -351,42 +407,13 @@
     });
   }
 
-  /* ---------- 今日焦点：翻页交互（点击/悬停圆点翻页） ---------- */
-  function bindFocusPager() {
-    var root = document.getElementById('focus');
-    if (!root) return;
-    root.addEventListener('click', function (e) {
-      var p = e.target.closest ? e.target.closest('.jn-pager-dot') : null;
-      if (!p) return;
-      goFocusPage(p.getAttribute('data-focus'));
-    });
-
-    /* 鼠标放到圆点上即翻页（mouseenter 不冒泡，需捕获阶段） */
-    root.addEventListener('mouseenter', function (e) {
-      var p = e.target.closest ? e.target.closest('.jn-pager-dot') : null;
-      if (!p) return;
-      goFocusPage(p.getAttribute('data-focus'));
-    }, true);
-  }
-
-  function goFocusPage(val) {
-    var pages = FOCUS_GROUPS.length;
-    var cur = parseInt(val, 10) - 1;
-    if (cur < 0) cur = 0;
-    if (cur > pages - 1) cur = pages - 1;
-    if (cur === state.focusIndex) return;
-    state.focusIndex = cur;
-    renderFocus();
-    if (!focusHover) startFocusCarousel();
-  }
-
   /* ---------- 进入详情 / 外链 ---------- */
   function bindNavigation() {
     document.addEventListener('click', function (e) {
       var el = e.target;
       if (!el || !el.closest) return;
       if (el.closest('[data-fav]')) return;
-      /* 行业快讯等外链：整卡在新标签打开原文 */
+      /* 行业快讯 / 头版封面 / 编辑列表外链：整卡新标签打开原文 */
       var ext = el.closest('[data-url]');
       if (ext) {
         e.preventDefault();
@@ -492,33 +519,12 @@
     if (mask) mask.addEventListener('click', closeSearchDrawer);
   }
 
-  /* ---------- 焦点轮播：仅当首屏可见时自动播放 ---------- */
-  function bindFocusVisibility() {
-    var fp = document.getElementById('jn-fullpage');
-    var fEl = document.getElementById('focus');
-    if (!fp || !fEl || !('IntersectionObserver' in window)) return;
-    var obs = new IntersectionObserver(function (es) {
-      es.forEach(function (e) {
-        if (e.isIntersecting) { if (!focusHover) startFocusCarousel(); }
-        else { stopFocusCarousel(); }
-      });
-    }, { root: fp, threshold: 0.4 });
-    obs.observe(fEl);
-  }
-
   function init() {
     bindFilter();
-    bindFocusPager();
     bindSearch();
     bindSearchDrawer();
     bindKeyboard();
     bindNavigation();
-
-    var focusEl = document.getElementById('focus');
-    if (focusEl) {
-      focusEl.addEventListener('mouseenter', function () { focusHover = true; stopFocusCarousel(); });
-      focusEl.addEventListener('mouseleave', function () { focusHover = false; startFocusCarousel(); });
-    }
 
     setTimeout(function () {
       var loading = document.getElementById('app-loading');
@@ -526,9 +532,7 @@
       if (loading) loading.style.display = 'none';
       if (app) app.hidden = false;
       renderAll();
-      startFocusCarousel();
-      bindFocusVisibility();
-    }, 420);
+    }, 380);
   }
 
   if (document.readyState === 'loading') {
