@@ -1378,9 +1378,37 @@ window.talentMapBack = function() {
     }
 };
 
+// 地区是否有可进入的岗位分析详情（地图着色/预览仍可见无数据区域）
+window.talentCityHasDetail = function(city) {
+    if (!city) return false;
+    if ((city.jobCount || 0) > 0) return true;
+    if (city.name && talentMapState.cityData && talentMapState.cityData.length) {
+        var hit = window.talentFindCityData(talentMapState.cityData, city.name);
+        if (hit && (hit.jobCount || 0) > 0) return true;
+    }
+    return false;
+};
+
+window.talentUpdateCityHoverBtn = function(city) {
+    var btn = document.getElementById('talent-hover-btn');
+    if (!btn) return;
+    if (window.talentCityHasDetail(city)) {
+        btn.style.display = '';
+        btn.textContent = '进入地区岗位分析 →';
+    } else {
+        btn.style.display = 'none';
+    }
+};
+
 window.talentMapClickCurrent = function() {
-    // 地区级不再进入岗位分析；仅省份悬停可点进省份详情
+    // 悬停地区且有数据 → 进入地区岗位分析
     if (talentMapState.hoveredCity && talentMapState.hoveredCity.name) {
+        if (window.talentCityHasDetail(talentMapState.hoveredCity)) {
+            var clickName = talentMapState.hoveredCityName
+                || talentMapState.hoveredCity.displayName
+                || talentMapState.hoveredCity.name;
+            return window.talentHandleCityClick(clickName);
+        }
         return;
     }
     // 省级悬停时：点击进入省份详情
@@ -1694,9 +1722,7 @@ window.talentRenderCityMap = function(provinceName) {
                 // 数值栏只写数字，标签已有「岗位数量」——避免「岗位总数」重复
                 document.getElementById('talent-hover-jobs').textContent = (city.jobCount || 0).toLocaleString();
                 document.getElementById('talent-hover-salary').textContent = talentFormatSalary(city.avgSalary);
-                // 地区只展示概览，不再提供「进入地区岗位分析」
-                var btn = document.getElementById('talent-hover-btn');
-                if (btn) btn.style.display = 'none';
+                window.talentUpdateCityHoverBtn(city);
                 window.talentShowCityPreview(city);
             }
         }
@@ -1722,13 +1748,17 @@ window.talentRenderCityMap = function(provinceName) {
         }
     });
 
-    // 点击地区：仅高亮/预览，不再进入地区岗位分析（省份分析入口保留在右侧面板）
+    // 点击地区：有数据则进入岗位分析，否则仅预览
     chart.off('click');
     chart.on('click', function(params) {
         if (!params || !params.name) return;
         if (params.componentType !== 'series' && params.componentType !== 'geo') return;
         var city = window.talentFindCityData(talentMapState.cityData, params.name)
             || { name: window.talentNormalizeCityName(params.name) || params.name, displayName: params.name };
+        if (window.talentCityHasDetail(city)) {
+            window.talentHandleCityClick(params.name);
+            return;
+        }
         talentMapState.hoveredCity = city;
         talentMapState.hoveredCityName = params.name;
         document.getElementById('talent-detail-empty').style.display = 'none';
@@ -1749,8 +1779,7 @@ window.talentRenderCityMap = function(provinceName) {
         document.getElementById('talent-hover-city-block').style.display = 'block';
         document.getElementById('talent-hover-jobs').textContent = (city.jobCount || 0).toLocaleString();
         document.getElementById('talent-hover-salary').textContent = talentFormatSalary(city.avgSalary);
-        var btn = document.getElementById('talent-hover-btn');
-        if (btn) btn.style.display = 'none';
+        window.talentUpdateCityHoverBtn(city);
         window.talentShowCityPreview(city);
     });
 };
@@ -2043,7 +2072,7 @@ window.gangaZoomHover = function(provinceName, enter) {
 // ============== 筛选 ==============
 // 应用筛选：根据 省份 → 地区 → 岗位 生成路由参数并落到对应地图视图
 // 有省份时直接复用地图点省逻辑 talentMapSelect（镜头动画/地图高亮/省份详情/市级地图），
-// 省份 + 具体地区仅展示地区概览（不再进入地区岗位分析）；省份岗位分析仍由右侧面板按钮进入。
+// 省份 + 具体地区：有数据则进入地区岗位分析；无数据仅预览。省份岗位分析仍由右侧面板按钮进入。
 // 确保筛选路径与点击地图省份路径状态（selectedProvince/高亮/详情/镜头）一致。
 window.talentMapApplyFilter = async function() {
     var filt = window.talentGetFilters();
@@ -2067,10 +2096,15 @@ window.talentMapApplyFilter = async function() {
         window.talentShowLayer('map');
         // 包含镜头动画、地图高亮、右侧省份详情、市级/区级地图渲染
         await window.talentMapSelect(prov);
-        // 省份 + 具体地区 → 仅在省地图上高亮并展示地区概览，不再进入地区岗位分析
+        // 省份 + 具体地区
         if (cityRaw) {
             var city = window.talentFindCityData(talentMapState.cityData, cityRaw)
                 || { name: window.talentNormalizeCityName(cityRaw) || cityRaw, displayName: cityRaw };
+            if (window.talentCityHasDetail(city)) {
+                await window.talentHandleCityClick(city.displayName || cityRaw);
+                if (jobName) window.talentApplyJobHighlight(jobName);
+                return;
+            }
             talentMapState.hoveredCity = city;
             talentMapState.hoveredCityName = city.displayName || city.name || cityRaw;
             document.getElementById('talent-detail-empty').style.display = 'none';
@@ -2088,8 +2122,7 @@ window.talentMapApplyFilter = async function() {
             document.getElementById('talent-hover-city-block').style.display = 'block';
             document.getElementById('talent-hover-jobs').textContent = (city.jobCount || 0).toLocaleString();
             document.getElementById('talent-hover-salary').textContent = talentFormatSalary(city.avgSalary);
-            var btn = document.getElementById('talent-hover-btn');
-            if (btn) btn.style.display = 'none';
+            window.talentUpdateCityHoverBtn(city);
             window.talentShowCityPreview(city);
             try {
                 var chart = talentMapState.mapChart;

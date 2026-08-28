@@ -5364,3 +5364,2066 @@ body.dd-modal-open { overflow: hidden; }
     height: auto;
   }
 }
+
+/* ========== Modular detail: one feature per view ========== */
+.dd-mod-layout {
+  display: grid;
+  grid-template-columns: 196px minmax(0, 1.08fr) minmax(320px, 0.98fr);
+  gap: 10px;
+  flex: 1 1 auto;
+  min-height: 0;
+  align-items: stretch;
+}
+
+.dd-mod-insight-col {
+  display: flex;
+  flex-direction: column;
+  align-self: stretch;
+  min-height: 100%;
+  height: auto;
+  min-width: 0;
+}
+
+.dd-mod-insight-col > .dd-mod-insight {
+  flex: 1 1 auto;
+  height: auto;
+  min-height: 100%;
+  display: none !important;
+}
+
+.dd-mod-insight-col > .dd-mod-insight.is-mod-active,
+.dd-mod-insight-col > .dd-mod-insight:not([hidden]) {
+  display: flex !important;
+}
+
+.dd-mod-body {
+  flex: 1;
+  min-height: 0;
+  display: flex !important;
+  flex-direction: column;
+  gap: 10px;
+  grid-template-columns: none !important;
+}
+
+.dd-mod-btn:not(.is-active) {
+  border-color: rgba(212, 176, 122, 0.1);
+  background: rgba(0, 0, 0, 0.18);
+}
+
+.dd-mod-rail {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 10px 8px;
+  border-radius: 14px;
+  border: 1px solid rgba(212, 176, 122, 0.18);
+  background:
+    linear-gradient(180deg, rgba(212, 176, 122, 0.08), transparent 38%),
+    rgba(10, 14, 20, 0.86);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  overflow: hidden;
+  height: 100%;
+  min-height: 100%;
+  max-height: none;
+  align-self: stretch;
+}
+
+.dd-mod-rail-kicker {
+  margin: 0 6px 6px;
+  flex: 0 0 auto;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(232, 201, 136, 0.55);
+}
+
+.dd-mod-btn {
+  display: grid;
+  grid-template-columns: 26px minmax(0, 1fr);
+  gap: 7px;
+  align-items: center;
+  width: 100%;
+  flex: 1 1 0;
+  min-height: 0;
+  padding: 8px 8px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: transparent;
+  color: rgba(232, 242, 248, 0.72);
+  text-align: left;
+  cursor: pointer;
+  transition: background .22s var(--dd-ease, cubic-bezier(.22,1,.36,1)),
+    border-color .22s ease, color .22s ease, transform .22s ease;
+}
+
+.dd-mod-btn:hover {
+  color: #f5f0e6;
+  border-color: rgba(212, 176, 122, 0.22);
+  background: rgba(212, 176, 122, 0.06);
+}
+
+.dd-mod-btn.is-active {
+  color: #1a1408;
+  border-color: rgba(212, 176, 122, 0.55);
+  background: linear-gradient(135deg, #ecc984, #d4b07a);
+  box-shadow: 0 8px 22px rgba(212, 176, 122, 0.22);
+  transform: translateX(2px);
+}
+
+.dd-mod-btn .n {
+  font-family: var(--font-display, Georgia, serif);
+  font-size: 12px;
+  font-weight: 700;
+  opacity: 0.7;
+  line-height: 1.2;
+}
+
+.dd-mod-btn.is-active .n { opacity: 0.9; }
+
+.dd-mod-btn .lab {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.dd-mod-btn .lab strong {
+  font-size: 12.5px;
+  font-weight: 650;
+  letter-spacing: 0.01em;
+  line-height: 1.2;
+}
+
+.dd-mod-btn .lab em {
+  font-style: normal;
+  font-size: 10px;
+  opacity: 0.62;
+  line-height: 1.25;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.dd-mod-btn.is-active .lab em { opacity: 0.78; color: #3a2a12; }
+
+.dd-mod-stage.dd-found-board,
+.dd-mod-stage.dd-fc-board,
+#dd-found-board.dd-mod-stage,
+#dd-fc-board.dd-mod-stage {
+  display: flex !important;
+  flex-direction: column;
+  grid-template-columns: none !important;
+  grid-template-rows: none !important;
+  grid-template-areas: none !important;
+  gap: 0 !important;
+  height: auto !important;
+  min-height: 440px;
+  overflow: visible;
+  align-items: stretch;
+}
+
+.dd-mod-stage > .dd-panel,
+.dd-mod-stage > .dd-fc-panel {
+  grid-area: unset !important;
+  display: none !important;
+  flex: 1 1 auto;
+  min-height: 520px;
+  max-height: none;
+  overflow: hidden;
+  padding: 12px 14px 12px !important;
+}
+
+.dd-mod-stage > .dd-panel.is-mod-active,
+.dd-mod-stage > .dd-fc-panel.is-mod-active {
+  display: flex !important;
+  flex-direction: column;
+  animation: ddModIn 0.55s cubic-bezier(.22,1,.36,1) both;
+}
+
+@keyframes ddModIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+
+.dd-mod-body {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1.38fr) minmax(260px, 0.82fr);
+  gap: 10px;
+  align-items: stretch;
+}
+
+.dd-mod-body > :first-child {
+  min-width: 0;
+  min-height: 0;
+}
+
+.dd-mod-insight {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 14px 14px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(212, 176, 122, 0.2);
+  background:
+    linear-gradient(165deg, rgba(212, 176, 122, 0.1), transparent 48%),
+    rgba(0, 0, 0, 0.28);
+  overflow: hidden;
+  height: auto;
+  min-height: 100%;
+  align-self: stretch;
+  box-sizing: border-box;
+}
+
+.dd-insight-top {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+}
+
+.dd-insight-foot {
+  flex: 0 0 auto;
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid rgba(212, 176, 122, 0.14);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.dd-mod-insight-col > .dd-mod-insight.is-mod-active,
+.dd-mod-insight-col > .dd-mod-insight:not([hidden]) {
+  display: flex !important;
+  justify-content: flex-start;
+  gap: 0;
+  overflow: auto;
+}
+
+.dd-insight-sec {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(232, 201, 136, 0.62);
+}
+
+.dd-insight-signals {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.dd-insight-sig {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 8px;
+  border-radius: 10px;
+  border: 1px solid rgba(212, 176, 122, 0.16);
+  background: rgba(0, 0, 0, 0.22);
+  min-height: 52px;
+  justify-content: center;
+}
+
+.dd-insight-sig em {
+  font-style: normal;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: rgba(232, 201, 136, 0.55);
+}
+
+.dd-insight-sig strong {
+  font-size: 12px;
+  font-weight: 700;
+  color: #f0ebe3;
+  line-height: 1.25;
+  word-break: break-word;
+}
+
+.dd-insight-sig.is-gold strong { color: #ecc984; }
+.dd-insight-sig.is-up strong { color: #9fd6b5; }
+.dd-insight-sig.is-warn strong { color: #f0b888; }
+
+.dd-insight-checks {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.dd-insight-checks ul,
+.dd-insight-bullets {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.dd-insight-checks li,
+.dd-insight-bullets li {
+  position: relative;
+  padding-left: 12px;
+  font-size: 11.5px;
+  line-height: 1.4;
+  color: rgba(232, 242, 248, 0.7);
+}
+
+.dd-insight-checks li::before,
+.dd-insight-bullets li::before {
+  content: "";
+  position: absolute;
+  left: 8px;
+  top: 1em;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #d4b07a;
+}
+
+.dd-insight-next {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  width: 100%;
+  margin-top: 2px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(212, 176, 122, 0.35);
+  background: linear-gradient(135deg, rgba(236, 201, 132, 0.16), rgba(212, 176, 122, 0.08));
+  color: #f2ebe0;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color .2s ease, filter .2s ease;
+}
+
+.dd-insight-next:hover {
+  border-color: rgba(212, 176, 122, 0.55);
+  filter: brightness(1.06);
+}
+
+.dd-insight-next span {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: rgba(232, 201, 136, 0.7);
+}
+
+.dd-insight-next strong {
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.dd-insight-reads {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 9px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(212, 176, 122, 0.14);
+  background: rgba(212, 176, 122, 0.06);
+}
+
+.dd-insight-reads ol {
+  margin: 0;
+  padding: 0 0 0 1.1em;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.dd-insight-reads li {
+  font-size: 12px;
+  line-height: 1.45;
+  color: rgba(232, 242, 248, 0.78);
+}
+
+.dd-insight-deeper {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  flex: 1 1 auto;
+  min-height: 160px;
+}
+
+.dd-insight-deeper-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 7px;
+  flex: 1 1 auto;
+  align-content: stretch;
+}
+
+.dd-insight-deep-card {
+  padding: 11px 11px;
+  border-radius: 10px;
+  border: 1px solid rgba(212, 176, 122, 0.16);
+  background: rgba(0, 0, 0, 0.22);
+  min-height: 84px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.dd-insight-deep-card strong {
+  display: block;
+  font-size: 12px;
+  color: #f0e6d2;
+  margin-bottom: 3px;
+}
+
+.dd-insight-deep-card p {
+  margin: 0;
+  font-size: 11.5px;
+  line-height: 1.45;
+  color: rgba(232, 242, 248, 0.68);
+}
+
+/* Modular duties: static list, no carousel height feedback */
+.dd-mod-stage .dd-found-duties-panel .dd-fc-duties-shell,
+.dd-mod-stage .dd-fc-duties .dd-fc-duties-shell,
+.dd-mod-stage .dd-fc-duties-shell.is-mod-static {
+  flex: 0 0 auto !important;
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  display: block !important;
+}
+
+.dd-mod-stage .dd-fc-duties-shell.is-mod-static .dd-fc-duties-viewport,
+.dd-mod-stage .dd-fc-duties-shell.is-expanded.is-mod-static .dd-fc-duties-viewport {
+  height: auto !important;
+  max-height: none !important;
+  min-height: 0 !important;
+  overflow: visible !important;
+  flex: 0 0 auto !important;
+}
+
+.dd-mod-stage .dd-fc-duties-shell.is-mod-static .dd-fc-duty-item {
+  height: auto !important;
+  min-height: 40px !important;
+  max-height: none !important;
+  padding: 8px 4px !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.dd-mod-stage .dd-fc-duties-shell.is-mod-static .dd-fc-duty-item .txt {
+  white-space: normal !important;
+  display: block !important;
+  -webkit-line-clamp: unset !important;
+  line-height: 1.45 !important;
+  font-size: 13px !important;
+}
+
+.dd-mod-stage .dd-fc-duties-shell.is-mod-static .dd-fc-duties-toggle {
+  display: none !important;
+}
+
+.dd-mod-stage .dd-fc-duties-track {
+  gap: 0 !important;
+}
+
+.dd-mod-insight .dd-mod-insight-k {
+  margin: 0;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(232, 201, 136, 0.7);
+}
+
+.dd-mod-insight .dd-mod-insight-t {
+  margin: 0;
+  font-family: var(--font-display, Georgia, serif);
+  font-size: 14.5px;
+  font-weight: 650;
+  color: #f2ebe0;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+}
+
+.dd-mod-insight .dd-mod-insight-p {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: rgba(232, 242, 248, 0.78);
+}
+
+.dd-insight-signals {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.dd-insight-sig {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 10px 9px;
+  border-radius: 10px;
+  border: 1px solid rgba(212, 176, 122, 0.18);
+  background: rgba(0, 0, 0, 0.28);
+  min-height: 58px;
+  justify-content: center;
+}
+
+.dd-insight-bullets li,
+.dd-insight-checks li {
+  padding: 7px 9px 7px 22px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(212, 176, 122, 0.08);
+}
+
+.dd-mod-insight ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.dd-mod-insight li {
+  position: relative;
+  padding-left: 12px;
+  font-size: 11.5px;
+  line-height: 1.45;
+  color: rgba(232, 242, 248, 0.68);
+}
+
+.dd-mod-insight li::before {
+  content: "";
+  position: absolute;
+ left: 0;
+ top: 0.55em;
+ width: 5px;
+ height: 5px;
+ border-radius: 50%;
+ background: #d4b07a;
+ box-shadow: 0 0 8px rgba(212, 176, 122, 0.45);
+}
+
+.dd-mod-jumps {
+ display: grid;
+ grid-template-columns: 1fr 1fr;
+ gap: 8px;
+ margin-top: 4px;
+}
+
+.dd-mod-jump {
+ display: flex;
+ flex-direction: column;
+ gap: 3px;
+ padding: 10px 11px;
+ border-radius: 10px;
+ border: 1px solid rgba(212, 176, 122, 0.18);
+ background: rgba(212, 176, 122, 0.05);
+ color: inherit;
+ text-align: left;
+ cursor: pointer;
+ transition: border-color .2s ease, background .2s ease, transform .2s ease;
+}
+
+.dd-mod-jump:hover {
+ border-color: rgba(212, 176, 122, 0.42);
+ background: rgba(212, 176, 122, 0.1);
+ transform: translateY(-1px);
+}
+
+.dd-mod-jump strong {
+ font-size: 12px;
+ color: #f0e6d2;
+}
+
+.dd-mod-jump span {
+ font-size: 10.5px;
+ color: rgba(232, 242, 248, 0.48);
+}
+
+.dd-mod-ext {
+ font-size: 11px;
+ font-weight: 600;
+ color: #e8c988;
+ text-decoration: none;
+ white-space: nowrap;
+}
+
+.dd-mod-ext:hover { text-decoration: underline; }
+
+.dd-mod-risk-main {
+ min-width: 0;
+ display: flex;
+ flex-direction: column;
+ gap: 10px;
+}
+
+.dd-mod-stage .dd-found-basics-body {
+ overflow: auto;
+}
+
+.dd-mod-stage .dd-skill-constellation {
+  min-height: 320px;
+  position: relative;
+}
+
+.dd-mod-stage .dd-skill-item {
+  opacity: 1;
+}
+
+.dd-mod-stage .dd-skill-list {
+  position: relative;
+  z-index: 1;
+}
+
+.dd-mod-stage .dd-fc-duties-shell {
+ min-height: 260px;
+}
+
+.dd-mod-stage .dd-fc-duties-shell:not(.is-expanded) .dd-fc-duties-viewport {
+ max-height: none !important;
+ height: auto !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+ .dd-mod-stage > .dd-panel.is-mod-active,
+ .dd-mod-stage > .dd-fc-panel.is-mod-active {
+ animation: none;
+ }
+ .dd-mod-btn.is-active { transform: none; }
+ .dd-mod-jump:hover { transform: none; }
+}
+
+@media (max-width: 980px) {
+  .dd-mod-layout {
+    grid-template-columns: 1fr;
+  }
+  .dd-mod-rail {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    max-height: none;
+    height: auto;
+    padding: 8px;
+    gap: 6px;
+  }
+  .dd-mod-rail-kicker { display: none; }
+  .dd-mod-btn {
+    min-width: 132px;
+    flex: 0 0 auto;
+    grid-template-columns: 22px minmax(0, 1fr);
+  }
+  .dd-mod-insight-col {
+    min-height: 320px;
+  }
+  .dd-bubble-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Modular stage overrides (beat compact grid packing) */
+#dd-found-board.dd-mod-stage > .dd-panel.is-mod-active,
+#dd-fc-board.dd-mod-stage > .dd-fc-panel.is-mod-active,
+#view-discovery-detail.is-found #dd-found-board.dd-mod-stage > .dd-panel.is-mod-active,
+#view-discovery-detail.is-forecast #dd-fc-board.dd-mod-stage > .dd-fc-panel.is-mod-active {
+  height: auto !important;
+  min-height: 460px !important;
+  max-height: none !important;
+  overflow: auto !important;
+  padding: 16px 18px 18px !important;
+  align-self: stretch;
+}
+
+#view-discovery-detail.is-found #dd-found-board.dd-mod-stage .dd-panel-head h2,
+#view-discovery-detail.is-forecast #dd-fc-board.dd-mod-stage .dd-panel-head h2 {
+  font-size: 16px !important;
+}
+
+#view-discovery-detail.is-found #dd-found-board.dd-mod-stage .dd-graph-pie-host {
+  flex: 0 0 200px !important;
+  width: 200px !important;
+  height: 200px !important;
+}
+
+#view-discovery-detail.is-found #dd-found-board.dd-mod-stage .dd-panel-graph .dd-found-graph {
+  width: 180px !important;
+  height: 180px !important;
+  min-height: 160px !important;
+}
+
+#view-discovery-detail.is-found #dd-found-board.dd-mod-stage .dd-trend-chart-wrap,
+#view-discovery-detail.is-forecast #dd-fc-board.dd-mod-stage .dd-trend-chart-wrap {
+  min-height: 300px !important;
+  flex: 1 1 auto;
+}
+
+body.dd-cockpit-page .page-main--cockpit:has(.dd-mod-layout) {
+  height: auto !important;
+  max-height: none !important;
+  overflow: auto !important;
+}
+
+html:has(body.dd-cockpit-page:has(.dd-mod-layout)),
+body.dd-cockpit-page:has(.dd-mod-layout),
+body.standalone-view.dd-cockpit-page:has(.dd-mod-layout) {
+  height: auto !important;
+  overflow: auto !important;
+}
+
+#view-discovery-detail.dd-page--unified:has(.dd-mod-layout),
+#view-discovery-detail.dd-page--cockpit:has(.dd-mod-layout) {
+  height: auto !important;
+  max-height: none !important;
+  min-height: calc(100vh - 64px);
+  overflow: visible !important;
+  flex: 1 0 auto !important;
+}
+
+.dd-found:has(.dd-mod-layout),
+.dd-fc:has(.dd-mod-layout) {
+  height: auto !important;
+  min-height: 0;
+  max-height: none !important;
+  overflow: visible !important;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1 0 auto;
+}
+
+.dd-mod-layout {
+  flex: 1 0 auto;
+  min-height: min(70vh, 640px);
+}
+
+/* —— Unified bubble language + rich module blocks —— */
+#view-discovery-detail {
+  --dd-bubble-r: 12px;
+  --dd-bubble-pad: 12px 14px;
+  --dd-bubble-min-h: 74px;
+}
+
+.dd-mod-main {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+  min-height: 0;
+}
+
+.dd-mod-rich {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  order: -1;
+}
+
+.dd-mod-body {
+  grid-template-columns: none !important;
+  gap: 10px !important;
+  align-items: stretch !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.dd-mod-main {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+}
+
+.dd-mod-rich {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  order: -1;
+}
+
+.dd-bubble-row {
+  gap: 8px;
+}
+
+.dd-bubble-stat {
+  min-height: 72px !important;
+  padding: 10px 11px;
+}
+
+.dd-note-grid {
+  gap: 8px;
+}
+
+.dd-note-card {
+  min-height: 104px !important;
+  padding: 10px 11px;
+  gap: 6px;
+}
+
+.dd-mod-stage .dd-found-kv {
+  gap: 8px !important;
+}
+
+.dd-mod-stage .dd-found-kv > div {
+  min-height: 68px;
+  padding: 10px 11px;
+}
+
+.dd-mod-jumps {
+  gap: 6px !important;
+}
+
+.dd-mod-jump.dd-bubble {
+  min-height: 56px !important;
+  padding: 8px 9px !important;
+}
+
+#dd-found-board.dd-mod-stage > .dd-panel.is-mod-active,
+#dd-fc-board.dd-mod-stage > .dd-fc-panel.is-mod-active,
+#view-discovery-detail.is-found #dd-found-board.dd-mod-stage > .dd-panel.is-mod-active,
+#view-discovery-detail.is-forecast #dd-fc-board.dd-mod-stage > .dd-fc-panel.is-mod-active {
+  height: auto !important;
+  min-height: 520px !important;
+  overflow: visible !important;
+  padding: 12px 14px !important;
+}
+
+.dd-mod-stage.dd-found-board,
+.dd-mod-stage.dd-fc-board,
+#dd-found-board.dd-mod-stage,
+#dd-fc-board.dd-mod-stage {
+  height: auto !important;
+  min-height: 520px;
+  overflow: visible !important;
+}
+
+.dd-mod-stage > .dd-panel,
+.dd-mod-stage > .dd-fc-panel {
+  overflow: visible !important;
+}
+
+#view-discovery-detail .dd-mod-btn {
+  min-height: 0;
+}
+
+/* Kill leftover sparse insight list styles conflicting with dense panel */
+.dd-mod-insight > ul:not(.dd-insight-bullets) {
+  display: none;
+}
+
+.dd-bubble-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  align-items: stretch;
+}
+
+.dd-bubble {
+  box-sizing: border-box;
+  border-radius: var(--dd-bubble-r);
+  border: 1px solid rgba(212, 176, 122, 0.2);
+  background:
+    linear-gradient(165deg, rgba(212, 176, 122, 0.09), transparent 50%),
+    rgba(0, 0, 0, 0.26);
+  min-height: var(--dd-bubble-min-h);
+}
+
+.dd-bubble-stat {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  padding: var(--dd-bubble-pad);
+  min-height: 90px;
+  height: 100%;
+}
+
+.dd-bubble-stat em {
+  font-style: normal;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(232, 201, 136, 0.62);
+}
+
+.dd-bubble-stat strong {
+  font-family: var(--font-display, Georgia, serif);
+  font-size: clamp(15px, 1.15vw, 20px);
+  font-weight: 700;
+  color: #f4efe6;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  word-break: break-word;
+}
+
+.dd-bubble-stat span {
+  font-size: 11px;
+  color: rgba(232, 242, 248, 0.48);
+  line-height: 1.35;
+}
+
+.dd-bubble-stat.is-gold {
+  border-color: rgba(212, 176, 122, 0.42);
+  box-shadow: 0 0 18px rgba(212, 176, 122, 0.12);
+}
+
+.dd-bubble-stat.is-gold strong { color: #ecc984; }
+.dd-bubble-stat.is-up strong { color: #9fd6b5; }
+.dd-bubble-stat.is-hot strong { color: #f0b070; }
+.dd-bubble-stat.is-warm strong { color: #e8c988; }
+.dd-bubble-stat.is-warn {
+  border-color: rgba(240, 160, 96, 0.35);
+}
+.dd-bubble-stat.is-warn strong { color: #f0b888; }
+
+.dd-note-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  align-items: stretch;
+  grid-auto-rows: 1fr;
+}
+
+.dd-note-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 13px;
+  min-height: 128px;
+  height: 100%;
+}
+
+.dd-note-card header {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.dd-note-card em {
+  font-style: normal;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: rgba(232, 201, 136, 0.62);
+}
+
+.dd-note-card strong {
+  font-size: 13px;
+  color: #f2ebe0;
+  line-height: 1.3;
+}
+
+.dd-note-card p {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.55;
+  color: rgba(232, 242, 248, 0.7);
+  flex: 1;
+}
+
+.dd-mod-jumps {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  grid-auto-rows: 1fr;
+  gap: 8px !important;
+  margin-top: 6px !important;
+  align-items: stretch;
+}
+
+.dd-mod-jump.dd-bubble {
+  display: grid !important;
+  grid-template-columns: 28px minmax(0, 1fr);
+  gap: 8px;
+  align-items: center;
+  min-height: 64px !important;
+  height: 100%;
+  padding: 10px 11px !important;
+  text-align: left;
+  cursor: pointer;
+  color: inherit;
+  transition: border-color .2s ease, background .2s ease, transform .2s ease;
+}
+
+.dd-mod-jump-n {
+  font-family: var(--font-display, Georgia, serif);
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(232, 201, 136, 0.72);
+  line-height: 1;
+}
+
+.dd-mod-jump-lab {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.dd-mod-jump-lab strong {
+  font-size: 12.5px;
+  color: #f0e6d2;
+  line-height: 1.2;
+}
+
+.dd-mod-jump-lab span {
+  font-size: 10.5px;
+  color: rgba(232, 242, 248, 0.48);
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.dd-mod-jump:hover {
+  border-color: rgba(212, 176, 122, 0.45) !important;
+  background: rgba(212, 176, 122, 0.12) !important;
+  transform: translateY(-1px);
+}
+
+/* Basics as aligned bubbles */
+.dd-mod-stage .dd-found-kv {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 10px !important;
+  grid-auto-rows: 1fr;
+}
+
+.dd-mod-stage .dd-found-kv > div {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  min-height: 78px;
+  height: 100%;
+  padding: 12px 14px;
+  border-radius: var(--dd-bubble-r);
+  border: 1px solid rgba(212, 176, 122, 0.16);
+  background: rgba(0, 0, 0, 0.22);
+}
+
+.dd-mod-stage .dd-found-kv dt {
+  margin: 0;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: rgba(232, 201, 136, 0.58);
+}
+
+.dd-mod-stage .dd-found-kv dd {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #f0ebe3;
+  line-height: 1.35;
+}
+
+.dd-mod-stage .dd-found-brief {
+  min-height: 78px;
+  border-radius: var(--dd-bubble-r) !important;
+  padding: 12px 14px !important;
+  font-size: 12.5px !important;
+  line-height: 1.6 !important;
+  display: flex;
+  align-items: center;
+}
+
+.dd-mod-jumps {
+  grid-auto-rows: 1fr !important;
+}
+
+.dd-mod-jump.dd-bubble {
+  min-height: 68px !important;
+}
+
+/* Verdict / fav / chip bubbles aligned */
+#view-discovery-detail .dd-verdict-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: stretch;
+}
+
+#view-discovery-detail .dd-chip-mini {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 28px;
+  padding: 0 11px;
+  border-radius: 999px;
+  border: 1px solid rgba(212, 176, 122, 0.28);
+  background: rgba(212, 176, 122, 0.08);
+  font-size: 11px;
+  line-height: 1;
+}
+
+#view-discovery-detail .dd-fav-chip {
+  min-height: 34px;
+  border-radius: 999px;
+  align-items: center;
+}
+
+#view-discovery-detail .dd-mod-rail {
+  align-self: stretch;
+  height: 100%;
+}
+
+#view-discovery-detail .dd-mod-btn {
+  min-height: 0;
+  align-items: center;
+}
+
+#view-discovery-detail .dd-flow-pill {
+  min-height: 34px;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0 12px;
+}
+
+@media (max-width: 1200px) {
+  .dd-bubble-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .dd-note-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 980px) {
+  .dd-mod-body {
+    grid-template-columns: 1fr !important;
+  }
+  .dd-bubble-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dd-mod-jump:hover { transform: none; }
+}
+
+/* ========== One-screen cockpit: aligned columns, minimal page scroll ========== */
+
+/* Lock page to viewport — scroll only inside module columns */
+html:has(body.dd-cockpit-page:has(.dd-mod-layout)),
+body.dd-cockpit-page:has(.dd-mod-layout),
+body.standalone-view.dd-cockpit-page:has(.dd-mod-layout) {
+  height: 100% !important;
+  overflow: hidden !important;
+}
+
+body.dd-cockpit-page .page-main--cockpit:has(.dd-mod-layout) {
+  height: calc(100vh - var(--topbar-h, 56px)) !important;
+  max-height: calc(100vh - var(--topbar-h, 56px)) !important;
+  overflow: hidden !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+#view-discovery-detail.dd-page--unified:has(.dd-mod-layout),
+#view-discovery-detail.dd-page--cockpit:has(.dd-mod-layout) {
+  height: 100% !important;
+  max-height: 100% !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+  flex: 1 1 auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 6px !important;
+}
+
+.dd-found:has(.dd-mod-layout),
+.dd-fc:has(.dd-mod-layout) {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  height: 100% !important;
+  overflow: hidden !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 6px !important;
+}
+
+/* Compact chrome above modules */
+#view-discovery-detail:has(.dd-mod-layout) .dd-fav-bar {
+  flex: 0 0 auto;
+  padding: 4px 8px !important;
+  min-height: 0 !important;
+}
+
+#view-discovery-detail:has(.dd-mod-layout) .dd-found-crumb,
+#view-discovery-detail:has(.dd-mod-layout) .dd-fc-crumb,
+#view-discovery-detail:has(.dd-mod-layout) .dd-back-bubble {
+  flex: 0 0 auto;
+  margin: 0 !important;
+  padding: 2px 0 !important;
+  font-size: 12px !important;
+}
+
+#view-discovery-detail:has(.dd-mod-layout) .dd-fc-hero,
+#view-discovery-detail:has(.dd-mod-layout) .dd-found-hero {
+  flex: 0 0 auto !important;
+  padding: 2px 0 0 !important;
+  gap: 10px !important;
+  margin: 0 !important;
+}
+
+#view-discovery-detail:has(.dd-mod-layout) .dd-fc-title {
+  font-size: clamp(18px, 1.8vw, 24px) !important;
+  line-height: 1.15 !important;
+}
+
+#view-discovery-detail:has(.dd-mod-layout) .dd-fc-mark svg {
+  width: 32px !important;
+  height: 32px !important;
+}
+
+#view-discovery-detail:has(.dd-mod-layout) .dd-fc-meta {
+  font-size: 11px !important;
+  gap: 6px !important;
+  margin-top: 2px !important;
+}
+
+#view-discovery-detail:has(.dd-mod-layout) .dd-fc-btn {
+  padding: 5px 10px !important;
+  font-size: 12px !important;
+  min-height: 0 !important;
+}
+
+#view-discovery-detail:has(.dd-mod-layout) .dd-verdict,
+#view-discovery-detail:has(.dd-mod-layout) .dd-verdict--fc {
+  flex: 0 0 auto !important;
+  padding: 8px 12px !important;
+  gap: 8px !important;
+  margin: 0 !important;
+}
+
+#view-discovery-detail:has(.dd-mod-layout) .dd-verdict-text {
+  font-size: 12.5px !important;
+  line-height: 1.4 !important;
+  margin: 0 !important;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+#view-discovery-detail:has(.dd-mod-layout) .dd-verdict-chips {
+  gap: 4px !important;
+}
+
+/* Three columns: same height, aligned edges */
+.dd-mod-layout {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  height: auto !important;
+  align-items: stretch !important;
+  gap: 8px !important;
+  display: grid !important;
+  grid-template-columns: 168px minmax(0, 1.12fr) minmax(280px, 0.88fr) !important;
+  overflow: hidden !important;
+}
+
+.dd-mod-rail {
+  height: 100% !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  align-self: stretch !important;
+  overflow: hidden !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 4px !important;
+  padding: 8px 6px !important;
+}
+
+.dd-mod-rail-kicker {
+  margin: 0 4px 2px !important;
+  font-size: 9px !important;
+  flex: 0 0 auto !important;
+}
+
+.dd-mod-rail-list {
+  flex: 0 0 auto !important;
+  min-height: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 3px !important;
+  position: relative !important;
+}
+
+.dd-mod-rail-list::before {
+  content: '';
+  position: absolute;
+  left: 17px;
+  top: 10px;
+  bottom: 10px;
+  width: 1px;
+  background: linear-gradient(
+    180deg,
+    rgba(212, 176, 122, 0.05),
+    rgba(212, 176, 122, 0.35),
+    rgba(212, 176, 122, 0.05)
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+.dd-mod-btn {
+  flex: 0 0 auto !important;
+  min-height: 42px !important;
+  max-height: none !important;
+  padding: 7px 8px !important;
+  gap: 6px !important;
+  align-items: center !important;
+  grid-template-columns: 26px minmax(0, 1fr) auto !important;
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+#view-discovery-detail .dd-mod-btn {
+  min-height: 42px !important;
+  max-height: none !important;
+}
+
+.dd-mod-btn .n { font-size: 11px !important; }
+.dd-mod-btn .lab strong { font-size: 12px !important; }
+.dd-mod-btn .lab em {
+  font-size: 9px !important;
+  -webkit-line-clamp: 2 !important;
+  line-clamp: 2 !important;
+}
+
+.dd-mod-btn-state {
+  font-size: 9px !important;
+  letter-spacing: 0.04em !important;
+  color: rgba(232, 242, 248, 0.38) !important;
+  white-space: nowrap !important;
+}
+
+.dd-mod-btn.is-done .dd-mod-btn-state {
+  color: rgba(140, 210, 180, 0.72) !important;
+}
+
+.dd-mod-btn.is-active .dd-mod-btn-state {
+  color: rgba(26, 20, 8, 0.72) !important;
+  font-weight: 700 !important;
+}
+
+.dd-mod-rail-foot {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  margin-top: 6px !important;
+  padding: 10px 9px !important;
+  border-radius: 10px !important;
+  border: 1px solid rgba(212, 176, 122, 0.22) !important;
+  background:
+    linear-gradient(165deg, rgba(212, 176, 122, 0.16), rgba(8, 12, 16, 0.92) 42%, rgba(0, 0, 0, 0.55)) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04) !important;
+  display: grid !important;
+  grid-template-rows: auto auto auto minmax(0, 1fr) !important;
+  gap: 6px !important;
+  overflow: hidden !important;
+}
+
+.dd-mod-rail-progress {
+  display: grid !important;
+  grid-template-columns: auto 1fr !important;
+  grid-template-rows: auto auto !important;
+  gap: 2px 8px !important;
+  align-items: baseline !important;
+}
+
+.dd-mod-rail-progress-lab {
+  font-size: 9px !important;
+  letter-spacing: 0.08em !important;
+  color: rgba(232, 201, 136, 0.58) !important;
+}
+
+.dd-mod-rail-progress strong {
+  justify-self: end !important;
+  font-size: 13px !important;
+  color: #ecc984 !important;
+  font-variant-numeric: tabular-nums !important;
+}
+
+.dd-mod-rail-progress-track {
+  grid-column: 1 / -1 !important;
+  height: 3px !important;
+  border-radius: 999px !important;
+  background: rgba(232, 242, 248, 0.08) !important;
+  overflow: hidden !important;
+}
+
+.dd-mod-rail-progress-track > i {
+  display: block !important;
+  height: 100% !important;
+  border-radius: inherit !important;
+  background: linear-gradient(90deg, #c9a46a, #ecc984) !important;
+  transition: width 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.dd-mod-rail-tip {
+  margin: 0 !important;
+  font-size: 11px !important;
+  line-height: 1.35 !important;
+  color: rgba(242, 235, 224, 0.88) !important;
+}
+
+.dd-mod-rail-tip em {
+  font-style: normal !important;
+  color: rgba(232, 201, 136, 0.72) !important;
+  margin-right: 4px !important;
+}
+
+.dd-mod-rail-checklist {
+  margin: 0 !important;
+  padding: 0 !important;
+  list-style: none !important;
+  display: grid !important;
+  grid-template-rows: repeat(4, minmax(0, 1fr)) !important;
+  gap: 4px !important;
+  min-height: 0 !important;
+  height: 100% !important;
+  overflow: hidden !important;
+}
+
+.dd-mod-rail-checklist li {
+  font-size: 10px !important;
+  line-height: 1.3 !important;
+  color: rgba(232, 242, 248, 0.62) !important;
+  padding: 4px 6px 4px 12px !important;
+  position: relative !important;
+  border-radius: 7px !important;
+  border: 1px solid rgba(212, 176, 122, 0.14) !important;
+  background: rgba(0, 0, 0, 0.28) !important;
+  min-height: 0 !important;
+  height: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  overflow: hidden !important;
+}
+
+.dd-mod-rail-checklist li::before {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 0.7em;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(212, 176, 122, 0.55);
+}
+
+.dd-mod-rail-snap {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 4px !important;
+}
+
+.dd-mod-rail-snap > div {
+  padding: 5px 6px !important;
+  border-radius: 7px !important;
+  border: 1px solid rgba(212, 176, 122, 0.12) !important;
+  background: rgba(0, 0, 0, 0.2) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 1px !important;
+  min-width: 0 !important;
+}
+
+.dd-mod-rail-snap em {
+  font-style: normal !important;
+  font-size: 9px !important;
+  color: rgba(232, 201, 136, 0.55) !important;
+}
+
+.dd-mod-rail-snap strong {
+  font-size: 12px !important;
+  color: #f2ebe0 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dd-mod-rail-progress-track > i { transition: none !important; }
+}
+
+/* Center stage fills column height */
+.dd-mod-stage.dd-found-board,
+.dd-mod-stage.dd-fc-board,
+#dd-found-board.dd-mod-stage,
+#dd-fc-board.dd-mod-stage {
+  min-height: 0 !important;
+  height: auto !important;
+  align-self: stretch !important;
+  align-items: stretch !important;
+  overflow: hidden !important;
+  display: flex !important;
+  flex-direction: column !important;
+  background: transparent !important;
+}
+
+.dd-mod-stage > .dd-panel,
+.dd-mod-stage > .dd-fc-panel {
+  min-height: 0 !important;
+  height: auto !important;
+  max-height: none !important;
+  flex: 1 1 auto !important;
+  overflow: hidden !important;
+  padding: 8px 10px !important;
+}
+
+.dd-mod-stage > .dd-panel.is-mod-active,
+.dd-mod-stage > .dd-fc-panel.is-mod-active,
+#dd-found-board.dd-mod-stage > .dd-panel.is-mod-active,
+#dd-fc-board.dd-mod-stage > .dd-fc-panel.is-mod-active,
+#view-discovery-detail.is-found #dd-found-board.dd-mod-stage > .dd-panel.is-mod-active,
+#view-discovery-detail.is-forecast #dd-fc-board.dd-mod-stage > .dd-fc-panel.is-mod-active {
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  height: 100% !important;
+  overflow: hidden !important;
+  padding: 8px 10px !important;
+}
+
+.dd-mod-stage .dd-panel-head {
+  flex: 0 0 auto !important;
+  margin-bottom: 6px !important;
+  padding: 0 !important;
+}
+
+.dd-mod-stage .dd-panel-head h2 {
+  font-size: 15px !important;
+  margin: 0 !important;
+}
+
+.dd-mod-stage .dd-panel-hint {
+  font-size: 10px !important;
+}
+
+/* Body: main + (insight already moved to col) */
+.dd-mod-body {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  height: auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 6px !important;
+  align-items: stretch !important;
+  overflow: hidden !important;
+}
+
+.dd-mod-main {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  height: auto !important;
+  overflow: auto !important;
+  overscroll-behavior: contain;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 6px !important;
+  scrollbar-width: thin;
+}
+
+.dd-mod-rich {
+  flex: 0 0 auto !important;
+  gap: 6px !important;
+  order: -1;
+}
+
+#view-discovery-detail {
+  --dd-bubble-r: 10px;
+  --dd-bubble-pad: 7px 9px;
+  --dd-bubble-min-h: 48px;
+}
+
+.dd-bubble-row {
+  gap: 6px !important;
+}
+
+.dd-bubble-stat,
+#view-discovery-detail .dd-bubble-stat {
+  min-height: 48px !important;
+  height: auto !important;
+  padding: 7px 9px !important;
+  gap: 2px !important;
+}
+
+.dd-bubble-stat em { font-size: 9px !important; }
+.dd-bubble-stat strong { font-size: 13px !important; line-height: 1.2 !important; }
+.dd-bubble-stat span { font-size: 10px !important; }
+
+.dd-note-grid {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)) !important;
+  grid-auto-rows: auto !important;
+  gap: 6px !important;
+}
+
+.dd-note-grid:has(> :nth-child(2):last-child) {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+}
+
+.dd-note-grid:has(> :only-child) {
+  grid-template-columns: 1fr !important;
+}
+
+.dd-note-card,
+#view-discovery-detail .dd-note-card {
+  min-height: 0 !important;
+  height: auto !important;
+  padding: 8px 9px !important;
+  gap: 3px !important;
+}
+
+.dd-note-card p {
+  flex: 0 0 auto !important;
+  font-size: 11px !important;
+  line-height: 1.4 !important;
+}
+
+.dd-note-card strong { font-size: 12px !important; }
+
+/* Comparison block fills remaining center space evenly */
+.dd-ind-cmp-wrap,
+#dd-found-board .dd-panel-cmp .dd-ind-cmp-wrap {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  height: auto !important;
+  overflow: hidden !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.dd-ind-cmp,
+#dd-found-board .dd-ind-cmp {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  height: 100% !important;
+  gap: 6px !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.dd-ind-summary {
+  flex: 0 0 auto !important;
+  gap: 4px !important;
+}
+
+.dd-ind-kpi {
+  padding: 4px 6px !important;
+}
+
+.dd-ind-kpi span { font-size: 8px !important; }
+.dd-ind-kpi strong { font-size: 11px !important; }
+
+.dd-cmp-lanes-wrap {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  height: auto !important;
+  overflow: hidden !important;
+  padding: 4px 5px !important;
+}
+
+.dd-cmp-lanes {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  height: 100% !important;
+  grid-template-rows: repeat(var(--cmp-count, 5), minmax(0, 1fr)) !important;
+  gap: 3px !important;
+}
+
+.dd-cmp-lane {
+  min-height: 0 !important;
+  padding: 1px 4px !important;
+}
+
+.dd-cmp-lane-track { height: 10px !important; }
+
+/* Right insight column: same height as center */
+.dd-mod-insight-col {
+  align-self: stretch !important;
+  min-height: 0 !important;
+  height: auto !important;
+  max-width: 100%;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+}
+
+.dd-mod-insight-col > .dd-mod-insight,
+.dd-mod-insight {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  height: 100% !important;
+  align-self: stretch !important;
+  overflow: hidden !important;
+  padding: 10px 11px !important;
+  gap: 0 !important;
+}
+
+.dd-mod-insight-col > .dd-mod-insight.is-mod-active,
+.dd-mod-insight-col > .dd-mod-insight:not([hidden]) {
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.dd-insight-top {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  overflow: auto !important;
+  overscroll-behavior: contain;
+  gap: 6px !important;
+  scrollbar-width: thin;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.dd-insight-deeper {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 6px !important;
+}
+
+.dd-insight-deeper-grid {
+  flex: 1 1 auto !important;
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  grid-auto-rows: minmax(0, 1fr) !important;
+  gap: 5px !important;
+  align-content: stretch !important;
+}
+
+.dd-insight-deep-card {
+  height: auto !important;
+  min-height: 52px !important;
+}
+
+.dd-insight-reads,
+.dd-insight-checks {
+  flex: 0 0 auto !important;
+}
+
+.dd-insight-foot {
+  flex: 0 0 auto !important;
+  margin-top: auto !important;
+  padding-top: 8px !important;
+}
+
+.dd-mod-insight-k { font-size: 9px !important; margin: 0 !important; }
+.dd-mod-insight-t { font-size: 13px !important; margin: 0 !important; line-height: 1.3 !important; }
+.dd-mod-insight-p { font-size: 11px !important; margin: 0 !important; line-height: 1.4 !important; }
+
+.dd-insight-sig {
+  min-height: 0 !important;
+  padding: 5px 6px !important;
+}
+
+.dd-insight-sig strong { font-size: 11px !important; }
+
+.dd-insight-bullets li,
+.dd-insight-checks li,
+.dd-insight-reads li {
+  font-size: 11px !important;
+  line-height: 1.35 !important;
+}
+
+/* Deep-read stays visible but compact — helps fill right column */
+.dd-insight-deeper {
+  display: block !important;
+}
+
+.dd-insight-deeper-grid {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 5px !important;
+}
+
+.dd-insight-deep-card {
+  min-height: 0 !important;
+  padding: 6px 8px !important;
+}
+
+.dd-insight-deep-card strong { font-size: 11px !important; }
+.dd-insight-deep-card p { font-size: 10.5px !important; line-height: 1.35 !important; margin: 0 !important; }
+
+/* Module fill grid — grows to eat remaining empty space */
+.dd-mod-fill {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  grid-auto-rows: minmax(0, 1fr) !important;
+  gap: 5px !important;
+  align-content: stretch !important;
+  margin-top: 2px;
+}
+
+/* Tail fill sits below charts/widgets and soaks leftover column height */
+.dd-mod-fill.is-tail {
+  order: 40 !important;
+  flex: 1 1 auto !important;
+  margin-top: 4px !important;
+  min-height: 88px !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  grid-auto-rows: auto !important;
+  align-content: start !important;
+  gap: 5px !important;
+}
+
+.dd-mod-fill.is-tail .dd-mod-fill-card {
+  height: auto !important;
+  min-height: 0 !important;
+  padding: 6px 8px !important;
+}
+
+.dd-mod-fill.is-tail .dd-mod-fill-card p {
+  flex: 0 0 auto !important;
+}
+
+.dd-mod-fill-card {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 2px !important;
+  padding: 7px 8px !important;
+  min-height: 0 !important;
+  height: 100% !important;
+  overflow: hidden;
+}
+
+.dd-mod-fill-card em {
+  font-style: normal;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: rgba(232, 201, 136, 0.62);
+}
+
+.dd-mod-fill-card strong {
+  font-size: 12px;
+  color: #f2ebe0;
+  line-height: 1.25;
+}
+
+.dd-mod-fill-card p {
+  margin: 0;
+  font-size: 10.5px;
+  line-height: 1.35;
+  color: rgba(232, 242, 248, 0.68);
+  flex: 1;
+}
+
+.dd-supply-focus,
+.dd-supply-focus-inner {
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 0 1 auto !important;
+  min-height: 0 !important;
+  height: auto !important;
+  gap: 6px !important;
+}
+
+.dd-mod-stage .dd-supply-focus {
+  flex: 0 1 auto !important;
+  max-height: none !important;
+}
+
+.dd-supply-extra {
+  flex: 0 0 auto !important;
+  min-height: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 6px !important;
+  margin-top: 4px;
+}
+
+.dd-supply-extra-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 5px;
+}
+
+.dd-supply-extra-card {
+  padding: 6px 7px;
+  border-radius: 8px;
+  border: 1px solid rgba(212, 176, 122, 0.16);
+  background: rgba(0, 0, 0, 0.22);
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.dd-supply-extra-card em {
+  font-style: normal;
+  font-size: 9px;
+  color: rgba(232, 201, 136, 0.6);
+}
+
+.dd-supply-extra-card strong {
+  font-size: 13px;
+  color: #ecc984;
+}
+
+.dd-supply-extra-card span {
+  font-size: 10px;
+  color: rgba(232, 242, 248, 0.55);
+}
+
+.dd-supply-actions {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  flex: 1 1 auto;
+}
+
+.dd-supply-actions li {
+  padding: 6px 8px;
+  border-radius: 8px;
+  border: 1px solid rgba(212, 176, 122, 0.14);
+  background: rgba(0, 0, 0, 0.2);
+  font-size: 11px;
+  line-height: 1.35;
+  color: rgba(232, 242, 248, 0.75);
+}
+
+.dd-supply-actions li b {
+  color: #ecc984;
+  margin-right: 4px;
+}
+
+.dd-mod-stage .dd-skill-constellation {
+  min-height: 0 !important;
+  flex: 1 1 auto !important;
+  height: auto !important;
+}
+
+.dd-mod-stage .dd-fc-duties-shell {
+  min-height: 0 !important;
+  flex: 1 1 auto !important;
+}
+
+.dd-mod-risk-main {
+  flex: 0 0 auto !important;
+  height: auto !important;
+  gap: 6px !important;
+}
+
+.dd-mod-stage .dd-fc-risk-cards,
+#dd-fc-board .dd-fc-risk-cards,
+#view-discovery-detail.is-forecast .dd-fc-risk-cards {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 5px !important;
+  flex: 0 0 auto !important;
+  height: auto !important;
+  justify-content: start !important;
+  overflow: visible !important;
+}
+
+.dd-mod-stage .dd-fc-risk-card,
+#dd-fc-board .dd-fc-risk-card {
+  flex: 0 0 auto !important;
+  min-height: 0 !important;
+  padding: 6px 8px !important;
+  align-content: start !important;
+}
+
+.dd-mod-stage .dd-mod-risk-main.is-rich-dup .dd-fc-risk-lead {
+  display: none !important;
+}
+
+/* Short modules: pin secondary block to bottom so columns feel filled & aligned */
+.dd-mod-stage [data-mod="risk"] .dd-mod-main,
+.dd-mod-stage [data-mod="overview"] .dd-mod-main {
+  justify-content: space-between !important;
+}
+
+.dd-mod-stage [data-mod="risk"] .dd-mod-risk-main {
+  margin-top: auto !important;
+  flex: 0 0 auto !important;
+}
+
+/* Collapse empty favorites bar to reclaim vertical room */
+#view-discovery-detail:has(.dd-mod-layout) .dd-fav-bar.is-empty {
+  padding: 2px 8px !important;
+  min-height: 0 !important;
+}
+
+#view-discovery-detail:has(.dd-mod-layout) .dd-fav-bar.is-empty .dd-fav-bar-track {
+  display: none !important;
+}
+
+#view-discovery-detail:has(.dd-mod-layout) .dd-fav-bar.is-empty .dd-fav-bar-empty {
+  display: none !important;
+}
+
+#view-discovery-detail:has(.dd-mod-layout) .dd-fav-bar.is-empty .dd-fav-bar-head {
+  margin: 0 !important;
+  opacity: 0.55;
+}
+
+.dd-mod-stage .dd-trend-chart-wrap,
+.dd-mod-stage .dd-fc-chart,
+.dd-mod-stage .dd-graph-chart-wrap,
+.dd-mod-stage .dd-found-radar,
+.dd-mod-stage .dd-radar-wrap {
+  flex: 0 1 auto !important;
+  min-height: 140px !important;
+  max-height: min(38vh, 280px) !important;
+  height: auto !important;
+}
+
+.dd-mod-jumps {
+  gap: 4px !important;
+}
+
+.dd-mod-jump.dd-bubble {
+  min-height: 44px !important;
+  padding: 6px 8px !important;
+}
+
+@media (max-width: 1200px) {
+  .dd-mod-layout {
+    grid-template-columns: 148px minmax(0, 1fr) minmax(240px, 0.9fr) !important;
+  }
+}
+
+@media (max-width: 980px) {
+  html:has(body.dd-cockpit-page:has(.dd-mod-layout)),
+  body.dd-cockpit-page:has(.dd-mod-layout) {
+    overflow: auto !important;
+    height: auto !important;
+  }
+  body.dd-cockpit-page .page-main--cockpit:has(.dd-mod-layout),
+  #view-discovery-detail:has(.dd-mod-layout),
+  .dd-found:has(.dd-mod-layout),
+  .dd-fc:has(.dd-mod-layout) {
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+  .dd-mod-layout {
+    grid-template-columns: 1fr !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+}

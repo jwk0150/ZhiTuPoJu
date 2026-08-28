@@ -10,7 +10,7 @@
   <link rel="stylesheet" href="../css/components.css?v=50" />
   <link rel="stylesheet" href="../css/page-polish.css?v=50" />
   <link rel="stylesheet" href="../css/discovery-favs.css?v=1" />
-  <link rel="stylesheet" href="../css/discovery-detail.css?v=85" />
+  <link rel="stylesheet" href="../css/discovery-detail.css?v=86mod24" />
   <link rel="stylesheet" href="../css/discovery-evolve.css?v=4" />
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 </head>
@@ -76,78 +76,105 @@
           <div class="dd-verdict-trust" id="dd-found-trust"></div>
         </aside>
 
-        <div class="dd-fc-board dd-found-board enter" style="--d:.12s" id="dd-found-board">
-          <section class="dd-panel dd-fc-panel dd-fc-basics" aria-labelledby="dd-basics-h">
-            <header class="dd-panel-head"><h2 id="dd-basics-h">岗位基本信息</h2></header>
-            <div class="dd-found-basics-body">
-              <dl class="dd-found-kv" id="dd-found-basics"></dl>
-              <p class="dd-found-brief" id="dd-found-brief"></p>
-            </div>
-          </section>
-
-          <section class="dd-panel dd-fc-panel dd-fc-skills" aria-labelledby="dd-skills-h">
-            <header class="dd-panel-head dd-panel-head-split">
-              <h2 id="dd-skills-h">核心能力 TOP 10</h2>
-              <span class="dd-panel-hint">热度分层</span>
-            </header>
-            <div class="dd-skill-constellation" id="dd-found-skills" role="list" aria-label="核心能力热度分层"></div>
-          </section>
-
-          <section class="dd-panel dd-fc-panel dd-fc-duties dd-found-duties-panel" aria-labelledby="dd-duties-h">
-            <header class="dd-panel-head"><h2 id="dd-duties-h">典型职责</h2></header>
-            <div class="dd-fc-duties-shell" id="dd-found-duties-shell">
-              <div class="dd-fc-duties-viewport" id="dd-found-duties-viewport">
-                <ol class="dd-fc-duties-track" id="dd-found-duties"></ol>
-              </div>
-              <button type="button" class="dd-fc-duties-toggle" id="dd-found-duties-toggle" hidden>查看全部</button>
-            </div>
-          </section>
-
-          <section class="dd-panel dd-fc-panel dd-panel-cmp" aria-labelledby="dd-radar-h">
-            <header class="dd-panel-head dd-panel-head-split">
-              <h2 id="dd-radar-h">能力对照</h2>
-              <span class="dd-panel-hint">本岗位 vs 行业</span>
-            </header>
-            <div class="dd-ind-cmp-wrap" id="dd-found-radar" role="region" aria-label="能力对照：本岗位与行业均值"></div>
-          </section>
-
-          <section class="dd-panel dd-fc-panel dd-panel-graph" aria-labelledby="dd-graph-h">
-            <header class="dd-panel-head"><h2 id="dd-graph-h">从哪些岗位走过来</h2></header>
-            <div class="dd-graph-chart-wrap">
-              <div class="dd-graph-pie-host">
-                <div class="dd-found-graph" id="dd-found-graph" role="img" aria-label="来源岗位占比分布"></div>
-              </div>
-              <div class="dd-graph-right">
-                <ul class="dd-graph-legend" id="dd-found-graph-legend" aria-label="来源岗位列表"></ul>
-                <div class="dd-graph-detail" id="dd-found-graph-detail" aria-live="polite">
-                  <p class="dd-graph-detail-hint">悬停扇区或列表项查看说明</p>
+        <div class="dd-mod-layout enter" style="--d:.12s" id="dd-found-mod-layout">
+          <nav class="dd-mod-rail" id="dd-found-rail" aria-label="真实发现分析模块"></nav>
+          <div class="dd-fc-board dd-found-board dd-mod-stage" id="dd-found-board">
+            <section class="dd-panel dd-fc-panel dd-fc-basics is-mod-active" data-mod="overview" aria-labelledby="dd-basics-h">
+              <header class="dd-panel-head"><h2 id="dd-basics-h">岗位画像概览</h2></header>
+              <div class="dd-mod-body">
+                <div class="dd-found-basics-body">
+                  <dl class="dd-found-kv" id="dd-found-basics"></dl>
+                  <p class="dd-found-brief" id="dd-found-brief"></p>
                 </div>
+                <aside class="dd-mod-insight" id="dd-found-overview-insight" aria-label="模块导读"></aside>
               </div>
-            </div>
-          </section>
+            </section>
 
-          <section class="dd-panel dd-fc-panel dd-panel-trend" aria-labelledby="dd-trend-h">
-            <header class="dd-panel-head dd-panel-head-split dd-trend-head">
-              <div class="dd-trend-head-main">
-                <h2 id="dd-trend-h">岗位需求趋势</h2>
-                <div class="dd-trend-legend" aria-hidden="true">
-                  <span class="leg is-bar"><i></i>发布量</span>
-                  <span class="leg is-line"><i></i>搜索热度</span>
+            <section class="dd-panel dd-fc-panel dd-fc-skills" data-mod="skills" aria-labelledby="dd-skills-h" hidden>
+              <header class="dd-panel-head dd-panel-head-split">
+                <h2 id="dd-skills-h">核心能力 TOP 10</h2>
+                <span class="dd-panel-hint">热度分层 · 可对照简历缺口</span>
+              </header>
+              <div class="dd-mod-body">
+                <div class="dd-skill-constellation" id="dd-found-skills" role="list" aria-label="核心能力热度分层"></div>
+                <aside class="dd-mod-insight" id="dd-found-skills-insight"></aside>
+              </div>
+            </section>
+
+            <section class="dd-panel dd-fc-panel dd-fc-duties dd-found-duties-panel" data-mod="duties" aria-labelledby="dd-duties-h" hidden>
+              <header class="dd-panel-head"><h2 id="dd-duties-h">典型职责</h2></header>
+              <div class="dd-mod-body">
+                <div class="dd-fc-duties-shell" id="dd-found-duties-shell">
+                  <div class="dd-fc-duties-viewport" id="dd-found-duties-viewport">
+                    <ol class="dd-fc-duties-track" id="dd-found-duties"></ol>
+                  </div>
+                  <button type="button" class="dd-fc-duties-toggle" id="dd-found-duties-toggle" hidden>查看全部</button>
                 </div>
+                <aside class="dd-mod-insight" id="dd-found-duties-insight"></aside>
               </div>
-              <span class="dd-trend-badge" id="dd-found-trend-badge"></span>
-            </header>
-            <div class="dd-trend-chart-wrap">
-              <div class="dd-found-trend" id="dd-found-trend" role="img" aria-label="岗位需求趋势"></div>
-            </div>
-          </section>
+            </section>
 
-          <section class="dd-panel dd-fc-panel dd-panel-supply" aria-labelledby="dd-supply-h">
-            <header class="dd-panel-head">
-              <h2 id="dd-supply-h">人才供需情况</h2>
-            </header>
-            <div class="dd-supply-focus" id="dd-found-supply"></div>
-          </section>
+            <section class="dd-panel dd-fc-panel dd-panel-cmp" data-mod="radar" aria-labelledby="dd-radar-h" hidden>
+              <header class="dd-panel-head dd-panel-head-split">
+                <h2 id="dd-radar-h">能力对照</h2>
+                <span class="dd-panel-hint">本岗位 vs 行业均值</span>
+              </header>
+              <div class="dd-mod-body">
+                <div class="dd-ind-cmp-wrap" id="dd-found-radar" role="region" aria-label="能力对照：本岗位与行业均值"></div>
+                <aside class="dd-mod-insight" id="dd-found-radar-insight"></aside>
+              </div>
+            </section>
+
+            <section class="dd-panel dd-fc-panel dd-panel-graph" data-mod="graph" aria-labelledby="dd-graph-h" hidden>
+              <header class="dd-panel-head dd-panel-head-split">
+                <h2 id="dd-graph-h">从哪些岗位走过来</h2>
+                <a class="dd-mod-ext" id="dd-found-evolve-link" href="#">打开演化图谱 →</a>
+              </header>
+              <div class="dd-mod-body">
+                <div class="dd-graph-chart-wrap">
+                  <div class="dd-graph-pie-host">
+                    <div class="dd-found-graph" id="dd-found-graph" role="img" aria-label="来源岗位占比分布"></div>
+                  </div>
+                  <div class="dd-graph-right">
+                    <ul class="dd-graph-legend" id="dd-found-graph-legend" aria-label="来源岗位列表"></ul>
+                    <div class="dd-graph-detail" id="dd-found-graph-detail" aria-live="polite">
+                      <p class="dd-graph-detail-hint">悬停扇区或列表项查看说明</p>
+                    </div>
+                  </div>
+                </div>
+                <aside class="dd-mod-insight" id="dd-found-graph-insight"></aside>
+              </div>
+            </section>
+
+            <section class="dd-panel dd-fc-panel dd-panel-trend" data-mod="trend" aria-labelledby="dd-trend-h" hidden>
+              <header class="dd-panel-head dd-panel-head-split dd-trend-head">
+                <div class="dd-trend-head-main">
+                  <h2 id="dd-trend-h">岗位需求趋势</h2>
+                  <div class="dd-trend-legend" aria-hidden="true">
+                    <span class="leg is-bar"><i></i>发布量</span>
+                    <span class="leg is-line"><i></i>搜索热度</span>
+                  </div>
+                </div>
+                <span class="dd-trend-badge" id="dd-found-trend-badge"></span>
+              </header>
+              <div class="dd-mod-body">
+                <div class="dd-trend-chart-wrap">
+                  <div class="dd-found-trend" id="dd-found-trend" role="img" aria-label="岗位需求趋势"></div>
+                </div>
+                <aside class="dd-mod-insight" id="dd-found-trend-insight"></aside>
+              </div>
+            </section>
+
+            <section class="dd-panel dd-fc-panel dd-panel-supply" data-mod="supply" aria-labelledby="dd-supply-h" hidden>
+              <header class="dd-panel-head">
+                <h2 id="dd-supply-h">人才供需情况</h2>
+              </header>
+              <div class="dd-mod-body">
+                <div class="dd-supply-focus" id="dd-found-supply"></div>
+                <aside class="dd-mod-insight" id="dd-found-supply-insight"></aside>
+              </div>
+            </section>
+          </div>
         </div>
       </div>
 
@@ -197,84 +224,113 @@
           <div class="dd-verdict-trust" id="dd-fc-trust"></div>
         </aside>
 
-        <div class="dd-fc-board enter" style="--d:.12s" id="dd-fc-board">
-          <section class="dd-panel dd-fc-panel dd-fc-basics" aria-labelledby="dd-fc-basics-h">
-            <header class="dd-panel-head"><h2 id="dd-fc-basics-h">预测岗位基本信息</h2></header>
-            <div class="dd-found-basics-body">
-              <dl class="dd-found-kv dd-fc-kv" id="dd-fc-basics"></dl>
-              <p class="dd-found-brief" id="dd-fc-brief"></p>
-            </div>
-          </section>
-
-          <section class="dd-panel dd-fc-panel dd-fc-skills" aria-labelledby="dd-fc-skills-h">
-            <header class="dd-panel-head dd-panel-head-split">
-              <h2 id="dd-fc-skills-h">核心能力 TOP 10</h2>
-              <span class="dd-panel-hint">热度分层</span>
-            </header>
-            <div class="dd-skill-constellation" id="dd-fc-skills" role="list" aria-label="核心能力热度分层"></div>
-          </section>
-
-          <section class="dd-panel dd-fc-panel dd-fc-duties" aria-labelledby="dd-fc-duties-h">
-            <header class="dd-panel-head">
-              <h2 id="dd-fc-duties-h">预测职责</h2>
-            </header>
-            <div class="dd-fc-duties-shell" id="dd-fc-duties-shell">
-              <div class="dd-fc-duties-viewport" id="dd-fc-duties-viewport">
-                <ol class="dd-fc-duties-track" id="dd-fc-duties"></ol>
-              </div>
-              <button type="button" class="dd-fc-duties-toggle" id="dd-fc-duties-toggle" hidden>查看全部</button>
-            </div>
-          </section>
-
-          <section class="dd-panel dd-fc-panel dd-fc-evolve" id="dd-fc-evolve-panel" aria-labelledby="dd-fc-evolve-h">
-            <header class="dd-panel-head"><h2 id="dd-fc-evolve-h">能力怎么长出来的</h2></header>
-            <div class="dd-flow" id="dd-fc-sankey" aria-label="能力演化三栏"></div>
-          </section>
-
-          <section class="dd-panel dd-fc-panel dd-fc-prob dd-panel-trend" aria-labelledby="dd-fc-prob-h">
-            <header class="dd-panel-head dd-panel-head-split dd-trend-head">
-              <div class="dd-trend-head-main">
-                <h2 id="dd-fc-prob-h">出现概率趋势</h2>
-                <div class="dd-trend-legend" aria-hidden="true">
-                  <span class="leg is-bar"><i></i>出现概率</span>
-                  <span class="leg is-line"><i></i>抬升轨迹</span>
+        <div class="dd-mod-layout enter" style="--d:.12s" id="dd-fc-mod-layout">
+          <nav class="dd-mod-rail" id="dd-fc-rail" aria-label="预测岗位分析模块"></nav>
+          <div class="dd-fc-board dd-mod-stage" id="dd-fc-board">
+            <section class="dd-panel dd-fc-panel dd-fc-basics is-mod-active" data-mod="overview" aria-labelledby="dd-fc-basics-h">
+              <header class="dd-panel-head"><h2 id="dd-fc-basics-h">预测岗位画像概览</h2></header>
+              <div class="dd-mod-body">
+                <div class="dd-found-basics-body">
+                  <dl class="dd-found-kv dd-fc-kv" id="dd-fc-basics"></dl>
+                  <p class="dd-found-brief" id="dd-fc-brief"></p>
                 </div>
+                <aside class="dd-mod-insight" id="dd-fc-overview-insight" aria-label="模块导读"></aside>
               </div>
-              <span class="dd-trend-badge is-surge" id="dd-fc-prob-badge">窗口抬升</span>
-            </header>
-            <div class="dd-trend-chart-wrap">
-              <div class="dd-fc-chart" id="dd-fc-prob-chart" role="img" aria-label="出现概率趋势"></div>
-            </div>
-          </section>
+            </section>
 
-          <section class="dd-panel dd-fc-panel dd-fc-industry" aria-labelledby="dd-fc-ind-h">
-            <header class="dd-panel-head dd-panel-head-split">
-              <h2 id="dd-fc-ind-h">需求可能落在哪</h2>
-              <span class="dd-panel-hint">行业占比</span>
-            </header>
-            <div class="dd-share" id="dd-fc-industry-chart" role="list"></div>
-          </section>
+            <section class="dd-panel dd-fc-panel dd-fc-skills" data-mod="skills" aria-labelledby="dd-fc-skills-h" hidden>
+              <header class="dd-panel-head dd-panel-head-split">
+                <h2 id="dd-fc-skills-h">核心能力 TOP 10</h2>
+                <span class="dd-panel-hint">热度分层 · 提前布局能力</span>
+              </header>
+              <div class="dd-mod-body">
+                <div class="dd-skill-constellation" id="dd-fc-skills" role="list" aria-label="核心能力热度分层"></div>
+                <aside class="dd-mod-insight" id="dd-fc-skills-insight"></aside>
+              </div>
+            </section>
 
-          <section class="dd-panel dd-fc-panel dd-fc-supply dd-panel-trend" aria-labelledby="dd-fc-sup-h">
-            <header class="dd-panel-head dd-panel-head-split dd-trend-head">
-              <div class="dd-trend-head-main">
-                <h2 id="dd-fc-sup-h">预测供需趋势</h2>
-                <div class="dd-trend-legend" aria-hidden="true">
-                  <span class="leg is-bar"><i></i>需求预测</span>
-                  <span class="leg is-line"><i></i>供给预测</span>
+            <section class="dd-panel dd-fc-panel dd-fc-duties" data-mod="duties" aria-labelledby="dd-fc-duties-h" hidden>
+              <header class="dd-panel-head">
+                <h2 id="dd-fc-duties-h">预测职责</h2>
+              </header>
+              <div class="dd-mod-body">
+                <div class="dd-fc-duties-shell" id="dd-fc-duties-shell">
+                  <div class="dd-fc-duties-viewport" id="dd-fc-duties-viewport">
+                    <ol class="dd-fc-duties-track" id="dd-fc-duties"></ol>
+                  </div>
+                  <button type="button" class="dd-fc-duties-toggle" id="dd-fc-duties-toggle" hidden>查看全部</button>
                 </div>
+                <aside class="dd-mod-insight" id="dd-fc-duties-insight"></aside>
               </div>
-            </header>
-            <div class="dd-trend-chart-wrap">
-              <div class="dd-fc-chart" id="dd-fc-supply-chart" role="img" aria-label="供需趋势"></div>
-            </div>
-          </section>
+            </section>
 
-          <section class="dd-panel dd-fc-panel dd-fc-risk" aria-labelledby="dd-fc-risk-h">
-            <header class="dd-panel-head"><h2 id="dd-fc-risk-h">不确定性说明</h2></header>
-            <p class="dd-fc-risk-lead" id="dd-fc-risk-lead">—</p>
-            <ul class="dd-fc-risk-list" id="dd-fc-risk-list"></ul>
-          </section>
+            <section class="dd-panel dd-fc-panel dd-fc-evolve" id="dd-fc-evolve-panel" data-mod="evolve" aria-labelledby="dd-fc-evolve-h" hidden>
+              <header class="dd-panel-head"><h2 id="dd-fc-evolve-h">能力怎么长出来的</h2></header>
+              <div class="dd-mod-body">
+                <div class="dd-flow" id="dd-fc-sankey" aria-label="能力演化三栏"></div>
+                <aside class="dd-mod-insight" id="dd-fc-evolve-insight"></aside>
+              </div>
+            </section>
+
+            <section class="dd-panel dd-fc-panel dd-fc-prob dd-panel-trend" data-mod="prob" aria-labelledby="dd-fc-prob-h" hidden>
+              <header class="dd-panel-head dd-panel-head-split dd-trend-head">
+                <div class="dd-trend-head-main">
+                  <h2 id="dd-fc-prob-h">出现概率趋势</h2>
+                  <div class="dd-trend-legend" aria-hidden="true">
+                    <span class="leg is-bar"><i></i>出现概率</span>
+                    <span class="leg is-line"><i></i>抬升轨迹</span>
+                  </div>
+                </div>
+                <span class="dd-trend-badge is-surge" id="dd-fc-prob-badge">窗口抬升</span>
+              </header>
+              <div class="dd-mod-body">
+                <div class="dd-trend-chart-wrap">
+                  <div class="dd-fc-chart" id="dd-fc-prob-chart" role="img" aria-label="出现概率趋势"></div>
+                </div>
+                <aside class="dd-mod-insight" id="dd-fc-prob-insight"></aside>
+              </div>
+            </section>
+
+            <section class="dd-panel dd-fc-panel dd-fc-industry" data-mod="industry" aria-labelledby="dd-fc-ind-h" hidden>
+              <header class="dd-panel-head dd-panel-head-split">
+                <h2 id="dd-fc-ind-h">需求可能落在哪</h2>
+                <span class="dd-panel-hint">行业占比</span>
+              </header>
+              <div class="dd-mod-body">
+                <div class="dd-share" id="dd-fc-industry-chart" role="list"></div>
+                <aside class="dd-mod-insight" id="dd-fc-industry-insight"></aside>
+              </div>
+            </section>
+
+            <section class="dd-panel dd-fc-panel dd-fc-supply dd-panel-trend" data-mod="supply" aria-labelledby="dd-fc-sup-h" hidden>
+              <header class="dd-panel-head dd-panel-head-split dd-trend-head">
+                <div class="dd-trend-head-main">
+                  <h2 id="dd-fc-sup-h">预测供需趋势</h2>
+                  <div class="dd-trend-legend" aria-hidden="true">
+                    <span class="leg is-bar"><i></i>需求预测</span>
+                    <span class="leg is-line"><i></i>供给预测</span>
+                  </div>
+                </div>
+              </header>
+              <div class="dd-mod-body">
+                <div class="dd-trend-chart-wrap">
+                  <div class="dd-fc-chart" id="dd-fc-supply-chart" role="img" aria-label="供需趋势"></div>
+                </div>
+                <aside class="dd-mod-insight" id="dd-fc-supply-insight"></aside>
+              </div>
+            </section>
+
+            <section class="dd-panel dd-fc-panel dd-fc-risk" data-mod="risk" aria-labelledby="dd-fc-risk-h" hidden>
+              <header class="dd-panel-head"><h2 id="dd-fc-risk-h">不确定性说明</h2></header>
+              <div class="dd-mod-body">
+                <div class="dd-mod-risk-main">
+                  <p class="dd-fc-risk-lead" id="dd-fc-risk-lead">—</p>
+                  <ul class="dd-fc-risk-list" id="dd-fc-risk-list"></ul>
+                </div>
+                <aside class="dd-mod-insight" id="dd-fc-risk-insight"></aside>
+              </div>
+            </section>
+          </div>
         </div>
       </div>
 
@@ -308,7 +364,7 @@
   <script src="../js/shell.js?v=20260825rx5"></script>
   <script src="../js/discovery-mock.js?v=1"></script>
   <script src="../js/discovery-favs.js?v=1"></script>
-  <script src="../js/pages/discovery-detail.js?v=85"></script>
+  <script src="../js/pages/discovery-detail.js?v=86mod24"></script>
   <script>
     function loadEcharts(cb) {
       if (window.echarts) { cb(); return; }
