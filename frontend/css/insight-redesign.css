@@ -612,6 +612,35 @@ body[data-page="insight"] #page-main {
 }
 .ir-m-source { color: var(--ir-text-3) !important; font-size: 12px !important; }
 
+/* 转变路径：由原来到现在的转变 */
+.ir-m-transform .ir-m-arrow-note {
+  font-size: 11px; font-weight: 500; color: var(--ir-text-3);
+  padding: 1px 8px; border-radius: 999px; background: rgba(255,255,255,0.06);
+}
+.ir-m-ba { display: grid; grid-template-columns: 1fr auto 1fr; align-items: stretch; gap: 10px; }
+.ir-m-ba-col {
+  display: flex; flex-direction: column; gap: 8px;
+  padding: 12px 14px; border-radius: 12px;
+  background: rgba(255,255,255,0.035);
+  border: 1px solid var(--ir-border);
+}
+.ir-m-ba-before { border-left: 3px solid #6b7686; }
+.ir-m-ba-after  { border-left: 3px solid var(--c); }
+.ir-m-ba-tag {
+  align-self: flex-start; font-size: 11px; font-weight: 700; letter-spacing: .5px;
+  padding: 2px 10px; border-radius: 999px;
+  color: #cfd6e0; background: rgba(255,255,255,0.08);
+}
+.ba-mod  .ir-m-ba-after .ir-m-ba-tag { color: #0a0f17; background: var(--c); }
+.ir-m-ba-before-t, .ir-m-ba-after-t {
+  margin: 0; font-size: 12.5px; line-height: 1.65; color: var(--ir-text); opacity: .92;
+}
+.ba-weak .ir-m-ba-after .ir-m-ba-tag { color: #0a0f17; background: var(--c); }
+.ir-m-ba-mid {
+  align-self: center; font-size: 20px; font-weight: 700; color: var(--c);
+  opacity: .85;
+}
+
 .ir-modal .mh { display: flex; align-items: center; justify-content: space-between; padding: 16px 18px; border-bottom: 1px solid var(--ir-border); }
 .ir-modal .mh .mt { font-size: 15px; font-weight: 700; color: var(--ir-text); }
 .ir-modal .mh .mx { cursor: pointer; color: var(--ir-text-3); font-size: 20px; line-height: 1; background: none; border: none; }

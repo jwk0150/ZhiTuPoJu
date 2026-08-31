@@ -1280,6 +1280,67 @@
       }
     };
 
+    // 转变路径（由原来到现在的转变）—— 仅用于"能力增强"(mod) 与"能力弱化"(weak)
+    // 每个领域为每个分类提供 { before, after } 一对描述，体现"原来 → 现在"的能力位移
+    const BEFORE_AFTER_LIB = {
+      ai: {
+        mod:  { before: `停留在"会调 API、写 Prompt"的尝鲜阶段，效果靠手感，难以量化与复现。`, after: `进入生产工程化：建评测集、做对照实验、跑灰度上线，效果可度量、可回归。`, },
+        weak: { before: `曾是团队重点投入方向，独立负责过相关模块与专项优化。`, after: `退居存量维护与迁移场景，新项目基本不再作为主攻，使用频率明显下降。`, }
+      },
+      cloud: {
+        mod:  { before: `能按文档部署单个服务，对环境、网络、配置细节理解较浅。`, after: `贯通工具链与治理：CI/CD、弹性、可观测、成本一体落地，能解决真实生产问题。`, },
+        weak: { before: `是业务部署的主要承载方式，独立负责资源与环境管理。`, after: `被云原生套件接管，角色由主导降为辅助，直接使用频率下降。`, }
+      },
+      arch: {
+        mod:  { before: `了解概念与常见模式，能照着方案"抄"，但选型与权衡讲不清。`, after: `能主导方案评审与落地验证，具备演进蓝图、风险预案与度量体系。`, },
+        weak: { before: `是系统拆分与服务治理的核心抓手，重投入方向。`, after: `热度阶段性回落，新业务更倾向轻量方案，整体需求收缩。`, }
+      },
+      obs: {
+        mod:  { before: `只会看现成监控面板，告警靠人工盯，问题定位慢。`, after: `贯通指标/日志/链路/AIOps，能定标准、做治理、驱动稳定性建设。`, },
+        weak: { before: `自主搭建与维护整套观测体系，是稳定性主力。`, after: `部分能力被云厂商吸收，转为掌握原理与故障排查即可。`, }
+      },
+      web: {
+        mod:  { before: `能实现页面与交互，但工程化、性能、可维护性较薄弱。`, after: `贯通框架/构建/测试/部署/性能全链路，具备组件化与设计系统能力。`, },
+        weak: { before: `是前端方案的主要选型与实现方向，独立负责。`, after: `新业务角色下降，仍有维护价值，重点转向迁移路径与原理。`, }
+      },
+      mobile: {
+        mod:  { before: `能完成功能开发，但性能调优、稳定性、跨端协同经验不足。`, after: `贯通 UI/性能/稳定性/跨端，具备端到端工程质量与灰度发布能力。`, },
+        weak: { before: `是移动端建设的核心方向，重点投入。`, after: `新业务角色下降，仍有维护价值，重点掌握迁移路径。`, }
+      },
+      game: {
+        mod:  { before: `能用引擎实现基础功能，对渲染/性能/稳定性缺乏系统掌握。`, after: `贯通渲染、性能与稳定性，与新硬件平台深度结合，具备综合工程能力。`, },
+        weak: { before: `是项目中的核心实现方向，专项职责明确。`, after: `部分实现被标准化引擎接管，专项需求减少。`, }
+      },
+      test: {
+        mod:  { before: `以手工与单点自动化为主，覆盖率与工程化意识弱。`, after: `贯通自动化、性能与质量平台，覆盖率与工程化成为核心考核点。`, },
+        weak: { before: `独立负责专项测试体系建设，是质量主力。`, after: `部分场景被一体化测试平台吸收，专项需求减少，投入收缩。`, }
+      },
+      devops: {
+        mod:  { before: `会执行部署与基本运维脚本，对工具链与治理理解浅。`, after: `贯通平台工程工具链与治理，标准化与最佳实践成为考核重点。`, },
+        weak: { before: `是交付与运维的主要职责承担方，独立负责。`, after: `部分职责被云厂商服务吸收，独立需求减少。`, }
+      },
+      embedded: {
+        mod:  { before: `能完成单板功能开发，对硬件协同与系统稳定性掌握有限。`, after: `贯通硬件与系统，工程化与稳定性成为考核重点，与新平台深度结合。`, },
+        weak: { before: `是硬件团队的核心开发方向，重点投入。`, after: `部分场景被标准化平台吸收，独立需求减少。`, }
+      },
+      db: {
+        mod:  { before: `会写 CRUD 与简单调优，对高并发、分布式存储理解浅。`, after: `在云原生与高并发场景下能力跃升，贯通新型存储引擎与数据层架构。`, },
+        weak: { before: `是数据层的主要设计与优化方向，独立负责。`, after: `部分场景被现代数据平台吸收，专项需求减少。`, }
+      },
+      security: {
+        mod:  { before: `能做基础防护与合规检查，缺乏体系化治理经验。`, after: `贯通攻防、合规、应急、治理，能定标准并跨团队推动落地。`, },
+        weak: { before: `独立负责安全专项建设与应急响应。`, after: `部分场景被平台化安全产品吸收，转为掌握原理与应急响应。`, }
+      },
+      product: {
+        mod:  { before: `靠经验做判断，决策难以量化，跨团队推动靠个人影响力。`, after: `以数据驱动决策，贯通"业务+用户+数据"，能主导从问题到验证的闭环。`, },
+        weak: { before: `是产品方向与需求的主导方，核心职责。`, after: `部分职能被平台化/自动化吸收，独立决策权重下降。`, }
+      },
+      general: {
+        mod:  { before: `满足常规要求即可，深度细节与跨团队落地能力不强。`, after: `成为岗位常规要求，面试对深度细节与综合应用能力要求明显提升。`, },
+        weak: { before: `曾是岗位优先级较高的能力，重点投入方向。`, after: `在新业务中优先级下降，使用频率减少，被其他能力吸收或替代。`, }
+      }
+    };
+
     // 数据来源（按领域差异化，组合岗位、技能名生成具体数字）
     function buildSource(name, key, domain) {
       const base = name.length;
@@ -1389,7 +1450,11 @@
         const reason = pick(REASON_LIB[domain][key], name, 1);
         const detail = pick(DETAIL_LIB[domain][key], name, 2);
         const source = buildSource(name, key, domain);
-        return { ...base, reason, detail, source };
+        // 转变路径（由原来到现在的转变）：仅"能力增强/能力弱化"两类有，体现原来→现在
+        const beforeAfter = (key === 'mod' || key === 'weak') && BEFORE_AFTER_LIB[domain] && BEFORE_AFTER_LIB[domain][key]
+          ? BEFORE_AFTER_LIB[domain][key]
+          : null;
+        return { ...base, reason, detail, source, beforeAfter };
       });
     }
     return {
@@ -2000,6 +2065,19 @@
     box.querySelector('.ir-m-reason').textContent = it.reason || '—';
     box.querySelector('.ir-m-detail').textContent = it.detail || '—';
     box.querySelector('.ir-m-source').textContent = it.source || '—';
+    // 转变路径（由原来到现在的转变）：仅"能力增强 / 能力弱化"展示
+    const transform = document.getElementById('ir-m-transform');
+    if (transform) {
+      if (it.beforeAfter) {
+        transform.hidden = false;
+        transform.querySelector('.ir-m-ba-before-t').textContent = it.beforeAfter.before;
+        transform.querySelector('.ir-m-ba-after-t').textContent = it.beforeAfter.after;
+        transform.classList.toggle('ba-mod', cat === 'mod');
+        transform.classList.toggle('ba-weak', cat === 'weak');
+      } else {
+        transform.hidden = true;
+      }
+    }
     overlay.classList.add('show');
     document.body.style.overflow = 'hidden';
   }
