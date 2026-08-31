@@ -119,7 +119,7 @@
   style.id = 'cinema-theme';
   style.textContent = [
     '.cinema-bg{position:fixed;inset:0;z-index:-1;overflow:hidden;background:#101c19;pointer-events:none;contain:strict;transform:translateZ(0);}',
-    '.cinema-bg-video{width:100%;height:100%;object-fit:cover;object-position:center 68%;transform:translateZ(0);}',
+    '.cinema-bg-video{width:100%;height:100%;object-fit:cover;object-position:center 68%;transform:translateZ(0);filter:brightness(1.22) contrast(1.02) saturate(1.06);}',
     '.cinema-bg.is-static{background:radial-gradient(120% 80% at 18% -10%,rgba(201,168,106,.12),transparent 44%),radial-gradient(90% 70% at 92% 8%,rgba(70,130,118,.18),transparent 42%),linear-gradient(165deg,#1a2c27 0%,#132420 48%,#101c19 100%);}',
     '.cinema-bg-wash{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 68%,rgba(201,168,106,.07),transparent 58%);}',
     '.cinema-bg-orb{position:absolute;border-radius:50%;filter:blur(56px);opacity:.38;will-change:transform;}',
@@ -128,7 +128,7 @@
     '@media (prefers-reduced-motion:no-preference){.cinema-bg-orb.is-a{animation:cinemaOrbA 22s ease-in-out infinite alternate}.cinema-bg-orb.is-b{animation:cinemaOrbB 28s ease-in-out infinite alternate}}',
     '@keyframes cinemaOrbA{from{transform:translate3d(0,0,0) scale(1)}to{transform:translate3d(3vw,2vh,0) scale(1.06)}}',
     '@keyframes cinemaOrbB{from{transform:translate3d(0,0,0) scale(1)}to{transform:translate3d(-2vw,-2vh,0) scale(1.05)}}',
-    '.cinema-bg .cinema-vignette{position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 50% 46%,transparent 48%,rgba(8,16,14,.10) 78%,rgba(8,16,14,.32) 100%),linear-gradient(90deg,rgba(8,16,14,.22),transparent 24%,transparent 76%,rgba(8,16,14,.18)),linear-gradient(180deg,rgba(8,16,14,.16),transparent 30%,transparent 74%,rgba(8,16,14,.26));}',
+    '.cinema-bg .cinema-vignette{position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 50% 46%,transparent 54%,rgba(8,16,14,.05) 82%,rgba(8,16,14,.16) 100%),linear-gradient(90deg,rgba(8,16,14,.1),transparent 24%,transparent 76%,rgba(8,16,14,.08)),linear-gradient(180deg,rgba(8,16,14,.08),transparent 30%,transparent 74%,rgba(8,16,14,.12));}',
     '.cinema-bg .grain{position:absolute;inset:0;pointer-events:none;opacity:.025;mix-blend-mode:overlay;background-image:url("data:image/svg+xml,%3Csvg viewBox=\'0 0 160 160\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'.8\' numOctaves=\'1\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'160\' height=\'160\' filter=\'url(%23n)\' opacity=\'.5\'/%3E%3C/svg%3E");}',
     '@media (max-width:768px){.cinema-bg .grain,.cinema-bg-orb{display:none}}',
     'html,body{background:transparent !important;}',

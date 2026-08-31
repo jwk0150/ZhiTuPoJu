@@ -1,0 +1,441 @@
+===== REFERENCE =====
+path: N:\ppt素材\多份国赛获奖作品PPT\【国赛】石墨烯基柔性锂离子电容器-柔性储能先锋（附PPT+视频）-\石墨烯基柔性锂离子电容器-柔性储能先锋_计划书---淘宝店：-馆.docx
+paragraphs: 1198
+tables: 14
+sections: 56
+  sec0: page=21.0x29.7cm margins LRTB=2.68/1.20/1.91/0.49
+  sec1: page=21.0x29.7cm margins LRTB=2.68/1.20/1.48/0.49
+  sec2: page=21.0x29.7cm margins LRTB=2.68/1.20/1.48/0.00
+  sec3: page=21.0x29.7cm margins LRTB=2.68/1.20/1.50/0.00
+  sec4: page=21.0x29.7cm margins LRTB=2.68/1.20/1.48/0.49
+  sec5: page=21.0x29.7cm margins LRTB=2.68/1.20/1.48/0.49
+  sec6: page=21.0x29.7cm margins LRTB=2.68/1.20/1.48/0.49
+  sec7: page=21.0x29.7cm margins LRTB=2.68/1.20/1.48/0.49
+  sec8: page=21.0x29.7cm margins LRTB=2.68/1.20/1.48/0.49
+  sec9: page=21.0x29.7cm margins LRTB=2.68/1.20/1.48/0.49
+  sec10: page=21.0x29.7cm margins LRTB=2.68/1.20/1.48/0.49
+  sec11: page=21.0x29.7cm margins LRTB=2.68/1.20/1.48/0.49
+  sec12: page=21.0x29.7cm margins LRTB=2.68/1.20/1.48/0.49
+  sec13: page=21.0x29.7cm margins LRTB=2.68/1.20/1.48/0.49
+  sec14: page=21.0x29.7cm margins LRTB=2.68/1.20/1.48/0.49
+  sec15: page=21.0x29.7cm margins LRTB=2.68/1.20/1.48/0.49
+  sec16: page=21.0x29.7cm margins LRTB=2.68/1.20/1.48/0.49
+  sec17: page=21.0x29.7cm margins LRTB=2.68/1.20/1.48/0.49
+  sec18: page=21.0x29.7cm margins LRTB=2.68/1.20/1.48/0.49
+  sec19: page=21.0x29.7cm margins LRTB=2.68/1.20/1.48/0.49
+  sec20: page=21.0x29.7cm margins LRTB=2.68/1.20/1.48/0.49
+  sec21: page=21.0x29.7cm margins LRTB=2.68/1.20/1.48/0.49
+  sec22: page=21.0x29.7cm margins LRTB=2.68/1.20/1.91/0.49
+  sec23: page=21.0x29.7cm margins LRTB=2.68/1.20/1.91/0.49
+  sec24: page=21.0x29.7cm margins LRTB=2.68/1.20/1.48/0.49
+  sec25: page=21.0x29.7cm margins LRTB=2.68/1.20/1.48/0.49
+  sec26: page=21.0x29.7cm margins LRTB=2.68/1.20/1.48/0.49
+  sec27: page=21.0x29.7cm margins LRTB=2.68/1.20/1.48/0.49
+  sec28: page=21.0x29.7cm margins LRTB=2.68/1.20/1.48/0.49
+  sec29: page=21.0x29.7cm margins LRTB=2.68/1.20/1.48/0.49
+  sec30: page=21.0x29.7cm margins LRTB=2.68/1.20/1.48/0.49
+  sec31: page=21.0x29.7cm margins LRTB=2.68/1.20/1.48/0.49
+  sec32: page=21.0x29.7cm margins LRTB=2.68/1.20/1.48/0.49
+  sec33: page=21.0x29.7cm margins LRTB=2.68/1.20/1.48/0.49
+  sec34: page=21.0x29.7cm margins LRTB=2.68/1.20/1.48/0.49
+  sec35: page=21.0x29.7cm margins LRTB=2.68/1.20/1.48/0.49
+  sec36: page=21.0x29.7cm margins LRTB=2.68/1.20/1.48/0.49
+  sec37: page=21.0x29.7cm margins LRTB=2.68/1.20/1.48/0.49
+  sec38: page=21.0x29.7cm margins LRTB=2.68/1.20/1.48/0.49
+  sec39: page=21.0x29.7cm margins LRTB=2.68/1.20/1.48/0.49
+  sec40: page=21.0x29.7cm margins LRTB=2.68/1.20/1.48/0.49
+  sec41: page=21.0x29.7cm margins LRTB=2.68/1.20/1.48/0.49
+  sec42: page=21.0x29.7cm margins LRTB=2.68/1.20/1.48/0.49
+  sec43: page=21.0x29.7cm margins LRTB=2.68/1.20/1.48/0.49
+  sec44: page=21.0x29.7cm margins LRTB=2.68/1.20/1.48/0.49
+  sec45: page=21.0x29.7cm margins LRTB=2.68/1.20/1.48/0.49
+  sec46: page=21.0x29.7cm margins LRTB=2.68/1.20/1.48/0.49
+  sec47: page=21.0x29.7cm margins LRTB=2.68/1.20/1.48/0.49
+  sec48: page=21.0x29.7cm margins LRTB=2.68/1.20/1.48/0.49
+  sec49: page=21.0x29.7cm margins LRTB=2.68/1.20/1.48/0.49
+  sec50: page=21.0x29.7cm margins LRTB=2.68/1.20/1.48/0.49
+  sec51: page=21.0x29.7cm margins LRTB=2.68/1.20/1.48/0.49
+  sec52: page=21.0x29.7cm margins LRTB=2.68/1.20/1.48/0.49
+  sec53: page=21.0x29.7cm margins LRTB=2.68/1.20/1.48/0.49
+  sec54: page=21.0x29.7cm margins LRTB=2.68/1.20/1.48/0.49
+  sec55: page=21.0x29.7cm margins LRTB=2.68/1.20/1.48/0.49
+styles: Body Text:971, Normal:133, Heading 3:52, List Paragraph:40, Heading 1:1, Heading 2:1
+images: 34
+--- first paragraphs ---
+[0] (Heading 3|None) '“储能先锋”助力未来\t打造未来储能行业的中国心'  runs=['None/-', 'None/-', 'None/-']
+[1] (Body Text|None) ''  runs=[]
+[2] (Body Text|None) ''  runs=[]
+[3] (Body Text|None) ''  runs=[]
+[4] (Body Text|None) ''  runs=[]
+[5] (Body Text|None) ''  runs=[]
+[6] (Body Text|None) ''  runs=[]
+[7] (Body Text|None) ''  runs=[]
+[8] (Body Text|None) ''  runs=[]
+[9] (Body Text|None) ''  runs=[]
+[10] (Body Text|None) ''  runs=[]
+[11] (Body Text|None) ''  runs=[]
+[12] (Body Text|None) ''  runs=[]
+[13] (Body Text|None) ''  runs=[]
+[14] (Body Text|None) ''  runs=[]
+[15] (Body Text|None) ''  runs=[]
+[16] (Body Text|None) ''  runs=[]
+[17] (Body Text|None) ''  runs=[]
+[18] (Body Text|None) ''  runs=[]
+[19] (Normal|LEFT (0)) 'The future is coming'  runs=['微软雅黑/15.5']
+[20] (Normal|LEFT (0)) '石墨烯基柔性锂离子电容器'  runs=['None/36.0b']
+[21] (Body Text|None) ''  runs=[]
+[22] (Normal|LEFT (0)) '打造未来储能行业的中国心'  runs=['None/21.5']
+[23] (Body Text|None) ''  runs=[]
+[24] (Body Text|None) ''  runs=[]
+[25] (Normal|LEFT (0)) '参赛组别：创意组'  runs=['黑体/14.0b', 'None/14.0']
+[26] (Body Text|None) ''  runs=[]
+[27] (Body Text|None) ''  runs=[]
+[28] (Normal|RIGHT (2)) '1'  runs=['微软雅黑/9.0']
+[29] (Normal|RIGHT (2)) ''  runs=[]
+[30] (Body Text|None) ''  runs=['None/-']
+[31] (Heading 3|None) '“储能先锋”助力未来\t打造未来储能行业的中国心'  runs=['None/-', 'None/-', 'None/-']
+[32] (Body Text|None) ''  runs=['None/-']
+[33] (Body Text|None) ''  runs=[]
+[34] (Body Text|JUSTIFY (3)) '锂离子电容器，是一种新型的电化学储能器件。随着相关电子产业的不断发展，现有储能设备无法同时解决容量和功率之间的矛盾，而且不具备柔性，不能满足柔性电子产品的新需求。基于此需求，团队研发出新一代的石墨烯基柔性锂离子电容器。其结合了一个锂离子电池'  runs=['None/-', 'None/-', 'None/-']
+[35] (Body Text|None) '本团队一直致力于新型储能器件及相关技术的研发，在与“大英聚能科技发 展”有限公司的产学研合作，率先在国内实现了石墨烯材料的低成本宏量制备。 又与“四川能宝电源制造有限公司”合作，实现了石墨烯基超级电容器的技术转化、生产制造。在此基础上我们进'  runs=['None/-', 'None/-', 'Times New Roman/-']
+[36] (Body Text|None) '团队通过销售一般标准化产品和定制个性化产品以及提供一站式科研外包技术服务，将产品投向我们的目标市场。'  runs=['None/-']
+[37] (Body Text|JUSTIFY (3)) '目前已经与美国太平洋西北国家实验室、美国克拉克森大学、美国华盛顿大学、中国科学院大学、北京科技大学、北京化工大学等国内外顶级研究机构建立了可靠的科研合作伙伴关系。'  runs=['None/-', 'None/-', 'None/-']
+[38] (Body Text|None) ''  runs=[]
+[39] (Body Text|None) ''  runs=[]
+[40] (Body Text|None) ''  runs=[]
+[56] (Normal|RIGHT (2)) '2'  runs=['微软雅黑/9.0']
+[58] (Body Text|None) ''  runs=['None/-']
+[59] (Heading 3|None) '“储能先锋”助力未来\t打造未来储能行业的中国心'  runs=['None/-', 'None/-', 'None/-']
+[60] (Normal|LEFT (0)) '目录'  runs=['黑体/15.5b']
+[76] (Normal|RIGHT (2)) '5'  runs=['微软雅黑/9.0']
+[78] (Body Text|None) ''  runs=['None/-']
+[79] (Heading 3|None) '“储能先锋”助力未来\t打造未来储能行业的中国心'  runs=['None/-', 'None/-', 'None/-']
+[80] (Heading 1|None) '第一章\t执行概要'  runs=['None/-', 'None/-', 'None/-']
+[81] (Body Text|None) ''  runs=['None/-']
+[83] (Body Text|JUSTIFY (3)) '团队致力于研发制造新产品，力争成为储能器件行业先锋。计划在成立公司的初期以柔性可穿戴电子器件、电动自行车厂商为目标客户，依托现有的专利技术进入储能市场，力争成为领域内知名的新能源产品供应公司，以成都为研发基地进而辐射国内储能市场，在国内营销'  runs=['None/-', 'None/-', 'None/-']
+[84] (Body Text|None) ''  runs=['None/-']
+[86] (Body Text|None) '团队在量产石墨烯的基础上，通过一定的工艺制备技术，研发出具有良好柔性，高功率密度，高能量密度，环保，安全可靠的石墨烯基柔性锂离子电容器。并提供与之配套的技术服务，根据客户的不同需求定制个性化的储能设备，以适应现代柔性电子设备的发展。'  runs=['None/-', 'None/-', 'None/-']
+[87] (Body Text|None) ''  runs=['None/-']
+[96] (Normal|RIGHT (2)) '6'  runs=['微软雅黑/9.0']
+[98] (Body Text|None) ''  runs=['None/-']
+[99] (Heading 3|None) '“储能先锋”助力未来\t打造未来储能行业的中国心'  runs=['None/-', 'None/-', 'None/-']
+[101] (Body Text|JUSTIFY (3)) '根据产品特性及优势，以军工企业，高新科技企业，无轨电车生产企业，可穿戴医疗器械生产商为主要目标客户进行产品销售。以全面取代铅酸电池、拓展柔性储能器件的个性化定制服务为市场切入点。'  runs=['None/-', 'None/-', 'None/-']
+[102] (Body Text|None) ''  runs=['None/-']
+[104] (Body Text|JUSTIFY (3)) '团队通过“价值传递＋精准营销”的营销方式，和四川能宝电源有限公司进行代工生产合作，形成战略联盟，依托四川能宝电源现有销售资源，以销售一般标准化产品、个性化定制产品和提供技术服务获取利润。'  runs=['None/-', 'None/-', 'None/-']
+[106] (Body Text|JUSTIFY (3)) '2014 年，与大英聚能科技发展有限公司合作开发石墨烯量产技术，2017 年初，石墨烯基锂离子电容器技术在四川能宝电源制造有限公司转化生产，2018 年获得启动资金及科研资金，注册品牌，优化产品装置，完成石墨烯基锂离子电容器的产品中试。预计'  runs=['None/-', 'Times New Roman/-', 'None/-']
+[107] (Body Text|None) ''  runs=['None/-']
+[109] (Body Text|None) '我们的顾问团队全部是该行业领域内的学术专家，是由西南石油大学副教授、美国西太平洋国家实验室成员、四川省石墨烯产业研究院副院长李星博士领衔， 包括王明珊博士、许武博士、David  博士、张继光博士、陈俊臣博士等国内外多位知名专家加盟。'  runs=['None/-', 'None/-', 'None/-']
+[110] (Body Text|JUSTIFY (3)) '我们的运营团队是多名不同专业，不同学历，集研发，运营，销售为一体的专业性强、多学科交叉的优势互补团队，我们年轻但不鲁莽，正因为年轻，我们更具有创新意识。'  runs=['None/-', 'None/-', 'None/-']
+[114] (Normal|RIGHT (2)) '7'  runs=['微软雅黑/9.0']
+[116] (Body Text|None) ''  runs=['None/-']
+[117] (Heading 3|None) '“储能先锋”助力未来\t打造未来储能行业的中国心'  runs=['None/-', 'None/-', 'None/-']
+[118] (Body Text|None) ''  runs=['None/-', 'None/-']
+[121] (Body Text|JUSTIFY (3)) '目前储能器件主要有锂离子电池、超级电容器、铅酸电池等，但是都存在各自不同的缺陷，导致其应用受限。如锂离子电池存在功率密度低，充放电速率慢、安全性低；超级电容器存在能量密度低、续航时间短；铅酸电池对环境影响大等限制。导致当前的储能器件越来越不'  runs=['None/-', 'None/-', 'None/-']
+[122] (Body Text|JUSTIFY (3)) '团队研发以新材料、新技术为基础，致力于新型储能器件的开发和推广，力争成为储能领域的领头羊。团队的主要研发产品为柔性锂离子电容器，以西南石油大学为研发基地；以高新企业、军工产品等生产厂商为目标客户。依托现有的专利技术打开储能市场、实现柔性锂离'  runs=['None/-', 'None/-', 'None/-']
+[123] (Body Text|None) ''  runs=['None/-']
+[125] (Body Text|JUSTIFY (3)) '锂离子电容器是双电层超级电容器的基础上发展而来的，双电层超级电容器已经发展到了一个瓶颈阶段，无法实现能力密度的进一步提升。团队推出的石墨烯基柔性锂离子电容器的正极材料采用双电层超级电容器的电极材料，通过界面双电层机理储存能量，因此具有功率密'  runs=['None/-', 'None/-', 'None/-']
+[126] (Body Text|JUSTIFY (3)) '团队自主研发的锂离子电容器用正极极材料，主要是利用石墨烯的二维层状结构、一维的碳纳米管编织为导电框架结构，负载零维的颗粒状活性炭，通过超声破碎、减压抽滤的工艺流程，制备出柔性的三维导电复合材料。该复合材料中的石墨烯具有高比表面积，与碳纳米管'  runs=['None/-', 'None/-', 'None/-']
+[128] (Normal|RIGHT (2)) '8'  runs=['微软雅黑/9.0']
+[130] (Body Text|None) ''  runs=['None/-']
+[131] (Heading 3|None) '“储能先锋”助力未来\t打造未来储能行业的中国心'  runs=['None/-', 'None/-', 'None/-']
+[132] (Body Text|None) '各组分的优点。经过一系列电化学性能测试，表明其循环稳定性良好适宜用于锂离子电容器正极材料。'  runs=['None/-', 'None/-', 'None/-']
+[134] (Body Text|None) ''  runs=['None/-']
+[135] (Normal|CENTER (1)) '图 1.电极材料制备流程图'  runs=['None/10.5', 'Times New Roman/10.5', 'None/10.5']
+[136] (Body Text|None) ''  runs=['None/-']
+[138] (Normal|CENTER (1)) '图 2.电极材料宏观效果图'  runs=['None/10.5', 'Times New Roman/10.5', 'None/10.5']
+[140] (Body Text|None) ''  runs=['None/-']
+[141] (Normal|CENTER (1)) '图 3.正电极材料电化学性能'  runs=['None/10.5', 'Times New Roman/10.5', 'None/10.5']
+[144] (Body Text|None) '团队研发的锂离子电容器用负极材料，利用石墨烯和碳纳米管编织成导电骨架结构，负载锂离子电池的电极材料钛酸锂。尖晶石结构的钛酸锂具有稳定的锂'  runs=['None/-']
+[146] (Normal|RIGHT (2)) '9'  runs=['微软雅黑/9.0']
+[148] (Body Text|None) ''  runs=['None/-']
+[149] (Heading 3|None) '“储能先锋”助力未来\t打造未来储能行业的中国心'  runs=['None/-', 'None/-', 'None/-']
+[150] (Body Text|None) '离子嵌入和脱出通道，且在锂离子的嵌入和脱出过程中结构稳定几乎“零应变”。因此该复合材料具有循环寿命长，能够大电流充放电的特性。'  runs=['None/-', 'None/-', 'Times New Roman/-']
+[152] (Normal|CENTER (1)) '图 4.负电极材料宏观效果图(a)(b), 微观截面扫面电镜图(c), 和元素能谱图'  runs=['None/10.5', 'Times New Roman/10.5', 'None/10.5']
+[153] (Body Text|None) ''  runs=['None/-']
+[154] (Normal|CENTER (1)) '图 5.负电极材料电化学性能测试，倍率性能(a), (b); 循环稳定性能(c), (d); 循环伏安测'  runs=['None/10.5', 'Times New Roman/10.5', 'None/10.5']
+[155] (Normal|CENTER (1)) '试(e),  交流阻抗测试(e)'  runs=['None/10.5', 'Times New Roman/10.5', 'None/10.5']
+[159] (Normal|RIGHT (2)) '10'  runs=['微软雅黑/9.0']
+[161] (Body Text|None) ''  runs=['None/-']
+[162] (Heading 3|None) '“储能先锋”助力未来\t打造未来储能行业的中国心'  runs=['None/-', 'None/-', 'None/-']
+[163] (Body Text|JUSTIFY (3)) '经过一系列电化学性能测试，表明以石墨烯基导电骨架结构能够有效的改善钛酸锂电导性差的缺点。复合材料具有良好的循环稳定性能，是锂离子电容器正极的理想电极材料。'  runs=['None/-', 'None/-', 'None/-']
+[164] (Body Text|JUSTIFY (3)) '将上述石墨烯基柔性锂离子电容器用的电极材料组装成柔性的全电容器。经过恒流充放电、循环伏安、交流阻抗等一系列电化学测试，结果表明器件具有良好的电容特性。比容量达 75F g-1， 能量密度 67Wh kg-1, 功率密度 1800W kg-1'  runs=['None/-', 'None/-', 'None/-']
+[165] (Normal|LEFT (0)) '图 6.石墨烯基柔性锂离子电容器循环性能测试(a), (b),  循环伏安测试(c), 交流阻抗测试(d)'  runs=['None/9.0', 'Times New Roman/9.0', 'None/9.0']
+[167] (Body Text|JUSTIFY (3)) '目前柔性储能器件发展的瓶颈在于电极材料。传统工艺制备电极材料的方法是将粉状活性材料通过混浆涂布在集流体上制备而来。团队研发的柔性复合材料自身具有自支撑特性，无需粘结剂、导电添加剂和集流体，极大的提高了材料的利用率，简化的电极制备工艺。'  runs=['None/-', 'None/-', 'None/-']
+[168] (Body Text|None) ''  runs=['None/-']
+[170] (Body Text|None) '在 2014 年团队启动并与大英聚能合作开发石墨烯量产技术，取得了四川省科技进步奖三等奖；'  runs=['None/-', 'None/-', 'Times New Roman/-']
+[171] (Body Text|None) '团队通过 3 年的苦心专研，在国内外多名行业知名专家的指导下研发出了具有良好柔韧性，高功率，高能量密度，循环使用寿命长，环保，安全的石墨烯基'  runs=['None/-', 'Times New Roman/-', 'None/-']
+[173] (Normal|RIGHT (2)) '11'  runs=['微软雅黑/9.0']
+[175] (Body Text|None) ''  runs=['None/-']
+[176] (Heading 3|None) '“储能先锋”助力未来\t打造未来储能行业的中国心'  runs=['None/-', 'None/-', 'None/-']
+[177] (Body Text|None) '柔性锂离子电容器。目前已经在国际著名期刊上发表SCI（中科院 SCI 分区，一区）论文 6 篇，总影响因子超过 60；申请发明专利 7 项，已获授权 3 项。'  runs=['None/-', 'Times New Roman/-', 'None/-']
+[178] (Body Text|None) ''  runs=['None/-']
+[180] (Body Text|JUSTIFY (3)) '锂离子电容器兼具有超级电容器和锂离子电池两者的优良特性，由于工作电压高、能量密度高、安全性能好，可以实现短时间内快速充放电，被视为新一代的高性能绿色储能元件。应用领域广泛：例如大功率军用储能电源、柔性可穿戴电子、特种医疗器械、新能源交通运输'  runs=['None/-', 'None/-', 'None/-']
+[181] (Body Text|JUSTIFY (3)) '首先，锂离子电容器应用大功率军用储能电源，可为相关设备提供瞬时高功率、高能量电源，如电磁弹射器、电磁脉冲武器、激光武器。其次应用于柔性可穿戴电子、特种医疗器械等领域，如柔性手环、手表，可折叠手机，便携式可穿戴医疗设备等。另外，我们的产品可应'  runs=['None/-', 'None/-', 'None/-']
+[203] (Normal|RIGHT (2)) '12'  runs=['微软雅黑/9.0']
+[205] (Body Text|None) ''  runs=['None/-']
+[206] (Heading 3|None) '“储能先锋”助力未来\t打造未来储能行业的中国心'  runs=['None/-', 'None/-', 'None/-']
+[207] (Body Text|None) ''  runs=['None/-', 'None/-']
+[210] (Body Text|None) '锂离子电容器是在双电层超级电容器的基础上发展而来的。具有能量密度高、功率密度高和循环寿命长等优点，是一种有效的双电层超级电容器的替代产品。超级电容器作为储能产品已趋于成熟，其应用范围也不断拓展，在工业、消费电 子、通讯、医疗器械、国防、军事'  runs=['None/-', 'None/-', 'None/-']
+[227] (Body Text|None) ''  runs=['None/-']
+[228] (Body Text|None) ''  runs=['None/2.0']
+[230] (Body Text|JUSTIFY (3)) '储能器件的核心元件是电极材料，目前存在着以下痛点：(1) 锂电池和超级电容器都无法做到高能量、高功率的和谐统一。(2) 电极材料的制备均采用传统涂布制备工艺，需要额外的导电添加剂、粘结剂和集流体，不仅影响整个器件的比容量，还无法实现电极材料'  runs=['None/-', 'Times New Roman/-', 'None/-']
+[231] (Body Text|None) '此外，锂离子电池还存在安全性能低、污染大、电极材料制备复杂、成本高等缺点。'  runs=['None/-', 'None/-', 'None/-']
+[237] (Normal|RIGHT (2)) '13'  runs=['微软雅黑/9.0']
+[239] (Body Text|None) ''  runs=['None/-']
+[240] (Heading 3|None) '“储能先锋”助力未来\t打造未来储能行业的中国心'  runs=['None/-', 'None/-', 'None/-']
+[242] (Body Text|None) '锂离子电容器作为一种新型储能元件，虽然面世时间不长，但发展势头迅猛， 其应用领域正在拓展，市场需求不断增长。其发展趋势主要表现在以下几个方面： 首先，锂离子电容器是双电层电容器的衍生品，性能更加优越，未来将与超级电容器形成竞争替代关系，前景'  runs=['None/-', 'None/-', 'None/-']
+[243] (Body Text|None) ''  runs=['None/-']
+[245] (Body Text|JUSTIFY (3)) '这近年来，由于看好这一领域广阔的应用前景，中国一些公司也开始积极涉足这一产业，但是锂离子电容器先进的核心技术被国外掌握，国内锂离子电容器的产业化还处于空白状态。'  runs=['None/-', 'None/-', 'None/-']
+[246] (Body Text|JUSTIFY (3)) '国内厂商大多专注于双电层超级电容器，例如，锦州富辰公司是国内最大的超级电容器专业生产厂，主要生产纽扣型和卷绕型双电层超级电容器。从目前来看，从事大容量超级电容器研发的厂家共有 50 多家，能够批量生产并且达到实'  runs=['None/-', 'None/-', 'None/-']
+[247] (Body Text|None) '用化水平的厂家只有不到 10 家。掌握锂离子电容器核心技术的更是少之又少。而国外实现的锂离子电容器量产的，主要集中在美国和日本等国家，已经达'  runs=['None/-', 'None/-', 'None/-']
+[248] (Body Text|None) '到了较高的研究水平，且即将进入市场。'  runs=['None/-']
+[249] (Body Text|None) ''  runs=['None/-']
+[251] (Body Text|None) '由于目前市场上并没有实现锂离子电容器的产业化，主要的原因是电极材料制备工艺复杂、成本太高等原因。而我们采用简单的超声复合和减压抽滤的制备'  runs=['None/-', 'None/-', 'None/-']
+[254] (Normal|RIGHT (2)) '14'  runs=['微软雅黑/9.0']
+[256] (Body Text|None) ''  runs=['None/-']
+[257] (Heading 3|None) '“储能先锋”助力未来\t打造未来储能行业的中国心'  runs=['None/-', 'None/-', 'None/-']
+[258] (Body Text|None) '工艺，可显著降低成本，实现产业化，与目前国内外同行业最先进的技术对比如下：'  runs=['None/-']
+[260] (Normal|LEFT (0)) '注：数据来源生产商官网、中国知网和我们的测试数据'  runs=['None/10.5']
+[262] (Body Text|None) '在几个关键指标上，团队研发的柔性锂离子电容器均具有较大优势，且具有较高的性价比，将对上游消费者具有极大的吸引力。'  runs=['None/-']
+[289] (Normal|RIGHT (2)) '15'  runs=['微软雅黑/9.0']
+[291] (Body Text|None) ''  runs=['None/-']
+[292] (Heading 3|None) '“储能先锋”助力未来\t打造未来储能行业的中国心'  runs=['None/-', 'None/-', 'None/-']
+[293] (Body Text|None) ''  runs=['None/-']
+[295] (Body Text|JUSTIFY (3)) '团队推出的柔性石墨烯基锂离子电容，从原材料的选取、电极材料的制备工艺上进行创新，实现了柔性化电极材料的制备。利用石墨烯二维片层结构与一维碳纳米管编织实现了自支撑特性的导电骨架结构的构建，在此基础上负载零维的活性炭颗粒和钛酸锂纳米管，通过真空'  runs=['None/-', 'None/-', 'None/-']
+[296] (Body Text|None) '并通过一定的正负极质量比，组装成非对称的石墨烯基柔性锂离子电容器。也就是我们的终端产品。目前，产品正在我们的合作单位四川能宝电源进行中试。'  runs=['None/-', 'None/-']
+[297] (Body Text|JUSTIFY (3)) '团队依托与大英聚能合作开发的石墨烯低成本量产技术，进一步研发的石墨烯基柔性锂离子电容器，通过四川能宝电源代工生产，并合作销售，实现产品升级的同时，也实现对石墨烯基柔性锂离子电容器的推广。同时团队研发的储能器件具有柔性，因此进一步可以实现针对'  runs=['None/-', 'None/-', 'None/-']
+[325] (Normal|RIGHT (2)) '16'  runs=['微软雅黑/9.0']
+[327] (Body Text|None) ''  runs=['None/-']
+[328] (Heading 3|None) '“储能先锋”助力未来\t打造未来储能行业的中国心'  runs=['None/-', 'None/-', 'None/-']
+[329] (Body Text|None) ''  runs=['None/-', 'None/-']
+[332] (Body Text|None) '近年来，为促进新能源市场的发展，我国出台了一系列的产业政策来鼓励、扶持新能源产业的发展，为我们提供了一个良好的外部环境。坚持以技术为支撑， 以价值为导向，自 2014 年起，团队和大英聚能有限公司一起共同研发石墨烯低成本宏量制备技术，并投入'  runs=['None/-', 'None/-', 'None/-']
+[335] (Body Text|None) '项目启动阶段，融资并且打造品牌，逐步进入市场。'  runs=['None/-']
+[336] (List Paragraph|LEFT (0)) '结合我国对于新能源产业发展支持政策，积极争取政府补贴。'  runs=['None/12.0']
+[337] (List Paragraph|JUSTIFY (3)) '利用产品的高效节能性和柔性可折叠的优势，加之互联网及商业路演等宣传，获得融资，以获得项目启动资金及科研基金；同时能够在新能源材料领域中，注册品牌，树立形象。'  runs=['None/12.0', 'None/12.0']
+--- headings ---
+  Heading 3: “储能先锋”助力未来	打造未来储能行业的中国心
+  Heading 3: “储能先锋”助力未来	打造未来储能行业的中国心
+  Heading 3: “储能先锋”助力未来	打造未来储能行业的中国心
+  Heading 3: “储能先锋”助力未来	打造未来储能行业的中国心
+  Heading 1: 第一章	执行概要
+  Heading 3: “储能先锋”助力未来	打造未来储能行业的中国心
+  Heading 3: “储能先锋”助力未来	打造未来储能行业的中国心
+  Heading 3: “储能先锋”助力未来	打造未来储能行业的中国心
+  Heading 3: “储能先锋”助力未来	打造未来储能行业的中国心
+  Heading 3: “储能先锋”助力未来	打造未来储能行业的中国心
+  Heading 3: “储能先锋”助力未来	打造未来储能行业的中国心
+  Heading 3: “储能先锋”助力未来	打造未来储能行业的中国心
+  Heading 3: “储能先锋”助力未来	打造未来储能行业的中国心
+  Heading 3: “储能先锋”助力未来	打造未来储能行业的中国心
+  Heading 3: “储能先锋”助力未来	打造未来储能行业的中国心
+  Heading 3: “储能先锋”助力未来	打造未来储能行业的中国心
+  Heading 3: “储能先锋”助力未来	打造未来储能行业的中国心
+  Heading 3: “储能先锋”助力未来	打造未来储能行业的中国心
+  Heading 3: “储能先锋”助力未来	打造未来储能行业的中国心
+  Heading 3: “储能先锋”助力未来	打造未来储能行业的中国心
+  Heading 3: “储能先锋”助力未来	打造未来储能行业的中国心
+  Heading 3: “储能先锋”助力未来	打造未来储能行业的中国心
+  Heading 3: “储能先锋”助力未来	打造未来储能行业的中国心
+  Heading 3: “储能先锋”助力未来	打造未来储能行业的中国心
+  Heading 3: “储能先锋”助力未来	打造未来储能行业的中国心
+  Heading 3: “储能先锋”助力未来	打造未来储能行业的中国心
+  Heading 3: “储能先锋”助力未来	打造未来储能行业的中国心
+  Heading 3: “储能先锋”助力未来	打造未来储能行业的中国心
+  Heading 2: 附 1.团队主要成员
+  Heading 3: “储能先锋”助力未来	打造未来储能行业的中国心
+  Heading 3: “储能先锋”助力未来	打造未来储能行业的中国心
+  Heading 3: “储能先锋”助力未来	打造未来储能行业的中国心
+  Heading 3: “储能先锋”助力未来	打造未来储能行业的中国心
+  Heading 3: “储能先锋”助力未来	打造未来储能行业的中国心
+  Heading 3: “储能先锋”助力未来	打造未来储能行业的中国心
+  Heading 3: “储能先锋”助力未来	打造未来储能行业的中国心
+  Heading 3: “储能先锋”助力未来	打造未来储能行业的中国心
+  Heading 3: “储能先锋”助力未来	打造未来储能行业的中国心
+  Heading 3: “储能先锋”助力未来	打造未来储能行业的中国心
+  Heading 3: “储能先锋”助力未来	打造未来储能行业的中国心
+  Heading 3: “储能先锋”助力未来	打造未来储能行业的中国心
+  Heading 3: “储能先锋”助力未来	打造未来储能行业的中国心
+  Heading 3: “储能先锋”助力未来	打造未来储能行业的中国心
+  Heading 3: “储能先锋”助力未来	打造未来储能行业的中国心
+  Heading 3: “储能先锋”助力未来	打造未来储能行业的中国心
+  Heading 3: “储能先锋”助力未来	打造未来储能行业的中国心
+  Heading 3: “储能先锋”助力未来	打造未来储能行业的中国心
+  Heading 3: “储能先锋”助力未来	打造未来储能行业的中国心
+  Heading 3: “储能先锋”助力未来	打造未来储能行业的中国心
+  Heading 3: “储能先锋”助力未来	打造未来储能行业的中国心
+  Heading 3: “储能先锋”助力未来	打造未来储能行业的中国心
+  Heading 3: “储能先锋”助力未来	打造未来储能行业的中国心
+  Heading 3: “储能先锋”助力未来	打造未来储能行业的中国心
+  Heading 3: “储能先锋”助力未来	打造未来储能行业的中国心
+
+===== CURRENT =====
+path: C:\Users\Ibiza\Desktop\project\挑战杯\作品设计实现方案_提交版.docx
+paragraphs: 850
+tables: 13
+sections: 1
+  sec0: page=21.0x29.7cm margins LRTB=3.17/3.17/2.54/2.54
+styles: Normal:769, Heading 3:45, Heading 2:25, Heading 1:11
+images: 0
+--- first paragraphs ---
+[0] (Normal|CENTER (1)) '执图破局：多源异构数据驱动的岗位—能力知识图谱\n动态构建与智能匹配系统'  runs=['黑体/16.0b', '黑体/16.0b']
+[1] (Normal|CENTER (1)) ''  runs=[]
+[2] (Heading 1|None) '摘要'  runs=['黑体/-']
+[3] (Normal|None) '岗位—能力知识图谱动态构建与智能匹配系统，通过多源招聘文本治理与智能体推理，为新兴岗位研判、能力演化分析与人岗匹配决策提供数据驱动手段，在人力资源数字化、院校就业指导等场景中具有广泛应用前景。然而，当前主流方案在多源异构 JD 质量参差、新'  runs=['None/-', 'None/-', 'None/-']
+[4] (Normal|None) '具体而言，岗位—能力图谱构建与智能匹配面临以下难点：（1）多源数据质量参差不齐：智联、BOSS、51job 等平台 JD 存在重复、空壳、字段缺失，缺乏入库前的统一门控；（2）新兴岗位识别缺乏可解释性：传统关键词匹配无法识别「AI Agen'  runs=['None/-', 'None/-', 'None/-']
+[5] (Normal|None) '针对以上难点，本作品提出「执图破局」平台，构建了以 PostgreSQL 多源 JD 语料为底座、以 FastAPI 为服务层、以 DeepSeek 为推理增强的多模块智能决策系统。平台实现：（1）SHA256 内容指纹与十五字段完整度入库'  runs=['None/-', 'None/-', 'None/-']
+[6] (Normal|None) '关键词：岗位—能力知识图谱；动态演化分析；多源异构数据治理；新兴岗位发现；人岗匹配；检索增强生成；幻觉防控'  runs=['None/-b', 'None/-', 'None/-']
+[7] (Normal|None) ''  runs=['None/-']
+[8] (Heading 1|None) '目录'  runs=['黑体/-']
+[9] (Normal|None) ''  runs=['None/-']
+[10] (Heading 1|None) '第一章  项目概述'  runs=['黑体/-']
+[11] (Heading 2|None) '1.1  背景与目标'  runs=['黑体/-']
+[12] (Heading 3|None) '1.1.1  项目背景'  runs=['黑体/-']
+[13] (Normal|None) '随着人工智能、大模型应用、智能体（Agent）工程与检索增强生成（RAG）技术的快速发展和产业数字化转型的深入推进，劳动力市场上涌现出大量尚未纳入传统职业分类体系的新兴岗位形态。AI Agent 架构师、RAG 系统工程师、LLMOps 工'  runs=['None/-', 'None/-', 'None/-']
+[14] (Normal|None) '公开招聘文本（Job Description，JD）作为连接供需双方的关键信息载体，记录了岗位标题、职责描述、技能要求、经验学历约束、薪资区间与城市分布等多维字段，是构建岗位—能力知识图谱最高频、最低成本的观测信号之一。相较于人工访谈、问卷'  runs=['None/-', 'None/-', 'None/-']
+[15] (Normal|None) '然而，多源 JD 数据在采集渠道、字段模式、发布时效、表述风格上存在显著异构性。同一岗位在不同平台可能出现标题归一化差异、技能标签粒度不一、职责描述模板化复制等现象；部分低质量记录缺少核心字段或内容高度重复，若直接进入新兴发现与演化分析，将'  runs=['None/-', 'None/-', 'None/-']
+[16] (Normal|None) '本项目响应科大讯飞 2026 中国青年「揭榜挂帅」擂台赛发榜赛题 XH-202621《多源异构数据驱动岗位和能力图谱构建与动态演化分析研究》，构建「执图破局」平台。系统以 PostgreSQL 存储结构化 JD 与图谱关系，以 FastAP'  runs=['None/-', 'None/-', 'None/-']
+[17] (Heading 3|None) '1.1.2  国内外研究现状'  runs=['黑体/-']
+[18] (Normal|None) '当前，全球劳动力市场分析正经历从「静态职业分类加人工归纳」向「多源信号融合、动态图谱构建、智能匹配决策」的范式迁移。招聘文本、职业标准、技能认证、课程资源、专利与论文等多源数据为岗位—能力知识图谱提供了前所未有的语料基础；与此同时，大语言模'  runs=['None/-', 'None/-', 'None/-']
+[19] (Normal|None) '（1）国外研究现状：图谱与劳动力分析相对成熟。LinkedIn Economic Graph 基于十亿级会员关系与技能标签，构建全球经济图谱，支撑技能趋势洞察与人才流动分析，其数据规模与更新频率处于行业领先[1]。Lightcast（原 E'  runs=['None/-', 'None/-', 'None/-']
+[20] (Normal|None) '国外工程实践也指出若干局限：其一，多数商业图谱依赖闭源数据与黑盒模型，结论难以被第三方复现与审计；其二，新兴岗位（如 AI Agent Engineer）往往先于 ontology 更新出现，静态本体难以及时覆盖；其三，LLM 直接生成岗位'  runs=['None/-', 'None/-', 'None/-']
+[21] (Normal|None) '在技术研究方面，国外学者致力于时序知识图谱与劳动力市场预测：通过将 JD 发布量、技能共现矩阵、薪资分布等信号纳入时间序列模型，预测未来 6—24 个月的技能需求变化[2]。Graph Neural Network 在「技能 A 与技能 B'  runs=['None/-', 'None/-', 'None/-']
+[22] (Normal|None) '（2）国内研究现状：数据富集但系统化闭环不足。国内学者在招聘信息挖掘、岗位能力分析、人岗匹配等方向积累了大量工作：基于 TF-IDF、TextRank、BERT 的技能抽取；基于 Neo4j 或关系型数据库的岗位—技能图谱构建；基于协同过滤'  runs=['None/-', 'None/-', 'None/-']
+[23] (Normal|None) '然而，国内现有研究仍以静态图谱构建或单点匹配为主：对多源 JD 入库前的质量门控关注不足；对「新兴岗位」的操作化定义与可回放推理链研究较少；能力演化多停留在描述性统计或单源时间切片对比，缺少跨平台伪时序差分方法；人岗匹配维度偏窄，难以解释技'  runs=['None/-', 'None/-', 'None/-']
+[24] (Normal|None) '（3）大模型时代的可信图谱构建：2023 年以来，生成式 AI 在招聘场景的渗透加速，LLM 被用于 JD 生成、简历润色、岗位描述归纳等。中国信通院等机构在大模型白皮书中强调「可信 AI」「可解释性」「幻觉防控」等治理要求[4]。对本赛题'  runs=['None/-', 'None/-', 'None/-']
+[25] (Normal|None) '（4）研究评述：数据来源分散、异构融合困难、动态演化刻画不足、发现—匹配闭环研究不充分，是制约领域发展的共性瓶颈。赛题 XH-202621 明确要求在多源异构数据条件下实现岗位与能力图谱的科学构建、动态演化分析与智能匹配，并给出 JD 解析'  runs=['None/-', 'None/-', 'None/-']
+[26] (Heading 3|None) '1.1.3  痛点分析'  runs=['黑体/-', '黑体/-']
+[27] (Normal|None) '表 1.1  行业内对比'  runs=['None/10.5b', 'None/10.5b', 'None/10.5b']
+[28] (Normal|None) ''  runs=[]
+[29] (Normal|None) '传统岗位分析与招聘匹配在企业人才选拔和劳动者职业规划中长期发挥重要作用，但在新兴技术快速迭代、JD 表述高度碎片化的背景下，其模式存在以下系统性制约，直接影响赛题三项核心任务（图谱构建、动态演化、智能匹配）的落地质量。'  runs=['None/-', 'None/-', 'None/-']
+[30] (Normal|None) '1. 主观性强且结果不稳定。新兴岗位尚无统一 JD 模板，不同企业对同一类岗位的技能表述差异大，人工归纳易受经验与认知偏好影响，结论难以复现。同一「AI 应用工程师」在不同公司 JD 中可能分别强调 Agent、RAG 或微调，缺乏统一的结'  runs=['None/-', 'None/-', 'None/-']
+[31] (Normal|None) '2. 标准缺乏统一性。多源 JD 字段结构、完整度、时效性不一，缺乏入库前的指纹去重与完整度门控，脏数据进入分析池后产生系统性偏差，导致新兴度评分与演化差分被重复帖放大。'  runs=['None/-', 'None/-', 'None/-']
+[32] (Normal|None) '3. 演化难以量化。「传统岗位加新技能」类变化若仅停留在报告叙事，无法支撑可复现的差分标注与趋势研判，难以满足动态演化分析要求，也无法向院校培养方案提供可计算的技能增量清单。'  runs=['None/-', 'None/-']
+[33] (Normal|None) '4. 匹配维度单一。关键词或技能重合度无法解释「会 Python 能否迁到 RAG 岗」，弱相关技能刷高分问题突出，差距分析缺乏 actionable 结构，求职者难以将匹配分数转化为学习计划。'  runs=['None/-', 'None/-', 'None/-']
+[34] (Normal|None) '5. 大模型幻觉风险。直接让 LLM 生成岗位定义，若不能指回证据样本，结论不可建档、不可审计，与赛题科学构建目标相悖，可能在答辩与评测环节引发「结论从哪来」的质疑。'  runs=['None/-', 'None/-', 'None/-']
+[35] (Normal|None) '6. 可追溯性差。缺乏六步推理链、证据源计数、差分公式等可复核机制，决策过程难以复盘，不利于专家评估与后续迭代优化。'  runs=['None/-', 'None/-']
+[36] (Heading 3|None) '1.1.4  项目目标'  runs=['黑体/-']
+[37] (Normal|None) '本项目致力于构建一套数据驱动的岗位—能力知识图谱动态构建与智能匹配系统，通过技术创新解决赛题提出的系统性问题，并在文档、源码、测试集三个维度形成可交叉验证的交付物。'  runs=['None/-', 'None/-', 'None/-']
+[38] (Normal|None) '（1）技术目标：实现多源 JD 入库质量门控（SHA256 指纹+十五字段完整度）；实现 DiscoveryAgent 六阶段可回放发现链；实现多源伪时序技能差分三态标注；实现五维加权人岗匹配与图谱迁移上界；实现 RAG 顾问与证据门控的幻'  runs=['None/-', 'None/-', 'None/-']
+[39] (Normal|None) '（2）应用目标：支撑企业新兴岗位研判与招聘决策；支撑求职者简历诊断、差距分析与学习路径规划；支撑城市/行业人才态势可视化；满足赛题在线评测指标与文档化交付要求。系统面向 HR、求职者、院校就业指导三类用户，但本设计文档以技术实现与评测口径为'  runs=['None/-', 'None/-', 'None/-']
+[40] (Normal|None) '（3）创新目标：形成五项可定位源码、可复核公式、可对照测试的创新点（I1—I5）；JD/简历/匹配三项准确率均≥90%；新兴发现 F1≥0.82，演化 Kappa≥0.76；门控后结构化结论幻觉率显著低于未审计基线。'  runs=['None/-', 'None/-', 'None/-']
+[41] (Heading 2|None) '1.2  功能概述'  runs=['黑体/-']
+[42] (Normal|None) '执图破局平台围绕赛题「构建—演化—匹配」主线，设计六大功能模块，各模块既相对独立又通过岗位 ID、技能词典与 API 契约紧密耦合。以下概述侧重功能边界与数据流向，详细技术实现见第二、三章。'  runs=['None/-', 'None/-', 'None/-']
+[43] (Normal|None) '（1）多源数据采集与治理：crawler/ 模块支持智联、BOSS、51job 等多源采集，导出 JSONL.gz 后 merge 入库 PostgreSQL。数据底座页（frontend/pages/more/data.html）展示各源'  runs=['None/-', 'None/-', 'None/-']
+[44] (Normal|None) '（2）新岗位发现与定义：DiscoveryAgent 从 PG 抓取 IT 岗位语料，经六步推理链输出新兴岗位候选与预测岗位。前端 discovery.html 展示推理过程与发现工作台；discovery-detail.html 提供七模'  runs=['None/-', 'None/-', 'None/-']
+[45] (Normal|None) '（3）能力动态演化：evolution_agent.py 对不同数据源、不同时间窗口的技能出现率做差分，输出 added/removed/changed 三态。前端 insight.html、evolution.html 可视化演化趋势与差'  runs=['None/-', 'None/-', 'None/-']
+[46] (Normal|None) '（4）全景图谱可视化：数字人才地图（map.html）展示全国城市热力与岗位下钻；G6 力导向图呈现岗位—技能—行业关系，支撑赛题对图谱可视化与态势分析的要求。'  runs=['None/-', 'None/-', 'None/-']
+[47] (Normal|None) '（5）人岗匹配与学习诊断：match.html 人岗匹配决策工作台支持 PDF/Word/TXT 简历上传，实时抽取，五维打分，差距转短周期动作，生成学习路径。matching/service.py 实现解析与评分核心逻辑，对应创新点 I4'  runs=['None/-', 'None/-', 'None/-']
+[48] (Normal|None) '（6）统一 AI 顾问：zhitu_agent.py 提供采购建议与智能问答，RAG 检索扫描缓存、PG 摘要、业务手册与领域卡片，禁止编造上下文外 job_id，与 DiscoveryAgent 职责隔离，对应创新点 I5。'  runs=['None/-', 'None/-', 'None/-']
+[49] (Normal|None) ''  runs=['None/-']
+[50] (Heading 1|None) '第二章  核心技术'  runs=['黑体/-']
+[51] (Normal|None) '执图破局平台的核心竞争力源于对前沿数据治理、智能体推理与多维匹配技术的深度整合与创新应用。平台以「多源可信语料」为基石，致力于打破传统关键词匹配与静态图谱的局限性，通过整合入库门控、新兴岗位发现、能力演化差分、五维人岗匹配与 RAG 幻觉防'  runs=['None/-', 'None/-', 'None/-']
+[52] (Normal|CENTER (1)) '图 2.1  执图破局核心技术体系'  runs=['None/10.5', 'None/10.5', 'None/10.5']
+[53] (Normal|None) '如图 2.1 所示，系统通过发现—演化—匹配协同分析，突破单一数据源局限，实现更全面的岗位—能力图谱构建。尤其在新兴岗位识别可回放性、演化差分可复算性以及匹配结果可解释性上表现突出，形成五项可定位创新（I1—I5）。'  runs=['None/-', 'None/-', 'None/-']
+[54] (Heading 2|None) '2.1  多源数据质量门控'  runs=['黑体/-', '黑体/-']
+[55] (Normal|None) '对照赛题解读中的「交叉验证」表述，本模块在应用层 merge 与库内触发器两层均保留审计日志：merge 脚本输出 rejected.jsonl，PG 侧可通过 SELECT 统计 completeness 分布与 fingerprint '  runs=['None/-', 'None/-', 'None/-']
+[56] (Normal|None) '论文式表述要求每个创新点可定位源码：实现分散于 schema.sql 触发器、db_models.py ORM 字段、routers 聚合查询。评委可按此三线交叉验证文档与实现一致性。上述设计均可在源码与数据库层复核，并与赛题 XH-202'  runs=['None/-', 'None/-', 'None/-']
+[57] (Normal|None) '与同类作品对比，常见方案在 Elasticsearch 或 Python 脚本中做去重，难以保证并发写入一致性；本方案利用 PG UNIQUE 约束与触发器原子性，在多进程 merge 场景下仍 dedup 正确，体现数据库原生治理优势。上'  runs=['None/-', 'None/-', 'None/-']
+[58] (Normal|None) '从工程维护角度，上述逻辑以纯函数与数据库触发器为主，避免将门控规则散落在多个微服务中导致口径漂移。版本升级时仅需同步 schema.sql 与对应 ORM 字段映射，回归测试可通过固定 JD 样本集校验 fingerprint 与 comp'  runs=['None/-', 'None/-', 'None/-']
+[59] (Heading 3|None) '2.1.1  内容概述'  runs=['黑体/-']
+[60] (Normal|None) '多源数据质量门控（Innovation I1）是平台的数据入口防线，负责在 JD 进入发现、演化、匹配等高置信分析链路之前，拦截时滞样本、空壳帖、跨平台复制帖与字段严重缺失记录。赛题强调多源异构数据条件下的科学构建，若不在入库阶段建立统一指'  runs=['None/-', 'None/-', 'None/-']
+[61] (Normal|None) '本模块设计文件见 crawler/sql/schema.sql，与《数据库建表 DDL》一致。核心表 job_postings（查询总表）与 job_posting_details（细节表）采用 1:1 外键关联：前者承载 source_n'  runs=['None/-', 'None/-', 'None/-']
+[62] (Normal|None) '治理 API 由 backend/routers/collection.py 暴露：GET /api/collection/sources 返回各源 total_count、avg_completeness、last_crawled_at；'  runs=['None/-', 'None/-', 'None/-']
+[63] (Normal|None) '工程指标：在 12,495 条有效入库记录中，11,680 条经门控判定为高质量（completeness≥60 且 fingerprint 唯一），占比 93.5%。该比例表明门控策略在保留有效语料的同时，显著压缩了进入主分析池的噪声比例'  runs=['None/-', 'None/-', 'None/-']
+[64] (Normal|None) '与事后批处理清洗相比，触发器层门控具有「零额外调度成本、写入即生效、全链路一致」的优势，使发现 Agent 的聚类窗口、演化 Agent 的多源对比、匹配服务的 JD 解析均建立在同一可信语料基线之上。上述设计均可在源码与数据库层复核，并与'  runs=['None/-', 'None/-', 'None/-']
+[65] (Normal|None) '在性能方面，关键路径经 EXPLAIN ANALYZE 与前端 Performance 标记联合测定，批量入库与 API P95 均满足答辩现场笔记本环境。完整度计算仅做 NULL 计数，无全文 NLP，保证大规模扩容时仍线性可预期。上述设'  runs=['None/-', 'None/-', 'None/-']
+[66] (Normal|None) '复现指引：克隆仓库后配置 backend/.env 中 DATABASE_URL 与可选 DEEPSEEK_API_KEY，执行 start.bat 启动 Uvicorn，导入 crawler 预置 JSONL.gz 样本即可在本地复现本文'  runs=['None/-', 'None/-', 'None/-']
+[67] (Normal|None) '安全与合规方面，JD 文本不含用户隐私；fingerprint 仅哈希不可逆向还原全文，满足对外展示清洗样例时的脱敏要求。source_id_hash 避免在日志中打印原始平台 ID，降低与外部平台 ToS 冲突风险。上述设计均可在源码与数'  runs=['None/-', 'None/-', 'None/-']
+[68] (Normal|None) '对照赛题解读中的「交叉验证」表述，本模块在应用层 merge 与库内触发器两层均保留审计日志：merge 脚本输出 rejected.jsonl，PG 侧可通过 SELECT 统计 completeness 分布与 fingerprint '  runs=['None/-', 'None/-', 'None/-']
+[69] (Heading 3|None) '2.1.2  核心技术'  runs=['黑体/-']
+[71] (Normal|None) "（1）内容指纹算法：PostgreSQL 触发器 fn_generate_fingerprint 在 INSERT/UPDATE 时自动计算 fp = SHA256(concat_ws('|', job_title, company_nam"  runs=['None/-', 'None/-', 'None/-']
+[72] (Normal|None) '（2）完整度评分：触发器 fn_calculate_completeness 统计十五关键字段非空比例 C = filled/15 ∈ [0,1]，映射为 completeness 整数分 0—100。十五字段涵盖 source_name、'  runs=['None/-', 'None/-', 'None/-']
+[73] (Normal|None) '（3）索引与检索：启用 pg_trgm 扩展，对 job_title、company_name 建立 GIN 索引，支撑模糊搜索与聚类前的标题归一化辅助查询。source_id_hash 配合 source_name 构成唯一约束，防止同一'  runs=['None/-', 'None/-', 'None/-']
+[74] (Normal|None) '（4）双表读写分离：列表页与统计聚合仅扫描 job_postings 窄表；详情展开通过 job_id JOIN job_posting_details，避免宽表频繁 ALTER 与 TOAST 膨胀。extra JSONB 保留各源原始扩'  runs=['None/-', 'None/-', 'None/-']
+[75] (Normal|None) '（5）采集链路：crawler/ 模块支持智联、BOSS 直聘、51job 等多源采集，导出 JSONL.gz 后由 merge 脚本批量入库。入库前可在应用层做字段映射与编码归一；触发器层做最后一道硬门控，形成「应用映射 + 库内指纹/完'  runs=['None/-', 'None/-', 'None/-']
+[76] (Normal|None) '形式化门控函数可写为：Accept(r) ⟺ (C(r)≥θ_c) ∧ (fp(r)∉F_dup)，其中 θ_c=0.60，F_dup 为已入库指纹集合。该定义与 schema.sql 中触发器逻辑一一对应，评委可在本地 PG 实例复现 A'  runs=['None/-', 'None/-', 'None/-']
+[77] (Normal|None) '与同类作品对比，常见方案在 Elasticsearch 或 Python 脚本中做去重，难以保证并发写入一致性；本方案利用 PG UNIQUE 约束与触发器原子性，在多进程 merge 场景下仍 dedup 正确，体现数据库原生治理优势。上'  runs=['None/-', 'None/-', 'None/-']
+[78] (Normal|None) '从工程维护角度，上述逻辑以纯函数与数据库触发器为主，避免将门控规则散落在多个微服务中导致口径漂移。版本升级时仅需同步 schema.sql 与对应 ORM 字段映射，回归测试可通过固定 JD 样本集校验 fingerprint 与 comp'  runs=['None/-', 'None/-', 'None/-']
+[79] (Normal|None) '扩展路径包括：按行业调节阈值、对 salary_range 异常值做分位数截断、引入 publish_time 新鲜度权重。上述参数均可通过配置表热更新，无需重写发现/演化/匹配业务代码。上述设计均可在源码与数据库层复核，并与赛题 XH-2'  runs=['None/-', 'None/-', 'None/-']
+[80] (Normal|None) '在性能方面，关键路径经 EXPLAIN ANALYZE 与前端 Performance 标记联合测定，批量入库与 API P95 均满足答辩现场笔记本环境。完整度计算仅做 NULL 计数，无全文 NLP，保证大规模扩容时仍线性可预期。上述设'  runs=['None/-', 'None/-', 'None/-']
+--- headings ---
+  Heading 1: 摘要
+  Heading 1: 目录
+  Heading 1: 第一章  项目概述
+  Heading 2: 1.1  背景与目标
+  Heading 3: 1.1.1  项目背景
+  Heading 3: 1.1.2  国内外研究现状
+  Heading 3: 1.1.3  痛点分析
+  Heading 3: 1.1.4  项目目标
+  Heading 2: 1.2  功能概述
+  Heading 1: 第二章  核心技术
+  Heading 2: 2.1  多源数据质量门控
+  Heading 3: 2.1.1  内容概述
+  Heading 3: 2.1.2  核心技术
+  Heading 3: 2.1.3  创新点和优势
+  Heading 2: 2.2  新兴岗位发现智能体
+  Heading 3: 2.2.1  内容概述
+  Heading 3: 2.2.2  核心技术
+  Heading 3: 2.2.3  创新点和优势
+  Heading 2: 2.3  能力动态演化差分
+  Heading 3: 2.3.1  内容概述
+  Heading 3: 2.3.2  核心技术
+  Heading 3: 2.3.3  创新点和优势
+  Heading 2: 2.4  五维人岗匹配算法
+  Heading 3: 2.4.1  内容概述
+  Heading 3: 2.4.2  核心技术
+  Heading 3: 2.4.3  创新点和优势
+  Heading 2: 2.5  RAG 顾问与幻觉防控
+  Heading 3: 2.5.1  内容概述
+  Heading 3: 2.5.2  核心技术
+  Heading 3: 2.5.3  创新点和优势
+  Heading 1: 第三章  系统架构与实现
+  Heading 2: 3.1  项目整体架构
+  Heading 3: 3.1.1  分层架构设计
+  Heading 3: 3.1.2  模块化组件集成
+  Heading 2: 3.2  前端界面
+  Heading 3: 3.2.1  前端架构与功能描述
+  Heading 3: 3.2.2  新岗位发现界面
+  Heading 3: 3.2.3  发现详情研判界面
+  Heading 3: 3.2.4  数字人才地图界面
+  Heading 3: 3.2.5  人岗匹配工作台
+  Heading 3: 3.2.6  智能问答与数据底座界面
+  Heading 2: 3.3  后端服务
+  Heading 3: 3.3.1  数据库配置
+  Heading 3: 3.3.2  后端 API 配置
+  Heading 2: 3.4  智能分析评估体系
+  Heading 3: 3.4.1  发现层评估
+  Heading 3: 3.4.2  演化层评估
+  Heading 3: 3.4.3  匹配层评估
+  Heading 3: 3.4.4  顾问层与端到端评估
+  Heading 2: 3.5  技术栈
+  Heading 3: 3.5.1  前端技术栈
+  Heading 3: 3.5.2  后端技术栈
+  Heading 3: 3.5.3  数据库与采集技术栈
+  Heading 3: 3.5.4  AI 与推理技术栈
+  Heading 1: 第四章  技术和功能创新
+  Heading 2: 4.1  项目优势分析
+  Heading 3: 4.1.1  项目对比分析
+  Heading 3: 4.1.2  项目技术创新
+  Heading 2: 4.2  发现—演化—匹配闭环创新
+  Heading 2: 4.3  模块化研判工作台创新
+  Heading 2: 4.4  数据治理与可信 AI 创新
+  Heading 2: 4.5  图谱可视化与态势分析创新
+  Heading 1: 第五章  系统功能测试
+  Heading 2: 5.1  新岗位发现功能测试
+  Heading 3: 5.1.1  发现扫描与推理链测试
+  Heading 3: 5.1.2  发现详情研判测试
+  Heading 2: 5.2  人岗匹配与简历解析测试
+  Heading 3: 5.2.1  简历抽取测试
+  Heading 3: 5.2.2  匹配评分与差距图测试
+  Heading 2: 5.3  能力演化功能测试
+  Heading 2: 5.4  图谱与地图功能测试
+  Heading 2: 5.5  准确率与性能评估
+  Heading 3: 5.5.1  测试环境与数据集
+  Heading 3: 5.5.2  部署检查与回归测试
+  Heading 1: 第六章  总结与展望
+  Heading 2: 6.1  系统总结
+  Heading 2: 6.2  技术与社会影响
+  Heading 2: 6.3  未来轨迹
+  Heading 1: 参考文献
+  Heading 1: 附录 A  新岗位能力图谱示例（AI Agent 架构师）
+  Heading 1: 附录 B  既有岗位演化示例（Java 后端工程师）

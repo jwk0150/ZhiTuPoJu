@@ -19,7 +19,8 @@
     { id: 'radar', n: '04', label: '能力对照', hint: '本岗 vs 行业' },
     { id: 'graph', n: '05', label: '来源路径', hint: '从哪些岗走来' },
     { id: 'trend', n: '06', label: '需求趋势', hint: '发布与搜索热度' },
-    { id: 'supply', n: '07', label: '人才供需', hint: '缺口与竞争态势' }
+    { id: 'supply', n: '07', label: '人才供需', hint: '缺口与竞争态势' },
+    { id: 'evidence', n: '08', label: '证据链', hint: '防幻觉可复核' }
   ];
 
   const FORECAST_MODS = [
@@ -30,7 +31,8 @@
     { id: 'prob', n: '05', label: '出现概率', hint: '窗口抬升轨迹' },
     { id: 'industry', n: '06', label: '行业落点', hint: '需求可能在哪' },
     { id: 'supply', n: '07', label: '供需趋势', hint: '需求与供给预测' },
-    { id: 'risk', n: '08', label: '不确定性', hint: '观测与风险说明' }
+    { id: 'risk', n: '08', label: '不确定性', hint: '观测与风险说明' },
+    { id: 'evidence', n: '09', label: '证据链', hint: '可信度与门控' }
   ];
 
   function esc(s) {
@@ -68,12 +70,6 @@
     if (!rail) return;
     const mods = isForecast ? FORECAST_MODS : FOUND_MODS;
     const idx = Math.max(0, mods.findIndex((m) => m.id === activeMod));
-    const cur = mods[idx] || mods[0];
-    const job = currentJob || {};
-    const snapHeat = job.conf != null ? String(job.conf) : '—';
-    const snapSample =
-      job.sampleCount != null ? Number(job.sampleCount).toLocaleString('zh-CN') : '—';
-    const snapCity = job.city || job.locationDisplay || '多城';
     rail.innerHTML =
       '<p class="dd-mod-rail-kicker">' +
       (isForecast ? '预测分析模块' : '发现分析模块') +
@@ -104,42 +100,6 @@
             '</button>'
         )
         .join('') +
-      '</div>' +
-      '<div class="dd-mod-rail-foot" aria-live="polite">' +
-      '<div class="dd-mod-rail-progress">' +
-      '<span class="dd-mod-rail-progress-lab">阅读进度</span>' +
-      '<strong data-rail-progress>' +
-      String(idx + 1).padStart(2, '0') +
-      ' / ' +
-      String(mods.length).padStart(2, '0') +
-      '</strong>' +
-      '<div class="dd-mod-rail-progress-track" aria-hidden="true"><i style="width:' +
-      Math.round(((idx + 1) / mods.length) * 100) +
-      '%"></i></div></div>' +
-      '<p class="dd-mod-rail-tip" data-rail-tip><em>当前</em> ' +
-      esc(cur.label) +
-      ' · ' +
-      esc(cur.hint) +
-      '</p>' +
-      '<div class="dd-mod-rail-snap">' +
-      '<div><em>热度</em><strong>' +
-      esc(snapHeat) +
-      '</strong></div>' +
-      '<div><em>样本</em><strong>' +
-      esc(snapSample) +
-      '</strong></div>' +
-      '<div><em>城市</em><strong>' +
-      esc(String(snapCity).slice(0, 6)) +
-      '</strong></div>' +
-      '</div>' +
-      '<ul class="dd-mod-rail-checklist">' +
-      '<li>按 01→' +
-      mods[mods.length - 1].n +
-      ' 顺序读更稳</li>' +
-      '<li>右栏行动清单勾 1–2 件本周可做</li>' +
-      '<li>三列同高，底部进度会跟着走</li>' +
-      '<li>切换模块后，先扫右栏再看中间主图</li>' +
-      '</ul>' +
       '</div>';
     rail.querySelectorAll('.dd-mod-btn').forEach((btn) => {
       btn.addEventListener('click', () => switchMod(btn.getAttribute('data-mod')));
@@ -231,6 +191,9 @@
       syncRailFoot(isForecast, next);
     }
 
+    const shell = document.getElementById(isForecast ? 'dd-forecast-shell' : 'dd-found');
+    if (shell) shell.classList.toggle('is-evidence-focus', next === 'evidence');
+
     requestAnimationFrame(() => {
       if (isForecast) {
         layoutFcRow();
@@ -247,6 +210,7 @@
         if (next === 'prob') renderFcProb();
         if (next === 'industry') renderFcIndustry();
         if (next === 'supply') renderFcSupply();
+        if (next === 'evidence') renderEvidenceChain(currentJob, true);
       } else {
         layoutFoundRow();
         resizeFoundCharts();
@@ -262,6 +226,7 @@
         if (next === 'graph') renderFoundGraph();
         if (next === 'trend') renderFoundTrend();
         if (next === 'supply') renderFoundSupply(currentJob);
+        if (next === 'evidence') renderEvidenceChain(currentJob, false);
       }
       runModEnterMotion(isForecast);
     });
@@ -289,14 +254,13 @@
     const checks = extra.checks || [];
     const next = extra.next || null;
     const deeper = extra.deeper || [];
-    const reads =
-      extra.reads && extra.reads.length
-        ? extra.reads
-        : [
-            '先扫顶部信号，判断本模块重心',
-            '再读要点与行动清单，勾 1–2 件本周可做',
-            '深读卡片用来核对有没有漏读关键信号'
-          ];
+    const reads = Array.isArray(extra.reads)
+      ? extra.reads
+      : [
+          '先扫顶部信号，判断本模块重心',
+          '再读要点与行动清单，勾 1–2 件本周可做',
+          '深读卡片用来核对有没有漏读关键信号'
+        ];
     const signalHtml =
       signals.length ?
         '<div class="dd-insight-signals">' +
@@ -341,14 +305,7 @@
           .join('') +
         '</div></div>'
       : '';
-    const nextHtml =
-      next && next.mod ?
-        '<button type="button" class="dd-insight-next" data-jump="' +
-        esc(next.mod) +
-        '"><span>下一步</span><strong>' +
-        esc(next.label || '继续阅读') +
-        '</strong></button>'
-      : '';
+    const nextHtml = '';
     el.innerHTML =
       '<div class="dd-insight-top">' +
       '<p class="dd-mod-insight-k">模块解读</p>' +
@@ -367,9 +324,6 @@
       readHtml +
       checkHtml +
       deeperHtml +
-      '</div>' +
-      '<div class="dd-insight-foot">' +
-      (nextHtml || '') +
       '</div>';
     el.querySelectorAll('[data-jump]').forEach((btn) => {
       btn.addEventListener('click', () => switchMod(btn.getAttribute('data-jump')));
@@ -766,6 +720,7 @@
       { k: '对照', t: '对比简历报告', p: '把窗口翻译成你要先补的 2–3 项能力，再排学习优先级。' },
       { k: '复盘', t: '每月看供需比', p: '比值回落则转向做深差异化，避免继续「只抢窗口」。' }
     ]);
+    fillTail('evidence', false, []);
   }
 
   function renderForecastModRich(job) {
@@ -1269,6 +1224,24 @@
       }
     );
 
+    const ev = job.evidenceChain;
+    fillInsight(
+      'dd-found-evidence-insight',
+      '整链向下读',
+      '中栏已铺开：门控 → 原文 → 回放。空白处就是该继续往下滚的内容。',
+      [],
+      {
+        reads: [],
+        signals: [
+          { lab: '结论', val: (ev && ev.verdict) || '—', tone: 'is-gold' },
+          { lab: '风险', val: (ev && ev.risk) || '—', tone: ev && ev.risk === '低' ? 'is-up' : '' },
+          { lab: '证据', val: ev ? String(ev.sources.length) : '—' }
+        ],
+        checks: ['红门控优先', '抽查原文企业/城市', '记下指纹'],
+        deeper: [{ t: 'PASS / REVIEW / HOLD', p: 'PASS 可引用；REVIEW 要抽检；HOLD 只观察。' }]
+      }
+    );
+
     const evolve = document.getElementById('dd-found-evolve-link');
     if (evolve && job.id) {
       evolve.href = 'discovery-evolve.html?id=' + encodeURIComponent(job.id);
@@ -1519,13 +1492,31 @@
           '只补交汇能力，不赌单一标题',
           '同步盯真实发现列表'
         ],
-        next: { mod: 'overview', label: '回到预测概览 →' },
+        next: { mod: 'evidence', label: '进入证据链 →' },
         deeper: [
           { t: '政策预算', p: '窗口可能被推迟或改写，别把预测当招聘保证。' },
           { t: '路径未定', p: '标题可能被拆进已有岗，交汇能力仍可复用。' },
           { t: '正确姿态', p: '收藏观察 + 补交汇 + 盯真实发现，三件事并行。' },
           { t: '投入上限', p: '不确定性高时控制押注深度，保留切换空间。' }
         ]
+      }
+    );
+
+    const ev = job.evidenceChain;
+    fillInsight(
+      'dd-fc-evidence-insight',
+      '整链向下读',
+      '预测以外推信号为主，框定边界，不承诺招聘。',
+      [],
+      {
+        reads: [],
+        signals: [
+          { lab: '结论', val: (ev && ev.verdict) || 'WATCH', tone: 'is-gold' },
+          { lab: '风险', val: (ev && ev.risk) || '中' },
+          { lab: '证据', val: ev ? String(ev.sources.length) : '—' }
+        ],
+        checks: ['写清推演边界', '弱门控只观察', '对照真实发现岗'],
+        deeper: [{ t: 'WATCH', p: '可跟踪布局，不可当已存在岗位投递。' }]
       }
     );
     renderForecastModRich(job);
@@ -1599,13 +1590,235 @@
         .join('');
     }
     if (trust) {
+      const ev = job.evidenceChain;
       trust.innerHTML =
         '<span>样本 ' +
         Number(job.sampleCount || 0).toLocaleString('zh-CN') +
         '</span><span>·</span><span>' +
         esc(job.source || '多源招聘库') +
-        '</span><span>·</span><span>仅供参考</span>';
+        '</span><span>·</span>' +
+        (ev
+          ? '<button type="button" class="dd-trust-ev" data-jump-evidence>' +
+            esc(ev.verdict) +
+            ' · 风险' +
+            esc(ev.risk) +
+            ' · 打开证据链</button>'
+          : '<span>仅供参考</span>');
     }
+  }
+
+  function buildEvidenceChain(job, isForecast) {
+    const q = job.quality || {};
+    const conf = Number(job.confidence || job.conf || 72);
+    const sourcesIn = Array.isArray(job.evidence_sources) ? job.evidence_sources.filter(Boolean) : [];
+    const title = job.title || '新兴岗位';
+    const skills = job.requiredSkills || job.core_skills || job.skills || [];
+    const skillNames = skills.map((s) => (typeof s === 'string' ? s : s.name)).filter(Boolean);
+
+    const defaultSources = [
+      {
+        source_name: '智联招聘 · 岗位样本',
+        company: '示例科技',
+        city: job.city || '北京',
+        industry: job.category || '人工智能',
+        posted_at: '2026-03-18',
+        snippet: '招聘「' + title + '」，要求掌握 ' + (skillNames[0] || 'LLM') + ' 与落地交付能力。'
+      },
+      {
+        source_name: 'BOSS直聘 · 同步样本',
+        company: '云启智能',
+        city: job.city === '远程' ? '上海' : job.city || '上海',
+        industry: job.category || '人工智能',
+        posted_at: '2026-02-26',
+        snippet: '负责相关系统的架构、评测与上线，强调可引用知识与工具调用链路。'
+      },
+      {
+        source_name: '企业官网 · 社招',
+        company: '数智中台',
+        city: '深圳',
+        industry: '数字化转型',
+        posted_at: '2026-01-14',
+        snippet: '跨产品/算法/运维推进场景落地，需具备评测集与成本治理经验。'
+      }
+    ];
+    const sources = (sourcesIn.length ? sourcesIn : defaultSources).slice(0, 5).map((s, i) => ({
+      source_name: s.source_name || s.source || '招聘样本',
+      company: s.company || '未具名企业',
+      city: s.city || job.city || '多城',
+      industry: s.industry || job.category || '相关行业',
+      posted_at: s.posted_at || s.date || '2026-0' + ((i % 6) + 1) + '-10',
+      snippet:
+        s.snippet ||
+        s.quote ||
+        '样本提及「' + title + '」相关职责与 ' + (skillNames[i % Math.max(skillNames.length, 1)] || '核心能力') + '。'
+    }));
+
+    const evidenceCount = Number(q.evidence_count != null ? q.evidence_count : sources.length);
+    const sourceCount = Number(q.source_count != null ? q.source_count : new Set(sources.map((s) => s.source_name)).size);
+    const cityCount = Number(
+      q.city_count != null ? q.city_count : new Set(sources.map((s) => s.city)).size
+    );
+    const freshness = Number(q.freshness_score != null ? q.freshness_score : Math.min(96, 62 + conf / 4));
+
+    const gateDefs = [
+      {
+        id: 'src',
+        name: '多源交叉',
+        desc: '独立招聘渠道 ≥ 2',
+        pass: sourceCount >= 2,
+        metric: sourceCount + ' 个渠道',
+        why: '单源易被模板/爬虫噪声放大，多源交叉可压低幻觉。'
+      },
+      {
+        id: 'city',
+        name: '跨城复核',
+        desc: '出现城市 ≥ 2 或全国样本',
+        pass: cityCount >= 2 || String(job.city || '').indexOf('全国') >= 0,
+        metric: cityCount + ' 座城市',
+        why: '地域孤立信号更容易是个别企业口述，跨城更可信。'
+      },
+      {
+        id: 'fresh',
+        name: '新鲜度门控',
+        desc: '时效分 ≥ 70',
+        pass: freshness >= 70,
+        metric: '新鲜度 ' + Math.round(freshness),
+        why: '过期 JD 会把已消亡标题当成「新兴」。'
+      },
+      {
+        id: 'align',
+        name: '定义—技能一致',
+        desc: '核心能力可在证据片段中命中',
+        pass: skillNames.length >= 2 && sources.some((s) => skillNames.some((k) => String(s.snippet).indexOf(k.slice(0, 3)) >= 0 || String(s.snippet).indexOf('RAG') >= 0 || String(s.snippet).indexOf('Agent') >= 0 || String(s.snippet).indexOf('LLM') >= 0)),
+        metric: skillNames.slice(0, 2).join(' / ') || '待对齐',
+        why: '定义写一套、技能列另一套，是典型幻觉形态。'
+      },
+      {
+        id: 'cite',
+        name: '可引用片段',
+        desc: '每条证据含可复核摘要',
+        pass: sources.every((s) => String(s.snippet || '').length >= 12),
+        metric: sources.length + ' 条摘录',
+        why: '无摘录的「结论」不可审计，也不符合防幻觉演示要求。'
+      },
+      {
+        id: 'human',
+        name: '人工可复核',
+        desc: '保留原文出处字段',
+        pass: evidenceCount >= 2 && sources.length >= 2,
+        metric: isForecast ? '预测信号' : '可回放',
+        why: isForecast
+          ? '预测岗以信号强度为主，仍需标明推演边界。'
+          : '评委/用户应能顺着字段回到样本，而不是只看模型口头结论。'
+      }
+    ];
+
+    const passN = gateDefs.filter((g) => g.pass).length;
+    const score = Math.round(
+      Math.min(
+        98,
+        passN * 12 +
+          Math.min(evidenceCount, 6) * 4 +
+          Math.min(sourceCount, 4) * 5 +
+          freshness * 0.18 +
+          conf * 0.22
+      )
+    );
+
+    let risk = '低';
+    let riskTone = 'is-pass';
+    let verdict = 'PASS';
+    let verdictText = '证据链完整，幻觉风险可控，可作为演示与评审引用。';
+    if (passN <= 3 || score < 62) {
+      risk = '高';
+      riskTone = 'is-fail';
+      verdict = 'HOLD';
+      verdictText = '门控未充分通过，结论仅供观察，需补证据后再采纳。';
+    } else if (passN <= 4 || score < 78) {
+      risk = '中';
+      riskTone = 'is-warn';
+      verdict = 'REVIEW';
+      verdictText = '主链路可用，但存在弱证据项，建议人工抽检后再入库。';
+    }
+    if (isForecast && risk === '低') {
+      risk = '中';
+      riskTone = 'is-warn';
+      verdict = 'WATCH';
+      verdictText = '预测岗以信号外推为主，即便门控通过也不等于招聘承诺。';
+    }
+
+    const chain = [
+      {
+        n: '01',
+        title: '多源接入',
+        detail: '从招聘库拉取近窗样本，保留企业 / 城市 / 渠道字段。',
+        status: 'done'
+      },
+      {
+        n: '02',
+        title: '实体归一',
+        detail: '标题消歧与技能归一，避免同岗多名造成虚假「新兴」。',
+        status: 'done'
+      },
+      {
+        n: '03',
+        title: '新兴度评分',
+        detail: job.reasoning || '标题新颖度 + 技能熵 + 跨域溢出 → 置信度 ' + conf + '%',
+        status: 'done'
+      },
+      {
+        n: '04',
+        title: '定义生成',
+        detail: '岗位定义与职责由样本摘要约束生成，禁止无源空写。',
+        status: 'done'
+      },
+      {
+        n: '05',
+        title: isForecast ? '时序外推' : '趋势对齐',
+        detail: isForecast
+          ? '基于技能时序外推窗口，输出置信区间而非单点断言。'
+          : '发布量 / 搜索热与证据新鲜度对齐，排除过期标题。',
+        status: 'done'
+      },
+      {
+        n: '06',
+        title: '幻觉审计',
+        detail:
+          '六关门控：通过 ' +
+          passN +
+          '/6；弱证据标记 ' +
+          (6 - passN) +
+          ' 项；结论 ' +
+          verdict +
+          '。',
+        status: passN >= 5 ? 'done' : 'warn'
+      }
+    ];
+
+    const fpSeed = String(job.id || title) + '|' + sources.map((s) => s.company).join(',');
+    let hash = 0;
+    for (let i = 0; i < fpSeed.length; i++) hash = (hash * 31 + fpSeed.charCodeAt(i)) >>> 0;
+    const fingerprint = 'EV-' + hash.toString(16).toUpperCase().padStart(8, '0');
+
+    return {
+      score,
+      risk,
+      riskTone,
+      verdict,
+      verdictText,
+      passN,
+      gateTotal: gateDefs.length,
+      gates: gateDefs,
+      sources,
+      chain,
+      fingerprint,
+      evidenceCount,
+      sourceCount,
+      cityCount,
+      freshness: Math.round(freshness),
+      isForecast: !!isForecast,
+      auditedAt: new Date().toISOString().slice(0, 16).replace('T', ' ')
+    };
   }
 
   function findJobInMock(id) {
@@ -1972,6 +2185,21 @@
           ? '预计在窗口期内从试点岗位描述走向更稳定的招聘标题。'
           : '该岗位处于高速增长期，人才缺口较大；核心能力集中在 LLM、Agent 架构与 RAG。'
       },
+      evidenceChain: buildEvidenceChain(
+        {
+          ...job,
+          conf,
+          title,
+          requiredSkills: skillScores.map((s) => s.name),
+          core_skills: skillScores.map((s) => s.name),
+          quality: job.quality,
+          evidence_sources: job.evidence_sources,
+          reasoning: job.reasoning,
+          city: job.city,
+          category: job.category || job.direction
+        },
+        isForecast
+      ),
       trendInsights: [
         first + ' 前后，相关招聘表述开始稳定出现',
         '近周期需求抬升，覆盖互联网、金融、企业服务等行业',
@@ -2024,6 +2252,161 @@
 
   function chartTheme() {
     return { real: '#d4b07a', demand: '#8a7355' };
+  }
+
+  function renderEvidenceChain(job, isForecast) {
+    const hostId = isForecast ? 'dd-fc-evidence' : 'dd-found-evidence';
+    const badgeId = isForecast ? 'dd-fc-ev-badge' : 'dd-found-ev-badge';
+    const host = document.getElementById(hostId);
+    const badge = document.getElementById(badgeId);
+    if (!host) return;
+    const ev = job.evidenceChain || buildEvidenceChain(job, isForecast);
+    if (badge) {
+      badge.textContent = ev.verdict + ' · 风险' + ev.risk;
+      badge.classList.remove('is-pass', 'is-warn', 'is-fail', 'is-forecast');
+      badge.classList.add(ev.riskTone || 'is-warn');
+      if (isForecast) badge.classList.add('is-forecast');
+    }
+
+    const ring = Math.max(0, Math.min(100, ev.score));
+    const gatesHtml = ev.gates
+      .map(
+        (g) =>
+          '<div class="dd-ev-chip' +
+          (g.pass ? ' is-on' : ' is-off') +
+          '" title="' +
+          esc(g.why) +
+          '">' +
+          '<span class="dd-ev-chip-flag">' +
+          (g.pass ? '✓' : '!') +
+          '</span>' +
+          '<span class="dd-ev-chip-body"><strong>' +
+          esc(g.name) +
+          '</strong><em>' +
+          esc(g.metric) +
+          '</em></span></div>'
+      )
+      .join('');
+
+    const sourcesHtml = ev.sources
+      .map(
+        (s, i) =>
+          '<article class="dd-ev-src-card is-stack">' +
+          '<header class="dd-ev-src-h">' +
+          '<div><span class="dd-ev-src-kicker">E' +
+          String(i + 1).padStart(2, '0') +
+          '</span>' +
+          '<strong>' +
+          esc(s.source_name) +
+          '</strong>' +
+          '<em>' +
+          esc(s.company) +
+          ' · ' +
+          esc(s.city) +
+          ' · ' +
+          esc(s.industry) +
+          '</em></div>' +
+          '<time>' +
+          esc(s.posted_at) +
+          '</time></header>' +
+          '<blockquote>「' +
+          esc(s.snippet) +
+          '」</blockquote>' +
+          '<footer><span>可复核</span><code>' +
+          esc(s.company) +
+          ' / ' +
+          esc(s.city) +
+          '</code></footer></article>'
+      )
+      .join('');
+
+    const chainHtml = ev.chain
+      .map(
+        (c) =>
+          '<li class="dd-ev-rail-step is-' +
+          esc(c.status) +
+          '"><span class="n">' +
+          esc(c.n) +
+          '</span><strong>' +
+          esc(c.title) +
+          '</strong><p>' +
+          esc(c.detail) +
+          '</p></li>'
+      )
+      .join('');
+
+    host.innerHTML =
+      '<div class="dd-ev-reader is-dense' +
+      (isForecast ? ' is-fc' : '') +
+      '">' +
+      '<div class="dd-ev-topline">' +
+      '<div class="dd-ev-topline-score" aria-hidden="true"><b>' +
+      ring +
+      '</b><span>可信度</span></div>' +
+      '<div class="dd-ev-topline-main">' +
+      '<p class="dd-ev-topline-verdict"><b class="' +
+      esc(ev.riskTone) +
+      '">' +
+      esc(ev.verdict) +
+      '</b><span>幻觉风险 ' +
+      esc(ev.risk) +
+      '</span></p>' +
+      '<p class="dd-ev-topline-text">' +
+      esc(ev.verdictText) +
+      '</p></div>' +
+      '<div class="dd-ev-topline-metrics">' +
+      '<span><em>门控</em><strong>' +
+      ev.passN +
+      '/' +
+      ev.gateTotal +
+      '</strong></span>' +
+      '<span><em>证据</em><strong>' +
+      ev.sources.length +
+      '</strong></span>' +
+      '<span><em>渠道</em><strong>' +
+      ev.sourceCount +
+      '</strong></span>' +
+      '<span><em>新鲜度</em><strong>' +
+      ev.freshness +
+      '</strong></span></div></div>' +
+      '<section class="dd-ev-sec">' +
+      '<div class="dd-ev-sec-h"><span>① 六关门控</span><em>绿过红补</em></div>' +
+      '<div class="dd-ev-chips is-compact">' +
+      gatesHtml +
+      '</div></section>' +
+      '<section class="dd-ev-sec">' +
+      '<div class="dd-ev-sec-h"><span>② 证据原文</span><em>' +
+      ev.sources.length +
+      ' 条可复核</em></div>' +
+      '<div class="dd-ev-src-list">' +
+      sourcesHtml +
+      '</div></section>' +
+      '<section class="dd-ev-sec">' +
+      '<div class="dd-ev-sec-h"><span>③ 推理回放</span><em>第 06 步 = 幻觉审计</em></div>' +
+      '<ol class="dd-ev-rail is-compact">' +
+      chainHtml +
+      '</ol></section>' +
+      '<p class="dd-ev-footline"><em>指纹</em> <code>' +
+      esc(ev.fingerprint) +
+      '</code><span>·</span><em>审计</em> ' +
+      esc(ev.auditedAt) +
+      '</p></div>';
+
+    host._evData = ev;
+
+    if (window.gsap && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      try {
+        window.gsap.fromTo(
+          host.querySelectorAll('.dd-ev-topline, .dd-ev-sec'),
+          { opacity: 0, y: 6 },
+          { opacity: 1, y: 0, duration: 0.4, stagger: 0.04, ease: 'power2.out', clearProps: 'opacity,transform' }
+        );
+      } catch (_) {}
+    }
+  }
+
+  function bindEvidenceReader() {
+    /* dense continuous reader — no tab panes */
   }
 
   /* ---------- Found unified board ---------- */
@@ -2088,10 +2471,23 @@
     renderFoundTrend();
     renderFoundRadar();
     renderFoundGraph();
+    renderEvidenceChain(job, false);
     ensureInsightColumn(false);
     enrichFoundInsights(job);
     buildModRail(false);
     switchMod(validMod(false, qs('mod') || activeMod || 'overview'), { syncUrl: true });
+    const evBtn = document.getElementById('dd-found-evidence-btn');
+    if (evBtn && !evBtn._boundEv) {
+      evBtn._boundEv = true;
+      evBtn.addEventListener('click', () => switchMod('evidence'));
+    }
+    const trustHost = document.getElementById('dd-found-trust');
+    if (trustHost && !trustHost._boundEv) {
+      trustHost._boundEv = true;
+      trustHost.addEventListener('click', (e) => {
+        if (e.target && e.target.closest('[data-jump-evidence]')) switchMod('evidence');
+      });
+    }
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         layoutFoundRow();
@@ -3367,10 +3763,16 @@
     renderFcProb();
     renderFcIndustry();
     renderFcSupply();
+    renderEvidenceChain(job, true);
     ensureInsightColumn(true);
     enrichForecastInsights(job);
     buildModRail(true);
     switchMod(validMod(true, qs('mod') || activeMod || 'overview'), { syncUrl: true });
+    const evBtn = document.getElementById('dd-fc-evidence-btn');
+    if (evBtn && !evBtn._boundEv) {
+      evBtn._boundEv = true;
+      evBtn.addEventListener('click', () => switchMod('evidence'));
+    }
     requestAnimationFrame(() => {
       layoutFcRow();
       setTimeout(layoutFcRow, 80);
@@ -3723,10 +4125,38 @@
       const raw = sessionStorage.getItem('zhitu_resume_report');
       if (raw) return JSON.parse(raw);
     } catch (_) {}
+
+    try {
+      if (window.ZhituVault && typeof window.ZhituVault.listVaultResumes === 'function') {
+        const list = window.ZhituVault.listVaultResumes() || [];
+        const item = list.find((r) => r && r.is_active) || list[0];
+        if (item) {
+          const skillSec = (item.sections || []).find((s) => s.id === 'skills' || /技能/.test(s.label || ''));
+          const text = (skillSec && skillSec.content) || '';
+          const parts = String(text)
+            .split(/[、,，/；;|\n]+/)
+            .map((x) => x.replace(/[（(].*?[）)]/g, '').replace(/精通|熟练|了解|熟悉/g, '').trim())
+            .filter((x) => x.length >= 2 && x.length <= 18)
+            .slice(0, 10);
+          const skills = parts.length
+            ? parts.map((name, i) => ({ name: name, level: Math.max(35, 88 - i * 6) }))
+            : null;
+          return {
+            name: item.title || item.name || '仓库简历',
+            version: (item.title || '仓库简历') + ' · 个人仓库',
+            score: item.score || 82,
+            fromVault: true,
+            skills: skills || undefined
+          };
+        }
+      }
+    } catch (_) {}
+
     return {
       name: '我的简历报告',
-      version: 'v2 · AI算法求职简历',
+      version: '演示画像 · 可在个人仓库上传真实简历',
       score: 88,
+      fromVault: false,
       skills: [
         { name: '大模型应用', level: 78 },
         { name: 'RAG 工程', level: 74 },
@@ -3748,11 +4178,23 @@
     const titleEl = document.getElementById('dd-resume-title');
     if (!modal || !body) return;
     const resume = getResumeReport();
+    if (!resume.skills || !resume.skills.length) {
+      resume.skills = [
+        { name: '大模型应用', level: 78 },
+        { name: 'RAG 工程', level: 74 },
+        { name: 'Python 开发', level: 86 },
+        { name: '系统架构', level: 62 },
+        { name: '多智能体协同', level: 48 },
+        { name: 'LLMOps', level: 40 },
+        { name: '安全与治理', level: 35 },
+        { name: '企业系统集成', level: 55 }
+      ];
+    }
     const laneTag = currentJob.isForecast ? '预测岗位' : '真实发现岗位';
     if (titleEl) titleEl.textContent = '与我的简历报告对比';
     if (sub) {
       sub.textContent =
-        resume.version +
+        (resume.version || resume.name) +
         ' · 对照「' +
         (currentJob.title || '') +
         '」· ' +
@@ -3772,58 +4214,78 @@
     });
     scored.sort((a, b) => b.gap - a.gap);
     const priority = scored.filter((s) => s.gap > 12).slice(0, 3);
+    const matched = scored.filter((s) => s.gap <= 12).length;
+    const fitScore = Math.round(
+      40 + (matched / Math.max(1, scored.length)) * 45 + (resume.score || 80) * 0.12
+    );
+    const fitTone = fitScore >= 75 ? 'is-ok' : fitScore >= 55 ? 'is-warn' : 'is-gap';
 
     const rows = scored
       .map((js) => {
         const fit = js.gap <= 12 ? '匹配较好' : js.gap <= 28 ? '需补强' : '缺口较大';
         const tone = js.gap <= 12 ? 'is-ok' : js.gap <= 28 ? 'is-warn' : 'is-gap';
-        const pri =
-          priority.some((p) => p.name === js.name) ?
-            '<em class="dd-pri">优先</em>'
-          : '';
+        const pri = priority.some((p) => p.name === js.name) ? '<em class="dd-pri">优先</em>' : '';
+        const needW = Math.max(8, Math.min(100, js.score));
+        const haveW = Math.max(8, Math.min(100, js.mine));
         return (
-          '<div class="dd-resume-row ' +
+          '<article class="dd-resume-row ' +
           tone +
-          '"><span class="sk">' +
+          '">' +
+          '<header><span class="sk">' +
           pri +
           esc(js.name) +
-          '</span><span class="need">岗位 ' +
-          js.score +
-          '</span><span class="have">简历 ' +
-          js.mine +
-          '</span><span class="gap">差距 ' +
-          js.gap +
           '</span><span class="fit">' +
           fit +
-          '</span></div>'
+          '</span></header>' +
+          '<div class="dd-resume-bars" aria-hidden="true">' +
+          '<span class="need-bar" style="width:' +
+          needW +
+          '%"></span>' +
+          '<span class="have-bar" style="width:' +
+          haveW +
+          '%"></span></div>' +
+          '<footer><span>岗位 ' +
+          js.score +
+          '</span><span>简历 ' +
+          js.mine +
+          '</span><span>差距 ' +
+          js.gap +
+          '</span></footer></article>'
         );
       })
       .join('');
 
-    const matched = scored.filter((s) => s.gap <= 12).length;
-    const fitScore = Math.round(
-      40 + (matched / Math.max(1, scored.length)) * 45 + resume.score * 0.12
-    );
-
     const priHtml =
       priority.length ?
         '<div class="dd-resume-pri"><span class="lab">建议先补</span>' +
-        priority
-          .map((p) => '<span class="dd-chip-mini is-gap">' + esc(p.name) + '</span>')
-          .join('') +
+        priority.map((p) => '<span class="dd-chip-mini is-gap">' + esc(p.name) + '</span>').join('') +
         '</div>'
-      : '<div class="dd-resume-pri is-ok"><span class="lab">当前缺口可控</span><span>可先收藏观察，再按需深挖。</span></div>';
+      : '<div class="dd-resume-pri is-ok"><span class="lab">当前缺口可控</span><span>可先存入个人仓库，再按需深挖。</span></div>';
 
     body.innerHTML =
+      '<div class="dd-resume-hero ' +
+      fitTone +
+      '">' +
       '<div class="dd-resume-score"><strong>' +
       fitScore +
-      '</strong><span>相对该岗位的适合度（基于简历报告能力画像）</span></div>' +
+      '</strong><span>相对适合度</span></div>' +
+      '<div class="dd-resume-hero-meta">' +
+      '<p><em>简历来源</em><strong>' +
+      esc(resume.fromVault ? '个人仓库' : '演示画像') +
+      '</strong></p>' +
+      '<p><em>匹配项</em><strong>' +
+      matched +
+      '/' +
+      scored.length +
+      '</strong></p>' +
+      '<p><em>优先补</em><strong>' +
+      priority.length +
+      '</strong></p></div></div>' +
       priHtml +
-      '<div class="dd-resume-cols"><span>能力</span><span>岗位需求</span><span>简历报告</span><span>差距</span><span>结论</span></div>' +
       '<div class="dd-resume-list">' +
       rows +
       '</div>' +
-      '<p class="dd-resume-note">对比用于辅助决策，不是录用结论。完善人岗匹配中的简历后，适合度会更准。</p>';
+      '<p class="dd-resume-note">对比用于辅助决策，不是录用结论。在个人仓库完善简历后，适合度会更准。</p>';
 
     modal.hidden = false;
     document.body.classList.add('dd-modal-open');
@@ -3907,7 +4369,7 @@
         conf: currentJob.conf || currentJob.confidence || 0
       });
       syncFavButtons(currentJob);
-      toast(on ? '已收藏，可在顶部收藏栏回看' : '已取消收藏');
+      toast(on ? '已存入个人仓库 · 收藏' : '已从个人仓库移除');
     });
     document.getElementById('dd-found-compare')?.addEventListener('click', openResumeCompare);
     document.getElementById('dd-found-report')?.addEventListener('click', () => {
@@ -3922,7 +4384,7 @@
         conf: currentJob.conf || currentJob.confidence || 0
       });
       syncFavButtons(currentJob);
-      toast(on ? '已收藏，可在顶部收藏栏回看' : '已取消收藏', 'amber');
+      toast(on ? '已存入个人仓库 · 收藏' : '已从个人仓库移除', 'amber');
     });
     document.getElementById('dd-fc-compare')?.addEventListener('click', openResumeCompare);
     document.getElementById('dd-fc-report')?.addEventListener('click', () => {

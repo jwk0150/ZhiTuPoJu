@@ -25,10 +25,99 @@
   window.discSetKind = setKind;
 
   window.openDiscoveryDaily = function () {
-    if (window.Utils && window.Utils.showToast) {
-      window.Utils.showToast('发现日报将汇总本周期真实发现与高置信预测', 'mint');
+    window.ensureDiscoveryState && window.ensureDiscoveryState();
+    const ds = window.discoveryState || {};
+    const found = (ds.discoveries || []).slice().sort((a, b) => (b.confidence || 0) - (a.confidence || 0));
+    const forecast = (ds.forecasts || []).slice().sort((a, b) => (b.confidence || 0) - (a.confidence || 0));
+    const high = forecast.filter((j) => (j.confidence || 0) >= 80);
+    const modal = document.getElementById('dh-daily-modal');
+    const body = document.getElementById('dh-daily-body');
+    const sub = document.getElementById('dh-daily-sub');
+    if (!modal || !body) {
+      if (window.Utils && window.Utils.showToast) {
+        window.Utils.showToast('发现日报将汇总本周期真实发现与高置信预测', 'mint');
+      }
+      return;
     }
+    const now = new Date();
+    const dateStr =
+      now.getFullYear() +
+      '-' +
+      String(now.getMonth() + 1).padStart(2, '0') +
+      '-' +
+      String(now.getDate()).padStart(2, '0');
+    if (sub) sub.textContent = dateStr + ' · 近 90 天信号摘要 · 共 ' + (found.length + forecast.length) + ' 条';
+
+    const esc = (s) =>
+      String(s == null ? '' : s)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+
+    const card = (j, lane) => {
+      const conf = j.confidence != null ? j.confidence : j.conf || 0;
+      const href = 'discovery-detail.html?id=' + encodeURIComponent(j.id || '');
+      const skills = (j.core_skills || j.skills || []).slice(0, 3);
+      const skillTxt = skills
+        .map((s) => (typeof s === 'string' ? s : s.name))
+        .filter(Boolean)
+        .join(' · ');
+      return (
+        '<a class="dh-daily-card is-' +
+        lane +
+        '" href="' +
+        href +
+        '">' +
+        '<span class="dh-daily-card-lane">' +
+        (lane === 'forecast' ? '预测' : '真实') +
+        '</span>' +
+        '<strong>' +
+        esc(j.title || '未命名岗位') +
+        '</strong>' +
+        '<em>' +
+        (skillTxt || esc(j.category || '新兴岗位')) +
+        '</em>' +
+        '<span class="dh-daily-card-conf">' +
+        conf +
+        '%</span></a>'
+      );
+    };
+
+    body.innerHTML =
+      '<div class="dh-daily-kpis">' +
+      '<div><em>真实发现</em><strong>' +
+      found.length +
+      '</strong></div>' +
+      '<div><em>预测岗位</em><strong>' +
+      forecast.length +
+      '</strong></div>' +
+      '<div><em>高置信预测</em><strong>' +
+      high.length +
+      '</strong></div>' +
+      '<div><em>建议动作</em><strong>读 Top 3</strong></div></div>' +
+      '<section class="dh-daily-sec">' +
+      '<h3>今日重点 · 真实发现</h3>' +
+      '<div class="dh-daily-grid">' +
+      (found.length ? found.slice(0, 4).map((j) => card(j, 'found')).join('') : '<p class="dh-daily-empty">暂无真实发现样本</p>') +
+      '</div></section>' +
+      '<section class="dh-daily-sec">' +
+      '<h3>前瞻信号 · 高置信预测</h3>' +
+      '<div class="dh-daily-grid">' +
+      ((high.length ? high : forecast).slice(0, 4).map((j) => card(j, 'forecast')).join('') ||
+        '<p class="dh-daily-empty">暂无预测样本</p>') +
+      '</div></section>' +
+      '<p class="dh-daily-note">日报用于快速扫盘：真实岗位可直接对照简历；预测岗位建议收藏到个人仓库后持续观察。</p>';
+
+    modal.hidden = false;
+    document.body.classList.add('dh-daily-open');
   };
+
+  function closeDiscoveryDaily() {
+    const modal = document.getElementById('dh-daily-modal');
+    if (modal) modal.hidden = true;
+    document.body.classList.remove('dh-daily-open');
+  }
 
   window.initDiscoveryHome = function () {
     document.querySelectorAll('.dh-tab[data-kind]').forEach((btn) => {
@@ -40,6 +129,18 @@
 
     const kindSelect = document.getElementById('discovery-kind');
     kindSelect?.addEventListener('change', () => setKind(kindSelect.value));
+
+    document.querySelectorAll('[data-close-daily]').forEach((el) => {
+      el.addEventListener('click', closeDiscoveryDaily);
+    });
+    document.getElementById('dh-daily-goto-found')?.addEventListener('click', () => {
+      closeDiscoveryDaily();
+      setKind('found');
+      document.getElementById('discovery-results')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeDiscoveryDaily();
+    });
 
     if (window.discoveryState) window.discoveryState.pageSize = 8;
     const origEnsure = window.ensureDiscoveryState;

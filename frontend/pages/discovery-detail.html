@@ -9,8 +9,8 @@
   <link rel="stylesheet" href="../css/shell.css?v=20260825soft" />
   <link rel="stylesheet" href="../css/components.css?v=50" />
   <link rel="stylesheet" href="../css/page-polish.css?v=50" />
-  <link rel="stylesheet" href="../css/discovery-favs.css?v=1" />
-  <link rel="stylesheet" href="../css/discovery-detail.css?v=86mod24" />
+  <link rel="stylesheet" href="../css/discovery-favs.css?v=3vault" />
+  <link rel="stylesheet" href="../css/discovery-detail.css?v=101cmp" />
   <link rel="stylesheet" href="../css/discovery-evolve.css?v=4" />
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 </head>
@@ -18,14 +18,6 @@
   <div id="app-shell"></div>
   <main class="page-main page-main--cockpit" id="page-main">
     <section class="view active dd-page dd-page--cockpit dd-page--unified" id="view-discovery-detail">
-
-      <aside class="dd-fav-bar enter" style="--d:.01s" id="dd-fav-bar" aria-label="收藏栏">
-        <div class="dd-fav-bar-head">
-          <span class="dd-fav-bar-title">收藏栏</span>
-          <span class="dd-fav-bar-count">0</span>
-        </div>
-        <div class="dd-fav-bar-track" id="dd-fav-bar-track"></div>
-      </aside>
 
       <!-- ========== 真实发现：整页统一看板 ========== -->
       <div class="dd-found" id="dd-found" hidden>
@@ -60,7 +52,10 @@
             <button type="button" class="dd-fc-btn is-primary" id="dd-found-compare" title="与自己的简历报告对比">
               <span class="ico" aria-hidden="true">⊞</span>对比简历报告
             </button>
-            <button type="button" class="dd-fc-btn" id="dd-found-fav"><span class="ico" aria-hidden="true">☆</span>收藏</button>
+            <button type="button" class="dd-fc-btn dd-fc-btn--evidence" id="dd-found-evidence-btn" title="打开防幻觉证据链">
+              <span class="ico" aria-hidden="true">◈</span>证据链
+            </button>
+            <button type="button" class="dd-fc-btn" id="dd-found-fav" title="存入个人仓库"><span class="ico" aria-hidden="true">☆</span>收藏到仓库</button>
             <button type="button" class="dd-fc-btn is-ghost" id="dd-found-report">
               <span class="ico" aria-hidden="true">↓</span>下载报告
             </button>
@@ -174,6 +169,20 @@
                 <aside class="dd-mod-insight" id="dd-found-supply-insight"></aside>
               </div>
             </section>
+
+            <section class="dd-panel dd-fc-panel dd-panel-evidence" data-mod="evidence" aria-labelledby="dd-evidence-h" hidden>
+              <header class="dd-panel-head dd-panel-head-split">
+                <div>
+                  <h2 id="dd-evidence-h">证据链 · 防幻觉审计</h2>
+                  <p class="dd-ev-head-sub">可复核来源 · 六关门控 · 推理回放 · 幻觉风险评级</p>
+                </div>
+                <span class="dd-ev-badge" id="dd-found-ev-badge">审计中</span>
+              </header>
+              <div class="dd-mod-body">
+                <div class="dd-ev-stage" id="dd-found-evidence" role="region" aria-label="岗位证据链"></div>
+                <aside class="dd-mod-insight" id="dd-found-evidence-insight"></aside>
+              </div>
+            </section>
           </div>
         </div>
       </div>
@@ -208,7 +217,10 @@
             <button type="button" class="dd-fc-btn is-primary" id="dd-fc-compare" title="与自己的简历报告对比">
               <span class="ico" aria-hidden="true">⊞</span>对比简历报告
             </button>
-            <button type="button" class="dd-fc-btn" id="dd-fc-fav"><span class="ico" aria-hidden="true">☆</span>收藏</button>
+            <button type="button" class="dd-fc-btn dd-fc-btn--evidence" id="dd-fc-evidence-btn" title="打开预测可信度证据链">
+              <span class="ico" aria-hidden="true">◈</span>证据链
+            </button>
+            <button type="button" class="dd-fc-btn" id="dd-fc-fav" title="存入个人仓库"><span class="ico" aria-hidden="true">☆</span>收藏到仓库</button>
             <button type="button" class="dd-fc-btn is-ghost" id="dd-fc-report">
               <span class="ico" aria-hidden="true">↓</span>下载报告
             </button>
@@ -330,6 +342,20 @@
                 <aside class="dd-mod-insight" id="dd-fc-risk-insight"></aside>
               </div>
             </section>
+
+            <section class="dd-panel dd-fc-panel dd-panel-evidence is-forecast-ev" data-mod="evidence" aria-labelledby="dd-fc-evidence-h" hidden>
+              <header class="dd-panel-head dd-panel-head-split">
+                <div>
+                  <h2 id="dd-fc-evidence-h">证据链 · 预测可信度</h2>
+                  <p class="dd-ev-head-sub">信号来源 · 门控校验 · 推演回放 · 幻觉风险提示</p>
+                </div>
+                <span class="dd-ev-badge is-forecast" id="dd-fc-ev-badge">推演审计</span>
+              </header>
+              <div class="dd-mod-body">
+                <div class="dd-ev-stage" id="dd-fc-evidence" role="region" aria-label="预测证据链"></div>
+                <aside class="dd-mod-insight" id="dd-fc-evidence-insight"></aside>
+              </div>
+            </section>
           </div>
         </div>
       </div>
@@ -342,12 +368,13 @@
             <div>
               <span class="dd-fc-tag">适合度对照</span>
               <h2 id="dd-resume-title">与我的简历报告对比</h2>
-              <p class="dd-resume-sub" id="dd-resume-sub">对照预测岗位所需能力与你的简历报告缺口</p>
+              <p class="dd-resume-sub" id="dd-resume-sub">对照岗位所需能力与你的简历缺口</p>
             </div>
             <button type="button" class="dd-fc-btn" data-close-resume aria-label="关闭">关闭</button>
           </header>
           <div class="dd-resume-body" id="dd-resume-body"></div>
           <footer class="dd-resume-foot">
+            <a class="dd-fc-btn" href="warehouse.html" id="dd-resume-vault-cta">个人仓库简历</a>
             <button type="button" class="dd-fc-btn" data-close-resume>稍后再说</button>
             <a class="dd-fc-btn is-primary" href="match.html" id="dd-resume-match-cta">去补齐优先缺口</a>
           </footer>
@@ -358,13 +385,14 @@
   </main>
   <script src="../js/api.js"></script>
   <script src="../js/runtime-core.js"></script>
-  <script src="../js/cinema-bg.js?v=20260825soft"></script>
+  <script src="../js/cinema-bg.js?v=20260831bright"></script>
   <script src="../js/perf-guard.js?v=1"></script>
   <script src="../js/cinema-music.js?v=20260824mem"></script>
   <script src="../js/shell.js?v=20260825rx5"></script>
-  <script src="../js/discovery-mock.js?v=1"></script>
-  <script src="../js/discovery-favs.js?v=1"></script>
-  <script src="../js/pages/discovery-detail.js?v=86mod24"></script>
+  <script src="../js/user-vault.js?v=1"></script>
+  <script src="../js/discovery-mock.js?v=99evfull"></script>
+  <script src="../js/discovery-favs.js?v=3vault"></script>
+  <script src="../js/pages/discovery-detail.js?v=100cmp"></script>
   <script>
     function loadEcharts(cb) {
       if (window.echarts) { cb(); return; }

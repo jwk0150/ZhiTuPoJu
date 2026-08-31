@@ -697,3 +697,200 @@
   }
   #view-discovery .dh-card:hover { transform: none; }
 }
+
+
+/* —— 发现日报 —— */
+.dh-daily-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+}
+.dh-daily-modal[hidden] { display: none !important; }
+.dh-daily-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(4, 8, 10, 0.72);
+  backdrop-filter: blur(8px);
+}
+.dh-daily-sheet {
+  position: relative;
+  width: min(840px, 100%);
+  max-height: min(86vh, 720px);
+  display: flex;
+  flex-direction: column;
+  border-radius: 16px;
+  border: 1px solid rgba(212, 176, 122, 0.3);
+  background:
+    radial-gradient(80% 60% at 0% 0%, rgba(77, 184, 196, 0.12), transparent 50%),
+    linear-gradient(180deg, rgba(212, 176, 122, 0.08), transparent 28%),
+    rgba(10, 14, 18, 0.97);
+  box-shadow: 0 28px 80px rgba(0,0,0,0.5);
+  overflow: hidden;
+}
+.dh-daily-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 18px 20px 14px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.dh-daily-kicker {
+  margin: 0;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  color: rgba(232, 201, 136, 0.7);
+  font-weight: 700;
+}
+.dh-daily-head h2 {
+  margin: 4px 0 4px;
+  font-size: 22px;
+  color: #f4efe6;
+}
+.dh-daily-sub {
+  margin: 0;
+  font-size: 12.5px;
+  color: rgba(232, 242, 248, 0.55);
+}
+.dh-daily-close {
+  appearance: none;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.04);
+  color: rgba(232,242,248,0.75);
+  border-radius: 10px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 12px;
+}
+.dh-daily-body {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.dh-daily-kpis {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+.dh-daily-kpis > div {
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.03);
+}
+.dh-daily-kpis em {
+  display: block;
+  font-style: normal;
+  font-size: 11px;
+  color: rgba(232,242,248,0.45);
+  margin-bottom: 4px;
+}
+.dh-daily-kpis strong {
+  font-size: 20px;
+  color: #e8d4a8;
+  font-variant-numeric: tabular-nums;
+}
+.dh-daily-sec h3 {
+  margin: 0 0 8px;
+  font-size: 13px;
+  color: #eaf3f6;
+}
+.dh-daily-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+.dh-daily-card {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  grid-template-rows: auto auto;
+  gap: 2px 10px;
+  padding: 12px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(0,0,0,0.28);
+  text-decoration: none;
+  color: inherit;
+  transition: border-color .2s, transform .2s;
+}
+.dh-daily-card:hover {
+  border-color: rgba(77, 184, 196, 0.45);
+  transform: translateY(-1px);
+}
+.dh-daily-card.is-forecast:hover {
+  border-color: rgba(212, 176, 122, 0.5);
+}
+.dh-daily-card-lane {
+  grid-row: span 2;
+  align-self: center;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 6px 8px;
+  border-radius: 8px;
+  background: rgba(77, 184, 196, 0.16);
+  color: #9fdfe6;
+}
+.dh-daily-card.is-forecast .dh-daily-card-lane {
+  background: rgba(212, 176, 122, 0.16);
+  color: #e8d4a8;
+}
+.dh-daily-card strong {
+  font-size: 14px;
+  color: #f0f6f8;
+}
+.dh-daily-card em {
+  grid-column: 2;
+  font-style: normal;
+  font-size: 11.5px;
+  color: rgba(232,242,248,0.5);
+}
+.dh-daily-card-conf {
+  grid-row: span 2;
+  align-self: center;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 13px;
+  color: #c9a86a;
+}
+.dh-daily-empty, .dh-daily-note {
+  margin: 0;
+  font-size: 12px;
+  color: rgba(232,242,248,0.48);
+}
+.dh-daily-foot {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 12px 20px 16px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+.dh-daily-btn {
+  appearance: none;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.04);
+  color: rgba(232,242,248,0.8);
+  border-radius: 10px;
+  padding: 9px 14px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.dh-daily-btn.is-primary {
+  border-color: rgba(212, 176, 122, 0.45);
+  background: linear-gradient(135deg, rgba(236, 201, 132, 0.22), rgba(212, 176, 122, 0.1));
+  color: #f2ebe0;
+}
+body.dh-daily-open { overflow: hidden; }
+@media (max-width: 720px) {
+  .dh-daily-kpis, .dh-daily-grid { grid-template-columns: 1fr 1fr; }
+  .dh-daily-kpis { grid-template-columns: 1fr 1fr; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dh-daily-card { transition: none; }
+}

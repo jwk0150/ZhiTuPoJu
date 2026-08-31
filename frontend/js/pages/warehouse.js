@@ -76,8 +76,8 @@
     var f = snap.favs || {};
     el.innerHTML =
       renderFavLane('岗位大新闻', f.news || [], '还没有收藏新闻，去「岗位大新闻」点心形即可。') +
-      renderFavLane('新岗位发现', f.discovery || [], '还没有收藏发现岗位。') +
-      renderFavLane('新岗位预测', f.forecast || [], '还没有收藏预测岗位。') +
+      renderFavLane('新岗位发现', f.discovery || [], '还没有收藏发现岗位。在详情页点「收藏到仓库」即可落入此处。') +
+      renderFavLane('新岗位预测', f.forecast || [], '还没有收藏预测岗位。在详情页点「收藏到仓库」即可落入此处。') +
       renderFavLane('人岗匹配', f.match || [], '在人岗匹配结果卡片上点 ★。');
   }
 
