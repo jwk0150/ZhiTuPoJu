@@ -1,13 +1,14 @@
 /* ============================================================
- * AI 简历生成器 · 未来生态都市终端
- * 主控：步骤管理 + 数据绑定 + AI Mock + 简历预览
+ * 执图破局 · 简历向导
+ * 主控：步骤管理 + 数据绑定 + 本地暂存 + 简历预览
  * ============================================================ */
 
 (function () {
   'use strict';
 
   /* ============== 1. 数据状态 ============== */
-  const STORAGE_KEY = 'rb_builder_state_v1';
+  const STORAGE_KEY = 'rb_builder_state_v2';
+  const LEGACY_STORAGE_KEY = 'rb_builder_state_v1';
 
   const defaultState = {
     currentStep: 1,
@@ -20,12 +21,7 @@
     jobDirection: {
       positions: []
     },
-    experiences: [{
-      id: 0,
-      type: '', time: '', title: '',
-      org: '', role: '',
-      brief: '', result: ''
-    }],
+    experiences: [],
     starExperiences: [],
     profile: {
       personality: '',
@@ -48,26 +44,31 @@
 
   function loadState() {
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
+      let raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) {
+        raw = localStorage.getItem(LEGACY_STORAGE_KEY);
+      }
       if (raw) {
         const obj = JSON.parse(raw);
-        // 一次性清理旧版本累积的多余经历，只保留第一条（已清理过则跳过）
-        if (Array.isArray(obj.experiences) && obj.experiences.length > 1 && !obj._expClean) {
-          obj.experiences = obj.experiences.slice(0, 1);
-          obj._expClean = true;
-          try { localStorage.setItem(STORAGE_KEY, JSON.stringify(obj)); } catch (_) {}
-        }
-        return Object.assign({}, defaultState, obj, {
+        const mapped = Object.assign({}, defaultState, obj, {
           basicInfo: Object.assign({}, defaultState.basicInfo, obj.basicInfo || {}),
           jobDirection: Object.assign({}, defaultState.jobDirection, obj.jobDirection || { positions: [] }),
-          experiences: obj.experiences && obj.experiences.length ? obj.experiences : defaultState.experiences.slice(),
-          starExperiences: obj.starExperiences || [],
+          experiences: (Array.isArray(obj.experiences) && obj.experiences.length)
+            ? obj.experiences
+            : JSON.parse(JSON.stringify(defaultState.experiences)),
+          starExperiences: Array.isArray(obj.starExperiences) ? obj.starExperiences : [],
           profile: Object.assign({}, defaultState.profile, obj.profile || {}, { skills: (obj.profile && obj.profile.skills) || [] }),
           photo: obj.photo || null,
           ai: Object.assign({}, defaultState.ai, obj.ai || {}),
           polish: Object.assign({}, defaultState.polish, obj.polish || {}),
           completedSteps: obj.completedSteps || {}
         });
+        // 旧 8 步 → 新 5 步
+        const legacyMap = { 1: 1, 2: 2, 3: 3, 4: 3, 5: 2, 6: 5, 7: 4, 8: 5 };
+        if (mapped.currentStep > 5) {
+          mapped.currentStep = legacyMap[mapped.currentStep] || 1;
+        }
+        return mapped;
       }
     } catch (err) { console.warn('rb state load fail:', err); }
     return JSON.parse(JSON.stringify(defaultState));
@@ -87,20 +88,24 @@
     const node = document.createElement(tag);
     if (attrs) {
       Object.keys(attrs).forEach(k => {
-        if (k === 'class') node.className = attrs[k];
-        else if (k === 'style' && typeof attrs[k] === 'object') Object.assign(node.style, attrs[k]);
-        else if (k.startsWith('on') && typeof attrs[k] === 'function') node.addEventListener(k.slice(2).toLowerCase(), attrs[k]);
-        else if (k === 'dataset') Object.assign(node.dataset, attrs[k]);
-        else if (attrs[k] != null) node.setAttribute(k, attrs[k]);
+        const v = attrs[k];
+        if (v == null || v === false) return;
+        if (k === 'class') node.className = v;
+        else if (k === 'style' && typeof v === 'object') Object.assign(node.style, v);
+        else if (k.startsWith('on') && typeof v === 'function') node.addEventListener(k.slice(2).toLowerCase(), v);
+        else if (k === 'dataset') Object.assign(node.dataset, v);
+        else if (k === 'selected' || k === 'checked' || k === 'disabled' || k === 'hidden') {
+          if (v) node.setAttribute(k, k === 'selected' || k === 'checked' ? '' : String(v));
+        } else node.setAttribute(k, v);
       });
     }
-    const appendChild = (c) => {
+    const append = (c) => {
       if (c == null || c === false) return;
-      if (Array.isArray(c)) { c.forEach(appendChild); return; }
+      if (Array.isArray(c)) { c.forEach(append); return; }
       if (typeof c === 'string' || typeof c === 'number') node.appendChild(document.createTextNode(String(c)));
-      else node.appendChild(c);
+      else if (c.nodeType) node.appendChild(c);
     };
-    children.forEach(appendChild);
+    children.forEach(append);
     return node;
   }
 
@@ -126,41 +131,100 @@
 
   /* ============== 3. 步骤配置 ============== */
   const STEPS = [
-    { id: 1, label: '基础信息',     short: '基础信息' },
-    { id: 2, label: '画像与方向',   short: '画像与方向' },
-    { id: 3, label: '经历补充',     short: '经历补充' },
-    { id: 4, label: 'STAR 结构化',  short: 'STAR 结构化' },
-    { id: 5, label: '软件信息',     short: '软件信息' },
-    { id: 6, label: '证件照',       short: '证件照' },
-    { id: 7, label: '精简润色',     short: '精简润色' },
-    { id: 8, label: '生成与导出',   short: '生成与导出' }
+    { id: 1, label: '基础信息', short: '基础信息' },
+    { id: 2, label: '方向技能', short: '方向技能' },
+    { id: 3, label: '实践经历', short: '实践经历' },
+    { id: 4, label: '润色检查', short: '润色检查' },
+    { id: 5, label: '生成导出', short: '生成导出' }
   ];
 
-  const POSITION_LIST = [
-    { id: 'java',  name: 'Java 后端开发',    meta: 'BACKEND' },
-    { id: 'web',   name: 'Web 前端开发',     meta: 'FRONTEND' },
-    { id: 'full',  name: '全栈开发工程师',   meta: 'FULLSTACK' },
-    { id: 'test',  name: '软件测试工程师',   meta: 'QA' },
-    { id: 'ops',   name: '技术支持工程师',   meta: 'SUPPORT' },
-    { id: 'pm',    name: '产品经理（技术方向）', meta: 'PRODUCT' },
-    { id: 'data',  name: '数据分析师',       meta: 'DATA' },
-    { id: 'it',    name: 'IT 运维工程师',    meta: 'OPS' }
-  ];
+  const ILLUS_IMG = { 1: 1, 2: 2, 3: 3, 4: 7, 5: 8 };
+
+  let POSITION_LIST = [];
+  let jobFilter = { q: '', cat: '全部' };
+  let skillFilter = { q: '' };
+
+  function slugId(name, fallback) {
+    return fallback || ('job_' + String(name || '').replace(/\s+/g, '_'));
+  }
+
+  function loadJobPoolSync() {
+    const pack = window.ZHITU_JOB_POOL;
+    if (pack && Array.isArray(pack.jobs) && pack.jobs.length) {
+      POSITION_LIST = pack.jobs.map((j, i) => ({
+        id: j.id || slugId(j.name, 'jp' + String(i + 1).padStart(3, '0')),
+        name: j.name,
+        cat: j.cat || j.meta || '其他',
+        meta: j.cat || j.meta || '其他',
+        skills: Array.isArray(j.skills) ? j.skills.slice() : [],
+        hot: typeof j.hot === 'number' ? j.hot : 0.5
+      }));
+      return;
+    }
+    POSITION_LIST = [
+      { id: 'java', name: 'Java开发工程师', cat: '软件开发', meta: '软件开发', skills: ['Java', 'Spring Boot', 'MySQL'], hot: 0.9 },
+      { id: 'web', name: '前端开发工程师', cat: '软件开发', meta: '软件开发', skills: ['Vue', 'React', 'TypeScript'], hot: 0.9 },
+      { id: 'data', name: '数据分析师', cat: '数据与人工智能', meta: '数据与人工智能', skills: ['SQL', 'Python', 'Excel'], hot: 0.9 }
+    ];
+  }
+
+  async function enrichJobPoolFromApi() {
+    try {
+      const base = apiBase();
+      const res = await fetch(base + '/api/ability/job-pool', { method: 'GET' });
+      if (!res.ok) return;
+      const data = await res.json();
+      const jobs = data && data.data && data.data.jobs;
+      if (!Array.isArray(jobs) || !jobs.length) return;
+      const selected = new Set(state.jobDirection.positions || []);
+      POSITION_LIST = jobs.map((j, i) => ({
+        id: j.id || slugId(j.name, 'jp' + String(i + 1).padStart(3, '0')),
+        name: j.name,
+        cat: j.cat || j.meta || '其他',
+        meta: j.cat || j.meta || '其他',
+        skills: Array.isArray(j.skills) ? j.skills.slice() : [],
+        hot: typeof j.hot === 'number' ? j.hot : 0.5
+      }));
+      // 保留已选 id；若旧 id 不在新池，按名称回填
+      state.jobDirection.positions = (state.jobDirection.positions || []).filter((id) =>
+        POSITION_LIST.some((p) => p.id === id)
+      );
+      if (!state.jobDirection.positions.length && selected.size) {
+        /* keep empty */
+      }
+      saveState();
+      if (state.currentStep === 2) renderPositions();
+    } catch (_) { /* 前端静态池兜底即可 */ }
+  }
+
+  loadJobPoolSync();
 
   /* ============== 4. 步骤渲染 ============== */
+  function maxReachableStep() {
+    var max = state.currentStep || 1;
+    Object.keys(state.completedSteps || {}).forEach(function (k) {
+      if (state.completedSteps[k]) max = Math.max(max, Number(k));
+    });
+    if (isStepComplete(state.currentStep)) {
+      max = Math.max(max, Math.min(state.currentStep + 1, STEPS.length));
+    }
+    return Math.min(Math.max(1, max), STEPS.length);
+  }
+
   function renderTopnav() {
     const nav = $('#rb-topnav-steps');
     nav.innerHTML = '';
+    const reach = maxReachableStep();
     STEPS.forEach(s => {
-      const isDone = state.completedSteps[s.id];
+      const isDone = !!state.completedSteps[s.id];
       const isActive = s.id === state.currentStep;
-      const reachable = s.id <= state.currentStep || isDone || s.id === Math.min(...Object.keys(state.completedSteps).map(Number).filter(n => state.completedSteps[n]), state.currentStep + 1) ;
-      const dis = !reachable && s.id > state.currentStep && !isDone;
+      const dis = s.id > reach;
       const btn = el('button', {
-        class: 'rb-step' + (isActive ? ' is-active' : '') + (isDone ? ' is-done' : ''),
+        class: 'rb-step' + (isActive ? ' is-active' : '') + (isDone && !isActive ? ' is-done' : ''),
         type: 'button',
         'data-step': s.id,
-        'aria-disabled': dis ? 'true' : 'false'
+        'aria-disabled': dis ? 'true' : 'false',
+        title: dis ? '请先完成前面的步骤' : ('前往：' + s.label)
       },
         el('span', { class: 'rb-step-num' }, String(s.id).padStart(2, '0')),
         el('span', { class: 'rb-step-label' }, s.label),
@@ -197,11 +261,12 @@
       return !!(b.name && b.phone && b.email && b.city && b.school && b.major);
     }
     if (stepId === 2) return state.jobDirection.positions.length > 0;
-    if (stepId === 3) return state.experiences.length > 0;
-    if (stepId === 4) return state.starExperiences.length > 0;
-    if (stepId === 5) return !!(state.profile.summary && state.profile.skills.length > 0);
-    if (stepId === 6) return !!state.photo;
-    if (stepId === 7) return !!state.polish.complete;
+    if (stepId === 3) {
+      ensureExperienceSeed();
+      return state.experiences.length > 0;
+    }
+    if (stepId === 4) return !!state.polish.complete;
+    if (stepId === 5) return true;
     return true;
   }
 
@@ -210,36 +275,24 @@
   /* 同时更新副标与左下角标题 / 描述文案，与每一步一一对应 */
   const ILLUS_COPY = {
     1: {
-      title: '先认识<br/><em>你</em>',
-      desc: '从姓名、联系方式与教育背景开始，AI 为你打好这份档案的第一块基石。'
+      title: '基本<br/><em>信息</em>',
+      desc: '填写姓名、联系方式与学校专业，后续步骤会用到这些字段。'
     },
     2: {
-      title: '找准<br/><em>方向</em>',
-      desc: 'AI 根据你的专业与经历画出个人画像，圈出 1-3 个最适合你的投递岗位。'
+      title: '方向<br/><em>技能</em>',
+      desc: '选 1–3 个投递方向，补充技能标签与自我评价。'
     },
     3: {
-      title: '收集<br/><em>经历</em>',
-      desc: '把实习、项目与校园实践写进来。没有也没关系，AI 会按你的画像帮你生成。'
+      title: '实践<br/><em>经历</em>',
+      desc: '写实习、项目或校园实践，并用 STAR 改写要点。'
     },
     4: {
-      title: '重构<br/><em>亮点</em>',
-      desc: '每段经历按 STAR 法则重新结构化：情境、任务、行动、结果，让成果被看见。'
+      title: '润色<br/><em>检查</em>',
+      desc: '压缩空话，保留可量化结果与岗位相关关键词。'
     },
     5: {
-      title: '认识<br/><em>自己</em>',
-      desc: '性格、职业意愿与技能标签，这些软信息让简历从「合格」变得有温度。'
-    },
-    6: {
-      title: '留下<br/><em>印象</em>',
-      desc: '上传一张清晰的证件照，为简历添上你的面孔；占位图同样可以随时补传。'
-    },
-    7: {
-      title: '打磨<br/><em>表达</em>',
-      desc: 'AI 会检查全文表达，压缩冗余、突出成果与关键词，让每句话更有力量。'
-    },
-    8: {
-      title: '翻开<br/><em>未来</em>',
-      desc: '所有信息已就绪。生成一份专业简历，进入简历库查看、分析与匹配。'
+      title: '生成<br/><em>导出</em>',
+      desc: '可选证件照，生成简历后下载或进入简历库。'
     }
   };
 
@@ -249,26 +302,16 @@
     const box = document.getElementById('rb-left-bg');
     if (!box) return;
     const idx = Math.min(Math.max(1, stepId | 0), STEPS.length);
-    if (idx === _illusLastIdx) return; // 同一张图无需切换
-    _illusLastIdx = idx;
-    if (_illusTimer) { clearTimeout(_illusTimer); _illusTimer = null; }
-    box.classList.add('is-switching');
-    _illusTimer = setTimeout(() => {
-      box.style.backgroundImage = `url('../images/resume-step-${idx}.jpg')`;
-      // 强制一次重排再撤掉过渡态，触发淡入
-      // eslint-disable-next-line no-unused-expressions
-      box.offsetHeight;
-      box.classList.remove('is-switching');
-      _illusTimer = null;
-    }, 220);
 
-    // 同步更新步骤副标
+    // 同步更新步骤副标与文案
     const eyebrow = document.getElementById('rb-left-step-eyebrow');
     if (eyebrow) {
-      eyebrow.textContent = `STEP ${String(idx).padStart(2, '0')} · NEXUS`;
+      eyebrow.textContent = `步骤 ${String(idx).padStart(2, '0')} / ${String(STEPS.length).padStart(2, '0')}`;
     }
-
-    // 同步更新左下角标题与描述，与每一步一一对应
+    const meta = document.getElementById('rb-current-meta');
+    if (meta) {
+      meta.textContent = `${String(idx).padStart(2, '0')} / ${String(STEPS.length).padStart(2, '0')}`;
+    }
     const copy = ILLUS_COPY[idx];
     if (copy) {
       const title = document.getElementById('rb-left-title');
@@ -276,6 +319,19 @@
       const desc = document.getElementById('rb-left-desc');
       if (desc) desc.textContent = copy.desc;
     }
+
+    if (idx === _illusLastIdx) return;
+    _illusLastIdx = idx;
+    if (_illusTimer) { clearTimeout(_illusTimer); _illusTimer = null; }
+    box.classList.add('is-switching');
+    const imgIdx = ILLUS_IMG[idx] || idx;
+    _illusTimer = setTimeout(() => {
+      box.style.backgroundImage = `url('../images/resume-step-${imgIdx}.jpg')`;
+      // eslint-disable-next-line no-unused-expressions
+      box.offsetHeight;
+      box.classList.remove('is-switching');
+      _illusTimer = null;
+    }, 220);
   }
 
   /* ============== 5. 步骤切换 ============== */
@@ -310,14 +366,35 @@
   }
 
   function updateStageSpecific(stepId) {
-    if (stepId === 2) renderPositions();
-    if (stepId === 3) renderExpList();
-    if (stepId === 4) renderStarList();
-    if (stepId === 5) renderTags();
-    if (stepId === 7) renderPolish();
-    if (stepId === 8) renderExport();
-    if (stepId === 6) renderPhoto();
+    if (stepId === 2) {
+      bindJobFilters();
+      bindSkillFilters();
+      renderJobCats();
+      renderPositions();
+      renderSkillPool();
+      renderTags();
+    }
+    if (stepId === 3) {
+      ensureExperienceSeed();
+      renderExpList();
+      syncAndPaintStars();
+    }
+    if (stepId === 4) renderPolish();
+    if (stepId === 5) { renderPhoto(); renderExport(); }
     if (stepId === 1) renderBasic();
+  }
+
+  function ensureExperienceSeed() {
+    if (!Array.isArray(state.experiences)) state.experiences = [];
+    if (!state.experiences.length) {
+      state.experiences.push({
+        id: Date.now(),
+        type: '', time: '', title: '',
+        org: '', role: '',
+        brief: '', result: ''
+      });
+      saveState();
+    }
   }
 
   /* ============== 6. 步骤 01 - 基础信息 ============== */
@@ -348,6 +425,12 @@
       input.addEventListener('input', () => {
         writePath(state, path, input.value);
         saveState();
+        renderBottom();
+      });
+      input.addEventListener('change', () => {
+        writePath(state, path, input.value);
+        saveState();
+        renderBottom();
       });
     });
   }
@@ -358,7 +441,7 @@
     if (!btn || btn.classList.contains('is-loading')) return;
     btn.classList.add('is-loading');
     btn.querySelector('.rb-ai-icon').textContent = '⟳';
-    btn.querySelector('.rb-ai-label').textContent = 'AI 整理中...';
+    btn.querySelector('.rb-ai-label').textContent = '补全中…';
     await fakeDelay(1400);
     const seed = state.basicInfo;
     if (!seed.major) seed.major = '软件工程';
@@ -373,55 +456,203 @@
     btn.classList.remove('is-loading');
     btn.classList.add('is-done');
     btn.querySelector('.rb-ai-icon').textContent = '✓';
-    btn.querySelector('.rb-ai-label').textContent = '已自动整理';
-    toast('✓ 基础信息已智能补全');
+    btn.querySelector('.rb-ai-label').textContent = '已补全';
+    toast('✓ 空缺字段已填入示例，可自行修改');
   }
 
   /* ============== 7. 步骤 02 - 求职方向 ============== */
-  function renderPositions() {
-    const list = $('#rb-positions');
-    list.innerHTML = '';
-    POSITION_LIST.forEach(p => {
-      const on = state.jobDirection.positions.includes(p.id);
-      const item = el('button', {
-        class: 'rb-position' + (on ? ' is-on' : ''),
-        type: 'button'
-      },
-        el('span', { class: 'rb-position-dot' }),
-        el('span', { class: 'rb-position-name' }, p.name),
-        el('span', { class: 'rb-position-meta' }, p.meta)
-      );
-      item.addEventListener('click', () => {
-        const arr = state.jobDirection.positions;
-        const idx = arr.indexOf(p.id);
-        if (idx >= 0) arr.splice(idx, 1);
-        else {
-          if (arr.length >= 3) {
-            toast('最多选择 3 个方向');
-            return;
-          }
-          arr.push(p.id);
-        }
-        saveState();
+  function findPosition(id) {
+    return POSITION_LIST.find(p => p.id === id);
+  }
+
+  function filteredPositions() {
+    const q = (jobFilter.q || '').trim().toLowerCase();
+    const cat = jobFilter.cat || '全部';
+    return POSITION_LIST.filter(p => {
+      if (cat !== '全部' && p.cat !== cat) return false;
+      if (!q) return true;
+      const hay = (p.name + ' ' + (p.cat || '') + ' ' + (p.skills || []).join(' ')).toLowerCase();
+      return hay.indexOf(q) !== -1;
+    });
+  }
+
+  function skillCatalog() {
+    const set = new Set();
+    POSITION_LIST.forEach(p => (p.skills || []).forEach(s => set.add(s)));
+    (state.profile.skills || []).forEach(s => set.add(s));
+    return Array.from(set).sort((a, b) => a.localeCompare(b, 'zh-CN'));
+  }
+
+  function toggleSkill(skill) {
+    if (!skill) return;
+    const arr = state.profile.skills || [];
+    const i = arr.indexOf(skill);
+    if (i >= 0) arr.splice(i, 1);
+    else arr.push(skill);
+    state.profile.skills = arr;
+    saveState();
+    renderSkillPool();
+    renderTags();
+    renderBottom();
+  }
+
+  function clearSelection() {
+    state.jobDirection.positions = [];
+    state.profile.skills = [];
+    saveState();
+    renderPositions();
+    renderSkillPool();
+    renderTags();
+    renderBottom();
+    toast('已清除所选岗位与技能');
+  }
+
+  function filteredSkills() {
+    const q = (skillFilter.q || '').trim().toLowerCase();
+    const all = skillCatalog();
+    if (!q) return all;
+    return all.filter(s => String(s).toLowerCase().indexOf(q) !== -1);
+  }
+
+  function renderSkillPool() {
+    const wrap = $('#rb-skill-pool');
+    if (!wrap) return;
+    wrap.innerHTML = '';
+    const selected = new Set(state.profile.skills || []);
+    const list = filteredSkills();
+    const countEl = $('#rb-skill-count');
+    if (countEl) {
+      countEl.textContent = list.length + ' 个技能' +
+        (selected.size ? ' · 已选 ' + selected.size : '');
+    }
+    if (!list.length) {
+      wrap.appendChild(el('div', { class: 'rb-skill-empty' },
+        skillFilter.q ? '没有匹配的技能，可在下方手动添加' : '暂无技能标签'));
+      return;
+    }
+    list.forEach(skill => {
+      const on = selected.has(skill);
+      const btn = el('button', {
+        class: 'rb-skill-chip' + (on ? ' is-on' : ''),
+        type: 'button',
+        title: on ? '取消选择' : '选择技能'
+      }, skill);
+      btn.addEventListener('click', () => toggleSkill(skill));
+      wrap.appendChild(btn);
+    });
+  }
+
+  function renderJobCats() {
+    const wrap = $('#rb-job-cats');
+    if (!wrap) return;
+    const cats = ['全部'].concat(
+      Array.from(new Set(POSITION_LIST.map(p => p.cat).filter(Boolean))).sort((a, b) => {
+        if (a === '爬取岗位') return 1;
+        if (b === '爬取岗位') return -1;
+        return a.localeCompare(b, 'zh-CN');
+      })
+    );
+    wrap.innerHTML = '';
+    cats.forEach(cat => {
+      const btn = el('button', {
+        class: 'rb-job-cat' + (jobFilter.cat === cat ? ' is-on' : ''),
+        type: 'button',
+        'data-cat': cat
+      }, cat);
+      btn.addEventListener('click', () => {
+        jobFilter.cat = cat;
+        renderJobCats();
         renderPositions();
       });
-      list.appendChild(item);
+      wrap.appendChild(btn);
     });
+  }
 
-    // 同步 persona 文本
+  function renderPositions() {
+    const list = $('#rb-positions');
+    if (!list) return;
+    list.innerHTML = '';
+    const rows = filteredPositions();
+    const countEl = $('#rb-job-count');
+    if (countEl) {
+      countEl.textContent = '显示 ' + rows.length + ' / 共 ' + POSITION_LIST.length + ' · 已选 ' + state.jobDirection.positions.length + '/3';
+    }
+    if (!rows.length) {
+      list.appendChild(el('div', { class: 'rb-job-empty' }, '没有匹配的岗位，试试换个关键词或分类'));
+    } else {
+      rows.forEach(p => {
+        const on = state.jobDirection.positions.includes(p.id);
+        const item = el('button', {
+          class: 'rb-position' + (on ? ' is-on' : ''),
+          type: 'button'
+        },
+          el('span', { class: 'rb-position-dot' }),
+          el('span', { class: 'rb-position-name' }, p.name),
+          el('span', { class: 'rb-position-meta' }, p.meta || p.cat || '')
+        );
+        item.addEventListener('click', () => {
+          const arr = state.jobDirection.positions;
+          const idx = arr.indexOf(p.id);
+          if (idx >= 0) arr.splice(idx, 1);
+          else {
+            if (arr.length >= 3) { toast('最多选择 3 个方向'); return; }
+            arr.push(p.id);
+          }
+          saveState();
+          renderPositions();
+          renderBottom();
+        });
+        list.appendChild(item);
+      });
+    }
+
     const personaEl = $('#rb-persona-text');
     if (personaEl) {
       const b = state.basicInfo;
       const parts = [];
-      parts.push(`就读于 <em>${b.school || '某高校'} ${b.major || '相关'}</em> 专业${b.degree || ''}生。`);
-      if (b.city) parts.push(`期望在 <em>${b.city}</em> 寻找发展机会。`);
+      // 与 HTML 默认文案同构：就读于 <em>学校 专业名专业</em> 学历。
+      parts.push(
+        '就读于 <em>' +
+          (b.school || '某高校') + ' ' +
+          (b.major || '软件工程') + '专业</em> ' +
+          (b.degree || '本科') + '。'
+      );
+      if (b.city) parts.push('期望在 <em>' + b.city + '</em> 寻找发展机会。');
       const firstThree = state.jobDirection.positions.length
-        ? state.jobDirection.positions.map(id => POSITION_LIST.find(x => x.id === id).name).join('、')
+        ? state.jobDirection.positions.map(id => (findPosition(id) || {}).name).filter(Boolean).join('、')
         : '';
-      if (firstThree) parts.push(`目前重点关注 <em>${firstThree}</em> 等方向。`);
-      parts.push('结合 AI 分析：你的课程结构与项目经历更偏向 <em>工程实现方向</em>，建议优先投递与开发或测试相关岗位。');
+      if (firstThree) parts.push('目前重点关注 <em>' + firstThree + '</em> 等方向。');
+      parts.push('按常见课程结构，更适合工程实现类岗位，可优先考虑开发或测试方向。');
       personaEl.innerHTML = parts.join(' ');
     }
+  }
+
+  function bindJobFilters() {
+    const input = $('#rb-job-search');
+    if (!input || input.dataset.bound === '1') return;
+    input.dataset.bound = '1';
+    let timer = null;
+    input.addEventListener('input', () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        jobFilter.q = input.value || '';
+        renderPositions();
+      }, 120);
+    });
+  }
+
+  function bindSkillFilters() {
+    const input = $('#rb-skill-search');
+    if (!input || input.dataset.bound === '1') return;
+    input.dataset.bound = '1';
+    let timer = null;
+    input.addEventListener('input', () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        skillFilter.q = input.value || '';
+        renderSkillPool();
+      }, 120);
+    });
   }
 
   /* ============== 8. 步骤 03 - 经历补充 ============== */
@@ -442,15 +673,19 @@
           )
         ),
         el('div', { class: 'rb-exp-row' },
-          expField('类型', el('select', null,
-            el('option', { value: '' }, '—'),
-            ['实习', '项目', '竞赛', '校园'].map(t => el('option', { value: t, selected: exp.type === t ? 'selected' : null }, t))
-          ), exp, 'type'),
-          expField('时间', el('input', { type: 'text', value: exp.time, placeholder: '2024.06 - 2024.09' }), exp, 'time')
+          expField('类型', (() => {
+            const sel = el('select', null,
+              el('option', { value: '' }, '—'),
+              ['实习', '项目', '竞赛', '校园'].map(t => el('option', { value: t }, t))
+            );
+            sel.value = exp.type || '';
+            return sel;
+          })(), exp, 'type'),
+          expField('时间', el('input', { type: 'text', value: exp.time || '', placeholder: '2024.06 - 2024.09' }), exp, 'time')
         ),
         el('div', { class: 'rb-exp-row' },
-          expField('公司 / 项目', el('input', { type: 'text', value: exp.org, placeholder: '公司名或项目名' }), exp, 'org'),
-          expField('角色', el('input', { type: 'text', value: exp.role, placeholder: '如：后端开发 / 算法助理' }), exp, 'role')
+          expField('公司 / 项目', el('input', { type: 'text', value: exp.org || '', placeholder: '公司名或项目名' }), exp, 'org'),
+          expField('角色', el('input', { type: 'text', value: exp.role || '', placeholder: '如：后端开发 / 算法助理' }), exp, 'role')
         ),
         el('div', { class: 'rb-exp-full' },
           expField('简介', el('textarea', { placeholder: '做了什么，遇到什么问题，如何解决 …' }, exp.brief || ''), exp, 'brief', true)
@@ -482,11 +717,11 @@
     if (j < 0 || j >= state.experiences.length) return;
     const arr = state.experiences;
     [arr[i], arr[j]] = [arr[j], arr[i]];
-    saveState(); renderExpList();
+    saveState(); renderExpList(); syncAndPaintStars(); renderBottom();
   }
   function removeExp(i) {
     state.experiences.splice(i, 1);
-    saveState(); renderExpList();
+    saveState(); renderExpList(); syncAndPaintStars(); renderBottom();
   }
   function addExp() {
     state.experiences.push({
@@ -495,7 +730,7 @@
       org: '', role: '',
       brief: '', result: ''
     });
-    saveState(); renderExpList();
+    saveState(); renderExpList(); syncAndPaintStars(); renderBottom();
     toast('已新增一段经历');
   }
 
@@ -515,7 +750,7 @@
 
     const orgGuess = (keywords[0] || '校园项目') + ' · 实践';
     const roleGuess = state.jobDirection.positions.length
-      ? POSITION_LIST.find(p => p.id === state.jobDirection.positions[0]).name
+      ? ((findPosition(state.jobDirection.positions[0]) || {}).name || '开发实习生')
       : '开发实习生';
     const brief = keywords.length > 1
       ? `在${keywords[0] || '校园项目'}中负责${keywords.slice(1).join('、')}等工作，与团队一起完成从需求拆解、接口设计到上线验证的完整链路。`
@@ -532,10 +767,7 @@
       brief,
       result
     };
-    // 若存在一条全空的初始经历，则替换它；否则追加新经历
-    const emptyIdx = state.experiences.findIndex(e => e && !e.type && !e.time && !e.org && !e.role && !e.brief && !e.result && !e.title);
-    if (emptyIdx >= 0) state.experiences[emptyIdx] = newExp;
-    else state.experiences.push(newExp);
+    state.experiences.push(newExp);
     saveState();
 
     btn.classList.remove('is-loading');
@@ -546,41 +778,56 @@
     state.ai.expHint = '';
     $('#rb-ai-input-block textarea').value = '';
     renderExpList();
-    toast('✓ AI 已根据你的描述生成 1 段经历');
+    syncAndPaintStars();
+    renderBottom();
+    toast('✓ 已根据描述整理 1 段经历');
   }
 
-  /* ============== 9. 步骤 04 - STAR 结构化 ============== */
-  async function renderStarList() {
-    const list = $('#rb-star-list');
+  /* ============== 9. STAR（嵌在步骤 03） ============== */
+  function syncStarsFromExperiences() {
+    const prev = state.starExperiences || [];
+    state.starExperiences = state.experiences.map((exp, i) => {
+      const old = prev.find(s => s.id === exp.id) || prev[i];
+      const auto = expToSTAR(exp);
+      return {
+        id: exp.id,
+        title: exp.title || ('经历 ' + (i + 1)),
+        S: (old && old.S) || auto.S,
+        T: (old && old.T) || auto.T,
+        A: (old && old.A) || auto.A,
+        R: (old && old.R) || auto.R
+      };
+    });
+    saveState();
+  }
+
+  function syncAndPaintStars() {
     const loading = $('#rb-star-loading');
     const numEl = $('#rb-star-num');
-    list.innerHTML = '';
-    loading.style.display = '';
-    if (state.experiences.length === 0) {
-      numEl.textContent = 0;
-      loading.querySelector('.rb-star-loading-text').innerHTML = '你还没有经历 · <b style="color:var(--mist-dim)">请返回第 3 步先补充经历</b>';
+    const list = $('#rb-star-list');
+    if (!state.experiences.length) {
+      if (numEl) numEl.textContent = '0';
+      if (loading) {
+        loading.hidden = false;
+        loading.style.display = '';
+        loading.classList.add('is-empty');
+        const tip = loading.querySelector('.rb-star-loading-text');
+        if (tip) tip.innerHTML = '还没有经历 · 先在上方「手动添加」或「根据描述整理」';
+      }
+      if (list) list.innerHTML = '';
       return;
     }
-    numEl.textContent = state.experiences.length;
-    if (state.starExperiences.length === state.experiences.length && state.starExperiences.every((s, i) => s.id === state.experiences[i].id)) {
-      // 已结构化，直接渲染
+    if (loading) {
+      loading.hidden = true;
       loading.style.display = 'none';
-      paintStarList();
-      return;
+      loading.classList.remove('is-empty');
     }
-    await fakeDelay(1300);
-    // 根据经历自动生成 STAR
-    state.starExperiences = state.experiences.map((exp, i) => ({
-      id: exp.id,
-      title: exp.title || ('经历 ' + (i + 1)),
-      S: state.starExperiences[i]?.S || expToSTAR(exp).S,
-      T: state.starExperiences[i]?.T || expToSTAR(exp).T,
-      A: state.starExperiences[i]?.A || expToSTAR(exp).A,
-      R: state.starExperiences[i]?.R || expToSTAR(exp).R
-    }));
-    saveState();
-    loading.style.display = 'none';
+    syncStarsFromExperiences();
     paintStarList();
+  }
+
+  async function renderStarList() {
+    syncAndPaintStars();
   }
 
   function expToSTAR(exp) {
@@ -634,6 +881,7 @@
   function renderTags() {
     const wrap = $('#rb-tags-input');
     const input = $('#rb-tags-input-el');
+    if (!wrap || !input) return;
     wrap.querySelectorAll('.rb-tag').forEach(n => n.remove());
     state.profile.skills.forEach((s, i) => {
       const tag = el('span', { class: 'rb-tag' }, s,
@@ -642,22 +890,26 @@
           state.profile.skills.splice(i, 1);
           saveState();
           renderTags();
+          renderSkillPool();
+          renderBottom();
         } }, '×')
       );
       wrap.insertBefore(tag, input);
     });
     const selfTa = $('#rb-self-textarea');
     if (selfTa && state.profile.summary) selfTa.value = state.profile.summary;
-    $$('[data-bind^="profile."]').forEach(input => {
-      const path = input.getAttribute('data-bind');
-      if (path === 'profile.summary') return; // handled above
+    $$('[data-bind^="profile."]').forEach(inp => {
+      const path = inp.getAttribute('data-bind');
+      if (path === 'profile.summary') return;
       const val = readPath(state, path);
-      if (input.value !== String(val || '')) input.value = val || '';
+      if (inp.value !== String(val || '')) inp.value = val || '';
     });
   }
 
   function bindTagsInput() {
     const input = $('#rb-tags-input-el');
+    if (!input || input.dataset.bound === '1') return;
+    input.dataset.bound = '1';
     input.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' || e.key === ',') {
         e.preventDefault();
@@ -666,43 +918,18 @@
           state.profile.skills.push(v);
           saveState();
           renderTags();
+          renderSkillPool();
+          renderBottom();
           input.value = '';
         }
       } else if (e.key === 'Backspace' && input.value === '' && state.profile.skills.length) {
         state.profile.skills.pop();
-        saveState(); renderTags();
+        saveState();
+        renderTags();
+        renderSkillPool();
+        renderBottom();
       }
     });
-  }
-
-  async function aiGenerateSkills() {
-    const btn = $('#rb-ai-skills');
-    btn.classList.add('is-loading');
-    btn.querySelector('.rb-ai-icon').textContent = '⟳';
-    btn.querySelector('.rb-ai-label').textContent = '推荐中…';
-    await fakeDelay(1200);
-    const seed = (state.basicInfo.major || '') + ' ' + (state.profile.intent || '') + ' ' +
-                 state.jobDirection.positions.map(id => POSITION_LIST.find(p => p.id === id).name).join(' ');
-    const set = new Set(state.profile.skills);
-    const pool = ['Java', 'Python', 'JavaScript', 'TypeScript', 'HTML / CSS', 'Vue.js', 'React',
-                  'Spring Boot', 'MySQL', 'Redis', 'Git', 'Docker', '数据结构', '算法基础',
-                  'Linux 命令', 'RESTful API', 'Axios / Fetch', 'Webpack', 'MyBatis', 'Nginx'];
-    pool.forEach(p => {
-      if (set.size < 8 && (seed.includes(p) || /(开发|工程|编程|软件|计算机|Java|Web|前端|后端|数据)/i.test(seed))) {
-        if (Math.random() > 0.4 && !set.has(p)) { set.add(p); }
-      }
-    });
-    if (set.size < 4) {
-      ['Java', 'Spring Boot', 'MySQL', 'Git'].forEach(p => set.add(p));
-    }
-    state.profile.skills = Array.from(set).slice(0, 10);
-    saveState();
-    renderTags();
-    btn.classList.remove('is-loading');
-    btn.classList.add('is-done');
-    btn.querySelector('.rb-ai-icon').textContent = '✓';
-    btn.querySelector('.rb-ai-label').textContent = '已推荐';
-    toast('✓ AI 已推荐技能标签');
   }
 
   async function aiGenerateSelf() {
@@ -714,10 +941,10 @@
     await fakeDelay(1400);
     const seed = state.basicInfo;
     const pos = state.jobDirection.positions.length
-      ? state.jobDirection.positions.map(id => POSITION_LIST.find(p => p.id === id).name).join('、')
+      ? state.jobDirection.positions.map(id => (findPosition(id) || {}).name).filter(Boolean).join('、')
       : '互联网开发';
     const personality = state.profile.personality || '沉稳细致、注重细节、善于协作';
-    const summary = `${seed.name || '我'}就读于${seed.school || '某高校'}${seed.major || '软件工程'}专业${seed.degree || '本科'}生，${personality.split(/[，。]/)[0] || '具备良好的工程素养'}。在校园学习和项目实践中，我对${pos}方向产生了浓厚兴趣，熟悉相关核心技术与开发流程。希望未来能够加入一个有清晰节奏与成长路径的工程团队，把课堂与项目里沉淀的能力转化为可被业务使用的产品。`;
+    const summary = `${seed.name || '本人'}就读于${seed.school || '某高校'}${seed.major || '软件工程'}专业${seed.degree || '本科'}，${personality.split(/[，。]/)[0] || '具备基本工程实践能力'}。课程与项目中接触过${pos}相关内容，希望从事节奏清晰、有成长空间的技术岗位。`;
     state.profile.summary = summary;
     saveState();
     ta.value = summary;
@@ -804,18 +1031,18 @@
     if (state.polish.complete) {
       stateTitle.textContent = '分析完成';
       stateIcon.classList.add('is-done');
-      stateText.textContent = 'READY';
+      stateText.textContent = '完成';
     } else {
-      stateTitle.textContent = '正在分析简历 …';
+      stateTitle.textContent = '正在检查简历 …';
       stateIcon.classList.remove('is-done');
-      stateText.textContent = 'Processing';
+      stateText.textContent = '检查中';
     }
 
     const items = [
-      { num: '01', name: '关键词优化', desc: '为每段经历匹配岗位核心词', status: 'ready' },
-      { num: '02', name: '内容精简',   desc: '压缩冗余描述，保留关键信息', status: 'ready' },
-      { num: '03', name: '成果强化',   desc: '突出量化数据与业务价值',     status: 'ready' },
-      { num: '04', name: '岗位匹配',   desc: '与所选岗位方向做匹配度对齐', status: 'ready' }
+      { num: '01', name: '关键词', desc: '对照所选岗位补关键词', status: 'ready' },
+      { num: '02', name: '精简',   desc: '去掉空话，保留事实', status: 'ready' },
+      { num: '03', name: '成果',   desc: '尽量保留可量化结果', status: 'ready' },
+      { num: '04', name: '匹配',   desc: '与投递方向对齐表述', status: 'ready' }
     ];
 
     items.forEach(it => {
@@ -829,7 +1056,7 @@
         ),
         el('div', { class: 'rb-polish-status is-' + (state.polish.complete ? 'ready' : it.status === 'ready' ? 'processing' : 'pending') },
           el('span', { class: 'dot' }),
-          el('span', null, state.polish.complete ? 'READY' : 'PROCESSING')
+          el('span', null, state.polish.complete ? '完成' : '进行中')
         )
       );
       list.appendChild(row);
@@ -842,14 +1069,15 @@
         await fakeDelay(700);
         rows[i].classList.remove('is-processing');
         rows[i].classList.add('is-ready');
-        rows[i].querySelector('span:last-child').textContent = 'READY';
+        rows[i].querySelector('span:last-child').textContent = '完成';
       }
       state.polish.complete = true;
       saveState();
-      stateTitle.textContent = '分析完成';
+      stateTitle.textContent = '检查完成';
       stateIcon.classList.add('is-done');
-      stateText.textContent = 'READY';
-      toast('✓ 简历润色分析完成');
+      stateText.textContent = '完成';
+      renderBottom();
+      toast('✓ 润色检查完成');
     }
   }
 
@@ -858,7 +1086,7 @@
     // 内容预览
     const inc = $('#rb-include-rows');
     inc.innerHTML = '';
-    const posNames = state.jobDirection.positions.map(id => POSITION_LIST.find(p => p.id === id).name).join(' / ') || '—';
+    const posNames = state.jobDirection.positions.map(id => (findPosition(id) || {}).name).filter(Boolean).join(' / ') || '—';
     const rows = [
       ['投递方向', posNames],
       ['实践经历', state.starExperiences.length + ' 段'],
@@ -877,7 +1105,7 @@
     checks.innerHTML = '';
     const checksData = [
       { ok: !!state.basicInfo.name, title: '简历内容', desc: state.basicInfo.name ? `信息完整，姓名 ${state.basicInfo.name}` : '尚未填写姓名' },
-      { ok: state.profile.summary && state.profile.summary.length > 20, title: '可读性', desc: state.profile.summary && state.profile.summary.length > 20 ? '自我评价长度合理' : '自我评价偏短，建议先 AI 生成' },
+      { ok: state.profile.summary && state.profile.summary.length > 20, title: '可读性', desc: state.profile.summary && state.profile.summary.length > 20 ? '自我评价长度合理' : '自我评价偏短，建议先生成一稿再改' },
       { ok: state.experiences.length > 0, title: '经历完整', desc: state.experiences.length > 0 ? `${state.experiences.length} 段经历已结构化为 STAR` : '尚未补充经历' },
       { ok: state.photo, title: '证件照', desc: state.photo ? '已上传（可后续替换）' : '可继续使用占位图' }
     ];
@@ -908,7 +1136,7 @@
 
   async function runGenerate() {
     state.generated = false;
-    state.completedSteps[8] = true;
+    state.completedSteps[5] = true;
     saveState();
     renderBottom();
 
@@ -926,7 +1154,7 @@
       '正在解析实践经历',
       '正在优化职业关键词',
       '正在构建简历结构',
-      '正在生成最终档案'
+      '正在汇总生成简历'
     ];
     const rows = [];
     steps.forEach((s, i) => {
@@ -952,90 +1180,165 @@
 
     state.generated = true;
     saveState();
-    await saveToLibrary();
+    saveToLibrary();
+    saveMatchResume();
+    syncProfileToBackend().catch(function () {});
     succ.classList.add('is-on');
     paper.classList.add('is-on');
     paintPaper();
     renderBottom();
     renderTopnav();
-    toast('✓ 简历已生成，已存入简历库');
+    toast('✓ 简历已生成，可进入人岗匹配');
   }
 
-  /* ============== 14.5 简历库 ============== */
-  const LIB_STORAGE_KEY = 'rb_resume_library_v1';
+  function apiBase() {
+    if (window.resolveApiBase) return window.resolveApiBase();
+    if (window.API_BASE) return window.API_BASE;
+    var host = location.hostname;
+    if (host === '127.0.0.1' || host === 'localhost') return 'http://127.0.0.1:8000';
+    return location.origin;
+  }
 
-  /** 压缩 base64 图片，防止 localStorage 配额超限 */
-  function compressImage(dataUrl, maxW) {
-    maxW = maxW || 300;
-    return new Promise((resolve) => {
-      try {
-        const img = new Image();
-        img.onload = () => {
-          try {
-            const ratio = Math.min(1, maxW / img.width);
-            const canvas = document.createElement('canvas');
-            canvas.width = Math.max(1, Math.round(img.width * ratio));
-            canvas.height = Math.max(1, Math.round(img.height * ratio));
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-            resolve(canvas.toDataURL('image/jpeg', 0.82));
-          } catch (_) { resolve(dataUrl); }
-        };
-        img.onerror = () => resolve(dataUrl);
-        img.src = dataUrl;
-      } catch (_) { resolve(dataUrl); }
+  function currentUserId() {
+    try {
+      var u = JSON.parse(localStorage.getItem('zhitu_user') || 'null');
+      if (u && (u.username || u.user_id || u.id)) return String(u.username || u.user_id || u.id);
+    } catch (_) {}
+    return 'demo_user';
+  }
+
+  async function syncProfileToBackend() {
+    var b = state.basicInfo;
+    var pos = state.jobDirection.positions[0]
+      ? ((findPosition(state.jobDirection.positions[0]) || {}).name || '')
+      : '';
+    var body = {
+      user_id: currentUserId(),
+      name: b.name || null,
+      school: b.school || null,
+      major: b.major || null,
+      education: b.degree || null,
+      target_job: pos || null,
+      bio: state.profile.summary || null,
+      phone: b.phone || null,
+      email: b.email || null
+    };
+    var res = await fetch(apiBase() + '/api/profile/profile/update', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
     });
+    if (!res.ok) throw new Error('profile sync failed');
+    return res.json();
   }
 
-  async function saveToLibrary() {
+  /* ============== 14.5 简历库 + 人岗匹配桥接 ============== */
+  const LIB_STORAGE_KEY = 'rb_resume_library_v1';
+  const MATCH_RESUME_KEY = 'zhitu_match_resume_v1';
+
+  function buildMatchSectionsFromState() {
+    const b = state.basicInfo || {};
+    const posName = state.jobDirection.positions[0]
+      ? ((findPosition(state.jobDirection.positions[0]) || {}).name || '')
+      : '';
+    const basicLines = [
+      b.name || '未命名',
+      posName ? (posName + (b.city ? '（' + b.city + '）' : '')) : (b.city || ''),
+      b.phone ? ('电话：' + b.phone) : '',
+      b.email ? ('邮箱：' + b.email) : ''
+    ].filter(Boolean);
+
+    const edu = [
+      [b.school || '某高校', b.major || '相关专业', b.degree || '本科'].filter(Boolean).join(' · '),
+      b.graduate ? (b.graduate + ' 毕业') : ''
+    ].filter(Boolean).join('\n');
+
+    const expLines = (state.starExperiences || []).map((s, i) => {
+      const exp = (state.experiences && state.experiences[i]) || {};
+      const head = [exp.title || s.title || ('经历 ' + (i + 1)), exp.org || '', exp.time || ''].filter(Boolean).join(' · ');
+      const body = ['S · ' + (s.S || ''), 'T · ' + (s.T || ''), 'A · ' + (s.A || ''), 'R · ' + (s.R || '')]
+        .filter((line) => !/·\s*$/.test(line))
+        .join('\n');
+      return [head, body].filter(Boolean).join('\n');
+    }).filter(Boolean);
+
+    const rawExps = (state.experiences || []).filter((e) => e && (e.title || e.org || e.brief || e.result));
+    const workLines = rawExps.map((e, i) => {
+      const head = [e.title || ('经历 ' + (i + 1)), e.org || '', e.role || '', e.time || ''].filter(Boolean).join(' · ');
+      const body = [e.brief, e.result].filter(Boolean).join('\n');
+      return [head, body].filter(Boolean).join('\n');
+    });
+
+    const skills = (state.profile.skills || []).join('、') || '—';
+    const summary = state.profile.summary || '';
+
+    return [
+      { id: 'basic', label: '个人信息', content: basicLines.join('\n'), ai_suggestion: '可补充期望城市与到岗时间。' },
+      { id: 'education', label: '教育经历', content: edu || '—', ai_suggestion: '可补充 GPA、主修课程或获奖。' },
+      { id: 'projects', label: '项目经历', content: expLines.join('\n\n') || '暂无项目经历', ai_suggestion: '建议用 STAR 突出可量化结果。' },
+      { id: 'work', label: '工作经历', content: workLines.join('\n\n') || '暂无正式工作 / 实习经历', ai_suggestion: '有实习请补全公司、时间与职责。' },
+      { id: 'skills', label: '专业技能', content: skills, ai_suggestion: '可将熟练度与项目场景绑定。' },
+      { id: 'summary', label: '自我评价', content: summary || '—', ai_suggestion: '控制在 2–3 句，突出方向与优势。' }
+    ];
+  }
+
+  function saveMatchResume() {
+    try {
+      const sections = buildMatchSectionsFromState();
+      const text = sections.map((s) => '【' + s.label + '】\n' + s.content).join('\n\n');
+      const payload = {
+        id: 'VR-wizard-' + (state.basicInfo.name || 'user'),
+        source: 'resume-builder',
+        updatedAt: Date.now(),
+        fileName: (state.basicInfo.name || '执图破局') + '_简历.txt',
+        size: text.length,
+        sections: sections,
+        text: text,
+        versionLabel: '探索初稿'
+      };
+      if (window.ZhituVault && typeof window.ZhituVault.saveMatchResume === 'function') {
+        window.ZhituVault.saveMatchResume(payload);
+      } else {
+        localStorage.setItem(MATCH_RESUME_KEY, JSON.stringify(payload));
+      }
+    } catch (err) {
+      console.warn('saveMatchResume fail:', err);
+    }
+  }
+
+  function goMatchPage() {
+    saveMatchResume();
+    const href = new URL('match.html', location.href).href + '?v=20260826vault1&auto=1';
+    try {
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({ source: 'zhitu-resume', type: 'done' }, '*');
+        window.parent.location.href = href;
+        return;
+      }
+    } catch (_) {}
+    window.location.href = href;
+  }
+
+  function saveToLibrary() {
     try {
       const lib = loadLibrary();
-      // 照片超过 200KB 则压缩，避免超出 localStorage 配额
-      let photoData = state.photo ? state.photo.data : null;
-      if (photoData && photoData.length > 200 * 1024) {
-        photoData = await compressImage(photoData);
-      }
-      const data = JSON.parse(JSON.stringify(state));
-      if (data.photo && photoData) data.photo.data = photoData;
-
       const item = {
         id: 'RB-' + Date.now().toString().slice(-8),
         name: state.basicInfo.name || '未命名简历',
-        position: (state.jobDirection.positions[0] && POSITION_LIST.find(p => p.id === state.jobDirection.positions[0]).name) || '未选择方向',
+        position: (state.jobDirection.positions[0] && (findPosition(state.jobDirection.positions[0]) || {}).name) || '未选择方向',
         createdAt: new Date().toLocaleString('zh-CN', { hour12: false }),
         summary: state.profile.summary || '',
         skills: state.profile.skills.slice(),
         expCount: state.starExperiences.length,
-        photo: photoData,
-        data
+        photo: state.photo ? state.photo.data : null,
+        data: JSON.parse(JSON.stringify(state))
       };
       // 同 id 去重更新；否则插入到最前
       const idx = lib.findIndex(r => r.id === item.id);
       if (idx >= 0) lib[idx] = item; else lib.unshift(item);
       localStorage.setItem(LIB_STORAGE_KEY, JSON.stringify(lib));
     } catch (err) {
-      // 兜底：去掉照片再存一次，保证简历文字内容一定能进库
-      console.warn('saveToLibrary fail (retry without photo):', err);
-      try {
-        const lib = loadLibrary();
-        const data = JSON.parse(JSON.stringify(state));
-        delete data.photo;
-        const item = {
-          id: 'RB-' + Date.now().toString().slice(-8),
-          name: state.basicInfo.name || '未命名简历',
-          position: (state.jobDirection.positions[0] && POSITION_LIST.find(p => p.id === state.jobDirection.positions[0]).name) || '未选择方向',
-          createdAt: new Date().toLocaleString('zh-CN', { hour12: false }),
-          summary: state.profile.summary || '',
-          skills: state.profile.skills.slice(),
-          expCount: state.starExperiences.length,
-          photo: null,
-          data
-        };
-        lib.unshift(item);
-        localStorage.setItem(LIB_STORAGE_KEY, JSON.stringify(lib));
-      } catch (e2) {
-        console.warn('saveToLibrary retry fail:', e2);
-      }
+      console.warn('saveToLibrary fail:', err);
     }
   }
 
@@ -1049,7 +1352,7 @@
 
   function paintPaper() {
     const b = state.basicInfo;
-    const posName = (state.jobDirection.positions[0] && POSITION_LIST.find(p => p.id === state.jobDirection.positions[0]).name) || '—';
+    const posName = (state.jobDirection.positions[0] && (findPosition(state.jobDirection.positions[0]) || {}).name) || '—';
     const skills = state.profile.skills;
     const paper = $('#rb-paper');
     const photoHtml = state.photo
@@ -1166,14 +1469,13 @@
   function bindEvents() {
     $('#rb-step-back').addEventListener('click', prevStep);
     $('#rb-step-next').addEventListener('click', nextStep);
-    $('#rb-go-home').addEventListener('click', () => {
-      saveState();
-      toast('✓ 进度已暂存');
-      setTimeout(() => { window.location.href = 'home.html'; }, 500);
-    });
 
     // 步骤 1
     $('#rb-ai-basic').addEventListener('click', aiAutofillBasic);
+
+    // 步骤 2
+    const clearBtn = $('#rb-clear-selection');
+    if (clearBtn) clearBtn.addEventListener('click', clearSelection);
 
     // 步骤 3
     $('#rb-exp-mode-haved').addEventListener('click', () => addExp());
@@ -1184,9 +1486,8 @@
     $('#rb-ai-input-go').addEventListener('click', aiGenerateExp);
     $('#rb-exp-add').addEventListener('click', addExp);
 
-    // 步骤 5
+    // 技能 / 评价
     bindTagsInput();
-    $('#rb-ai-skills').addEventListener('click', aiGenerateSkills);
     $('#rb-ai-self').addEventListener('click', aiGenerateSelf);
 
     // 步骤 6
@@ -1195,29 +1496,23 @@
     // 步骤 8
     $('#rb-export-word').addEventListener('click', downloadWord);
     $('#rb-export-pdf').addEventListener('click', downloadPDF);
-    $('#rb-go-library').addEventListener('click', () => { window.location.href = 'resume-library.html'; });
+    const goMatch = $('#rb-go-match');
+    if (goMatch) goMatch.addEventListener('click', goMatchPage);
+    const goLib = $('#rb-go-library');
+    if (goLib) goLib.addEventListener('click', goMatchPage);
 
     bindInputs();
   }
 
   /* ============== 16. 初始化 ============== */
   function init() {
-    // 顶部时间
-    function tick() {
-      const tEl = $('#rb-status-time');
-      if (tEl) tEl.textContent = clockNow();
-      const arch = $('#rb-arch-id');
-      if (arch && arch.textContent === 'AX-0000-0000') arch.textContent = randId();
-    }
-    tick();
-    setInterval(tick, 30000);
-
     bindEvents();
     renderTopnav();
     renderBottom();
     renderBasic();
-    // 重新进入时，按当前 step 渲染；gotoStep 内部会触发 renderIllus 同步左栏全列背景
+    // 重新进入时，按当前 step 渲染；gotoStep 内部会触发 renderIllus
     gotoStep(state.currentStep);
+    enrichJobPoolFromApi();
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);

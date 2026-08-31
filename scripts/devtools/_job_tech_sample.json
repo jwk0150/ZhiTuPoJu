@@ -1,0 +1,349 @@
+{
+  "code": 0,
+  "message": "success",
+  "data": {
+    "jobTitle": "数据分析师",
+    "centerJob": "数据分析师",
+    "skillCount": 2368,
+    "uniqueSkills": 81,
+    "categories": [
+      {
+        "name": "编程语言",
+        "type": "category",
+        "technologies": [
+          {
+            "name": "Python",
+            "type": "technology",
+            "frequency": 245,
+            "size": 42,
+            "ratio": 1.0
+          },
+          {
+            "name": "Excel",
+            "type": "technology",
+            "frequency": 157,
+            "size": 31,
+            "ratio": 0.64
+          },
+          {
+            "name": "PowerBI",
+            "type": "technology",
+            "frequency": 153,
+            "size": 31,
+            "ratio": 0.62
+          },
+          {
+            "name": "CAD/CAM",
+            "type": "technology",
+            "frequency": 27,
+            "size": 17,
+            "ratio": 0.11
+          },
+          {
+            "name": "TypeScript",
+            "type": "technology",
+            "frequency": 15,
+            "size": 15,
+            "ratio": 0.06
+          },
+          {
+            "name": "Android",
+            "type": "technology",
+            "frequency": 13,
+            "size": 15,
+            "ratio": 0.05
+          },
+          {
+            "name": "SCADA",
+            "type": "technology",
+            "frequency": 12,
+            "size": 15,
+            "ratio": 0.05
+          },
+          {
+            "name": "PACK",
+            "type": "technology",
+            "frequency": 8,
+            "size": 14,
+            "ratio": 0.03
+          },
+          {
+            "name": "OpenStack",
+            "type": "technology",
+            "frequency": 8,
+            "size": 14,
+            "ratio": 0.03
+          }
+        ]
+      },
+      {
+        "name": "核心技能",
+        "type": "category",
+        "technologies": [
+          {
+            "name": "数据分析",
+            "type": "technology",
+            "frequency": 89,
+            "size": 24,
+            "ratio": 0.36
+          },
+          {
+            "name": "工业数据",
+            "type": "technology",
+            "frequency": 88,
+            "size": 24,
+            "ratio": 0.36
+          },
+          {
+            "name": "质量分析",
+            "type": "technology",
+            "frequency": 85,
+            "size": 23,
+            "ratio": 0.35
+          },
+          {
+            "name": "MES",
+            "type": "technology",
+            "frequency": 82,
+            "size": 23,
+            "ratio": 0.33
+          },
+          {
+            "name": "数据采集",
+            "type": "technology",
+            "frequency": 44,
+            "size": 19,
+            "ratio": 0.18
+          },
+          {
+            "name": "电商运营",
+            "type": "technology",
+            "frequency": 33,
+            "size": 17,
+            "ratio": 0.13
+          },
+          {
+            "name": "供应链",
+            "type": "technology",
+            "frequency": 33,
+            "size": 17,
+            "ratio": 0.13
+          },
+          {
+            "name": "物流管理",
+            "type": "technology",
+            "frequency": 25,
+            "size": 16,
+            "ratio": 0.1
+          },
+          {
+            "name": "WMS",
+            "type": "technology",
+            "frequency": 24,
+            "size": 16,
+            "ratio": 0.1
+          },
+          {
+            "name": "医疗器械注册",
+            "type": "technology",
+            "frequency": 24,
+            "size": 16,
+            "ratio": 0.1
+          },
+          {
+            "name": "BMS",
+            "type": "technology",
+            "frequency": 24,
+            "size": 16,
+            "ratio": 0.1
+          },
+          {
+            "name": "Unity",
+            "type": "technology",
+            "frequency": 23,
+            "size": 16,
+            "ratio": 0.09
+          }
+        ]
+      },
+      {
+        "name": "数据存储与处理",
+        "type": "category",
+        "technologies": [
+          {
+            "name": "SQL",
+            "type": "technology",
+            "frequency": 166,
+            "size": 32,
+            "ratio": 0.68
+          },
+          {
+            "name": "Hadoop",
+            "type": "technology",
+            "frequency": 28,
+            "size": 17,
+            "ratio": 0.11
+          },
+          {
+            "name": "Flink",
+            "type": "technology",
+            "frequency": 15,
+            "size": 15,
+            "ratio": 0.06
+          },
+          {
+            "name": "Hive",
+            "type": "technology",
+            "frequency": 13,
+            "size": 15,
+            "ratio": 0.05
+          },
+          {
+            "name": "Spark",
+            "type": "technology",
+            "frequency": 11,
+            "size": 15,
+            "ratio": 0.04
+          },
+          {
+            "name": "MySQL",
+            "type": "technology",
+            "frequency": 8,
+            "size": 14,
+            "ratio": 0.03
+          }
+        ]
+      },
+      {
+        "name": "数据处理",
+        "type": "category",
+        "technologies": [
+          {
+            "name": "Tableau",
+            "type": "technology",
+            "frequency": 161,
+            "size": 32,
+            "ratio": 0.66
+          }
+        ]
+      },
+      {
+        "name": "框架与开发",
+        "type": "category",
+        "technologies": [
+          {
+            "name": "Vue",
+            "type": "technology",
+            "frequency": 45,
+            "size": 19,
+            "ratio": 0.18
+          },
+          {
+            "name": "Spring Boot",
+            "type": "technology",
+            "frequency": 41,
+            "size": 18,
+            "ratio": 0.17
+          },
+          {
+            "name": "UE",
+            "type": "technology",
+            "frequency": 22,
+            "size": 16,
+            "ratio": 0.09
+          }
+        ]
+      },
+      {
+        "name": "AI与算法",
+        "type": "category",
+        "technologies": [
+          {
+            "name": "PyTorch",
+            "type": "technology",
+            "frequency": 29,
+            "size": 17,
+            "ratio": 0.12
+          },
+          {
+            "name": "TensorFlow",
+            "type": "technology",
+            "frequency": 18,
+            "size": 16,
+            "ratio": 0.07
+          },
+          {
+            "name": "OpenCV",
+            "type": "technology",
+            "frequency": 18,
+            "size": 16,
+            "ratio": 0.07
+          },
+          {
+            "name": "大模型",
+            "type": "technology",
+            "frequency": 16,
+            "size": 15,
+            "ratio": 0.07
+          }
+        ]
+      },
+      {
+        "name": "嵌入式/硬件",
+        "type": "category",
+        "technologies": [
+          {
+            "name": "嵌入式",
+            "type": "technology",
+            "frequency": 33,
+            "size": 17,
+            "ratio": 0.13
+          },
+          {
+            "name": "PLC",
+            "type": "technology",
+            "frequency": 13,
+            "size": 15,
+            "ratio": 0.05
+          },
+          {
+            "name": "Verilog",
+            "type": "technology",
+            "frequency": 10,
+            "size": 15,
+            "ratio": 0.04
+          },
+          {
+            "name": "硬件",
+            "type": "technology",
+            "frequency": 8,
+            "size": 14,
+            "ratio": 0.03
+          }
+        ]
+      },
+      {
+        "name": "测试技术",
+        "type": "category",
+        "technologies": [
+          {
+            "name": "Selenium",
+            "type": "technology",
+            "frequency": 23,
+            "size": 16,
+            "ratio": 0.09
+          },
+          {
+            "name": "JMeter",
+            "type": "technology",
+            "frequency": 13,
+            "size": 15,
+            "ratio": 0.05
+          },
+          {
+            "name": "自动化测试",
+            "type": "technology",
+            "frequency": 13,
+            "size": 15,
+            "ratio": 0.05
+    

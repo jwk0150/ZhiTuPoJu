@@ -1379,7 +1379,7 @@ window.selectDiscoveryJob = function(id) {
       sessionStorage.setItem('zhitu_disc_job', JSON.stringify(job));
       sessionStorage.setItem('zhitu_disc_lane', isForecast ? 'forecast' : 'found');
     } catch (e) {}
-    location.href = 'discovery-detail.html?id=' + encodeURIComponent(job.id);
+    location.href = 'discovery-detail.html?id=' + encodeURIComponent(job.id) + '&v=fix25';
 };
 
 window.showDiscoveryDetail = function(id) {

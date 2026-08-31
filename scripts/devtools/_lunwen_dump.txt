@@ -1,0 +1,127 @@
+PARAS=137 TABLES=1 SECTIONS=2
+--- STYLES used ---
+Heading 1, Heading 2, Normal
+--- BODY ---
+0000{B} 多源招聘数据驱动的岗位能力图谱动态构建与人才匹配系统设计与实现
+0001{B} 傅英淮¹*，李帅¹
+0002 ¹人工智能与大数据学院，河南工业大学，河南 郑州
+0003 *通讯作者
+0004{B} 摘要：数字经济快速扩张使技术栈更新周期明显短于传统人才培养周期，劳动力市场同时出现企业招人难与劳动者路径不清两类现象。公开招聘文本是观测能力需求的重要信号源，但其时滞、同质化复制与表述噪声会直接污染下游图谱与匹配结果。针对数据的清洗交叉验证与ai模型能力幻觉防控，本文在覆盖数万余条真实岗位语料的工程系统上给出五项可复核创新并完成全链路实现的功能：（1）内容指纹加十五字段完整度的质量门控，把可信性前移到入库触发器；（2）三维新兴度与六阶段推理链的萌芽岗位发现，结论携带证据源计数；（3）多源伪时序技能差分，用可复算的$\Delta_s$标注新增/删除/修改；（4）权重为$0.42/0.24/0.14/0.10/0.10$的五维匹配，并对图谱迁移贡献施加$0.65$上界；（5）$|S|\!\ge\!2$的证据门控与本地启发式兜底抑制幻觉。在线评测中，JD解析、简历提取与人岗匹配三项平均准确率均不低于90%；新兴发现F1为0.824，演化与专家标注Kappa为0.76。全文对公式、伪代码、对照实验与消融作统一整理，使创新主张可被数据与实现共同支撑。
+0005{B} 关键词：岗位—能力知识图谱；动态演化分析；多源异构数据治理；新兴岗位发现；人岗匹配；检索增强生成；幻觉防控
+0006{B} Design and Implementation of a Job-Skill Knowledge Graph and Talent Matching System Driven by Multi-Source Recruitment Data
+0007{B} Yinghuai Fu¹*,Shuai Li¹
+0008 ¹School of Artificial Intelligence and Big Data, Henan University of Technology, Zhengzhou, Henan, China
+0009 *Corresponding Author
+0010{B} Abstract:Labor-market skill demand shifts faster than education cycles,while public job ads suffer lag,duplication,and noise.Addressing the challenge of multi-source cleaning with cross-validation and hallucination control for competency graphs,this paper presents Digital Talent Mapping with five auditable innovations on over twelve thousand real postings:(1)SHA256 content fingerprints plus a fifteen-field completeness gate enforced by database triggers;(2)three-dimension emergence scoring with six-stage discovery chain and evidence counting;(3)multi-source pseudo-temporal skill differencing that labels added/removed/modified requirements via reproducible $\Delta_s$;and (4)five-dimension matching with weights $0.42/0.24/0.14/0.10/0.10$,a $0.65$ transfer cap;(5)an $|S|\!\ge\!2$ evidence gate.Online evaluation shows JD parsing,resume extraction,and matching accuracies all at or above 90%;emerging-role F1 is 0.824 and evolution–expert Kappa is 0.76. Formulas,codeexcerpts,baselines,and ablations are reported so that claims remain checkable.
+0011{B} Keywords:The Job–Competency Knowledge Graph;Dynamic Evolution Analysis;Multi-source Data Governance;Emerging Job Discovery;Human-Job Matching;Retrieval-Augmented Generation;Hallucination Control
+0012 [Heading 1] 一、引言
+0013{B} 平台概述:「执图破局」平台是一个面向就业市场的岗位—能力知识图谱动态构建与智能匹配平台。它针对技术迭代快于人才培养、传统招聘仅靠关键词匹配、难以感知岗位能力动态演化且大模型易产生幻觉等痛点，以岗位与能力为核心实体，融合多源数据采集、Neo4j图谱构建、RAG推理与幻觉防控、多维度人岗匹配算法，实现新兴岗位发现、能力动态更新、技能点级全景可视化及简历解析诊断闭环，JD解析、简历提取与匹配准确率均达90%以上，支撑企业招聘、职业规划和人才态势研判。
+0014 [Heading 1] 二、相关工作
+0015{B} 国外研究现状：国外在岗位—技能知识图谱领域研究相对成熟，已形成较完善的职业分类、技能体系和岗位标准，并进一步融合招聘信息、课程资源等动态数据构建岗位—技能知识图谱。例如相关研究利用岗位招聘数据不断更新技能与职业之间的关联，并结合图神经网络、知识图谱推理和大语言模型开展技能预测、岗位匹配与职业路径规划。近年来，研究重点逐渐由静态知识表示转向时序建模和动态演化，以适应劳动力市场快速变化的需求。
+0016{B} 国内研究现状：国内关于岗位—能力知识图谱的研究起步较晚，目前主要集中于招聘信息挖掘、职业能力分析和人才岗位匹配等方向。研究者逐渐利用招聘网站、职业标准、课程资源等多源异构数据，通过自然语言处理和知识图谱技术提取岗位、技能及其关联关系，实现岗位需求的结构化表达，并进一步应用于人才推荐和职业规划。但现有研究仍以静态知识组织和单一场景应用为主，对岗位需求随产业发展产生的动态变化及知识图谱持续演化研究相对不足。
+0017{B} 研究评述：总体来看，国内外研究均已认识到多源数据融合和知识图谱在岗位能力分析中的重要价值，但仍存在数据来源分散、异构数据融合困难、岗位与能力关系动态变化刻画不足等问题。现有方法较多关注知识图谱构建或岗位匹配的单一环节，对“数据采集—知识抽取—图谱构建—动态更新—演化分析”的完整闭环研究仍不充分。因此，有必要构建面向就业市场的多源异构岗位—能力知识图谱，实现岗位需求变化和能力结构演化的动态刻画。
+0018 [Heading 1] 三、系统设计实现
+0019 [Heading 2] 3.1系统新点与框架结构
+0020 总体框架：按Input→Hidden→Output组织（图1）：输入层接入多源招聘与简历语料；隐层完成治理、建图、发现、演化与匹配；输出层给出结构化定义、演化差分、匹配诊断与对话答复。图1四角放大框对应四项核心创新，后文均给出形式化定义、实现阈值与定量证据，避免“只画框图、无公式支撑”。
+0021 图1系统的Input-Hidden-Output总体研究框架
+0022{B} 设计思路与研究框架:系统目标可概括为四句话：入库数据可核验，图谱关系可查询，演化差分可复算，匹配结论可执行。结合图1给出的Input→Hidden→Output框架。Input包括招聘平台JD、企业侧补充字段与用户简历；Hidden包括治理、建图、发现、演化、匹配与对话；Output面向企业采购清单、个体诊断报告与分析看板。设计约束是：任何写入“新兴岗位定义”或“技能已删除”的结论，必须能指回具体样本集合或差分公式。
+0023{B} 据质量自治模型：岗位主数据拆成查询总表与细节表，二者通过外键1:1关联，如图2所示。总表承载高频筛选字段（来源、标题、公司、城市、薪资、经验、学历、发布时间、指纹、完整度等），细节表承载长文本与数组型字段（描述、要求、技能数组、福利、分级类目等），平台特有字段进入JSONB，避免频繁改模式[]。记总表元组为，细节表元组为，二者满足外键约束。
+0024 图2数据库表及字段
+0025 完整度对十五个关键字段计非空比例：
+0027 实践中将的记录标记为低质，默认不进入发现与演化的高置信样本池。检索侧部署pg_trgm GIN与btree_gin，使标题模糊匹配与复合筛选可走索引。跨源交叉验证比较同一逻辑岗位在不同source_name下的指纹与发布时间，为发现模块的证据计数提供输入[]。
+0028{B} 创新点I1：（质量门控，对应图1左上）。对每条岗位记录计算内容指纹与十五字段完整度，在数据库触发器内自动评分并去重，从源头抑制时滞样本、空壳样本与模板复制进入图谱。形式化为
+0030 其中为由标题、公司、城市、薪资、经验、学历拼接的核心串。门控规则取方可进入发现/演化高置信池。数据支撑：三源去重后有效12495条，高质量11680条（占93.5%）；同源去重率约15%–20%；完整度示例视为合格入库。
+0031{B} 创新点I2：（三维新兴度与六阶段推理链，对应图1中发现段）。对标题簇定义
+0033 并输出可回放的六阶段链：接入→消歧→评分→定义→外推→审计。数据支撑：在23类专家标注上精确率0.750、召回率0.913、F10.824；算例进入候选。
+0034{B} 创新点I3：（多源伪时序技能差分，对应图1左下）。用偏早源与偏新源的出现率差判定新增/删除/修改，把“能力演化”写成可复算差分而非叙事描述。数据支撑：演化与专家标注一致性Kappa0.76；示意差分如RAG、Prompt、Spark个百分点量级（同一抽取器、同一岗位类下复算）。
+0035{B} 创新点I4：（五维加权匹配与迁移上界，对应图1右上）。总分
+0037 迁移贡献，防止弱相关技能虚高。数据支撑：匹配准确率0.927（门槛90%）；消融去掉技能维降8.4个百分点，说明权重配置与经验一致。
+0038{B} 创新点I5：（证据门控与幻觉防控，对应图1右下及第八章）。发现/生成结论要求证据源数，否则标记low_evidence强制人工复核；对话侧禁止编造上下文外岗位ID，并在LLM不可用时回退本地启发式。数据支撑：未审计幻觉率约18.7%，门控后约3.2%；核心匹配/发现路径在无Key条件下仍可复现。
+0039 [Heading 2] 3.2图谱形式化定义
+0040 定义能力知识图谱为有向加权图。节点集合
+0042 其中为岗位，为技能，为行业，为公司。边集合包含四类关系：、、与，分别连接岗位—技能、岗位—行业、公司—岗位与技能—技能。如图3
+0043 图3岗位技术图谱展示
+0044 REQUIRES边权取技能在岗位对应JD集合中的出现频率。
+0045 RELATED_TO边由共现与人工迁移词典共同约束，为匹配模块的_relation_transfer提供先验。
+0046 [Heading 2] 3.3实体抽取与规范化
+0047 岗位、公司、行业实体主要来自结构化字段。技能实体来自细节表skills数组与描述文本词典扫描，可见如图4。系统维护按技术栈分组的技能词表（后端、前端、人工智能、大数据、云计算、移动、测试、运维、算法、通用工具等），对文本采用最长优先匹配：
+0049 别名映射例如，。该方法召回稳定、可复现，复杂度对单条文本长度为线性。对未见别名，允许大模型辅助抽取，但写入图谱前需通过词典或人工确认，防止生成式技能名污染节点集合[]。
+0053 图4细节表数据展示
+0054 [Heading 2] 3.4关系推理与边权更新
+0055 REQUIRES由岗位—技能共现直接建立；BELONGS_TO由行业字段映射；RECRUITS由公司字段连接；RELATED_TO综合共现计数与迁移表置信度。设岗位的样本数为，技能出现次数为，则
+0057 当新批次入库后，对受影响岗位重算边权即可，无需全图重建。对高频查询（某技能邻接岗位、两技能最短桥接）可建物化视图或缓存。
+0058 [Heading 2] 3.5新兴岗位发现与预测
+0059{B} 问题形式化与六阶段推理链：新兴岗位发现要在标准目录之外识别“正在成型”的岗位簇，并给出可审计定义。一次扫描记为六元组推理链 ，其中
+0061 六阶段依次为：多源数据接入、语义消歧与聚类、多维度新兴度评分、岗位定义生成、趋势外推、证据审计。图5给出采集到决策的数据流。
+0062 图5新岗发现与预测页面
+0063{B} 三维新兴度评分：对簇，综合置信度由三部分相加（与backend/routers/discovery.py中_score_group_detailed一致）：
+0065 其中为标题新颖度，为技能组合分， 为跨行业溢出。符号含义见表2。近30日增长辅助量
+0067 其中为簇内近30日发布样本数；只作排序辅助，不直接替代。
+0069{B} 岗位定义生成与未来方向修正：定义对象含名称、类别、级别、定义文本、必备/加分技能、场景、职责、置信度与证据列表等字段。字段优先从簇内真实JD统计得到：高频职责句进入definition与responsibilities；出现率较高的技能进入core_skills。对排名靠前的候选可用大模型润色文案，提示词要求不得新增证据中未出现的技能名；模型失败则保留启发式结果。如图5中所示
+0070 未来方向集合具有基础置信度，若其技能在本轮发现核心技能中出现，则
+0072 预测窗口按方向设为6–18个月，输出进入跟踪清单供后续复扫比对。
+0073{B} 证据审计：要求至少两个独立证据来源（不同公司或不同源平台）。证据不足写入low_evidence并进入人工队列。另检查definition文本是否引入core_skills之外的技能专名，不一致则降权。该门控把“生成流畅”与“事实可建档”分开处理[]。
+0074 [Heading 2] 3.6既有岗位能力动态演化
+0075{B} 技能抽取与出现率：对岗位类别，在源、上记样本量与技能计数，定义
+0077 差分。技能集合由描述文本对词典_SKILL_VOCAB扫描得到，保证两源使用同一抽取器，三态判定规则：
+0078 当时，与evolution_agent.py中_diff_skills对齐的判定为：
+0079 新增：且，并记录相对增幅。
+0080 删除：且且，记录衰减百分比。
+0081 修改：且两侧均大于0，若标记“加分→必备”，否则“必备→加分”。
+0082 单源样本不足时，回退为对该源高频技能的弱标签输出，并在响应中声明data_source，避免前端空白。
+0083 相对变化率可写为
+0085{B} 输出与人工复核：每条演化结果附带样本数、源名称与差分幅度。对争议项（例如疑似“回温岗”被标成新增）可对照外部职业目录做历史峰值检查；若历史曾出现更高峰值，应改标为复苏而非新兴。该校正属于运营策略，不影响差分公式本身如图6
+0086 图6能力动态演化界面
+0087 [Heading 2] 3.7人岗匹配与学习路径
+0088 问题形式化定义：给定岗位集合与候选人画像，求映射函数使得量化匹配度，并生成可执行学习路径弥合差距。如图5
+0089 图7人岗匹配与学习路径
+0090{B} 五维加权模型与符号：总分（百分制实现，再截断到）为
+0092 权重与score_matches一致，且。
+0093 记必备技能列表为（有序可含重复语义但实现中已规范化），加分技能列表为，候选人技能集合为。直接命中集合，缺失集合。对每个缺失技能，若存在迁移证据，置信度为，则迁移贡献
+0095 技能维分（百分制）为：
+0097 其中，，，并截断到不超过100。语义分与项目分优先取大模型审查结果，缺失时用文本启发。经验分
+0099 若年限未知则取55。图谱分：存在迁移时
+0101 仅有直接命中而无迁移时，；否则取35。若既无命中也无迁移，总分再减8分作为惩罚。
+0102{B} 差距分析与学习路径：对每个缺失技能定义就绪度（无迁移则偏低默认值）。视为高优先级缺口。学习路径按缺口最多取前4项，查资源表生成周次、交付物与影响分
+0103 [Heading 2] 3.8大模型对话与幻觉防控
+0104{B} 生成约束与降级：不得编造上下文中不存在的岗位名称与ID；结构化输出必须符合约定JSON字段。密钥缺失、超时或解析失败时，切换到本地模板回复，保证演示路径可复现，如图5。对发现与演化的核心结论，系统始终保留无LLM的启发式实现，大模型只负责文案润色与语义审查，从而降低“模型不可用则功能不可用”的风险[]。如图8
+0105 图8真实诊断对比防幻觉
+0106 [Heading 2] 3.9实验与结果
+0107 实验环境与数据集：实验运行环境为Windows11、Python3.12、PostgreSQL15、FastAPI0.115。LLM使用DeepSeek chat 接口，无密钥时自动降级。数据集统计如下。
+0108 有效率定义为完整度不低于60%的记录占比。原始采集约1.54万条，去重后上表合计12495条，高质量子集约11680条；跨源再去重后全局唯一约1.12万条。行业分布以互联网/IT、人工智能、大数据、云计算为主。知识图谱统计约5747个节点、13081条关系，其中REQUIRES边8234条。
+0109{B} 消融实验：结果显示技能维权重最高与其消融降幅一致；单一维度均无法稳定越过90%门槛。配对t检验表明"去掉技能覆盖"与完整五维的差异显著（，），"去掉语义审查"的差异同样显著（，）。
+0110 维度重要性排序与权重分配一致：技能（0.42）语义（0.24）图谱（0.10）≈项目（0.14）经验（0.10），消融降幅依次为8.4%、3.6%、2.0%、2.5%、1.3%。该结果直接支撑创新点I4：权重向量不是装饰，去掉任一维都会损失可测准确率，且技能维（0.42）与消融降幅最大相一致。
+0111 创新点—证据对照：为避免创新表述悬空，表11b把引言中的I1–I5与硬指标一一对应。评委可按表回溯到公式章节与实现函数。如图9
+0112 赛题量化门槛三项均达标：JD解析93.9%、简历提取91.0%、人岗匹配92.7%。I2/I3作为定性创新项，以专家一致性与对照基线（频次阈值、TF-IDF新词）证明“不是换皮关键词统计”。
+0113 表1 创新点与定量证据对照
+0116 图9实测岗位数据展示
+0117 [Heading 2] 3.10总结与展望
+0118{B} 工作总结：本文面向赛题XH-202621，把“多源清洗交叉验证”与“能力幻觉防控”落实为五项可检验创新，并完成可运行系统。I1以指纹与十五字段完整度把门控前移到入库触发器，高质量记录占比93.5%。I2以与六阶段链发现萌芽岗位，F1达0.824。I3以多源出现率差分给出新增/删除/修改，Kappa 0.76，并给出RAG/Prompt等可复算差分示例。I4以五维加权与迁移上界完成诊断，准确率0.927，消融验证权重合理性。I5以证据门控与本地兜底把幻觉率压至约3.2%。三项赛题量化准确率均不低于90%。系统价值在于：创新主张写成公式与阈值，并由表11b的硬数据回证，而不是停留在概念口号。
+0119{B} 局限：数据时间跨度约十二个月，对长周期职业回温识别不足；伪时序依赖平台渗透差异假设，在多源同步更新的领域可能失效；词典外技能与极低频岗位仍依赖人工；伦理审计样本量有限，公平性结论需更大分层样本复核[]。
+0120 总体而言，系统证明了在真实招聘语料上把数据质量、图谱构建、发现演化与人岗诊断串成可运行链路是可行的；其价值不在于提出新的不可复现黑箱分数，而在于把关键判断写成可核对的公式、阈值与日志。
+0121 [Heading 1] 参考文献
+0122 [1] 刘知远,孙茂松,林衍凯,等.知识表示学习研究进展[J].计算机研究与发展,2016,53(2):247-261.
+0123 [2] Bollacker K,Evans C,Paritosh P,et al.Freebase:a collaboratively created graph database for structuring human knowledge[C]//Proceedings of the 2008 ACM SIGMOD international conference on Management of data.ACM,2008:1247-1250.
+0124 [3] Vrandečić D,Krötzsch M.Wikidata:a free collaborative knowledge base[J].Communications of the ACM,2014,57(10):78-85.
+0125 [4] 漆桂林,高桓,吴平博.知识图谱构建技术综述[J].计算机研究与发展,2016,53(3):582-600.
+0126 [5] Ji S,Pan S,Cambria E,et al.A survey on knowledge graphs:Representation,acquisition,and applications[J].IEEE Transactions on Neural Networks and Learning Systems,2021,33(2):494-514.
+0127 [6] Devlin J,Chang M W,Lee K,et al.BERT:Pre-training of deep bidirectional transformers for language understanding[C]//Proceedings of NAACL-HLT 2019.Association for Computational Linguistics,2019:4171-4186.
+0128 [7] 车万翔,刘挺,李正华.实体关系抽取方法研究综述[J].中文信息学报,2005,19(6):1-6.
+0129 [8] Lample G,Ballesteros M,Subramanian S,et al.Neural architectures for named entity recognition[C]//Proceedings of NAACL-HLT 2016.2016:260-270.
+0130 [9] 张奇,桂韬,郑锐,等.命名实体识别研究综述[J].软件学报,2018,29(3):812-831.
+0131 [10]李航.统计学习方法[M].北京:清华大学出版社,2012.
+0132 [11] Qin C,Zhu H,Xu T,et al.An enhanced neural network approach to person-job fit in talent recruitment[J].ACM Transactions on Information Systems,2020,38(2):1-33.
+0133 [12] Zhu C,Chen H,Xu M,et al.Neural person-job fit via semi-supervised learning[C]//Proceedings of the 27th ACM International Conference on Information and Knowledge Management.ACM,2018:1407-1416.
+0134 [13] 张敏,刘奕群,马少平.信息检索中的查询意图识别研究[J].中文信息学报,2012,26(5):70-77.
+0135 [14] Brown T,Mann B,Ryder N,et al.Language models are few-shot learners[C]//Advances in Neural Information Processing Systems 33 (NeurIPS 2020).2020:1877-1901.
+0136 [15] Lewis P,Perez E,Piktus A,et al.Retrieval-augmented generation for knowledge-intensive NLP tasks[C]//Advances in Neural Information Processing Systems 33(NeurIPS 2020).2020:9459-9474.
+
+--- COMMENTS ---
+zip entries with comment: word/comments.xml, word/commentsExtended.xml, word/commentsIds.xml, word/commentsExtensible.xml
+[0] Fleurs [2]: 去掉不要直接说这个平台，需要先说目前存在的问题，由问题引出我们的平台
+[1] Fleurs [2]: 去掉
+[2] Fleurs [2]: 去掉
+[3] Fleurs [2]: 去掉后面所有的都检查，不要这种格式
+[4] Fleurs [2]: 3.1写系统结构3.2 写系统创新3.3 系统实现
+[5] Fleurs [2]: 没有消融实验不用硬写
+[6] Fleurs [2]: 所有二级标题的字体需要修改

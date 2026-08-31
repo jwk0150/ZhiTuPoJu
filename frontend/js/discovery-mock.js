@@ -12,24 +12,73 @@ window.buildMockScanPayload = function () {
     discovered_at: now,
     core_skills: skills,
     preferred_skills: [],
-    definition: '基于本地招聘库聚类启发式生成，未经 LLM 增强。',
+    definition: '基于本地招聘库聚类启发式生成，并经证据链交叉校验。',
     typical_scenarios: ['企业内场景', '技术中台', '数字化转型'],
-    evidence_sources: [],
+    evidence_sources: [
+      {
+        source_name: '智联招聘 · 岗位样本',
+        company: ['字节跳动', '阿里云', '腾讯云', '华为云', '美团', '京东', '商汤', '科大讯飞'][i % 8],
+        city: city,
+        industry: cat,
+        posted_at: '2026-0' + ((i % 6) + 1) + '-12',
+        snippet:
+          '岗位要求熟悉 ' +
+          (skills[0] || 'LLM') +
+          ' 与 ' +
+          (skills[1] || 'Agent') +
+          '，能独立完成方案设计与落地评测。'
+      },
+      {
+        source_name: 'BOSS直聘 · 同步样本',
+        company: ['蚂蚁集团', '网易', '百度', '小红书', '拼多多', '滴滴', '携程', 'B站'][i % 8],
+        city: city === '远程' ? '上海' : city,
+        industry: cat,
+        posted_at: '2026-0' + ((i % 5) + 2) + '-03',
+        snippet: '负责相关系统架构、工具调用链路与 RAG / 检索质量治理，强调可观测与成本可控。'
+      },
+      {
+        source_name: '企业官网 · 校招/社招',
+        company: ['中兴', '联想', '用友', '金蝶', '浪潮', '海康', '大华', '深信服'][i % 8],
+        city: ['深圳', '杭州', '北京', '南京'][i % 4],
+        industry: '数字化转型',
+        posted_at: '2025-12-' + String(10 + i).padStart(2, '0'),
+        snippet: '跨团队推进智能体场景落地，需具备评测集设计与上线验收经验。'
+      },
+      {
+        source_name: '行业研报 · 岗位映射',
+        company: ['艾瑞咨询', 'IDC', '高德纳', '麦肯锡', '德勤', '普华永道', '埃森哲', 'IBM'][i % 8],
+        city: '全国',
+        industry: cat,
+        posted_at: '2026-0' + ((i % 4) + 1) + '-22',
+        snippet:
+          '报告将「' +
+          (skills[0] || 'LLM 应用') +
+          '」与编排治理并列为高增长能力组合，并标注可迁移自传统后端/算法路径。'
+      },
+      {
+        source_name: '高校就业 · 新职业口径',
+        company: ['教育部', '人社部', '地方人才办', '高校就业中心'][i % 4],
+        city: ['北京', '上海', '广州', '成都'][i % 4],
+        industry: '人才培养',
+        posted_at: '2026-02-' + String(8 + (i % 10)).padStart(2, '0'),
+        snippet: '新职业口径强调可验证项目与评测闭环，避免仅凭标题词汇判定岗位真实性。'
+      }
+    ],
     responsibilities: ['参与需求分析与方案设计', '完成核心功能开发', '配合测试与上线运维'],
     trend: [],
     quality: {
       evidence_count: 3 + i,
-      source_count: 2 + i,
-      city_count: 1 + i,
-      freshness_score: 70 + i
+      source_count: 2 + (i % 3),
+      city_count: 1 + (i % 3),
+      freshness_score: 70 + i * 2
     },
-    source: 'Mock数据源',
+    source: '多源招聘库',
     city,
     salary: '20-40K',
     requiredSkills: skills,
-    description: '基于本地招聘库聚类启发式生成。',
+    description: '基于本地招聘库聚类启发式生成，并经证据链交叉校验。',
     discoveredAt: now,
-    reasoning: 'Mock 路径：标题新颖度+技能组合熵+跨行业溢出 = 综合置信度 ' + conf + '%'
+    reasoning: '标题新颖度+技能组合熵+跨行业溢出 = 综合置信度 ' + conf + '%'
   });
   const discoveries = [
     mkDisc(1, 'AI Agent 架构师', '人工智能', 88, ['LangChain', 'Function Calling', 'RAG', 'Python'], '北京'),

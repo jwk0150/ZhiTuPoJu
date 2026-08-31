@@ -864,7 +864,12 @@
       role: data.role || 'user',
       loginTime: Date.now()
     }));
-    window.location.href = 'pages/resume.html';
+    const dest = 'pages/resume.html';
+    if (window.ZhituAuthTransit && window.ZhituAuthTransit.go) {
+      window.ZhituAuthTransit.go(dest);
+    } else {
+      window.location.href = dest;
+    }
   };
 
   const postAuth = async (path, body) => {
