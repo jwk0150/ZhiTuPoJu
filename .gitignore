@@ -60,3 +60,11 @@ frontend.err
 /u3.json
 serve_nocache.py
 frontend/index_backup_old.html
+
+
+# 运行日志（本地）
+backend_run*.err
+backend_run*.log
+frontend_run*.err
+ingest_all.*
+*.log.bak
