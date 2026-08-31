@@ -8,8 +8,9 @@
   <link rel="stylesheet" href="../css/shell.css" />
   <link rel="stylesheet" href="../css/components.css" />
   <link rel="stylesheet" href="../css/legacy-views.css" />
-  <link rel="stylesheet" href="../css/match.css" />
-  <link rel="stylesheet" href="../css/learning-os.css" />
+  <link rel="stylesheet" href="../css/match.css?v=7" />
+  <link rel="stylesheet" href="../css/match-paper.css?v=7" />
+  <link rel="stylesheet" href="../css/learning-os.css?v=7" />
   <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js" defer></script>
 </head>
 <body class="standalone-view" data-page="match">
@@ -153,10 +154,6 @@
                 <div class="cond-panel-head"><b>条件影响分析</b><small>修改条件后，岗位覆盖范围将实时变化</small></div>
                 <div class="cond-impact" id="cond-impact"></div>
               </section>
-              <section class="cond-panel cond-panel--target">
-                <div class="cond-panel-head"><b>目标岗位画像</b><button class="cond-panel-btn" id="cond-edit-job" type="button">编辑岗位</button></div>
-                <div class="cond-target" id="cond-target"></div>
-              </section>
             </div>
 
             <footer class="cond-wk-foot">
@@ -179,42 +176,8 @@
               <div class="rps-bg-grid"></div>
             </div>
 
-            <!-- 中央 AI 分析核心 + 环形任务节点 -->
+            <!-- 顶部：分析标题 + 进度（左上） -->
             <section class="rps-stage" id="rps-stage" aria-label="AI 分析引擎">
-              <div class="rps-scanline" id="rps-scanline" aria-hidden="true"></div>
-              <!-- 环形任务节点（JS 渲染） -->
-              <div class="rps-ring" id="rps-ring"></div>
-              <!-- 中心能量球 -->
-              <div class="rps-orb" id="rps-orb">
-                <span class="rps-orb-halo rps-orb-halo--a"></span>
-                <span class="rps-orb-halo rps-orb-halo--b"></span>
-                <svg class="rps-neural" viewBox="0 0 120 120" aria-hidden="true">
-                  <g class="rps-neural-nodes">
-                    <circle cx="60" cy="60" r="3" />
-                    <circle cx="26" cy="34" r="2.2" />
-                    <circle cx="94" cy="32" r="2.2" />
-                    <circle cx="24" cy="86" r="2.2" />
-                    <circle cx="96" cy="86" r="2.2" />
-                    <circle cx="60" cy="16" r="2" />
-                    <circle cx="60" cy="104" r="2" />
-                  </g>
-                  <g class="rps-neural-links">
-                    <line x1="60" y1="60" x2="26" y2="34" />
-                    <line x1="60" y1="60" x2="94" y2="32" />
-                    <line x1="60" y1="60" x2="24" y2="86" />
-                    <line x1="60" y1="60" x2="96" y2="86" />
-                    <line x1="60" y1="60" x2="60" y2="16" />
-                    <line x1="60" y1="60" x2="60" y2="104" />
-                  </g>
-                </svg>
-                <span class="rps-orb-ring" aria-hidden="true"></span>
-                <div class="rps-orb-core">
-                  <span class="rps-orb-ai">AI</span>
-                  <span class="rps-orb-pulse" aria-hidden="true"></span>
-                </div>
-              </div>
-
-              <!-- 中心文案 + 环形进度 -->
               <div class="rps-core-copy">
                 <h2 class="rps-title" id="analysis-title">正在分析你的简历</h2>
                 <p class="rps-direction" id="analysis-direction">Java 后端开发方向</p>
@@ -249,28 +212,6 @@
               </div>
             </section>
 
-            <!-- 预计生成内容预览 -->
-            <section class="rps-preview" id="rps-preview" aria-label="预计生成内容">
-              <div class="rps-preview-card los-glass">
-                <span class="rps-preview-icon">◈</span>
-                <b>能力画像</b>
-                <small>技能雷达图生成中…</small>
-                <span class="rps-preview-shimmer" aria-hidden="true"></span>
-              </div>
-              <div class="rps-preview-card los-glass">
-                <span class="rps-preview-icon">◉</span>
-                <b>岗位推荐</b>
-                <small>匹配算法计算中…</small>
-                <span class="rps-preview-shimmer" aria-hidden="true"></span>
-              </div>
-              <div class="rps-preview-card los-glass">
-                <span class="rps-preview-icon">◇</span>
-                <b>学习路径</b>
-                <small>成长方案生成中…</small>
-                <span class="rps-preview-shimmer" aria-hidden="true"></span>
-              </div>
-            </section>
-
             <!-- 底部说明 -->
             <footer class="rps-foot">
               <span class="rps-foot-dot"><i></i></span>
@@ -285,8 +226,8 @@
           <svg width="0" height="0" style="position:absolute" aria-hidden="true">
             <defs>
               <linearGradient id="match-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#1FC8D9" />
-                <stop offset="100%" stop-color="#F0B429" />
+                <stop offset="0%" stop-color="#C84738" />
+                <stop offset="100%" stop-color="#B58A4A" />
               </linearGradient>
             </defs>
           </svg>
@@ -336,9 +277,6 @@
                 <div class="jd-pane" data-jd-pane="resume" id="jd-pane-resume"></div>
                 <div class="jd-pane" data-jd-pane="interview" id="jd-pane-interview"></div>
               </div>
-
-              <!-- 底部：职业决策路径 -->
-              <div class="jd-decision" id="jd-decision"></div>
             </section>
           </div>
 
@@ -909,7 +847,7 @@
   <script src="../js/cinema-bg.js"></script>
   <script src="../js/cinema-music.js"></script>
   <script src="../js/shell.js"></script>
-  <script src="../js/pages/match.js"></script>
+  <script src="../js/pages/match.js?v=5"></script>
   <script>
     window.Shell && window.Shell.mount({ pageId: 'match', title: '人岗匹配诊断', subtitle: '简历 → 匹配 → 岗位 → 学习 → 面试' });
     window.initMatch && window.initMatch();

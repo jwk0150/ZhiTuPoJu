@@ -821,13 +821,56 @@ body:has(#view-learn.is-active) .qa-fab {
 
 /* ---- 舞台（能量球 + 环形节点） ---- */
 .rps-stage {
-  position: relative;
-  height: 520px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
+  position: relative !important;
+  height: auto !important;
+  min-height: 0 !important;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: flex-start !important;
+  justify-content: flex-start !important;
+  gap: 24px !important;
+  padding: 0 0 24px !important;
+  overflow: visible !important;
+}
+
+/* ---- 重构：标题 + 进度 一行，靠左上 ---- */
+.rps-core-copy {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 18px !important;
+  margin-top: 0 !important;
+  text-align: left !important;
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  position: relative !important;
+  z-index: 4 !important;
+}
+.rps-title {
+  font-family: "Noto Serif SC", serif !important;
+  font-size: 22px !important;
+  font-weight: 500 !important;
+  letter-spacing: -0.3px !important;
+  margin: 0 !important;
+  flex: 0 0 auto !important;
+}
+.rps-title::after { display: none !important; }
+.rps-direction {
+  font-family: "Noto Sans SC", sans-serif !important;
+  font-size: 13px !important;
+  color: #665F55 !important;
+  margin: 0 !important;
+  letter-spacing: 0.05em !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  flex: 0 1 auto !important;
+  min-width: 0 !important;
+}
+.rps-direction b { color: #A97845 !important; font-weight: 500 !important; }
+.rps-progress {
+  margin: 0 !important;
+  flex: 0 0 auto !important;
 }
 
 /* 环形节点层 */
@@ -952,7 +995,20 @@ body:has(#view-learn.is-active) .qa-fab {
 .rps-progress-num small { font-size: 11px; color: var(--los-ink-soft); margin-left: 2px; }
 
 /* ---- 动态内容区 ---- */
-.rps-dynamic { padding: 16px 20px; margin-top: 4px; }
+.rps-dynamic {
+  padding: 32px 36px !important;
+  margin-top: 0 !important;
+  min-height: 360px;
+  border: 1px solid #DDD4C5 !important;
+  border-radius: 12px !important;
+  background: #FBF8F1 !important;
+  box-shadow: 0 2px 14px rgba(60, 45, 30, 0.06) !important;
+  max-width: 760px;
+  width: 100%;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+.rps-dynamic .los-glass { background: transparent !important; }
 .rps-dyn-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 13px; }
 .rps-dyn-live { display: inline-flex; align-items: center; gap: 7px; font-size: 11px; font-weight: 700; letter-spacing: 1.6px; color: var(--los-teal); }
 .rps-dyn-live i { width: 7px; height: 7px; border-radius: 50%; background: var(--los-teal); box-shadow: 0 0 10px rgba(53, 224, 200, 0.9); animation: rps-pulse 1.6s infinite; }

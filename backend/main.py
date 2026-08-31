@@ -3,7 +3,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from backend.routers import agent, collection, discovery, evolution, graph, matching, data, talent_map, auth, profile, trends, ability
+from backend.routers import agent, collection, discovery, evolution, graph, matching, data, talent_map, auth, profile, trends, ability, knowledge
 from backend.db_async import close_pool
 from backend.config import config
 from backend.init_database import ensure_view_only
@@ -82,3 +82,6 @@ app.include_router(trends.router, prefix="/api/trends", tags=["trends"])
 
 # 新增：我的能力路由（技术目录 + 用户能力问卷/图谱）
 app.include_router(ability.router, prefix="/api/ability", tags=["ability"])
+
+# 新增：RAG 知识库检索（Phase 02）
+app.include_router(knowledge.router, prefix="/api/knowledge", tags=["knowledge"])

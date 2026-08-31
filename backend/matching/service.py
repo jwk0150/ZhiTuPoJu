@@ -425,12 +425,21 @@ def _fallback_semantic(profile: dict[str, Any], job: dict[str, Any]) -> tuple[fl
     return float(semantic), float(project)
 
 
-def score_matches(profile: dict[str, Any], reviews: dict[str, dict[str, Any]]) -> list[dict[str, Any]]:
+def score_matches(
+    profile: dict[str, Any],
+    reviews: dict[str, dict[str, Any]],
+    jobs: list[dict[str, Any]] | None = None,
+) -> list[dict[str, Any]]:
+    """五维匹配评分。
+
+    jobs：候选岗位列表（Phase 03 起支持真实岗位；缺省回退 data.JOBS Mock）。
+    评分算法保持原样，不重写。
+    """
     candidate_skills = {canonical_skill(item.get("name", "")) for item in profile.get("skills", [])}
     candidate_skills.discard("")
     results: list[dict[str, Any]] = []
 
-    for job in data.JOBS:
+    for job in (jobs if jobs is not None else data.JOBS):
         required = [canonical_skill(skill) for skill in job.get("required_skills", [])]
         preferred = [canonical_skill(skill) for skill in job.get("preferred_skills", [])]
         matched = [skill for skill in required if skill in candidate_skills]
@@ -760,22 +769,325 @@ def analyze_job_requirement(target_job: dict[str, Any]) -> dict[str, Any]:
     return parsed
 
 
-def diagnose(filename: str, content: bytes, target_job_id: str | None = None, mode: str = "b") -> dict[str, Any]:
-    document = extract_document(filename, content)
-    profile, parse_meta = parse_resume(document["text"], filename)
-    reviews, review_meta = _semantic_review(profile, data.JOBS)
-    matches = score_matches(profile, reviews)
+# ============================================================
+# Phase 03 — 真实岗位接入（Mock → Real）
+# ============================================================
+def to_match_job_dict(row: dict[str, Any]) -> dict[str, Any]:
+    """把真实岗位行（job_postings+details join）转成 MatchingService 需要的结构。
+
+    字段契约与 data.JOBS 对齐：id/title/category/company/industry/city/salary/
+    required_skills/preferred_skills/post_date/source/description + 溯源字段。
+    技能为空时用知识库清洗器的规则抽取（skills+keywords+labels+词典，不调 LLM）。
+    """
+    from backend.knowledge.cleaner import extract_skills
+
+    raw_skills = row.get("skills") or []
+    skills = list(dict.fromkeys(str(s) for s in raw_skills if s)) if isinstance(raw_skills, list) else []
+    if not skills:
+        skills = extract_skills(row)
+    keywords = row.get("keywords") or []
+    labels = row.get("job_labels") or []
+    preferred = list(dict.fromkeys(str(s) for s in (list(keywords) + list(labels)) if s))
+
+    salary: str | None = None
+    lo, hi = row.get("salary_min"), row.get("salary_max")
+    if lo or hi:
+        lo_k = int(lo or 0) // 1000
+        hi_k = int(hi or 0) // 1000
+        salary = f"{lo_k}-{hi_k}K" if lo_k and hi_k else (f"{hi_k}K" if hi_k else f"{lo_k}K")
+
+    description = "\n".join(
+        x for x in (row.get("job_description") or "", row.get("job_requirement") or "") if x
+    )
+    return {
+        "id": row.get("id") if row.get("id") is not None else row.get("job_id"),
+        "title": row.get("job_title"),
+        "category": row.get("job_category_l1") or "",
+        "company": row.get("company_name"),
+        "industry": row.get("company_industry"),
+        "city": row.get("city"),
+        "salary": salary,
+        "required_skills": skills[:20],
+        "preferred_skills": preferred[:20],
+        "post_date": str(row.get("publish_time")) if row.get("publish_time") else None,
+        "source": row.get("source_name"),
+        "description": description,
+        "source_url": row.get("source_url"),
+        "education": row.get("education"),
+        "experience": row.get("experience"),
+    }
+
+
+# 学历标签（与 job_postings.education 的短标签对齐，如 本科/大专/硕士）
+_EDU_TAGS = ("博士", "硕士", "本科", "大专", "中技", "中专", "高中", "初中")
+
+
+def _extract_education_tag(text: str) -> str:
+    """从教育经历文本（如「某大学 计算机科学与技术 本科 2019.09 - 2023.06」）
+    提取学历标签；无则返回空串（不设 filter，避免误过滤）。"""
+    for tag in _EDU_TAGS:
+        if tag in (text or ""):
+            return tag
+    return ""
+
+
+def build_retrieval_query(profile: dict[str, Any]) -> tuple[str, dict[str, Any]]:
+    """由 Candidate Profile 生成 KnowledgeService 检索 query 与结构化 filters。"""
+    parts: list[str] = []
+    target = (profile.get("target_role") or "").strip()
+    skills = [s.get("name", "") for s in (profile.get("skills") or []) if s.get("name")][:8]
+    summary = (profile.get("summary") or "").strip()
+    if target:
+        parts.append(target)
+    if skills:
+        parts.append(" ".join(skills))
+    if summary:
+        parts.append(summary[:150])
+    query = " ".join(parts).strip() or (target or "招聘岗位")
+
+    filters: dict[str, Any] = {}
+    city = (profile.get("city") or "").strip()
+    if city and city not in ("未识别", "未知"):
+        filters["city"] = city
+    education = (profile.get("education") or "").strip()
+    # education 可能是整段教育经历文本 → 先提取学历标签再作为 filter，避免精确匹配落空
+    edu_tag = _extract_education_tag(education)
+    if edu_tag:
+        filters["education"] = edu_tag
+    years = profile.get("experience_years")
+    if isinstance(years, (int, float)) and years > 0:
+        if years < 1:
+            filters["experience"] = "应届"
+        elif years <= 3:
+            filters["experience"] = "1-3年"
+        elif years <= 5:
+            filters["experience"] = "3-5年"
+        elif years <= 10:
+            filters["experience"] = "5-10年"
+        else:
+            filters["experience"] = "10年以上"
+    return query, filters
+
+
+def retrieve_candidate_jobs(
+    profile: dict[str, Any],
+    top_k: int = 50,
+    target_job_id: str | None = None,
+) -> list[dict[str, Any]]:
+    """召回真实候选岗位并转换为 MatchingService 输入。
+
+    - target_job_id 指定时：只取该真实岗位（数值 job_id）
+    - 否则：KnowledgeService.hybrid_search 召回 top_k，附 Evidence chunk 信息
+    """
+    from backend.knowledge.ingestion import fetch_jobs
+    from backend.knowledge.service import KnowledgeService
+
     if target_job_id:
-        selected = next((item for item in matches if item["job"]["id"] == target_job_id), matches[0])
+        try:
+            rows = fetch_jobs(job_ids=[int(target_job_id)], limit=1)
+        except (TypeError, ValueError):
+            rows = []
+        jobs = [to_match_job_dict(r) for r in rows]
+        return jobs
+
+    query, filters = build_retrieval_query(profile)
+    svc = KnowledgeService()
+    res = svc.hybrid_search(query, filters=filters, top_k=top_k)
+    if res.get("status") != "OK" or not res.get("results"):
+        return []
+
+    hits_by_job: dict[int, list[dict[str, Any]]] = {}
+    for hit in res["results"]:
+        job_id = hit.get("job_id")
+        if job_id is None:
+            continue
+        base = {
+            "job_id": job_id,
+            "doc_id": hit.get("doc_id"),
+            "source_name": hit.get("source_name"),
+            "source_url": hit.get("source_url"),
+            "score": hit.get("final_score"),
+        }
+        chunks = hit.get("chunks") or [{"chunk_id": hit.get("chunk_id"), "snippet": hit.get("snippet")}]
+        for c in chunks:
+            hits_by_job.setdefault(job_id, []).append({
+                **base,
+                "chunk_id": c.get("chunk_id"),
+                "snippet": c.get("snippet"),
+            })
+
+    ids = [h["job_id"] for h in res["results"] if h.get("job_id")]
+    rows = fetch_jobs(job_ids=ids, limit=len(ids) or 1) if ids else []
+    jobs = []
+    for row in rows:
+        job = to_match_job_dict(row)
+        job["_evidence"] = hits_by_job.get(row["id"], [])
+        jobs.append(job)
+    return jobs
+
+
+def _empty_diagnose_result(
+    profile: dict[str, Any],
+    document: dict[str, Any],
+    parse_meta: dict[str, Any],
+    reason: str = "未找到候选岗位",
+) -> dict[str, Any]:
+    """无候选岗位时的兜底：不报错、不编造。"""
+    return {
+        "profile": profile,
+        "document": {key: value for key, value in document.items() if key != "text"},
+        "matches": [],
+        "selected_job_id": None,
+        "gap_graph": {},
+        "learning_path": [],
+        "perfect_resume": {},
+        "competitiveness": {},
+        "job_analysis": {},
+        "model": {
+            "used": profile.get("source") == "deepseek",
+            "name": parse_meta.get("llm") or "none",
+            "mode": "no-jobs",
+            "error": reason,
+            "compare_error": None,
+        },
+        "trace": [
+            {"key": "upload", "label": "文件校验", "status": "done"},
+            {"key": "extract", "label": "版面解析", "status": "done"},
+            {"key": "profile", "label": "DeepSeek画像", "status": "done" if profile.get("source") == "deepseek" else "fallback"},
+            {"key": "retrieve", "label": "候选岗位召回", "status": "empty"},
+        ],
+    }
+
+
+def _evidence_confidence(count: int) -> tuple[str, float, float]:
+    """按 Evidence 条数给置信度（Phase 04 §八）：>=2 high / >=1 medium / 0 low。"""
+    from backend.knowledge.evidence import evidence_confidence
+
+    return evidence_confidence(count)
+
+
+def _generate_explanations(
+    profile: dict[str, Any],
+    matches: list[dict[str, Any]],
+    top_n: int = 10,
+) -> dict[str, dict[str, Any]] | None:
+    """批量生成 DeepSeek 解释：输入 = Candidate + Job + Match Result + Evidence。
+
+    只生成推荐理由 / 匹配原因 / 技能优势 / 技能缺口；
+    禁止编造岗位、技能、公司、URL、来源；无 Evidence 时标注 INSUFFICIENT_EVIDENCE。
+    失败返回 None（调用方走 fallback）。
+    """
+    targets = matches[:top_n]
+    compact = []
+    for m in targets:
+        job = m["job"]
+        ev_texts = [e.get("snippet") for e in (m.get("evidence") or []) if e.get("snippet")][:3]
+        compact.append({
+            "job_id": job.get("id"),
+            "title": job.get("title"),
+            "company": job.get("company"),
+            "match_score": m.get("score"),
+            "matched_skills": (m.get("matched") or [])[:8],
+            "missing_skills": (m.get("missing") or [])[:8],
+            "evidence": ev_texts,
+        })
+    system = (
+        "你是就业推荐解释助手。只能基于提供的 Candidate Profile、Job、Match Result、Evidence 生成解释。\n"
+        "禁止编造岗位要求、技能、公司、URL、来源，或任何输入中不存在的事实。\n"
+        "若某岗位 Evidence 为空，reason 必须以 INSUFFICIENT_EVIDENCE 开头，且不补充任何细节。\n"
+        "严格输出 JSON：{\"items\":[{\"job_id\":\"\",\"reason\":\"不超过60字\","
+        "\"strengths\":[\"来自候选人简历的技能优势，最多3条\"],"
+        "\"gaps\":[\"需要补齐的技能及建议，最多3条\"]}]}"
+    )
+    user = json.dumps({
+        "candidate": {
+            "target_role": profile.get("target_role"),
+            "skills": [s.get("name") for s in (profile.get("skills") or [])][:10],
+            "experience_years": profile.get("experience_years"),
+            "education": profile.get("education"),
+            "summary": (profile.get("summary") or "")[:150],
+        },
+        "matches": compact,
+    }, ensure_ascii=False)
+
+    content, meta = deepseek.chat_completions(
+        [{"role": "system", "content": system}, {"role": "user", "content": user}],
+        temperature=0.3,
+        timeout=45.0,
+    )
+    if meta.get("error") or not content:
+        return None
+    try:
+        payload = deepseek._extract_json(content)
+        items = payload.get("items") if isinstance(payload.get("items"), list) else []
+        return {str(it.get("job_id")): it for it in items if it.get("job_id")}
+    except Exception:
+        return None
+
+
+def diagnose_from_profile(
+    profile: dict[str, Any],
+    jobs: list[dict[str, Any]],
+    target_job_id: str | None = None,
+    mode: str = "b",
+    parse_meta: dict[str, Any] | None = None,
+    document: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """画像 + 候选岗位 → 五维评分 → Evidence 持久化 → DeepSeek 解释 → 推荐。"""
+    parse_meta = parse_meta or {"llm": "none", "error": None}
+    document = document or {}
+    errors = [error for error in (parse_meta.get("error"),) if error]
+
+    if not jobs:
+        return _empty_diagnose_result(profile, document, parse_meta)
+
+    reviews, review_meta = _semantic_review(profile, jobs)
+    matches = score_matches(profile, reviews, jobs=jobs)
+    # Evidence 挂到每个匹配结果（供前端溯源）
+    for m in matches:
+        m["evidence"] = (m.get("job") or {}).get("_evidence", [])
+
+    if not matches:
+        return _empty_diagnose_result(profile, document, parse_meta, reason="候选岗位评分异常")
+
+    # ---- Phase 04：Evidence 持久化 + 置信度 + 解释 ----
+    explanations = _generate_explanations(profile, matches)
+    for m in matches:
+        ev_count = len(m.get("evidence") or [])
+        conf_level, conf_num, unc = _evidence_confidence(ev_count)
+        m["confidence"] = conf_level
+        m["sources"] = list(dict.fromkeys(
+            e.get("source_url") for e in m.get("evidence") or [] if e.get("source_url")
+        ))
+        # 持久化 Evidence → evidence_items（幂等），并把 evidence_id 写回
+        try:
+            from backend.knowledge.evidence import persist_match_evidence
+
+            persist_match_evidence(m, conf_num, unc)
+        except Exception as exc:
+            errors.append(f"evidence persist: {exc}")
+        # DeepSeek 解释（失败 → fallback；无 Evidence → INSUFFICIENT_EVIDENCE）
+        ex = (explanations or {}).get(str(m["job"]["id"]))
+        if ex and ex.get("reason"):
+            m["match_reasons"] = [str(ex["reason"])[:200]]
+            m["explanation"] = ex
+        else:
+            fallback = m.get("reason") if ev_count else "INSUFFICIENT_EVIDENCE"
+            m["match_reasons"] = [fallback]
+            m["explanation"] = None
+
+    if target_job_id:
+        selected = next((item for item in matches if str(item["job"]["id"]) == str(target_job_id)), matches[0])
     else:
         selected = matches[0]
     learning_path = build_learning_path(selected)
     gap_graph = build_gap_graph(profile, selected)
     llm_used = profile.get("source") == "deepseek" or bool(reviews)
     model_name = review_meta.get("llm") or parse_meta.get("llm") or "none"
-    errors = [error for error in (parse_meta.get("error"), review_meta.get("error")) if error]
+    if review_meta.get("error"):
+        errors.append(review_meta["error"])
 
-    # New: Perfect Resume + Comparison + Job Analysis
+    # Perfect Resume + Comparison + Job Analysis
     perfect_resume: dict[str, Any] = {}
     competitiveness: dict[str, Any] = {}
     job_analysis: dict[str, Any] = {}
@@ -819,6 +1131,7 @@ def diagnose(filename: str, content: bytes, target_job_id: str | None = None, mo
             {"key": "upload", "label": "文件校验", "status": "done"},
             {"key": "extract", "label": "版面解析", "status": "done"},
             {"key": "profile", "label": "DeepSeek画像", "status": "done" if profile.get("source") == "deepseek" else "fallback"},
+            {"key": "retrieve", "label": "候选岗位召回", "status": "done"},
             {"key": "semantic", "label": "语义匹配", "status": "done" if reviews else "fallback"},
             {"key": "graph", "label": "图谱推理", "status": "done"},
             {"key": "plan", "label": "路径规划", "status": "done"},
@@ -826,3 +1139,10 @@ def diagnose(filename: str, content: bytes, target_job_id: str | None = None, mo
             {"key": "compare", "label": "竞争力对比", "status": "done" if competitiveness else ("fallback" if compare_error else "pending")},
         ],
     }
+
+
+def diagnose(filename: str, content: bytes, target_job_id: str | None = None, mode: str = "b") -> dict[str, Any]:
+    """兼容入口：Mock 数据诊断（保持既有行为/测试可用）。"""
+    document = extract_document(filename, content)
+    profile, parse_meta = parse_resume(document["text"], filename)
+    return diagnose_from_profile(profile, list(data.JOBS), target_job_id, mode, parse_meta, document)

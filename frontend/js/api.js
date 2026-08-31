@@ -1,7 +1,7 @@
 (function () {
   function localApiBase() {
     if (location.hostname === '127.0.0.1' || location.hostname === 'localhost') {
-      return 'http://127.0.0.1:8000';
+      return 'http://127.0.0.1:5000';
     }
     return location.origin;
   }

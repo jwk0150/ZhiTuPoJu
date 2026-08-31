@@ -20,6 +20,28 @@ class Config:
     DEEPSEEK_BASE_URL: str = os.getenv("DEEPSEEK_BASE_URL", "https://api.deepseek.com")
     DEEPSEEK_MODEL: str = os.getenv("DEEPSEEK_MODEL", "deepseek-chat")
 
+    # ============ RAG Embedding / VectorStore ============
+    # 模型名：HuggingFace 模型 id（BGE-small-zh-v1.5，中文检索、512 维、CPU 可跑）
+    EMBEDDING_MODEL: str = os.getenv("EMBEDDING_MODEL", "BAAI/bge-small-zh-v1.5")
+    # 模型输出维度（必须与模型一致；bge-small-zh-v1.5 = 512，兼容 cube 扩展 2048 上限）
+    EMBEDDING_DIM: int = int(os.getenv("EMBEDDING_DIM", "512"))
+    # embedding 版本号：模型/维度/归一化策略变化时递增，用于向量失效与重建
+    EMBEDDING_VERSION: str = os.getenv("EMBEDDING_VERSION", "bge-small-zh-v1.5@v1")
+    # 推理设备：cpu / cuda
+    EMBEDDING_DEVICE: str = os.getenv("EMBEDDING_DEVICE", "cpu")
+    # 向量存储实现：array（当前默认，double precision[] + numpy，免安装）|
+    #               cube（本机 100 维上限，不适用 512 维）| pgvector（未来安装后切换）
+    VECTOR_STORE: str = os.getenv("VECTOR_STORE", "array")
+
+    # ============ Hybrid Retrieval ============
+    # 融合权重（可配置；metadata 腿当前为 0，见 service.hybrid_search 说明）
+    HYBRID_WEIGHT_VECTOR: float = float(os.getenv("HYBRID_WEIGHT_VECTOR", "0.5"))
+    HYBRID_WEIGHT_KEYWORD: float = float(os.getenv("HYBRID_WEIGHT_KEYWORD", "0.3"))
+    HYBRID_WEIGHT_METADATA: float = float(os.getenv("HYBRID_WEIGHT_METADATA", "0.0"))
+    # 最低相关度阈值：低于此分数的查询返回 INSUFFICIENT_EVIDENCE
+    # （考虑向量腿贡献上限 0.5、关键词腿 0.3，0.22 兼顾召回与低噪）
+    HYBRID_MIN_SCORE: float = float(os.getenv("HYBRID_MIN_SCORE", "0.22"))
+
     # ============ PostgreSQL ============
     PG_HOST: str = os.getenv("PG_HOST", "127.0.0.1")
     PG_PORT: int = int(os.getenv("PG_PORT", "5432"))  # 标准PostgreSQL端口

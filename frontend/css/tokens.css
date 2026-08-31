@@ -1,34 +1,107 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@500;600;700&family=Sora:wght@600;700&family=IBM+Plex+Mono:wght@500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600&family=Noto+Serif+SC:wght@400;500;600&family=Inter:wght@400;500;600&display=swap');
 
-/* Brand palette — 深色电影风（源自 personal-homepage） */
+/* ==========================================================================
+   Design Tokens · 「执图破局」日系纸张招聘档案体系
+   浅米白 + 深墨 + 朱砂红 + 赭金 + 低饱和青绿
+   ========================================================================== */
 :root {
-  --signal: #1FC8D9;
-  --signal-deep: #3DD5E5;
-  --signal-dim: rgba(31, 200, 217, 0.16);
-  --primary: #0AA8BC;
-  --primary-light: #3DD5E5;
-  --primary-navy: #1E3A5F;
-  --accent-gold: #F0B429;
-  --brand-gold: #ecc984;
-  --brand-gold-bright: #f5ddb0;
-  --bg-page: #06070a;
-  --bg-page-soft: #0b0e14;
-  --bg-sidebar: rgba(10, 12, 18, 0.72);
-  --bg-card: rgba(255, 255, 255, 0.06);
-  --bg-topbar: rgba(10, 12, 18, 0.55);
-  --text-dark: #E8F2F8;
-  --text-secondary: #A9BDCB;
-  --text-muted: #7C8FA0;
-  --text-on-dark: #E8F7FA;
-  --border: rgba(255, 255, 255, 0.12);
-  --shadow-md: 0 10px 28px rgba(0, 0, 0, 0.35);
-  --radius: 14px;
-  --font-display: 'Sora', 'Noto Sans SC', sans-serif;
-  --font-body: 'DM Sans', 'Noto Sans SC', "PingFang SC", "Microsoft YaHei", sans-serif;
-  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
-  --sidebar-w: 248px;
+  /* —— 背景层级 —— */
+  --bg: #F4EFE5;             /* 页面主背景 */
+  --surface: #FBF8F1;        /* 卡片/面板主表面 */
+  --surface-soft: #F1EADF;   /* 次级表面（分区/分组） */
+  --surface-hover: #F6F0E5;  /* Hover 时表面 */
+  --surface-input: #FCF9F3;  /* 输入区域/凹陷感 */
+  --surface-paper: #F8F3EA;  /* 纸张感节点 */
+
+  /* —— 文字层级 —— */
+  --text-primary: #29261F;   /* 一级文字：深墨 */
+  --text-secondary: #665F55; /* 二级文字 */
+  --text-tertiary: #91887B;  /* 三级/辅助文字 */
+
+  /* —— 边框 —— */
+  --border: #DDD4C5;
+  --border-soft: #E8E0D4;
+  --border-strong: #C8BDA8;
+  --line: rgba(105, 85, 60, 0.16);
+
+  /* —— 主要强调色 —— */
+  --accent-red: #C84738;        /* 朱砂红 · 一级 Accent */
+  --accent-red-hover: #B83D31;
+  --accent-red-soft: #F4E4DF;   /* 风险/警告 浅底 */
+  --accent-red-border: #E5C7C0;
+  --accent-red-wash: rgba(200, 71, 56, 0.08);
+
+  /* —— 辅助强调 —— */
+  --accent-gold: #B58A4A;          /* 赭金 · 匹配百分比/数据 */
+  --accent-gold-soft: #C7A86B;     /* 圆环主色 */
+  --accent-gold-deep: #A97845;     /* 数字 / label */
+  --accent-gold-light: #F3EBDD;    /* Badge 底 */
+
+  --accent-green: #6FA69A;         /* 低饱和青绿 · 辅助 */
+  --accent-green-deep: #5F9C91;
+  --accent-green-soft: #E8EEE7;
+  --accent-green-border: #CBD8C9;
+  --success: #5F765D;              /* 正向反馈绿 */
+  --success-soft: #E8EEE7;
+  --success-border: #CBD8C9;
+
+  /* —— 圆角 —— */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  --radius-xl: 12px;
+  --radius: 10px;
+
+  /* —— 阴影（极弱） —— */
+  --shadow-soft: 0 2px 10px rgba(60, 45, 30, 0.04);
+  --shadow-press: 0 1px 4px rgba(60, 45, 30, 0.06);
+  --shadow-none: 0 0 0 transparent;
+
+  /* —— 字体 —— */
+  --font-serif: "Noto Serif SC", "Source Han Serif SC", "Songti SC", "STSong", serif;
+  --font-sans: "Noto Sans SC", "Source Han Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-mono: "Inter", "Noto Sans SC", ui-monospace, monospace;
+  --font-display: "Noto Serif SC", "Noto Sans SC", serif;
+
+  /* —— 与现有 tokens 对齐（兼容老代码，避免破坏其他页） —— */
+  --signal: #C84738;
+  --signal-deep: #B83D31;
+  --signal-dim: rgba(200, 71, 56, 0.08);
+  --primary: #C84738;
+  --primary-light: #B83D31;
+  --primary-navy: #29261F;
+  --accent-gold: #B58A4A;
+  --brand-gold: #B58A4A;
+  --brand-gold-bright: #C7A86B;
+  --bg-page: #F4EFE5;
+  --bg-page-soft: #F1EADF;
+  --bg-sidebar: #FBF8F1;
+  --bg-card: #FBF8F1;
+  --bg-topbar: #FBF8F1;
+  --text-dark: #29261F;
+  --text-secondary-legacy: #665F55;
+  --text-muted: #91887B;
+  --text-on-dark: #29261F;
+
+  /* —— match 页面专用变量（覆盖旧有） —— */
+  --rose: #C84738;
+  --rose-wash: #F4E4DF;
+  --rose-deep: #B83D31;
+  --ok: #5F765D;
+  --warn: #A97845;
+  --ink: #29261F;
+  --ink-soft: #665F55;
+  --ink-faint: #91887B;
+  --ck-signal: #B58A4A;
+  --bg-2: #F1EADF;
+  --bg-2-soft: #F6F0E5;
+  --surface-2: #FBF8F1;
+  --shadow: var(--shadow-soft);
+  --shadow-sm: 0 1px 4px rgba(60, 45, 30, 0.06);
+
+  /* —— 布局尺寸 —— */
+  --sidebar-w: 232px;
   --topbar-h: 64px;
-  --brand-logo: url('../assets/brand/logo.png');
-  --brand-logo-gold: url('../assets/brand/logo-gold.png');
-  --brand-hero: url('../assets/brand/hero-bg.png');
+  --radius-btn: 6px;
+  --radius-card: 10px;
 }

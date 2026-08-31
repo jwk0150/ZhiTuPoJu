@@ -1,7 +1,7 @@
 /* Shared runtime extracted for standalone pages */
-window.API_BASE = window.API_BASE || ((location.hostname === '127.0.0.1' || location.hostname === 'localhost') ? 'http://127.0.0.1:8000' : location.origin);
+window.API_BASE = window.API_BASE || ((location.hostname === '127.0.0.1' || location.hostname === 'localhost') ? 'http://127.0.0.1:5000' : location.origin);
 window.resolveApiBase = window.resolveApiBase || function () {
-  return window.API_BASE || ((location.hostname === '127.0.0.1' || location.hostname === 'localhost') ? 'http://127.0.0.1:8000' : location.origin);
+  return window.API_BASE || ((location.hostname === '127.0.0.1' || location.hostname === 'localhost') ? 'http://127.0.0.1:5000' : location.origin);
 };
 window.Utils = {
     rand: (min, max) => Math.floor(Math.random() * (max - min + 1)) + min,
