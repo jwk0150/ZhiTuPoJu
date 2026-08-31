@@ -1,3 +1,271 @@
+// ========== AI 补充：为每条技能动态生成专属的「核心洞察 + 数据来源」 ==========
+// 不依赖外部 LLM —— 基于技能方向+趋势文本的本地"伪 AI"模板生成
+const aiSupplementFor = (function() {
+    const SRC_TYPES = [
+        { type: '招聘·JD',    status: '正常', label: '招聘·JD' },
+        { type: '企业私有',  status: '正常', label: '企业私有' },
+        { type: '研究报告',  status: '正常', label: '研究报告' },
+        { type: '技术社区',  status: '正常', label: '技术社区' },
+        { type: '开源趋势',  status: '正常', label: '开源趋势' },
+        { type: '实战案例',  status: '实验', label: '实战案例' }
+    ];
+    const INSIGHT_TEMPLATES = {
+        up: [
+            { tag: '新增趋势', titleTpl: '{skill}成为招聘新要求', phenomenonTpl: '近期招聘 JD 中"{keyword}"关键词出现频率显著上升，{beforeAfter}。', reasonTpl: '原因：{reason}', conclusionTpl: '"{skill}" 已从加分项转为必选项，建议在 1-2 个月内完成系统化学习。' },
+            { tag: '企业采纳', titleTpl: '{skill}在头部企业规模化落地', phenomenonTpl: '据企业招聘数据，{skill} 在中大型企业的 Java 后端岗位中出现率从 {prev} 提升至 {now}。', reasonTpl: '驱动：{reason}', conclusionTpl: '预计未来 6 个月渗透率将持续上升，简历中体现相关项目经验可显著提升面试通过率。' }
+        ],
+        stable: [
+            { tag: '能力升级', titleTpl: '{skill}能力要求从"了解"升级为"精通"', phenomenonTpl: '同一岗位对 {skill} 的 JD 描述从"了解"显著升级为"精通/独立设计"，涉及更多工程化细节。', reasonTpl: '驱动：{reason}', conclusionTpl: '建议在简历中突出 {skill} 的工程化项目经验（如自定义组件、生产实践），提升匹配度。' },
+            { tag: '工程化深化', titleTpl: '{skill}在生产环境中的工程化要求', phenomenonTpl: '招聘要求从"会用"升级为"能独立搭建"，关注可观测性、可维护性、稳定性。', reasonTpl: '驱动：{reason}', conclusionTpl: '系统掌握 {skill} 的工程化范式（监控、灰度、故障恢复）是晋升高级岗的关键。' }
+        ],
+        down: [
+            { tag: '能力退场', titleTpl: '{skill}在新增岗位中持续退出', phenomenonTpl: '招聘 JD 中 {skill} 关键词出现率从 {prev} 持续下降至 {now}，部分岗位已完全删除相关要求。', reasonTpl: '驱动：{reason}', conclusionTpl: '简历中 {skill} 的权重应下调，可作为"了解"项保留，无需重点投入。' },
+            { tag: '替代技术', titleTpl: '{skill}被现代方案取代', phenomenonTpl: '现代开发栈（Spring Boot、云原生）已全面覆盖 {skill} 的使用场景，工具链迁移基本完成。', reasonTpl: '驱动：{reason}', conclusionTpl: '掌握 {skill} 的核心思想即可，重点投入其替代技术的工程化能力建设。' }
+        ]
+    };
+    const EVIDENCE_TEMPLATES = {
+        up: [
+            '招聘·JD：相关关键词出现率 +{pct}%（{prev} → {now}）',
+            '技术社区：知乎/CSDN 月度讨论量 {posts}+',
+            '开源趋势：相关项目 GitHub Star 年增长 +{pct2}%',
+            '企业案例：{n} 家头部企业（互联网/金融/制造业）已规模化应用'
+        ],
+        stable: [
+            '招聘·JD：能力描述从"了解"升级为"精通/独立搭建"',
+            '研究报告：Gartner / 信通院相关报告均列入"必备能力"',
+            '技术社区：实战工程化文章占比从 30% 提升至 65%',
+            '企业内训：{n} 家头部企业已将此能力纳入必修课程'
+        ],
+        down: [
+            '招聘·JD：关键词出现率 -{pct}%（{prev} → {now}）',
+            '技术社区：相关讨论热度持续衰减',
+            '开源趋势：相关项目维护频率下降或归档',
+            '替代方案：现代方案覆盖度达 90%+'
+        ]
+    };
+    const monthHash = (s) => { let h = 0; for (let i=0;i<s.length;i++) h = (h*31 + s.charCodeAt(i)) | 0; return Math.abs(h); };
+    const filled = (tpl, vars) => tpl.replace(/\{(\w+)\}/g, (m, k) => vars[k] !== undefined ? vars[k] : m);
+    const rateProfile = (type, dir) => {
+        const seed = monthHash(type + ':' + dir);
+        return {
+            prev: (seed % 25) + 5 + '%',
+            now:  Math.min(95, ((seed % 30) + 40)) + '%',
+            pct:  ((seed % 180) + 60),
+            pct2: ((seed % 250) + 80),
+            posts: ((seed % 1500) + 200),
+            n:     ((seed % 9) + 4)
+        };
+    };
+
+    return function(h, profile) {
+        console.log('[aiSupplementFor] called with h.direction=', h && h.direction, 'h.skills=', h && h.skills);
+        if (!h) return { insights: [], sources: [] };
+        const dir = h.direction === 'up' ? 'up' : (h.direction === 'down' ? 'down' : 'stable');
+        const skills = h.skills && h.skills.length ? h.skills : [h.trend || '该技能'];
+        const skill = skills[0];
+        const keyword = (h.trend || skill || '相关能力').split(/[成为,在,的,，]/)[0].trim() || skill;
+        const node = h.node || (profile && profile.timelineMonths && profile.timelineMonths[profile.timelineMonths.length - 1]) || '2026-08';
+
+        const rates = rateProfile(skill, dir);
+        const vars = {
+            skill, keyword,
+            beforeAfter: h.beforeAfter || h.desc || '企业需求显著上升',
+            reason: (h.reason || h.desc || '行业技术演进驱动').split(/[。.；;]/)[0] || '行业技术演进驱动',
+            prev: rates.prev, now: rates.now, pct: rates.pct, pct2: rates.pct2, posts: rates.posts, n: rates.n
+        };
+
+        const insightTemplates = INSIGHT_TEMPLATES[dir] || INSIGHT_TEMPLATES.stable;
+        const evidenceTemplates = EVIDENCE_TEMPLATES[dir] || EVIDENCE_TEMPLATES.stable;
+        const insights = insightTemplates.slice(0, 2).map((tpl, idx) => {
+            const insightId = 'ins-' + (h.id || 'gen') + '-' + idx + '-' + node;
+            return {
+                id: insightId,
+                tag: tpl.tag,
+                title: filled(tpl.titleTpl, vars),
+                phenomenon: filled(tpl.phenomenonTpl, vars),
+                reason: filled(tpl.reasonTpl, vars),
+                conclusion: filled(tpl.conclusionTpl, vars),
+                evidence: evidenceTemplates.map(e => filled(e, vars)),
+                nodes: [node]
+            };
+        });
+
+        const sourceMix = dir === 'up' ? [0, 2, 3, 4, 1, 5]
+                       : dir === 'down' ? [0, 2, 3, 4, 1]
+                       : [0, 1, 2, 3, 4];
+        const sources = sourceMix.map((typeIdx, idx) => {
+            const src = SRC_TYPES[typeIdx];
+            const monthOffset = idx;
+            const monthNum = parseInt(node.split('-')[1], 10);
+            const dateSrc = new Date(2026, monthNum - 1 - monthOffset, 15);
+            const dateStr = dateSrc.getFullYear() + '-' + String(dateSrc.getMonth() + 1).padStart(2, '0');
+            const sourceDesc = {
+                '招聘·JD': '包含 ' + skill + ' 关键词的招聘 JD 抓取（' + (dir === 'down' ? '退出趋势' : '新增趋势') + '）',
+                '企业私有': '头部企业招聘数据（' + skill + ' 相关岗位）',
+                '研究报告': (dir === 'down' ? '退场' : '新增') + '技术研究报告：' + skill + ' 在 Java 后端领域的演进',
+                '技术社区': skill + ' 相关话题的技术社区讨论与问答数据',
+                '开源趋势': skill + ' 相关开源项目的 Star / Fork / Issue 趋势数据',
+                '实战案例': '企业级 ' + skill + ' 工程化实战案例与最佳实践'
+            }[src.type] || (skill + ' 相关 ' + src.type + ' 数据');
+            return {
+                id: 'src-' + (h.id || 'gen') + '-' + idx + '-' + node,
+                name: sourceDesc,
+                type: src.type,
+                status: src.status,
+                updatedAt: dateStr + ' 更新',
+                links: [insights[0].id]
+            };
+        });
+
+        return { insights, sources };
+    };
+})();
+
+// ========== 动态生成：基于 timelineMonths 生成真实化的 trendHighlights 与 changes ==========
+// 规则：距离当前月越久，技能变化越多（累计效应）
+const dynamicTrendHighlights = (function() {
+    const UP_POOL = [
+        { name: 'AI 辅助编程（Copilot、Cursor）', type: 'AI 工具', trend: 'AI 协同开发能力成为基础门槛', desc: 'AI 辅助编程、Prompt 工程、LLM 应用等能力在岗位要求中快速涌现。', beforeAfter: 'JD 中"AI 工具"关键词出现率从 8% 升至 35%，从加分项转为必选项。', reason: '大模型技术爆发，企业系统性将 AI 能力整合到研发流程。' },
+        { name: 'Prompt Engineering',            type: 'AI 工具', trend: 'Prompt 工程成为新增独立能力分支', desc: '系统化提示词设计、上下文工程、Agent 编排成为岗位新要求。', beforeAfter: '新增能力中 Prompt 相关关键词出现频率提升约 +220%。', reason: '大模型应用规模化，企业需要可工程化、可复用的 Prompt 体系。' },
+        { name: 'RAG 与向量检索',                type: 'AI 应用', trend: 'RAG 与向量数据库成为 AI 工程化主线', desc: 'RAG、向量数据库、Embedding 在新增能力中权重居前。', beforeAfter: '招聘要求中"向量检索 / Embedding"关键词出现率提升 +150%。', reason: '企业私域知识接入大模型驱动检索增强生成标准化。' },
+        { name: 'Agent / MCP 协议',              type: 'AI 应用', trend: 'Agent 与 MCP 推动 AI 应用架构升级', desc: 'Agent 框架、Tool Calling、MCP 协议在新增能力中频繁出现。', beforeAfter: 'Agent 相关关键词渗透率从 <1% 升至 8%。', reason: '大模型从对话走向行动，工具调用与协议标准化成为新要求。' },
+        { name: '云原生（K8s / Serverless）',     type: '云原生', trend: '云原生能力持续下沉为核心要求', desc: 'K8s、Serverless、Service Mesh 等能力持续成为核心要求。', beforeAfter: '高级岗位中"K8s / Service Mesh"关键词出现率提升 +80%。', reason: '企业全面上云，弹性与可观测标准化驱动云原生栈迁移。' },
+        { name: '可观测性（OpenTelemetry）',      type: '可观测', trend: '可观测性从加分项转为基础要求', desc: 'OpenTelemetry、SLO/SLI、Trace 成为新增能力主线。', beforeAfter: '"可观测 / SRE" 关键词渗透率提升 +95%。', reason: '微服务复杂度提升，倒逼全链路追踪与稳定性工程。' },
+        { name: 'GitOps / 声明式运维',            type: '运维',   trend: 'GitOps 与声明式运维成为新要求', desc: 'ArgoCD、Flux、Terraform 等声明式工具进入岗位要求。', beforeAfter: '"GitOps / IaC" 关键词出现率提升 +70%。', reason: '云原生下交付标准化，需要可审计、可回滚的运维流程。' },
+        { name: '混沌工程',                      type: '稳定性', trend: '混沌工程从大厂下沉到中大型企业', desc: 'ChaosBlade、Litmus 等混沌工程工具进入新增能力。', beforeAfter: '"混沌工程 / 韧性测试" 关键词出现率提升 +60%。', reason: '分布式系统复杂度上升，主动故障注入成为稳定性必备。' },
+        { name: 'eBPF / 内核可观测',              type: '前沿',   trend: 'eBPF 与内核级可观测进入头部企业要求', desc: 'eBPF、Cilium 等内核级技术在高级岗位中出现。', beforeAfter: '"eBPF / 内核" 关键词出现率提升 +45%。', reason: '云原生网络与可观测深入到内核层。' },
+        { name: 'WebAssembly 后端应用',          type: '前沿',   trend: 'Wasm 在边缘与插件场景出现', desc: 'Wasm、wasmtime、wasmEdge 在部分高级岗位中出现。', beforeAfter: '"Wasm / 边缘" 关键词出现率提升 +30%。', reason: '边缘计算与多语言运行时驱动 Wasm 工程化。' },
+        { name: '响应式编程（Reactor / Mutiny）', type: '开发范式', trend: '响应式编程在高性能场景回归', desc: 'Reactor、Mutiny、响应式设计在部分高级岗位出现。', beforeAfter: '"响应式 / 背压" 关键词出现率提升 +35%。', reason: '高并发与流式处理场景驱动响应式范式回归。' },
+        { name: 'Edge Computing / CDN 边缘',     type: '前沿',   trend: '边缘计算在部分行业出现', desc: '边缘函数、CDN 边缘、Cloudflare Workers 在特定岗位出现。', beforeAfter: '"边缘 / Edge" 关键词出现率提升 +25%。', reason: '低延迟场景驱动计算下沉到边缘。' }
+    ];
+    const DOWN_POOL = [
+        { name: 'SSH 框架（Struts + Spring + Hibernate）', type: '框架',    desc: 'SSH 老框架全面退出主流招聘要求。', beforeAfter: '出现率从 22% 降至 <2%，已基本被 Spring Boot 替代。', reason: 'Spring Boot 普及与配置简化使 SSH 失去工程优势。' },
+        { name: '传统单体应用开发',                       type: '开发模式', desc: '单体开发模式在新增岗位中持续退出。', beforeAfter: '出现率从 30% 降至 8%，企业架构向分布式转型。', reason: '企业架构向微服务 / 云原生转型。' },
+        { name: 'JSP / Servlet 原生页面开发',             type: '前端',    desc: 'JSP / Servlet 在新增能力中退出。', beforeAfter: '出现率从 18% 降至 <1%，被前后端分离取代。', reason: '前后端分离架构成为主流，模板引擎角色弱化。' },
+        { name: 'SOAP / XML WebService',                  type: '通信',    desc: 'SOAP 在新增岗位中退出。', beforeAfter: '出现率从 12% 降至 <1%，被 REST / gRPC 取代。', reason: 'REST 与 gRPC 成为主流跨服务通信协议。' },
+        { name: 'EJB（企业 Java Bean）',                  type: '框架',    desc: 'EJB 在新增岗位中完全退出。', beforeAfter: '出现率从 8% 降至 0%，被 Spring 全家桶取代。', reason: 'EJB 容器过重，Spring 提供了更轻量的替代。' },
+        { name: '传统 Ant 构建',                          type: '工程',    desc: 'Ant 构建在新增岗位中退出。', beforeAfter: '出现率从 10% 降至 <1%，被 Maven / Gradle 取代。', reason: '标准化构建工具普及，Ant 维护成本高。' },
+        { name: 'SVN 集中式版本控制',                     type: '协作',    desc: 'SVN 在新增岗位中退出。', beforeAfter: '出现率从 25% 降至 5%，Git 成为主流。', reason: '分布式协作需求与开源生态驱动 Git 普及。' },
+        { name: '传统 RPC（Dubbo XML 配置）',              type: '通信',    desc: 'XML 配置式 RPC 在新增岗位中退出。', beforeAfter: '出现率从 14% 降至 <2%，注解式 / 配置中心化方案取代。', reason: '配置中心化与服务网格简化了 RPC 配置管理。' }
+    ];
+    const MOD_POOL = [
+        { name: '分布式事务（Seata / TCC）',  type: '分布式', desc: '分布式事务从基础到高级逐步标准化。', beforeAfter: '从"了解"升级为"精通"，涉及 Seata、TCC、消息最终一致性。', reason: '微服务架构普及驱动数据一致性需求深化。' },
+        { name: '服务治理与限流',            type: '稳定性', desc: '服务治理从基础下沉到高级要求。', beforeAfter: '新增对 Sentinel、Resilience4j、Istio 等限流熔断的明确要求。', reason: '系统稳定性诉求驱动精细化流量治理。' },
+        { name: '链路追踪与可观测',          type: '可观测', desc: '链路追踪从加分项变为基础要求。', beforeAfter: '从"了解"升级为"独立搭建"，涉及 SkyWalking、OpenTelemetry。', reason: '微服务排障成本驱动全链路可观测标准化。' },
+        { name: 'CI/CD 与发布工程',          type: '工程',   desc: 'CI/CD 从加分项转为基本要求。', beforeAfter: '从"了解 Jenkins"升级为"设计多环境灰度发布"。', reason: '敏捷与高频发布驱动流水线工程化。' },
+        { name: '配置中心与动态配置',        type: '架构',   desc: '配置中心从加分项转为基础要求。', beforeAfter: '从"使用"升级为"设计多环境隔离与灰度策略"。', reason: '微服务规模扩大驱动配置统一治理。' },
+        { name: 'API 网关与多协议接入',      type: '架构',   desc: 'API 网关从单点升级为多协议接入。', beforeAfter: '从"路由"升级为"鉴权 + 限流 + 协议转换"。', reason: '微服务与多端接入驱动网关功能外延。' },
+        { name: '消息一致性 / 幂等设计',     type: '分布式', desc: '消息一致性从基础变为高级要求。', beforeAfter: '从"了解"升级为"设计幂等 + 死信 + 重试链路"。', reason: '异步架构普及驱动消息可靠性工程化。' },
+        { name: 'Spring Boot 进阶',          type: '框架',   desc: 'Spring Boot 从基础升级到进阶。', beforeAfter: '从"会用"升级为"自定义 Starter / 自动装配"。', reason: 'Spring Boot 在企业普及驱动深度使用诉求。' }
+    ];
+
+    const monthHash = (s) => { let h = 0; for (let i=0;i<s.length;i++) h = (h*31 + s.charCodeAt(i)) | 0; return Math.abs(h); };
+    const monthDiff = (m1, m2) => {
+        const [y1, mo1] = m1.split('-').map(Number);
+        const [y2, mo2] = m2.split('-').map(Number);
+        return (y2 - y1) * 12 + (mo2 - mo1);
+    };
+    // 距离 currentMonth 越久，变化越多
+    const calcCounts = (distance) => ({
+        up:       Math.min(9, Math.max(1, Math.round(2 + distance * 1.4))),
+        down:     Math.min(4, Math.max(1, Math.round(1 + distance * 0.5))),
+        modified: Math.min(4, Math.max(1, Math.round(1 + distance * 0.7)))
+    });
+    const take = (arr, n, seed) => {
+        const indexed = arr.map((x, i) => ({ x, k: monthHash(seed + ':' + x.name + ':' + i) }));
+        indexed.sort((a, b) => a.k - b.k);
+        return indexed.slice(0, n).map(o => o.x);
+    };
+    const splitSkills = (raw) => {
+        const main = raw.split(/[（(]/)[0].trim();
+        const parts = raw.split(/[（(]/)[0].split(/[、，,]/).map(s=>s.trim()).filter(Boolean);
+        return Array.from(new Set([...parts.slice(0, 3), main])).slice(0, 4);
+    };
+
+    return function(timelineMonths) {
+        if (!Array.isArray(timelineMonths) || !timelineMonths.length) return [];
+        const currentMonth = timelineMonths[timelineMonths.length - 1];
+        const result = [];
+        for (let i = 0; i < timelineMonths.length; i++) {
+            const node = timelineMonths[i];
+            const dist = Math.max(0, monthDiff(node, currentMonth));
+            const counts = calcCounts(dist);
+            const upItems = take(UP_POOL, counts.up, node + ':up');
+            const downItems = take(DOWN_POOL, counts.down, node + ':down');
+            const modItems = take(MOD_POOL, counts.modified, node + ':mod');
+
+            upItems.forEach((u, idx) => {
+                const importance = idx === 0 ? 'high' : (idx < 2 ? 'medium' : 'low');
+                const confidence = Math.min(0.95, 0.6 + dist * 0.04);
+                result.push({
+                    node, direction: 'up',
+                    trend: u.trend, magnitude: Math.min(100, 55 + dist * 4 + idx * 2),
+                    importance, confidence,
+                    desc: u.desc,
+                    skills: splitSkills(u.name),
+                    beforeAfter: u.beforeAfter,
+                    reason: u.reason,
+                    dataEvidence: '企业招聘数据（40%）：' + u.trend.split('成为')[0] + '关键词出现率显著提升；技术社区（15%）：相关话题热度持续；GitHub 趋势（10%）：相关项目 star 增长明显。',
+                    analysis: u.desc
+                });
+            });
+            modItems.forEach(m => {
+                result.push({
+                    node, direction: 'stable',
+                    trend: m.desc, magnitude: Math.min(80, 40 + dist * 3),
+                    importance: 'medium', confidence: Math.min(0.92, 0.55 + dist * 0.03),
+                    desc: m.desc,
+                    skills: splitSkills(m.name),
+                    beforeAfter: m.beforeAfter,
+                    reason: m.reason,
+                    dataEvidence: '企业招聘数据（40%）：相关能力从"加分"升级为"必备"；技术社区（15%）：工程实践讨论增多。',
+                    analysis: m.desc
+                });
+            });
+            downItems.forEach(d => {
+                result.push({
+                    node, direction: 'down',
+                    trend: d.desc, magnitude: Math.min(80, 30 + dist * 4),
+                    importance: dist >= 2 ? 'medium' : 'low', confidence: Math.min(0.9, 0.5 + dist * 0.04),
+                    desc: d.desc,
+                    skills: splitSkills(d.name),
+                    beforeAfter: d.beforeAfter,
+                    reason: d.reason,
+                    dataEvidence: '企业招聘数据（40%）：相关关键词出现率持续下降；技术社区（15%）：讨论热度衰减。',
+                    analysis: d.desc
+                });
+            });
+        }
+        return result;
+    };
+})();
+
+const dynamicChanges = (function() {
+    return function(timelineMonths) {
+        if (!Array.isArray(timelineMonths) || !timelineMonths.length) return { added: [], modified: [], removed: [] };
+        const all = dynamicTrendHighlights(timelineMonths);
+        const added = all.filter(h => h.direction === 'up').slice(0, 6).map(h => ({
+            name: (h.skills && h.skills[0]) || h.trend.split('成为')[0] || h.trend,
+            type: '新增能力',
+            importance: h.importance === 'high' ? 5 : (h.importance === 'medium' ? 3 : 2),
+            reason: h.reason
+        }));
+        const modified = all.filter(h => h.direction === 'stable').slice(0, 6).map(h => ({
+            name: (h.skills && h.skills[0]) || h.trend.split('从')[0] || h.trend,
+            type: '升级能力',
+            importance: h.importance === 'high' ? 4 : 3,
+            reason: h.reason
+        }));
+        const removed = all.filter(h => h.direction === 'down').slice(0, 6).map(h => ({
+            name: (h.skills && h.skills[0]) || h.trend,
+            type: '退出能力',
+            importance: 1,
+            reason: h.reason
+        }));
+        return { added, modified, removed };
+    };
+})();
+
 // ============== Evolution View ==============
 // build: 2026082301 — 历史版本对比重构：版本选择+能力结构演化关系
 console.log('[evolution.js] build=2026082301, history version compare refactor');
@@ -47,238 +315,8 @@ window.initEvolution = function() {
         timelineMonths: ['2026-02','2026-03','2026-04','2026-05','2026-06','2026-07','2026-08'],
         trendMax: 100,
         // 本期重点变化（按节点聚合的能力趋势，非逐条罗列）
-        trendHighlights: [
-            {
-                node: '2026-07', trend: 'AI 辅助开发能力增强', direction: 'up', magnitude: 92,
-                importance: 'high', confidence: 0.89,
-                desc: 'AI 辅助编程、Prompt 工程、LLM 应用等能力在岗位要求中快速涌现，成为新的能力分支。',
-                skills: ['AI 辅助编程', 'Copilot', 'Cursor', 'Prompt Engineering', 'LLM 应用', 'RAG', '向量数据库', 'Agent', 'MCP'],
-                beforeAfter: '岗位 JD 中"AI 工具使用 / AIGC 工程化"相关关键词出现率由约 8% 升至 35%，从加分项转为必选项。',
-                reason: '大模型技术爆发，企业开始系统性将 AI 能力整合进研发流程。',
-                dataEvidence: '企业招聘数据（40%）：含 AI 工具岗位占比 +27pp；技术社区（15%）：相关话题热度 +180%；GitHub 趋势（10%）：AI 编码工具 star 增长显著。',
-                analysis: 'AI 工具应用已从"加分项"转为"必选项"，相关工程化能力需求迅速扩大，建议在培养路径中前置。'
-            },
-            {
-                node: '2026-05', trend: '云原生应用能力提升', direction: 'up', magnitude: 85,
-                importance: 'high', confidence: 0.86,
-                desc: 'Kubernetes、容器化、Service Mesh 等云原生能力权重持续上升，逐步替代传统部署能力。',
-                skills: ['Kubernetes', 'Docker', 'Helm', 'Service Mesh', 'Serverless', 'GitOps', '可观测性', 'CKA', 'Operator', 'CRD'],
-                beforeAfter: '"掌握 K8s / 容器编排"由高级要求下沉为通用要求；传统运维/部署相关描述减少。',
-                reason: '企业上云率持续提升，云原生成为新基础设施标准。',
-                dataEvidence: '行业报告（25%）：云原生岗位渗透率 +19%；企业招聘数据（40%）：K8s 要求占比 +22pp。',
-                analysis: '云原生能力将逐步替代传统部署能力，成为 Java 后端工程师的必备技能。'
-            },
-            {
-                node: '2026-07', trend: '传统 SSH 框架需求下降', direction: 'down', magnitude: 70,
-                importance: 'mid', confidence: 0.82,
-                desc: 'Struts + Spring + Hibernate 等传统框架组合在岗位要求中明显减少，被 Spring Boot 等现代栈替代。',
-                skills: ['SSH 框架', 'Struts', '传统单体应用开发', 'XML 配置式开发'],
-                beforeAfter: '要求"熟悉 SSH/SSM"的 JD 占比由 30% 降至 12%，"Spring Boot 优先"成为主流表述。',
-                reason: '现代框架降低样板代码与配置成本，企业技术栈整体升级。',
-                dataEvidence: '企业招聘数据（40%）：SSH 相关描述 -18pp；技术社区（15%）：相关问答量持续走低。',
-                analysis: '传统框架维护能力需求持续下降，建议将学习资源向 Spring Boot / 响应式栈倾斜。'
-            },
-            {
-                node: '2026-03', trend: '微服务架构重要性提升', direction: 'up', magnitude: 78,
-                importance: 'high', confidence: 0.84,
-                desc: '服务治理、熔断降级、链路追踪等微服务相关能力成为中高端岗位的核心要求。',
-                skills: ['Spring Cloud', '服务治理', '熔断降级', 'API 网关', '配置中心', '链路追踪', '容器化', 'CI/CD'],
-                beforeAfter: '"具备微服务设计与治理能力"由加分项转为中高级岗位硬性要求；分布式事务/幂等相关问题占比上升。',
-                reason: '企业数字化转型推进，单体应用加速向微服务架构演进。',
-                dataEvidence: '行业报告（25%）：微服务岗位占比 +15%；企业招聘数据（40%）：治理/可观测关键词 +20pp。',
-                analysis: '微服务架构已成为 Java 后端岗位的标配能力，相关技术栈需求持续扩大。'
-            },
-            {
-                node: '2026-06', trend: '可观测性与稳定性能力增强', direction: 'up', magnitude: 60,
-                importance: 'mid', confidence: 0.8,
-                desc: '日志、监控、链路追踪、混沌工程等稳定性保障能力在岗位要求中的权重稳步提升。',
-                skills: ['Prometheus', 'Grafana', 'OpenTelemetry', 'ELK', '混沌工程', 'SLO/SLI'],
-                beforeAfter: '"具备可观测性体系搭建经验"由高级要求扩散至通用要求。',
-                reason: '系统规模与复杂度上升，稳定性保障成为工程成熟度标志。',
-                dataEvidence: '技术社区（15%）：可观测性内容增长 +60%；企业招聘数据（40%）：监控/追踪关键词 +12pp。',
-                analysis: '可观测性将成为后端工程师的基础能力，建议纳入标准培养模块。'
-            },
-            {
-                node: '2026-07', trend: '分布式事务能力演进', direction: 'stable', magnitude: 45,
-                importance: 'high', confidence: 0.83,
-                desc: '分布式事务、幂等设计、最终一致性方案要求标准趋同，相关能力描述更加具体化。',
-                skills: [
-                    { name: 'Seata',     before: '了解分布式事务概念，能描述 ACID / CAP 理论', after: '掌握 Seata 在订单/库存/账户等场景的应用，能选型 AT / TCC / Saga 模式' },
-                    { name: 'TCC',       before: '理解两阶段提交理论',                         after: '能基于 TCC 实现自定义事务框架，含 Try/Confirm/Cancel 幂等与悬挂处理' },
-                    { name: '消息一致性', before: '了解最终一致性概念',                         after: '能基于 RocketMQ / Kafka 实现可靠消息 + 本地消息表，处理重复消费与对账' },
-                    { name: '幂等设计',  before: '能识别重复请求场景',                         after: '掌握 Token / 唯一索引 / 状态机 / 分布式锁等幂等方案，能落地业务级幂等' }
-                ],
-                beforeAfter: '从"了解分布式事务"细化为"Seata / TCC / 消息一致性"具体方案与适用场景。',
-                reason: '企业云原生与微服务落地加深，事务方案标准趋同。',
-                dataEvidence: '企业招聘数据（40%）：具体方案关键词 +9pp；行业报告（25%）：分布式事务成熟度评估分 +0.6。',
-                analysis: '分布式事务方案描述由抽象转为具体，建议在 JD 中明确所用方案与适用边界。'
-            }
-        ],
-        changes: {
-            added: [
-                { name: 'AI 辅助编程（如 Copilot、Cursor）',   type: '技术工具', importance: 5, reason: 'AI 编程工具在企业中广泛运用' },
-                { name: '云原生应用开发（K8s、Serverless）',   type: '云原生',   importance: 4, reason: '企业上云与云原生技术普及' },
-                { name: '向量数据库使用（如 Milvus、Pinecone）', type: '数据库技术', importance: 3, reason: '大规模应用驱动向量检索需求' }
-            ],
-            modified: [
-                { name: '微服务架构设计',     type: '架构设计', importance: 3, reason: '从基础到高级逐步标准化' },
-                { name: '数据库调优',         type: '数据库',   importance: 3, reason: 'AI 性能优化扩展到非结构化' },
-                { name: '分布式系统设计',     type: '架构设计', importance: 4, reason: '增加分布式事务、幂等需求' }
-            ],
-            removed: [
-                { name: 'SSH 框架（Struts + Spring + Hibernate）', type: '框架',     importance: 1, reason: '已被 Spring Boot 等现代框架替代' },
-                { name: '传统单体应用开发',                       type: '开发模式', importance: 1, reason: '企业架构向微服务转型' }
-            ]
-        },
-        // 核心洞察：结构化，体现"现象 → 原因 → 趋势/结论"，并绑定时间节点用于联动
-        insights: [
-            {
-                id: 'ai-baseline',
-                tag: 'AI 协同',
-                title: 'AI 辅助开发正从"加分项"转变为"基础能力"',
-                phenomenon: '本期新增能力中，AI 辅助编程、Copilot、Cursor、代码生成相关技能集中出现，并在招聘要求中从"优先"下沉为"通用要求"。',
-                reason: '大模型编码工具在企业研发流程中加速落地，单位人效提升诉求驱动岗位对 AI 协同开发能力形成刚性预期。',
-                conclusion: '未来 1～2 年，AI 协同开发（含 Prompt 工程、代码审查辅助、单测生成）将成为 Java 工程师的基础门槛，而非差异化优势。',
-                evidence: ['技术社区内容同比增长 +85%', '企业招聘"AI 辅助"关键词渗透率 +18pp', '样本岗位中 6/10 已将 AI 工具写入 JD'],
-                nodes: ['2026-07', '2026-06']
-            },
-            {
-                id: 'cloud-native',
-                tag: '云原生',
-                title: '企业上云推动云原生与容器化能力持续提升',
-                phenomenon: '云原生应用、Kubernetes、Docker、Service Mesh 等能力在新增列表中权重居前，且从"高级"扩散至"核心"要求。',
-                reason: '政企与互联网客户全面上云，弹性、可观测、标准化的交付方式倒逼后端工程能力向云原生栈迁移。',
-                conclusion: '云原生能力（容器编排 + 服务网格 + 声明式运维）将长期作为 Java 后端的主线能力，且与微服务深度绑定。',
-                evidence: ['企业招聘"云原生"提及率 +22pp', 'Kubernetes 要求岗位同比 +34%', '行业报告将云原生列为年度 Top3 技术主线'],
-                nodes: ['2026-05', '2026-07']
-            },
-            {
-                id: 'distributed',
-                tag: '架构演进',
-                title: '岗位能力从单一 Java 栈向"分布式 + 云原生 + AI"协同扩展',
-                phenomenon: '微服务、分布式事务、消息一致性、可观测性等技术密集出现，传统单体 SSH/Struts 能力被标记为下降/移除。',
-                reason: '业务复杂度与系统规模上升，单技术栈已无法覆盖稳定性、弹性与智能化诉求，岗位要求向复合能力演进。',
-                conclusion: 'Java 工程师的能力边界正在外扩：内核仍是 Java，但价值高地转向分布式架构治理与跨栈协同。',
-                evidence: ['分布式相关技能新增 8 项', '传统 SSH 框架要求下降 -15%', '架构类关键词 JD 占比升至 47%'],
-                nodes: ['2026-03', '2026-07']
-            },
-            {
-                id: 'observability',
-                tag: '稳定性',
-                title: '可观测性与稳定性成为工程成熟度标志',
-                phenomenon: 'Prometheus、Grafana、OpenTelemetry、SLO/SLI 等能力要求稳步提升，并由高级要求扩散至通用要求。',
-                reason: '系统规模与复杂度上升，故障定位与韧性保障成为高频痛点，稳定性能力被纳入标准培养模块。',
-                conclusion: '可观测性将从"运维专属"转为"开发即职责"，SLO 思维成为后端工程师的通用素养。',
-                evidence: ['可观测性内容增长 +60%', '监控/追踪关键词 +12pp', '样本岗位 7/10 要求具备稳定性体系经验'],
-                nodes: ['2026-06']
-            },
-            {
-                id: 'legacy-decline',
-                tag: '技术更替',
-                title: '传统单体框架能力需求持续走弱',
-                phenomenon: 'SSH、Struts 等传统框架在删除/下降能力中集中出现，相关岗位要求明显收缩。',
-                reason: '新型云原生与前后端分离架构全面替代传统 MVC 单体，遗留技术栈维护场景收窄。',
-                conclusion: '建议减少对传统单体框架的投入，将学习预算转向微服务与云原生现代化栈。',
-                evidence: ['传统 SSH 框架要求下降 -15%', 'Struts 相关 JD 同比减少 28%', '新增能力中 0 项涉及传统单体框架'],
-                nodes: ['2026-07']
-            }
-        ],
-        // 数据来源：结构化，体现可信链路（来源 → 数据 → 支撑的分析结论）
-        sources: [
-            {
-                id: 'recruit',
-                name: '企业招聘数据',
-                type: '招聘 JD',
-                updatedAt: '2026-08-01 更新',
-                scale: '12,580 条有效 JD',
-                coverage: '近 30 天 · 一线及新一线城市 · Java 后端岗位',
-                contribution: '识别企业岗位能力需求变化，权重最高',
-                status: '正常',
-                links: ['ai-baseline', 'cloud-native', 'distributed'],
-                details: '采集自 51JOB、智联、BOSS 等公开招聘渠道，经清洗去重后保留有效 Java 后端 JD 12,580 条。主要用于识别"AI 辅助编程""云原生""微服务"等关键词的渗透率与增长趋势，直接支撑新增能力（如 Copilot、Kubernetes）的判定。'
-            },
-            {
-                id: 'internal',
-                name: '企业内部岗位数据',
-                type: '企业私有',
-                updatedAt: '2026-08-15 更新',
-                scale: '3,240 条岗位画像',
-                coverage: '合作企业研发岗 · 含职级与薪酬带宽',
-                contribution: '校准能力重要性权重，区分核心/辅助技能',
-                status: '正常',
-                links: ['distributed', 'observability'],
-                details: '来自合作企业的内部岗位画像与晋升标准，用于校准能力重要性分级（high/mid/low），并将"可观测性""分布式事务"等标注为核心能力，避免仅依赖公开数据导致的偏差。'
-            },
-            {
-                id: 'report',
-                name: '行业研究报告',
-                type: '研究报告',
-                updatedAt: '2026-07-28 更新',
-                scale: '18 份年度/季度报告',
-                coverage: '2024Q4–2025Q2 · 云计算/AI/研发效能',
-                contribution: '提供宏观技术趋势背景与年度主线判断',
-                status: '正常',
-                links: ['cloud-native', 'ai-baseline'],
-                details: '汇总信通院、IDC、各大厂技术白皮书等 18 份报告，提取"云原生列为年度 Top3 技术主线""AI 工程化加速"等结论，为趋势洞察提供行业级背景支撑。'
-            },
-            {
-                id: 'community',
-                name: '技术社区数据',
-                type: '技术社区',
-                updatedAt: '2026-08-12 更新',
-                scale: '46,300 条内容',
-                coverage: 'CSDN/掘金/InfoQ/Stack Overflow',
-                contribution: '捕捉新兴技术与工具的早期信号',
-                status: '正常',
-                links: ['ai-baseline', 'observability'],
-                details: '爬取主流技术社区近 90 天内容，统计技术关键词增长。AI 辅助编程相关内容同比增长 +85%，可观测性内容增长 +60%，是"AI 从加分项转为基础能力"洞察的关键早期信号来源。'
-            },
-            {
-                id: 'github',
-                name: 'GitHub 趋势',
-                type: '开源趋势',
-                updatedAt: '2026-08-10 更新',
-                scale: 'Top 2,000 仓库',
-                coverage: 'Java/云原生/AI 工具链仓库',
-                contribution: '验证工具链流行度与生态成熟度',
-                status: '正常',
-                links: ['cloud-native', 'ai-baseline'],
-                details: '跟踪 GitHub Trending 与 star 增速，Kubernetes、LangChain4j 等仓库持续高位，佐证云原生与 AI 协同开发能力的实际采用热度。'
-            },
-            {
-                id: 'trend',
-                name: '技术趋势预测',
-                type: 'AI 预测',
-                updatedAt: '2026-08-16 更新',
-                scale: '模型推理 1 次/日',
-                coverage: '基于上述 5 源融合推理',
-                contribution: '生成前瞻性演化预测与不确定性标注',
-                status: '实验',
-                links: ['legacy-decline', 'distributed'],
-                details: '由 DeepSeek 驱动的演化预测引擎，对上述多源数据进行融合推理，输出"传统单体框架走弱""分布式+云原生+AI 协同"等前瞻性判断，并标注置信度，当前为实验性来源。'
-            }
-        ],
-        // 历史版本对比：结构化，体现能力结构演化（而非简单增删改统计）
-        history: {
-            versions: [
-                { id: 'v35', label: 'V3.5', date: '2026-07-16', count: 84, tag: '当前版本', desc: '云原生与 AI 协同开发成为主线' },
-                { id: 'v30', label: 'V3.0', date: '2026-04-12', count: 80, tag: '上一版本', desc: '微服务与分布式能力稳定成形' },
-                { id: 'v25', label: 'V2.5', date: '2024-10-08', count: 76, tag: '更早版本', desc: '单体架构能力仍占较高比重' }
-            ],
-            // 版本间能力演化关系（A → B），突出结构变化与演化方向
-            evolution: [
-                { type: 'replace', from: '传统部署', to: '容器化部署', importanceFrom: 2, importanceTo: 3, levelFrom: '掌握', levelTo: '精通', note: 'Docker/Kubernetes 成为交付标配', reason: '企业上云推动部署方式全面容器化', sources: ['recruit','cloud-native'], event: '2026-05' },
-                { type: 'upgrade', from: 'Java 基础开发', to: '云原生开发', importanceFrom: 3, importanceTo: 3, levelFrom: '精通', levelTo: '精通', note: '能力重心向云原生栈外延', reason: '云原生与分布式成为价值高地', sources: ['report','internal'], event: '2026-05' },
-                { type: 'upgrade', from: '辅助开发', to: 'AI 协同开发', importanceFrom: 1, importanceTo: 3, levelFrom: '了解', levelTo: '掌握', note: 'AI 工具从加分项变基础能力', reason: '大模型编码工具落地，人效诉求驱动', sources: ['community','recruit'], event: '2026-07' },
-                { type: 'strengthen', from: '微服务架构', to: '微服务架构', importanceFrom: 2, importanceTo: 3, levelFrom: '掌握', levelTo: '精通', note: '重要性从"加分"升至"核心"', reason: '业务复杂度上升，架构治理价值突显', sources: ['internal','report'], event: '2026-03' },
-                { type: 'strengthen', from: '可观测性', to: '可观测性', importanceFrom: 1, importanceTo: 2, levelFrom: '了解', levelTo: '掌握', note: '稳定性能力下沉为通用要求', reason: '系统规模上升，韧性保障成标配', sources: ['community','recruit'], event: '2026-06' },
-                { type: 'weaken', from: 'SSH/Struts 单体', to: 'SSH/Struts 单体', importanceFrom: 2, importanceTo: 1, levelFrom: '掌握', levelTo: '了解', note: '传统框架能力要求收缩', reason: '云原生与前后端分离替代传统 MVC', sources: ['recruit','internal'], event: '2026-07' },
-                { type: 'new', from: '—', to: '向量数据库/RAG', importanceFrom: 0, importanceTo: 2, levelFrom: '—', levelTo: '掌握', note: 'AI 工程化新能力进入视野', reason: 'RAG 技术需求进入快速扩张期', sources: ['community','github'], event: '2026-07' },
-                { type: 'new', from: '—', to: 'Service Mesh', importanceFrom: 0, importanceTo: 2, levelFrom: '—', levelTo: '掌握', note: '服务网格成为微服务进阶能力', reason: '微服务规模化后治理复杂度上升', sources: ['github','report'], event: '2026-05' },
-                { type: 'strengthen', from: '分布式事务', to: '分布式事务', importanceFrom: 2, importanceTo: 3, levelFrom: '掌握', levelTo: '精通', note: '方案描述由抽象转具体', reason: '云原生落地加深，事务方案标准趋同', sources: ['internal','recruit'], event: '2026-07' },
-                { type: 'weaken', from: '手工运维', to: '声明式运维', importanceFrom: 2, importanceTo: 1, levelFrom: '掌握', levelTo: '了解', note: '手工运维被自动化替代', reason: 'IaC 与 GitOps 成为标准实践', sources: ['github','report'], event: '2026-05' }
-            ]
-        }
+        trendHighlights: dynamicTrendHighlights(['2026-02','2026-03','2026-04','2026-05','2026-06','2026-07','2026-08']),
+        changes: dynamicChanges(['2026-02','2026-03','2026-04','2026-05','2026-06','2026-07','2026-08']),
     };
     profile = Object.assign({}, DEMO, profile);
     // 如果 getEvolutionForJob 没返回 changes 等字段，用 DEMO 补
@@ -397,203 +435,138 @@ window.renderEvolutionList = function() {
     });
 };
 
-// ===== 新布局：能力变化时间轴（双线 + 关键事件浮窗卡片） =====
+// ===== 新布局：能力变化时间轴（原生 SVG 双线图，不依赖 echarts） =====
 window.renderEvoTimelineChart = function(profile, range) {
     const dom = document.getElementById('chart-evo-timeline');
-    if (!dom || !window.echarts) return;
+    if (!dom) return;
     if (range === 'all') range = 9999;
     range = parseInt(range, 10) || 6;
 
-    const totalAll = (profile && profile.timelineTotal) || [38, 41, 45, 47, 52, 58, 64];
-    const newlyAll = (profile && profile.timelineNewly) || [ 0,  3,  2,  3,  5,  6,  6];
+    const totalAll  = (profile && profile.timelineTotal)  || [38, 41, 45, 47, 52, 58, 64];
+    const newlyAll  = (profile && profile.timelineNewly)  || [ 0,  3,  2,  3,  5,  6,  6];
     const monthsAll = ['2026-02','2026-03','2026-04','2026-05','2026-06','2026-07','2026-08'];
-    // 按 range 取末尾 N 个月
     const n = Math.min(range, totalAll.length);
     const xs = monthsAll.slice(-n);
     const ys1 = totalAll.slice(-n);
     const ys2 = newlyAll.slice(-n);
 
-    // 关键事件（按 month 聚合；范围切换后只显示该范围内的）
     const eventsAll = (profile && profile.timelineEvents) || [];
-    const visibleMonths = xs;
-    const events = eventsAll.filter(e => visibleMonths.indexOf(e.time) >= 0);
+    const events = eventsAll.filter(e => xs.indexOf(e.time) >= 0);
 
-    // markPoint data
-    const markPointData = events.map((e, i) => {
-        const idx = visibleMonths.indexOf(e.time);
-        if (idx < 0) return null;
-        return {
-            name: e.title,
-            value: ys1[idx],
-            xAxis: idx,
-            yAxis: ys1[idx],
-            // 自定义数据传给 formatter
-            eventData: e
-        };
-    }).filter(Boolean);
+    function buildChart() {
+        const W = dom.clientWidth || 800;
+        const H = dom.clientHeight || 200;
+        const padL = 44, padR = 52, padT = 24, padB = 30;
+        const plotW = Math.max(10, W - padL - padR);
+        const plotH = Math.max(10, H - padT - padB);
 
-    if (window.echarts.getInstanceByDom) {
-        const old = window.echarts.getInstanceByDom(dom);
-        if (old) old.dispose();
-    }
-    const chart = window.echarts.init(dom);
-    // 左侧 Y 轴：能力总数（按数据动态上界，向上取整）
-    const totalMax = Math.max(10, Math.ceil(Math.max(...ys1) * 1.15 / 10) * 10);
-    // 右侧 Y 轴：新生变化的能力（按数据动态上界，至少 6，圆整到合适的整十/整五）
-    const newlyMaxRaw = Math.max(...ys2);
-    const newlyMax = Math.max(6, Math.ceil(newlyMaxRaw * 1.4 / 5) * 5);
-    chart.setOption({
-        grid: { left: 44, right: 56, top: 34, bottom: 32 },
-        tooltip: {
-            trigger: 'axis',
-            backgroundColor: 'rgba(15,25,40,0.92)',
-            borderColor: 'rgba(31,200,217,0.4)',
-            textStyle: { color: '#eaf6fb' },
-            formatter: function(params) {
-                if (!params || !params.length) return '';
-                const month = params[0].axisValue;
-                const ev = events.find(e => e.time === month);
-                const t = params.find(p => p.seriesName === '能力总数');
-                const n2 = params.find(p => p.seriesName === '发生变化的能力');
-                let html = `<div style="font-weight:700;margin-bottom:4px;">${month}</div>`;
-                if (t) html += `<div style="font-size:12px;color:#1fc8d9;">● 能力总数：<b>${t.value}</b></div>`;
-                if (n2) html += `<div style="font-size:12px;color:#F0B429;">● 发生变化的能力：<b>${n2.value}</b></div>`;
-                if (ev) {
-                    html += `<div style="font-size:12px;margin-top:6px;padding-top:6px;border-top:1px solid rgba(255,255,255,0.15);">`;
-                    html += `<b style="color:#1fc8d9;">${ev.count} 项变化</b> · ${ev.title}`;
-                    html += `<div style="color:rgba(220,232,240,0.75);margin-top:2px;">${ev.desc}</div>`;
-                    html += `</div>`;
-                }
-                return html;
-            }
-        },
-        xAxis: {
-            type: 'category',
-            data: xs,
-            boundaryGap: false,
-            axisLine: { lineStyle: { color: 'rgba(255,255,255,0.2)' } },
-            axisLabel: { color: 'rgba(220,232,240,0.75)', fontSize: 11 }
-        },
-        yAxis: [
-            {
-                type: 'value',
-                name: '能力总数',
-                nameTextStyle: { color: 'rgba(220,232,240,0.6)', fontSize: 11 },
-                min: 0,
-                max: totalMax,
-                position: 'left',
-                axisLine: { show: false },
-                axisLabel: { color: 'rgba(220,232,240,0.6)', fontSize: 11 },
-                splitLine: { lineStyle: { color: 'rgba(255,255,255,0.08)', type: 'dashed' } }
-            },
-            {
-                type: 'value',
-                name: '新生变化的能力',
-                nameTextStyle: { color: 'rgba(220,232,240,0.6)', fontSize: 11 },
-                min: 0,
-                max: newlyMax,
-                position: 'right',
-                axisLine: { show: false },
-                axisLabel: { color: 'rgba(240,180,41,0.7)', fontSize: 11 },
-                splitLine: { show: false }
-            }
-        ],
-        series: [
-            {
-                name: '能力总数', type: 'line', smooth: true, data: ys1,
-                yAxisIndex: 0,
-                lineStyle: { color: '#1fc8d9', width: 2.5 },
-                itemStyle: { color: '#1fc8d9' },
-                areaStyle: { color: 'rgba(31,200,217,0.18)' },
-                symbol: 'circle', symbolSize: 7,
-                markPoint: {
-                    symbol: 'circle',
-                    symbolSize: 14,
-                    itemStyle: {
-                        color: '#1fc8d9',
-                        borderColor: '#fff',
-                        borderWidth: 2,
-                        shadowColor: 'rgba(31,200,217,0.6)',
-                        shadowBlur: 8
-                    },
-                    label: {
-                        show: false
-                    },
-                    data: markPointData
-                }
-            },
-            {
-                name: '新生变化的能力', type: 'line', smooth: true, data: ys2,
-                yAxisIndex: 1,
-                lineStyle: { color: '#F0B429', width: 2 },
-                itemStyle: { color: '#F0B429' },
-                symbol: 'circle', symbolSize: 5
-            }
-        ]
-    });
+        const totalMax = Math.max(10, Math.ceil(Math.max.apply(null, ys1) * 1.15 / 10) * 10);
+        const newlyMaxRaw = Math.max.apply(null, ys2);
+        const newlyMax = Math.max(6, Math.ceil(newlyMaxRaw * 1.4 / 5) * 5);
 
-    // 鼠标悬停 markPoint → 显示白底浮层卡片
-    let floatingCard = dom.querySelector('.evo-timeline-floating-card');
-    if (!floatingCard) {
-        floatingCard = document.createElement('div');
-        floatingCard.className = 'evo-timeline-floating-card';
-        floatingCard.style.display = 'none';
-        dom.appendChild(floatingCard);
-    }
-    function hideFloating() { floatingCard.style.display = 'none'; }
-    chart.on('mouseover', function(params) {
-        if (params.componentType !== 'markPoint' || !params.data || !params.data.eventData) return;
-        const e = params.data.eventData;
-        const count = e.count != null ? e.count : '';
-        floatingCard.innerHTML = [
-            '<div class="evo-fc-count">' + count + ' 项变化</div>',
-            '<div class="evo-fc-title"></div>',
-            '<div class="evo-fc-desc"></div>'
-        ].join('');
-        floatingCard.querySelector('.evo-fc-title').textContent = e.title || '';
-        floatingCard.querySelector('.evo-fc-desc').textContent  = e.desc  || '';
-        // 转换为容器内像素坐标
-        let px = null, py = null;
-        try {
-            const dataIndex = (params.data && params.data.xAxis != null) ? params.data.xAxis : null;
-            const val = (params.data && params.data.yAxis != null) ? params.data.yAxis : null;
-            if (dataIndex != null) {
-                px = chart.convertToPixel({ xAxisIndex: 0 }, dataIndex);
-            }
-            if (val != null) {
-                py = chart.convertToPixel({ yAxisIndex: 0 }, val);
-            }
-        } catch (err) {}
-        // 回退：使用鼠标事件 offsetX/offsetY
-        if (px == null && params.event && params.event.offsetX != null) px = params.event.offsetX;
-        if (py == null && params.event && params.event.offsetY != null) py = params.event.offsetY;
-        if (px == null) px = dom.clientWidth / 2;
-        if (py == null) py = 30;
-        const cardW = floatingCard.offsetWidth || 180;
-        const cardH = floatingCard.offsetHeight || 60;
-        // 卡片居中显示在点上方
-        floatingCard.style.left = Math.max(4, Math.min(dom.clientWidth - cardW - 4, px - cardW / 2)) + 'px';
-        floatingCard.style.top  = Math.max(4, py - cardH - 12) + 'px';
-        floatingCard.style.display = 'block';
-    });
-    chart.on('mouseout', function(params) {
-        if (params.componentType === 'markPoint') hideFloating();
-    });
-    // 鼠标离开整个图表也收起
-    dom.addEventListener('mouseleave', hideFloating);
+        const xAt = i => padL + (xs.length === 1 ? plotW / 2 : plotW * i / (xs.length - 1));
+        const y1At = v => padT + plotH * (1 - v / totalMax);
+        const y2At = v => padT + plotH * (1 - v / newlyMax);
 
-    // 点击 markPoint → 弹窗显示该时间点详情，并联动「本期重点变化」
-    chart.on('click', function(params) {
-        if (params.componentType === 'markPoint' && params.data && params.data.eventData) {
-            window.openEvoTimepointModal(params.data.eventData, params.data.eventData.skills || []);
-            try { if (window.renderEvoImportantChanges) window.renderEvoImportantChanges(profile, { timeNode: params.data.eventData.time }); } catch(err) { console.warn(err); }
-            // 核心洞察联动：聚焦点击的时间节点
-            try { if (window.renderEvoInsight) window.renderEvoInsight(profile, { timeNode: params.data.eventData.time }); } catch(err) { console.warn(err); }
+        // 网格 + Y 轴刻度
+        let grid = '';
+        const yTicks = 4;
+        for (let t = 0; t <= yTicks; t++) {
+            const y = padT + plotH * t / yTicks;
+            const v1 = Math.round(totalMax * (1 - t / yTicks));
+            const v2 = Math.round(newlyMax * (1 - t / yTicks));
+            grid += `<line x1="${padL}" y1="${y}" x2="${padL + plotW}" y2="${y}" stroke="rgba(255,255,255,0.08)" stroke-dasharray="4 4"/>`;
+            grid += `<text x="${padL - 6}" y="${y + 3}" text-anchor="end" font-size="10" fill="rgba(220,232,240,0.6)">${v1}</text>`;
+            grid += `<text x="${padL + plotW + 6}" y="${y + 3}" text-anchor="start" font-size="10" fill="rgba(240,180,41,0.7)">${v2}</text>`;
         }
-    });
 
-    setTimeout(() => chart && chart.resize && chart.resize(), 80);
-    // 暴露给弹窗使用
+        // X 轴标签
+        let xlabels = '';
+        xs.forEach((m, i) => {
+            xlabels += `<text x="${xAt(i)}" y="${padT + plotH + 18}" text-anchor="middle" font-size="10" fill="rgba(220,232,240,0.75)">${m}</text>`;
+        });
+
+        // 折线 path
+        const line1 = ys1.map((v, i) => (i === 0 ? 'M' : 'L') + xAt(i) + ' ' + y1At(v)).join(' ');
+        const line2 = ys2.map((v, i) => (i === 0 ? 'M' : 'L') + xAt(i) + ' ' + y2At(v)).join(' ');
+        const area1 = line1 + ` L${xAt(ys1.length - 1)} ${padT + plotH} L${xAt(0)} ${padT + plotH} Z`;
+
+        // 数据点
+        let dots1 = '', dots2 = '';
+        ys1.forEach((v, i) => { dots1 += `<circle cx="${xAt(i)}" cy="${y1At(v)}" r="3.5" fill="#1fc8d9"/>`; });
+        ys2.forEach((v, i) => { dots2 += `<circle cx="${xAt(i)}" cy="${y2At(v)}" r="2.5" fill="#F0B429"/>`; });
+
+        // 事件点（大圆点，可点击/hover）
+        let evDots = '';
+        events.forEach(e => {
+            const idx = xs.indexOf(e.time);
+            if (idx < 0) return;
+            const cx = xAt(idx), cy = y1At(ys1[idx]);
+            evDots += `<circle class="evo-ev-dot" data-time="${e.time}" cx="${cx}" cy="${cy}" r="7" fill="#1fc8d9" stroke="#fff" stroke-width="2" style="cursor:pointer"/>`;
+        });
+
+        const svg =
+            `<svg width="100%" height="100%" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" style="display:block;overflow:visible">` +
+                grid + xlabels +
+                `<path d="${area1}" fill="rgba(31,200,217,0.16)"/>` +
+                `<path d="${line1}" fill="none" stroke="#1fc8d9" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>` +
+                `<path d="${line2}" fill="none" stroke="#F0B429" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>` +
+                dots1 + dots2 + evDots +
+            `</svg>`;
+
+        // 浮层卡片（复用现有样式类）
+        let floatingCard = dom.querySelector('.evo-timeline-floating-card');
+        if (!floatingCard) {
+            floatingCard = document.createElement('div');
+            floatingCard.className = 'evo-timeline-floating-card';
+            floatingCard.style.display = 'none';
+            dom.appendChild(floatingCard);
+        }
+        const eventMap = {};
+        events.forEach(e => { eventMap[e.time] = e; });
+
+        dom.innerHTML = svg;
+        dom.appendChild(floatingCard);
+
+        const hideFloating = () => { floatingCard.style.display = 'none'; };
+        dom.querySelectorAll('.evo-ev-dot').forEach(dot => {
+            const e = eventMap[dot.getAttribute('data-time')];
+            if (!e) return;
+            dot.addEventListener('mouseenter', (ev) => {
+                const rect = dom.getBoundingClientRect();
+                const cx = parseFloat(dot.getAttribute('cx'));
+                const cy = parseFloat(dot.getAttribute('cy'));
+                floatingCard.innerHTML = '';
+                const c = document.createElement('div'); c.className = 'evo-fc-count';
+                c.textContent = (e.count != null ? e.count : '') + ' 项变化';
+                const t = document.createElement('div'); t.className = 'evo-fc-title'; t.textContent = e.title || '';
+                const d = document.createElement('div'); d.className = 'evo-fc-desc'; d.textContent = e.desc || '';
+                floatingCard.appendChild(c); floatingCard.appendChild(t); floatingCard.appendChild(d);
+                floatingCard.style.display = 'block';
+                const cardW = floatingCard.offsetWidth || 180;
+                const cardH = floatingCard.offsetHeight || 60;
+                floatingCard.style.left = Math.max(4, Math.min(dom.clientWidth - cardW - 4, cx - cardW / 2)) + 'px';
+                floatingCard.style.top  = Math.max(4, cy - cardH - 12) + 'px';
+            });
+            dot.addEventListener('mouseleave', hideFloating);
+            dot.addEventListener('click', () => {
+                window.openEvoTimepointModal(e, e.skills || []);
+                try { if (window.renderEvoImportantChanges) window.renderEvoImportantChanges(profile, { timeNode: e.time }); } catch(err) {}
+                try { if (window.renderEvoInsight) window.renderEvoInsight(profile, { timeNode: e.time }); } catch(err) {}
+            });
+        });
+        dom.addEventListener('mouseleave', hideFloating);
+    }
+
+    buildChart();
+    if (window.__evoChartResizeObs) window.__evoChartResizeObs.disconnect();
+    if (typeof ResizeObserver !== 'undefined') {
+        window.__evoChartResizeObs = new ResizeObserver(() => buildChart());
+        window.__evoChartResizeObs.observe(dom);
+    } else {
+        window.addEventListener('resize', buildChart);
+    }
+
     window.__evoCurrentEvents = events;
 };
 
@@ -657,6 +630,8 @@ window.openEvoTimepointModal = function(eventData, skills) {
 // ===== 新布局：本期重点变化（参考图排版：新增/修改/删除 三组表格） =====
 window.renderEvoImportantChanges = function(profile, opts) {
     opts = opts || {};
+    // 暴露给弹窗使用（含 sources / insights）
+    window.__evoCurrentProfile = profile || null;
     const groupsEl  = document.getElementById('evo-groups');
     const legendEl  = document.getElementById('evo-importance-legend');
     const loadingEl = document.getElementById('evo-important-loading');
@@ -733,7 +708,7 @@ window.renderEvoImportantChanges = function(profile, opts) {
                         const skName = (typeof sk === 'string') ? sk : (sk && sk.name) || '未命名';
                         const type = (h.skillTypes && h.skillTypes[i]) || (h.trend && h.trend.split(' ')[0]) || (h.importance === 'high' ? '核心技术' : '辅助技能');
                         rows.push(`
-                          <div class="evo-table-row" data-trend='${JSON.stringify(h).replace(/'/g,"&#39;")}'>
+                          <div class="evo-table-row" data-skill="${skName.replace(/"/g,'&quot;')}" data-trend='${JSON.stringify(h).replace(/'/g,"&#39;")}'>
                             <div class="evo-table-cell col-name">${skName}</div>
                             <div class="evo-table-cell col-type"><span class="evo-type-pill">${type}</span></div>
                             <div class="evo-table-cell col-imp">${stars(imp)}</div>
@@ -744,8 +719,8 @@ window.renderEvoImportantChanges = function(profile, opts) {
                 return rows;
             };
 
-            // 每组默认显示前 N 行，其余行折叠到下拉浮层
-            const DEFAULT_ROWS = 3;
+            // 每组默认显示全部行（取消折叠/滚轮，直接展示所有变化）；如需恢复折叠改为 3 即可
+            const DEFAULT_ROWS = Infinity;
             const renderGroup = (arr, containerId, countId) => {
                 const wrap = document.getElementById(containerId);
                 const cnt  = document.getElementById(countId);
@@ -821,7 +796,8 @@ window.renderEvoImportantChanges = function(profile, opts) {
                 r.addEventListener('click', () => {
                     let data = null;
                     try { data = JSON.parse(r.getAttribute('data-trend').replace(/&#39;/g, "'")); } catch(e) {}
-                    if (data) window.openEvoTrendDetailModal(data);
+                    const skill = r.getAttribute('data-skill') || null;
+                    if (data) window.openEvoTrendDetailModal(data, skill, window.__evoCurrentProfile || null);
                 });
             });
 
@@ -835,7 +811,7 @@ window.renderEvoImportantChanges = function(profile, opts) {
 };
 
 // ===== 重点变化详情弹窗 =====
-window.openEvoTrendDetailModal = function(h) {
+window.openEvoTrendDetailModal = function(h, clickedSkill, profile) {
     let modal = document.getElementById('evo-trend-modal');
     if (!modal) {
         modal = document.createElement('div');
@@ -843,82 +819,241 @@ window.openEvoTrendDetailModal = function(h) {
         modal.className = 'evo-modal-mask';
         document.body.appendChild(modal);
     }
-    const dirText = { up: '增强', down: '下降', stable: '稳定' };
+    const dirText = { up: '新增', down: '删除', stable: '修改', mod: '修改' };
     const impLabel = { high: '高', mid: '中', low: '低' };
-    const impScore = { high: 3, mid: 2, low: 1 };
     const dirCls = h.direction === 'up' ? 'dir-up' : (h.direction === 'down' ? 'dir-down' : 'dir-stable');
     const skillName = (s) => (typeof s === 'string') ? s : (s && s.name) || '未命名';
-    const skillsHtml = (h.skills || []).map(s => `<span class="evo-modal-skill">${skillName(s)}</span>`).join('');
-    // 「修改明细」：仅在修改方向、且 skills 是带 before/after 的对象数组时渲染
-    const isModify = (h.direction === 'stable' || h.direction === 'mod');
-    const modifyRows = isModify ? (h.skills || []).filter(s => s && typeof s === 'object' && (s.before || s.after)) : [];
-    const modifySectionHtml = (isModify && modifyRows.length) ? `
-          <div class="evo-modal-section">
-            <div class="evo-modal-h">修改明细（原本要求 → 修改后要求）</div>
-            <div class="evo-modal-modify-list">
-              ${modifyRows.map(s => `
-                <div class="evo-modal-modify-item">
-                  <div class="evo-modal-modify-name">${skillName(s)}</div>
-                  <div class="evo-modal-modify-compare">
-                    <div class="evo-modal-modify-before">
-                      <div class="evo-modal-modify-tag">原本要求</div>
-                      <div class="evo-modal-modify-text">${s.before || '—'}</div>
+    const topSkill = clickedSkill || ((h.skills && h.skills[0]) ? skillName(h.skills[0]) : (h.trend || ''));
+
+    // ========== AI 补充：必须在 afterHtml 构造之前执行 ==========
+    // AI 补充：为本条技能动态生成专属的 insights + sources（必须在构造 afterHtml 之前执行！）
+try {
+    const aiOut = aiSupplementFor(h, profile);
+    console.log('[aiSupplementFor] called with h.direction=', h && h.direction, 'h.skills=', h && h.skills);
+    if (aiOut && Array.isArray(aiOut.insights) && aiOut.insights.length) {
+        profile = Object.assign({}, profile, { insights: aiOut.insights });
+    }
+    if (aiOut && Array.isArray(aiOut.sources) && aiOut.sources.length) {
+        profile = Object.assign({}, profile, { sources: aiOut.sources });
+    }
+    console.log('[evo-modal] after-merge profile.insights=', profile.insights && profile.insights.length, 'profile.sources=', profile.sources && profile.sources.length);
+    // 兜底：即便 AI 没跑成，也至少给个硬编码示例让用户看到结构
+    if (!profile.insights || !profile.insights.length) {
+        const fbTime = Date.now();
+        profile = Object.assign({}, profile, { insights: [
+            {
+                id: 'fb-a-' + fbTime,
+                tag: 'AI 补充',
+                title: '本技能正处于招聘新要求窗口期',
+                phenomenon: '近期招聘 JD 中相关关键词出现频率显著上升，' + (h.beforeAfter || h.desc || '企业需求显著增长') + '。',
+                reason: '原因：' + (h.reason || h.desc || '行业技术演进驱动') + '。',
+                conclusion: '建议在未来 1-2 个月内系统化掌握相关技能，并在简历中体现工程化经验。',
+                evidence: [
+                    '招聘·JD：相关关键词出现率显著提升',
+                    '技术社区：相关话题热度持续',
+                    '开源趋势：相关项目 Star 增长明显',
+                    '企业案例：多家头部企业已规模化应用'
+                ],
+                nodes: [h.node || '2026-08']
+            },
+            {
+                id: 'fb-b-' + fbTime,
+                tag: '工程化建议',
+                title: '简历与项目经验应同步体现',
+                phenomenon: '仅有"了解"级描述已无法通过中高级岗位初筛，需有可量化的产出。',
+                reason: '原因：竞争加剧 + 招聘要求从"会用"升级为"能独立搭建"。',
+                conclusion: '建议在简历中加入 1-2 个基于该技能的工程化项目，含性能/可观测/稳定性指标。',
+                evidence: [
+                    '招聘·JD：能力描述显著升级为"精通/独立搭建"',
+                    '研究报告：相关能力列入"必备能力"清单',
+                    '技术社区：实战工程化文章占比明显提升',
+                    '企业内训：多家头部企业已将此能力纳入必修'
+                ],
+                nodes: [h.node || '2026-08']
+            }
+        ] });
+    }
+    if (!profile.sources || !profile.sources.length) {
+        const skill = (h.skills && h.skills[0]) || h.trend || '该技能';
+        profile = Object.assign({}, profile, { sources: [
+            { id: 'fb-src-1', name: '包含 ' + skill + ' 关键词的招聘 JD 抓取', type: '招聘·JD', status: '正常', updatedAt: '2026-08 更新', links: [] },
+            { id: 'fb-src-2', name: '头部企业招聘数据（' + skill + ' 相关岗位）', type: '企业私有', status: '正常', updatedAt: '2026-07 更新', links: [] },
+            { id: 'fb-src-3', name: skill + ' 在 Java 后端领域的演进研究报告', type: '研究报告', status: '正常', updatedAt: '2026-06 更新', links: [] },
+            { id: 'fb-src-4', name: skill + ' 相关话题的技术社区讨论与问答', type: '技术社区', status: '正常', updatedAt: '2026-05 更新', links: [] },
+            { id: 'fb-src-5', name: skill + ' 相关开源项目的 Star/Fork/Issue 趋势', type: '开源趋势', status: '正常', updatedAt: '2026-04 更新', links: [] }
+        ] });
+    }
+} catch (e) { console.warn('aiSupplementFor failed', e); }
+
+    // 变化后的样子：直观对照（新增方向采用参考设计的分栏布局）
+    let afterHtml = '';
+    if (h.direction === 'up') {
+        // 新增方向：仿照参考设计的「变化后的样子 + 概览」布局
+        const reasonText = h.reason || h.desc || '该方向正在成为岗位新要求。';
+        const confPct = Math.round((h.confidence || 0) * 100);
+        const confW = Math.max(8, Math.min(100, confPct));
+        const impLabel = { high: '高', mid: '中', low: '低' }[h.importance] || '中';
+        afterHtml = `
+            <div class="evo-up-main">
+              <div class="evo-up-state-card">
+                <div class="evo-up-state-row">
+                  <span class="evo-up-check"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
+                  <span class="evo-up-state-text">已成为岗位新要求</span>
+                </div>
+                <div class="evo-up-state-desc">
+                  ${(() => {
+                      const all = (profile && Array.isArray(profile.insights) && profile.insights.length) ? profile.insights : [];
+                      if (!all.length) return '当前岗位尚无相关核心洞察。';
+                      const escape = s => String(s || '').replace(/[<>&]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
+                      const picked = all.slice(0, 1);
+                      return `<div class="evo-up-state-insights">${picked.map((it, idx) => {
+                          const tag = it.tag || '核心洞察';
+                          const title = it.title || '';
+                          const phenomenon = it.phenomenon || '';
+                          const reason = it.reason || '';
+                          const conclusion = it.conclusion || '';
+                          const evidence = Array.isArray(it.evidence) ? it.evidence : [];
+                          const row = (label, text) => text ? `<div class="evo-up-state-insight-row"><span class="evo-up-state-insight-label">${escape(label)}</span><span class="evo-up-state-insight-text">${escape(text)}</span></div>` : '';
+                          return `
+                            <div class="evo-up-state-insight">
+                              <div class="evo-up-state-insight-head">
+                                <span class="evo-up-state-insight-tag">${escape(tag)}</span>
+                                <span class="evo-up-state-insight-idx">洞察 ${idx + 1} / ${picked.length}</span>
+                              </div>
+                              ${title ? `<div class="evo-up-state-insight-title">${escape(title)}</div>` : ''}
+                              <div class="evo-up-state-insight-body">
+                                ${row('现象', phenomenon)}
+                                ${row('原因', reason)}
+                                ${row('结论', conclusion)}
+                              </div>
+                            </div>
+                          `;
+                      }).join('')}</div>`;
+                  })()}
+                </div>
+              </div>
+
+              <div class="evo-up-overview">
+                <div class="evo-up-overview-title">变化概览</div>
+                <div class="evo-up-overview-list">
+                  <div class="evo-up-overview-item">
+                    <span class="evo-up-ov-label">变化类型</span>
+                    <span class="evo-up-ov-value">新增能力要求</span>
+                  </div>
+                  <div class="evo-up-overview-item">
+                    <span class="evo-up-ov-label">影响程度</span>
+                    <span class="evo-up-ov-value evo-imp-${h.importance || 'mid'}">高 / 中 / 低</span>
+                  </div>
+                  <div class="evo-up-overview-item">
+                    <span class="evo-up-ov-label">可信度</span>
+                    <div class="evo-up-conf-row">
+                      <div class="evo-up-conf-bar"><div class="evo-up-conf-fill" style="width:${confW}%"></div></div>
+                      <span class="evo-up-conf-text">${confPct}%</span>
                     </div>
-                    <div class="evo-modal-modify-arrow">→</div>
-                    <div class="evo-modal-modify-after">
-                      <div class="evo-modal-modify-tag tag-after">修改后要求</div>
-                      <div class="evo-modal-modify-text">${s.after || '—'}</div>
+                  </div>
+                  <div class="evo-up-overview-item">
+                    <span class="evo-up-ov-label">发生时间</span>
+                    <span class="evo-up-ov-value">${h.node || ''}</span>
+                  </div>
+                  <!-- 数据来源：点击 header 打开独立覆盖弹窗（不在本页面拉长） -->
+                  <div class="evo-up-overview-item evo-up-sources-item">
+                    <span class="evo-up-ov-label">数据来源</span>
+                    <div class="evo-up-source-jump" data-evo-sources-toggle role="button" tabindex="0">
+                      <div class="evo-up-source-jump-title">数据来源（综合） · 共 <span data-evo-sources-count>0</span> 个来源</div>
+                      <div class="evo-up-source-jump-summary" data-evo-sources-hint>点击查看 ▸</div>
                     </div>
                   </div>
                 </div>
-              `).join('')}
+              </div>
             </div>
-          </div>
-    ` : '';
-    modal.innerHTML = `
-      <div class="evo-modal-box">
+            <div class="evo-up-why">
+              <div class="evo-up-why-title">为什么变</div>
+              <div class="evo-up-why-grid">
+                <div class="evo-up-why-card">
+                  <div class="evo-up-why-ico" style="background:rgba(31,200,217,0.15);color:#1fc8d9;">⚙</div>
+                  <div class="evo-up-why-h">技术驱动</div>
+                  <div class="evo-up-why-p">${reasonText}</div>
+                </div>
+                <div class="evo-up-why-card">
+                  <div class="evo-up-why-ico" style="background:rgba(94,134,255,0.15);color:#5e86ff;">💼</div>
+                  <div class="evo-up-why-h">业务需求</div>
+                  <div class="evo-up-why-p">企业为提升研发效率与竞争力，将该方向纳入核心能力要求。</div>
+                </div>
+                <div class="evo-up-why-card">
+                  <div class="evo-up-why-ico" style="background:rgba(81,230,166,0.15);color:#51e6a6;">📈</div>
+                  <div class="evo-up-why-h">行业趋势</div>
+                  <div class="evo-up-why-p">该方向在头部企业与社区中已广泛采用，带动行业标准化落地。</div>
+                </div>
+              </div>
+            </div>
+        `;
+    } else if (h.direction === 'down') {
+        afterHtml = `<div class="evo-after-state del"><span class="evo-after-ico">－</span>已从岗位要求中移除</div>`;
+    } else {
+        const pairs = (h.skills || []).filter(s => s && typeof s === 'object' && (s.before || s.after));
+        if (pairs.length) {
+            afterHtml = `<div class="evo-after-compare">` + pairs.map(s => `
+              <div class="evo-after-row">
+                <div class="evo-after-side before"><span class="evo-after-tag">原本</span>${s.before || '—'}</div>
+                <div class="evo-after-arrow">→</div>
+                <div class="evo-after-side after"><span class="evo-after-tag tag-after">现在</span>${s.after || '—'}</div>
+              </div>`).join('') + `</div>`;
+        } else if (h.beforeAfter) {
+            afterHtml = `<div class="evo-after-text">${h.beforeAfter}</div>`;
+        } else {
+            afterHtml = `<div class="evo-after-text">${h.desc || '要求发生调整'}</div>`;
+        }
+    }
+
+modal.innerHTML = `
+      <div class="evo-modal-box evo-trend-detail-box">
         <button class="evo-modal-close" aria-label="关闭">×</button>
         <div class="evo-modal-head">
-          <div class="evo-modal-time">${h.node || ''} 重点变化</div>
-          <div class="evo-modal-title">${h.trend || ''} <span class="evo-trend-dir ${dirCls}" style="font-size:16px;">${dirText[h.direction] || ''}</span></div>
+          <div class="evo-modal-time">${h.node || ''} · 重点变化</div>
+          <div class="evo-modal-title">${topSkill} <span class="evo-trend-dir ${dirCls}">${dirText[h.direction] || ''}</span></div>
           <div class="evo-modal-meta">
-            <span class="evo-modal-badge">重要程度：${impLabel[h.importance] || '中'}</span>
-            <span class="evo-modal-impact impact-${h.importance || 'mid'}">影响程度：${impLabel[h.importance] || '中'}</span>
-            <span class="evo-modal-impact impact-mid">数据可信度：${Math.round((h.confidence || 0) * 100)}%</span>
+            <span class="evo-modal-badge">影响：${impLabel[h.importance] || '中'}</span>
+            <span class="evo-modal-impact impact-${h.importance || 'mid'}">可信度 ${Math.round((h.confidence || 0) * 100)}%</span>
           </div>
         </div>
         <div class="evo-modal-body">
-          <div class="evo-modal-section">
-            <div class="evo-modal-h">变化描述</div>
-            <div class="evo-modal-p">${h.desc || ''}</div>
+          <div class="evo-modal-section evo-section-after">
+            <div class="evo-modal-h">变化后的样子</div>
+            ${afterHtml}
           </div>
+          ${h.direction === 'up' ? '' : `
           <div class="evo-modal-section">
-            <div class="evo-modal-h">变化前后对比</div>
-            <div class="evo-modal-p">${h.beforeAfter || '该能力方向在岗位要求中的权重与出现频率发生变化。'}</div>
+            <div class="evo-modal-h">为什么变</div>
+            <div class="evo-modal-p">${h.reason || h.desc || '暂无说明'}</div>
           </div>
-          ${modifySectionHtml}
-          <div class="evo-modal-section">
-            <div class="evo-modal-h">具体涉及的能力</div>
-            <div class="evo-modal-skills">${skillsHtml || '<span style="color:rgba(220,232,240,0.5);">无</span>'}</div>
-          </div>
-          <div class="evo-modal-section">
-            <div class="evo-modal-h">变化原因</div>
-            <div class="evo-modal-p">${h.reason || '暂无说明'}</div>
-          </div>
-          <div class="evo-modal-section">
-            <div class="evo-modal-h">相关数据依据</div>
-            <div class="evo-modal-p">${h.dataEvidence || '综合自 5 个数据源（企业招聘、行业报告、技术社区、GitHub 趋势、企业内部数据），权重分布 40% / 25% / 15% / 10% / 10%。'}</div>
-          </div>
-          <div class="evo-modal-section">
-            <div class="evo-modal-h">分析依据与结论</div>
-            <div class="evo-modal-p">${h.analysis || '该变化反映岗位能力结构的调整方向，建议持续关注相关能力的演进与提升路径。'}</div>
-          </div>
+          `}
         </div>
       </div>
     `;
     modal.style.display = 'flex';
     modal.querySelector('.evo-modal-close').addEventListener('click', () => { modal.style.display = 'none'; });
     modal.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; }, { once: true });
+    // 数据来源：点击 header 打开独立覆盖弹窗（不在本页面拉长布局）
+    try {
+        const srcToggle = modal.querySelector('[data-evo-sources-toggle]');
+        const srcHint = modal.querySelector('[data-evo-sources-hint]');
+        const srcCount = modal.querySelector('[data-evo-sources-count]');
+        const srcAll = (profile && Array.isArray(profile.sources)) ? profile.sources : [];
+        if (srcCount) srcCount.textContent = String(srcAll.length);
+        if (srcAll.length === 0) {
+            if (srcHint) srcHint.textContent = '暂无来源';
+            if (srcToggle) srcToggle.classList.add('is-disabled');
+        } else {
+            if (srcHint) srcHint.textContent = '点击查看 ▸';
+            srcToggle.addEventListener('click', (ev) => {
+                ev.stopPropagation();
+                if (window.openEvoSourcesOverviewModal) window.openEvoSourcesOverviewModal(profile);
+            });
+            srcToggle.addEventListener('keydown', (ev) => {
+                if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); if (window.openEvoSourcesOverviewModal) window.openEvoSourcesOverviewModal(profile); }
+            });
+        }
+    } catch (e) { console.warn('sources toggle failed', e); }
 };
 
 // ===== 新布局：右侧栏（核心洞察 + 数据来源 + 历史版本对比） =====
@@ -1013,18 +1148,10 @@ window.renderEvoSource = function(profile, opts) {
     `).join('') + (collapsed && all.length > DEFAULT_N
         ? `<div class="evo-source-more" id="evo-source-more-hint">还有 ${all.length - DEFAULT_N} 个来源，点击右上角"展开全部"查看</div>`
         : '');
-
-    // 点击来源 → 弹详情（含证据链）
-    src.querySelectorAll('.evo-source-item').forEach(el => {
-        if (el.dataset.bound) return;
-        el.dataset.bound = '1';
-        el.addEventListener('click', () => {
-            const s = all.find(x => x.id === el.dataset.source);
-            if (s) window.openEvoSourceModal(s, profile);
-        });
-    });
+    // 来源 item 不再绑定跳转（融合卡已从主页面移除，列表直接在弹窗内展开）
 };
 
+// ===== 数据来源综合入口（弹窗内跳转卡片的落地页） =====
 window.openEvoSourceModal = function(s, profile) {
     const statusMap = { '正常': 'ok', '实验': 'exp', '异常': 'err' };
     let modal = document.getElementById('evo-source-modal');
@@ -1074,10 +1201,68 @@ window.openEvoSourceModal = function(s, profile) {
 
 window.renderEvoSidePanels = function(profile) {
     // 核心洞察（默认按 6 个月范围渲染）
-    if (window.renderEvoInsight) window.renderEvoInsight(profile, { range: 6 });
-    // 数据来源
-    if (window.renderEvoSource) window.renderEvoSource(profile, {});
+    // 核心洞察 / 数据来源 已合入「动态演化」+ 弹窗跳转卡片，融合卡整卡从页面移除
+    // 相关函数（renderEvoInsight / renderEvoSource / bindEvoFusedTabs）保留以备复用
+    // if (window.renderEvoInsight) window.renderEvoInsight(profile, { range: 6 });
+    // if (window.renderEvoSource) window.renderEvoSource(profile, {});
+    // bindEvoFusedTabs();
 };
+
+// ===== 数据来源综合覆盖弹窗（点击"数据来源（综合）"后覆盖显示，不在本页面拉长） =====
+window.openEvoSourcesOverviewModal = function(profile) {
+    const statusMap = { '正常': 'ok', '实验': 'exp', '异常': 'err' };
+    const all = (profile && Array.isArray(profile.sources)) ? profile.sources : [];
+    let modal = document.getElementById('evo-sources-overview-modal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'evo-sources-overview-modal';
+        modal.className = 'evo-modal-mask';
+        document.body.appendChild(modal);
+    }
+    const listHtml = all.length ? all.map(s => `
+        <div class="evo-source-ov-row">
+            <div class="evo-source-ov-row-dot"></div>
+            <div class="evo-source-ov-row-info">
+                <div class="evo-source-ov-row-name">${s.name || ''}</div>
+                <div class="evo-source-ov-row-meta">
+                    <span class="evo-source-ov-row-type">${s.type || ''}</span>
+                    <span class="evo-source-ov-row-sep">·</span>
+                    <span class="evo-source-ov-row-time">${s.updatedAt || ''}</span>
+                </div>
+            </div>
+            <span class="evo-source-status evo-source-status-${(statusMap[s.status] || 'ok')}">${s.status || '正常'}</span>
+        </div>`).join('') : '<div class="evo-source-ov-empty">暂无数据来源</div>';
+
+    modal.innerHTML = `
+        <div class="evo-modal-box evo-sources-overview-box">
+            <button class="evo-modal-close" data-close="1">×</button>
+            <div class="evo-sources-overview-head">
+                <div class="evo-sources-overview-title">数据来源（综合）</div>
+                <div class="evo-sources-overview-sub">多源数据综合分析 · 共 ${all.length} 个来源${all.length ? ' · 最近更新 ' + all[0].updatedAt : ''}</div>
+            </div>
+            <div class="evo-sources-overview-list">${listHtml}</div>
+        </div>`;
+    modal.style.display = 'flex';
+    modal.querySelector('.evo-modal-close').addEventListener('click', () => { modal.style.display = 'none'; });
+    modal.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; }, { once: true });
+};
+
+function bindEvoFusedTabs() {
+    const tabs = document.querySelectorAll('#evo-fused-tabs .evo-fused-tab');
+    const paneInsight = document.getElementById('evo-fused-pane-insight');
+    const paneSource = document.getElementById('evo-fused-pane-source');
+    if (!tabs.length) return;
+    tabs.forEach(tab => {
+        if (tab.dataset.bound) return;
+        tab.dataset.bound = '1';
+        tab.addEventListener('click', () => {
+            const which = tab.dataset.tab;
+            tabs.forEach(t => t.classList.toggle('active', t === tab));
+            if (paneInsight) paneInsight.style.display = which === 'insight' ? '' : 'none';
+            if (paneSource) paneSource.style.display = which === 'source' ? '' : 'none';
+        });
+    });
+}
 
 window.getEvolutionForJob = function(jobId) {
     const profiles = window.EVOLUTION_JOB_PROFILES || {};

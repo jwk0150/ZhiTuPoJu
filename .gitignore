@@ -38,3 +38,8 @@ crawler/exports/
 
 # 本地注册用户（含密码，禁止入库）
 backend/data/
+# 本地虚拟环境
+venv/
+*.pyc
+__pycache__/
+

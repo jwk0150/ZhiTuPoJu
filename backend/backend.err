@@ -1,0 +1,38 @@
+INFO:     Will watch for changes in these directories: ['C:\\Users\\28891\\Desktop\\zuixin\\ZhiTuPoJu']
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [23204] using WatchFiles
+INFO:     Started server process [33088]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'crawler\shixiseng\_check_progress.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [33088]
+WARNING:  WatchFiles detected changes in 'crawler\shixiseng\_test_api.py'. Reloading...
+INFO:     Started server process [7216]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [7216]
+INFO:     Started server process [37096]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in '_check_db.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [37096]
+WARNING:  WatchFiles detected changes in 'crawler\shixiseng\_reset_db.py', '_check2.py'. Reloading...
+INFO:     Started server process [32916]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [32916]
+INFO:     Started server process [36244]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.

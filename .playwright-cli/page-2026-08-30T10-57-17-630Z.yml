@@ -1,0 +1,150 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - link "执图破局" [ref=e5] [cursor=pointer]:
+        - /url: home.html
+        - img "执图破局" [ref=e6]
+        - generic [ref=e7]: 执图破局
+      - navigation [ref=e9]:
+        - link "工作台" [ref=e10] [cursor=pointer]:
+          - /url: home.html
+          - img [ref=e11]
+          - generic [ref=e16]: 工作台
+        - link "数字人才地图" [ref=e17] [cursor=pointer]:
+          - /url: map.html
+          - img [ref=e18]
+          - generic [ref=e22]: 数字人才地图
+        - link "岗位洞察" [ref=e23] [cursor=pointer]:
+          - /url: insight.html?v=2
+          - img [ref=e24]
+          - generic [ref=e27]: 岗位洞察
+        - link "新岗位发现" [ref=e28] [cursor=pointer]:
+          - /url: discovery.html
+          - img [ref=e29]
+          - generic [ref=e33]: 新岗位发现
+        - link "人岗匹配" [ref=e34] [cursor=pointer]:
+          - /url: match.html
+          - img [ref=e35]
+          - generic [ref=e38]: 人岗匹配
+        - link "数据底座" [ref=e39] [cursor=pointer]:
+          - /url: more/data.html
+          - img [ref=e40]
+          - generic [ref=e44]: 数据底座
+      - generic [ref=e45]:
+        - link "访 访客" [ref=e46] [cursor=pointer]:
+          - /url: match.html?tab=profile
+          - generic [ref=e47]: 访
+          - generic [ref=e48]: 访客
+        - button "退出" [ref=e49] [cursor=pointer]:
+          - img [ref=e50]
+          - generic [ref=e53]: 退出
+    - main [ref=e55]:
+      - generic [ref=e58]:
+        - complementary [ref=e59]:
+          - generic [ref=e60]:
+            - generic [ref=e61]: 🔍
+            - textbox "搜索岗位…" [ref=e62]
+          - generic [ref=e63]:
+            - generic [ref=e64] [cursor=pointer]:
+              - generic [ref=e65]: Java 开发工程师 热门
+              - generic [ref=e66]: 后端开发
+            - generic [ref=e67] [cursor=pointer]:
+              - generic [ref=e68]: 前端开发工程师
+              - generic [ref=e69]: 前端开发
+            - generic [ref=e70] [cursor=pointer]:
+              - generic [ref=e71]: 算法工程师 新增
+              - generic [ref=e72]: 人工智能
+            - generic [ref=e73] [cursor=pointer]:
+              - generic [ref=e74]: 数据工程师
+              - generic [ref=e75]: 数据
+            - generic [ref=e76] [cursor=pointer]:
+              - generic [ref=e77]: DevOps 工程师
+              - generic [ref=e78]: 运维
+            - generic [ref=e79] [cursor=pointer]:
+              - generic [ref=e80]: 测试开发工程师
+              - generic [ref=e81]: 质量
+            - generic [ref=e82] [cursor=pointer]:
+              - generic [ref=e83]: 产品经理
+              - generic [ref=e84]: 产品
+            - generic [ref=e85] [cursor=pointer]:
+              - generic [ref=e86]: AI 应用工程师 热门
+              - generic [ref=e87]: 人工智能
+          - button "＋ 新增岗位" [ref=e88] [cursor=pointer]
+        - main [ref=e89]:
+          - generic [ref=e90]:
+            - generic [ref=e91]:
+              - heading "岗位能力动态洞察" [level=1] [ref=e92]
+              - generic [ref=e93]: 基于时序图谱，识别技能新增、删除与修改，追踪岗位能力结构变化
+            - button "⬇ 导出报告" [ref=e95] [cursor=pointer]
+          - generic [ref=e97]:
+            - generic [ref=e99]: 能力变化全景
+            - generic [ref=e100]:
+              - generic [ref=e101]: 选择时间点
+              - slider [ref=e102] [cursor=pointer]: "7"
+              - generic [ref=e103]:
+                - generic [ref=e106]: 01月
+                - generic [ref=e109]: 02月
+                - generic [ref=e112]: 03月
+                - generic [ref=e115]: 04月
+                - generic [ref=e118]: 05月
+                - generic [ref=e121]: 06月
+                - generic [ref=e124]: 07月
+                - generic [ref=e127]: 08月
+            - generic [ref=e128]:
+              - img [ref=e129]:
+                - generic [ref=e141]: 新增能力
+                - generic [ref=e145]: 能力增强
+                - generic [ref=e149]: 淘汰能力
+                - generic [ref=e153]: 能力弱化
+                - generic [ref=e156] [cursor=pointer]: AI 辅助编程
+                - generic [ref=e159] [cursor=pointer]: RAG 与向量检索
+                - generic [ref=e162] [cursor=pointer]: 云原生
+                - generic [ref=e165] [cursor=pointer]: 分布式事务
+                - generic [ref=e168] [cursor=pointer]: 服务治理与限流
+                - generic [ref=e171] [cursor=pointer]: 链路追踪与可观测
+                - generic [ref=e174] [cursor=pointer]: SSH 框架
+                - generic [ref=e177] [cursor=pointer]: JSP / Ser…
+                - generic [ref=e180] [cursor=pointer]: SVN 集中式版本…
+                - generic [ref=e183] [cursor=pointer]: EJB
+                - generic [ref=e186] [cursor=pointer]: SVN 集中式版本…
+                - generic [ref=e189] [cursor=pointer]: JSP / Ser…
+              - generic:
+                - generic: 👤
+                - generic: Java开发工程师
+        - complementary [ref=e192]:
+          - generic [ref=e193]:
+            - generic [ref=e195]: 能力图谱（示例）
+            - img [ref=e197]:
+              - generic [ref=e207]: AI 辅助编程
+              - generic [ref=e208]: RAG 与向量检索
+              - generic [ref=e209]: 分布式事务
+              - generic [ref=e210]: 服务治理与限流
+              - generic [ref=e211]: SSH 框架
+              - generic [ref=e212]: JSP / Ser…
+          - generic [ref=e213]:
+            - generic [ref=e214]:
+              - generic [ref=e215]: Java开发工程师
+              - generic [ref=e216]: 岗位概览
+            - generic [ref=e217]:
+              - generic [ref=e218]: 岗位类别后端开发
+              - generic [ref=e219]: 在招职位数1382
+              - generic [ref=e220]: 薪資区间18-32K
+              - generic [ref=e221]: 需求趋势+12%
+              - generic [ref=e222]:
+                - text: 核心能力
+                - generic [ref=e223]: AI 辅助编程RAG 与向量检索云原生 分布式事务服务治理与限流
+  - button "播放背景音乐" [ref=e224] [cursor=pointer]:
+    - img [ref=e225]
+  - generic:
+    - button "打开智能问答" [ref=e227] [cursor=pointer]:
+      - img [ref=e228]
+      - generic [ref=e230]: 问答
+    - generic [ref=e231]:
+      - generic [ref=e232]:
+        - generic [ref=e233]:
+          - text: 智能问答
+          - generic [ref=e234]: 图谱 · RAG
+        - button [ref=e235] [cursor=pointer]:
+          - img [ref=e236]
+      - iframe [ref=e239]:
+        

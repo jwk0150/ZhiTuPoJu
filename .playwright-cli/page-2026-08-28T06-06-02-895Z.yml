@@ -1,0 +1,184 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - link "执图破局" [ref=e5] [cursor=pointer]:
+        - /url: home.html
+        - img "执图破局" [ref=e6]
+        - generic [ref=e7]: 执图破局
+      - navigation [ref=e9]:
+        - link "工作台" [ref=e10] [cursor=pointer]:
+          - /url: home.html
+          - img [ref=e11]
+          - generic [ref=e16]: 工作台
+        - link "数字人才地图" [ref=e17] [cursor=pointer]:
+          - /url: map.html
+          - img [ref=e18]
+          - generic [ref=e22]: 数字人才地图
+        - link "岗位洞察" [ref=e23] [cursor=pointer]:
+          - /url: insight.html?v=2
+          - img [ref=e24]
+          - generic [ref=e27]: 岗位洞察
+        - link "新岗位发现" [ref=e28] [cursor=pointer]:
+          - /url: discovery.html
+          - img [ref=e29]
+          - generic [ref=e33]: 新岗位发现
+        - link "人岗匹配" [ref=e34] [cursor=pointer]:
+          - /url: match.html
+          - img [ref=e35]
+          - generic [ref=e38]: 人岗匹配
+        - link "数据底座" [ref=e39] [cursor=pointer]:
+          - /url: more/data.html
+          - img [ref=e40]
+          - generic [ref=e44]: 数据底座
+      - generic [ref=e45]:
+        - link "访 访客" [ref=e46] [cursor=pointer]:
+          - /url: match.html?tab=profile
+          - generic [ref=e47]: 访
+          - generic [ref=e48]: 访客
+        - button "退出" [ref=e49] [cursor=pointer]:
+          - img [ref=e50]
+          - generic [ref=e53]: 退出
+    - main [ref=e55]:
+      - generic [ref=e57]:
+        - generic [ref=e58]:
+          - generic [ref=e59]:
+            - heading "既有岗位能力动态演化" [level=1] [ref=e60]
+            - generic [ref=e61]: 基于时序图谱，识别技能新增、删除与修改，追踪岗位能力结构变化
+          - generic [ref=e62]:
+            - generic [ref=e63]: Java开发工程师
+            - generic [ref=e64]: · 能力动态更新
+        - generic [ref=e66]:
+          - generic [ref=e67]:
+            - generic [ref=e68]:
+              - generic [ref=e69]: 能力变化时间轴
+              - generic [ref=e70]:
+                - generic [ref=e71] [cursor=pointer]: 近 6 个月
+                - generic [ref=e72] [cursor=pointer]: 近 3 个月
+                - generic [ref=e73] [cursor=pointer]: 近 1 年
+                - generic [ref=e74] [cursor=pointer]: 全部
+            - generic [ref=e76]:
+              - generic [ref=e77]: 能力总数
+              - generic [ref=e79]: 新生变化的能力
+          - generic [ref=e84]:
+            - generic [ref=e85]:
+              - generic [ref=e86]:
+                - generic [ref=e87]: 2026-08
+                - text: 本期重点变化
+              - generic [ref=e88]:
+                - generic [ref=e89]: 与
+                - combobox "选择对比月份" [ref=e90] [cursor=pointer]:
+                  - option "2026-02"
+                  - option "2026-03"
+                  - option "2026-04"
+                  - option "2026-05"
+                  - option "2026-06"
+                  - option "2026-07" [selected]
+                  - option "2026-08"
+                - generic [ref=e91]: 相比
+            - generic [ref=e93]:
+              - generic [ref=e94]:
+                - generic [ref=e95]:
+                  - generic [ref=e96]: +
+                  - generic [ref=e97]:
+                    - text: 新增能力
+                    - generic [ref=e98]: 5 项
+                - generic [ref=e99]:
+                  - generic:
+                    - generic: 能力
+                    - generic: 类型
+                    - generic: 重要性
+                    - generic: 变化原因
+                  - generic [ref=e100] [cursor=pointer]:
+                    - generic [ref=e101]: GitOps / 声明式运维
+                    - generic [ref=e103]: GitOps
+                    - generic [ref=e105]: ★★★★★
+                    - generic [ref=e106]: 云原生下交付标准化，需要可审计、可回滚的运维流程。
+                  - generic [ref=e107] [cursor=pointer]:
+                    - generic [ref=e108]: GitOps / 声明式运维
+                    - generic [ref=e110]: GitOps
+                    - generic [ref=e112]: ★★★★★
+                    - generic [ref=e113]: 云原生下交付标准化，需要可审计、可回滚的运维流程。
+                  - generic [ref=e114] [cursor=pointer]:
+                    - generic [ref=e115]: 混沌工程
+                    - generic [ref=e117]: 混沌工程从大厂下沉到中大型企业
+                    - generic [ref=e119]: ★★★☆☆
+                    - generic [ref=e120]: 分布式系统复杂度上升，主动故障注入成为稳定性必备。
+                  - generic [ref=e121] [cursor=pointer]:
+                    - generic [ref=e122]: 可观测性
+                    - generic [ref=e124]: 可观测性从加分项转为基础要求
+                    - generic [ref=e126]: ★★★☆☆
+                    - generic [ref=e127]: 微服务复杂度提升，倒逼全链路追踪与稳定性工程。
+                  - generic [ref=e128] [cursor=pointer]:
+                    - generic [ref=e129]: Prompt Engineering
+                    - generic [ref=e131]: Prompt
+                    - generic [ref=e133]: ★☆☆☆☆
+                    - generic [ref=e134]: 大模型应用规模化，企业需要可工程化、可复用的 Prompt 体系。
+              - generic [ref=e135]:
+                - generic [ref=e136]:
+                  - generic [ref=e137]: ✓
+                  - generic [ref=e138]:
+                    - text: 修改能力
+                    - generic [ref=e139]: 3 项
+                - generic [ref=e140]:
+                  - generic:
+                    - generic: 能力
+                    - generic: 类型
+                    - generic: 重要性
+                    - generic: 变化原因
+                  - generic [ref=e141] [cursor=pointer]:
+                    - generic [ref=e142]: API 网关与多协议接入
+                    - generic [ref=e144]: API
+                    - generic [ref=e146]: ★★★☆☆
+                    - generic [ref=e147]: 微服务与多端接入驱动网关功能外延。
+                  - generic [ref=e148] [cursor=pointer]:
+                    - generic [ref=e149]: 链路追踪与可观测
+                    - generic [ref=e151]: 链路追踪从加分项变为基础要求。
+                    - generic [ref=e153]: ★★★☆☆
+                    - generic [ref=e154]: 微服务排障成本驱动全链路可观测标准化。
+                  - generic [ref=e155] [cursor=pointer]:
+                    - generic [ref=e156]: 服务治理与限流
+                    - generic [ref=e158]: 服务治理从基础下沉到高级要求。
+                    - generic [ref=e160]: ★★★☆☆
+                    - generic [ref=e161]: 系统稳定性诉求驱动精细化流量治理。
+              - generic [ref=e162]:
+                - generic [ref=e163]:
+                  - generic [ref=e164]: −
+                  - generic [ref=e165]:
+                    - text: 删除能力
+                    - generic [ref=e166]: 3 项
+                - generic [ref=e167]:
+                  - generic:
+                    - generic: 能力
+                    - generic: 类型
+                    - generic: 重要性
+                    - generic: 变化原因
+                  - generic [ref=e168] [cursor=pointer]:
+                    - generic [ref=e169]: 传统 Ant 构建
+                    - generic [ref=e171]: Ant
+                    - generic [ref=e173]: ★☆☆☆☆
+                    - generic [ref=e174]: 标准化构建工具普及，Ant 维护成本高。
+                  - generic [ref=e175] [cursor=pointer]:
+                    - generic [ref=e176]: SSH 框架
+                    - generic [ref=e178]: SSH
+                    - generic [ref=e180]: ★☆☆☆☆
+                    - generic [ref=e181]: Spring Boot 普及与配置简化使 SSH 失去工程优势。
+                  - generic [ref=e182] [cursor=pointer]:
+                    - generic [ref=e183]: SSH 框架
+                    - generic [ref=e185]: SSH
+                    - generic [ref=e187]: ★☆☆☆☆
+                    - generic [ref=e188]: Spring Boot 普及与配置简化使 SSH 失去工程优势。
+  - button "播放背景音乐" [ref=e189] [cursor=pointer]:
+    - img [ref=e190]
+  - generic:
+    - button "打开智能问答" [ref=e192] [cursor=pointer]:
+      - img [ref=e193]
+      - generic [ref=e195]: 问答
+    - generic [ref=e196]:
+      - generic [ref=e197]:
+        - generic [ref=e198]:
+          - text: 智能问答
+          - generic [ref=e199]: 图谱 · RAG
+        - button [ref=e200] [cursor=pointer]:
+          - img [ref=e201]
+      - iframe [ref=e204]:
+        

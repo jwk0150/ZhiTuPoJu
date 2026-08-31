@@ -1,0 +1,307 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - link "执图破局" [ref=e5] [cursor=pointer]:
+        - /url: home.html
+        - img "执图破局" [ref=e6]
+        - generic [ref=e7]: 执图破局
+      - navigation [ref=e9]:
+        - link "工作台" [ref=e10] [cursor=pointer]:
+          - /url: home.html
+          - img [ref=e11]
+          - generic [ref=e16]: 工作台
+        - link "数字人才地图" [ref=e17] [cursor=pointer]:
+          - /url: map.html
+          - img [ref=e18]
+          - generic [ref=e22]: 数字人才地图
+        - link "岗位洞察" [ref=e23] [cursor=pointer]:
+          - /url: insight.html?v=2
+          - img [ref=e24]
+          - generic [ref=e27]: 岗位洞察
+        - link "新岗位发现" [ref=e28] [cursor=pointer]:
+          - /url: discovery.html
+          - img [ref=e29]
+          - generic [ref=e33]: 新岗位发现
+        - link "人岗匹配" [ref=e34] [cursor=pointer]:
+          - /url: match.html
+          - img [ref=e35]
+          - generic [ref=e38]: 人岗匹配
+        - link "数据底座" [ref=e39] [cursor=pointer]:
+          - /url: more/data.html
+          - img [ref=e40]
+          - generic [ref=e44]: 数据底座
+      - generic [ref=e45]:
+        - link "访 访客" [ref=e46] [cursor=pointer]:
+          - /url: match.html?tab=profile
+          - generic [ref=e47]: 访
+          - generic [ref=e48]: 访客
+        - button "退出" [ref=e49] [cursor=pointer]:
+          - img [ref=e50]
+          - generic [ref=e53]: 退出
+    - main [ref=e55]:
+      - generic [ref=e58]:
+        - complementary [ref=e59]:
+          - generic [ref=e60]:
+            - generic [ref=e61]: 🔍
+            - textbox "搜索岗位…" [ref=e62]
+          - generic [ref=e63]:
+            - generic [ref=e64] [cursor=pointer]:
+              - generic [ref=e65]: Java 开发工程师
+              - generic [ref=e66]: 后端开发
+              - generic [ref=e67]: 热门
+            - generic [ref=e68] [cursor=pointer]:
+              - generic [ref=e69]: 前端开发工程师
+              - generic [ref=e70]: 前端开发
+            - generic [ref=e71] [cursor=pointer]:
+              - generic [ref=e72]: 算法工程师
+              - generic [ref=e73]: 人工智能
+            - generic [ref=e74] [cursor=pointer]:
+              - generic [ref=e75]: 数据工程师
+              - generic [ref=e76]: 数据
+            - generic [ref=e77] [cursor=pointer]:
+              - generic [ref=e78]: DevOps 工程师
+              - generic [ref=e79]: 运维
+              - generic [ref=e80]: 上升
+            - generic [ref=e81] [cursor=pointer]:
+              - generic [ref=e82]: 测试开发工程师
+              - generic [ref=e83]: 质量
+            - generic [ref=e84] [cursor=pointer]:
+              - generic [ref=e85]: 产品经理
+              - generic [ref=e86]: 产品
+            - generic [ref=e87] [cursor=pointer]:
+              - generic [ref=e88]: AI 应用工程师
+              - generic [ref=e89]: 人工智能
+              - generic [ref=e90]: 新增
+          - button "＋ 新增岗位" [ref=e91] [cursor=pointer]
+        - main [ref=e92]:
+          - generic [ref=e93]:
+            - generic [ref=e94]:
+              - heading "岗位能力动态洞察" [level=1] [ref=e95]
+              - generic [ref=e96]: 基于时序图谱，识别技能新增、删除与修改，追踪岗位能力结构变化
+            - generic [ref=e97]:
+              - generic [ref=e98]:
+                - generic [ref=e99] [cursor=pointer]: 近 6 月
+                - generic [ref=e100] [cursor=pointer]: 近 3 月
+                - generic [ref=e101] [cursor=pointer]: 近 1 年
+                - generic [ref=e102] [cursor=pointer]: 全部
+              - button "⬇ 导出报告" [ref=e103] [cursor=pointer]
+          - generic [ref=e104]:
+            - generic [ref=e105]:
+              - generic [ref=e106]: 新增能力
+              - generic [ref=e107]: "8"
+              - generic [ref=e108]: ▲ +8 较上期
+              - img [ref=e109]
+            - generic [ref=e111]:
+              - generic [ref=e112]: 能力增强
+              - generic [ref=e113]: "6"
+              - generic [ref=e114]: ▲ +6 较上期
+              - img [ref=e115]
+            - generic [ref=e117]:
+              - generic [ref=e118]: 能力弱化
+              - generic [ref=e119]: "2"
+              - generic [ref=e120]: ▼ -2 较上期
+              - img [ref=e121]
+            - generic [ref=e123]:
+              - generic [ref=e124]: 淘汰能力
+              - generic [ref=e125]: "6"
+              - generic [ref=e126]: ▼ -6 较上期
+              - img [ref=e127]
+          - generic [ref=e129]:
+            - generic [ref=e130]:
+              - generic [ref=e131]:
+                - generic [ref=e132]: 能力变化时间轴
+                - generic [ref=e133]:
+                  - generic [ref=e134]: ●
+                  - text: 能力总数 ● 新增能力
+              - img [ref=e137]:
+                - generic [ref=e138]: "80"
+                - generic [ref=e139]: "60"
+                - generic [ref=e140]: "40"
+                - generic [ref=e141]: "20"
+                - generic [ref=e142]: "0"
+                - generic [ref=e143]: 26-03
+                - generic [ref=e144]: 26-04
+                - generic [ref=e145]: 26-05
+                - generic [ref=e146]: 26-06
+                - generic [ref=e147]: 26-07
+                - generic [ref=e148]: 26-08
+            - generic [ref=e167]:
+              - generic [ref=e169]: 能力变化分布
+              - generic [ref=e170]:
+                - img [ref=e171]:
+                  - generic [ref=e175]: "20"
+                  - generic [ref=e176]: 能力变化总数
+                - generic [ref=e177]:
+                  - generic [ref=e178]:
+                    - text: 新增能力
+                    - generic [ref=e180]: 40%
+                  - generic [ref=e181]:
+                    - text: 能力增强
+                    - generic [ref=e183]: 30%
+                  - generic [ref=e184]:
+                    - text: 淘汰能力
+                    - generic [ref=e186]: 30%
+            - generic [ref=e187]:
+              - generic [ref=e189]: 能力领域变化 TOP5
+              - generic [ref=e191]:
+                - generic [ref=e192]:
+                  - generic [ref=e193]: RAG 与向量检索
+                  - generic [ref=e194]: "75"
+                - generic [ref=e197]:
+                  - generic [ref=e198]: 云原生
+                  - generic [ref=e199]: "75"
+                - generic [ref=e202]:
+                  - generic [ref=e203]: RAG 与向量检索
+                  - generic [ref=e204]: "75"
+                - generic [ref=e207]:
+                  - generic [ref=e208]: 可观测性
+                  - generic [ref=e209]: "75"
+                - generic [ref=e212]:
+                  - generic [ref=e213]: AI 辅助编程
+                  - generic [ref=e214]: "70"
+            - generic [ref=e217]:
+              - generic [ref=e219]: 能力图谱（示例）
+              - img [ref=e221]:
+                - generic [ref=e231]: 工程能力
+                - generic [ref=e232]: 架构设计
+                - generic [ref=e233]: 云原生
+                - generic [ref=e234]: AI 应用
+                - generic [ref=e235]: 稳定性
+                - generic [ref=e236]: 协作
+            - generic [ref=e237]:
+              - generic [ref=e239]: 能力关系网络
+              - img [ref=e241]:
+                - generic [ref=e249]: Java 开发工
+                - generic [ref=e251]: AI 辅助编程
+                - generic [ref=e253]: RAG 与向量检
+                - generic [ref=e255]: 分布式事务
+                - generic [ref=e257]: SSH 框架
+                - generic [ref=e259]: RAG 与向量检
+                - generic [ref=e261]: 云原生
+                - generic [ref=e263]: 服务治理与限流
+            - generic [ref=e264]:
+              - generic [ref=e266]: 能力变化全景
+              - generic [ref=e268]:
+                - generic [ref=e269]:
+                  - generic [ref=e270]:
+                    - generic [ref=e271]: ＋
+                    - text: 新增能力
+                    - generic [ref=e272]: "8"
+                  - generic [ref=e273]:
+                    - generic [ref=e274]: AI 辅助编程
+                    - generic [ref=e275]: 大模型技术爆发，企业系统性将 AI 能力整合到研发流程。
+                  - generic [ref=e276]:
+                    - generic [ref=e277]: RAG 与向量检索
+                    - generic [ref=e278]: 企业私域知识接入大模型驱动检索增强生成标准化。
+                  - generic [ref=e279]:
+                    - generic [ref=e280]: RAG 与向量检索
+                    - generic [ref=e281]: 企业私域知识接入大模型驱动检索增强生成标准化。
+                  - generic [ref=e282]:
+                    - generic [ref=e283]: 云原生
+                    - generic [ref=e284]: 企业全面上云，弹性与可观测标准化驱动云原生栈迁移。
+                  - generic [ref=e285]:
+                    - generic [ref=e286]: AI 辅助编程
+                    - generic [ref=e287]: 大模型技术爆发，企业系统性将 AI 能力整合到研发流程。
+                - generic [ref=e288]:
+                  - generic [ref=e289]:
+                    - generic [ref=e290]: ↑
+                    - text: 能力增强
+                    - generic [ref=e291]: "6"
+                  - generic [ref=e292]:
+                    - generic [ref=e293]: 分布式事务
+                    - generic [ref=e294]: 微服务架构普及驱动数据一致性需求深化。
+                  - generic [ref=e295]:
+                    - generic [ref=e296]: 服务治理与限流
+                    - generic [ref=e297]: 系统稳定性诉求驱动精细化流量治理。
+                  - generic [ref=e298]:
+                    - generic [ref=e299]: 链路追踪与可观测
+                    - generic [ref=e300]: 微服务排障成本驱动全链路可观测标准化。
+                  - generic [ref=e301]:
+                    - generic [ref=e302]: 服务治理与限流
+                    - generic [ref=e303]: 系统稳定性诉求驱动精细化流量治理。
+                  - generic [ref=e304]:
+                    - generic [ref=e305]: 链路追踪与可观测
+                    - generic [ref=e306]: 微服务排障成本驱动全链路可观测标准化。
+                - generic [ref=e307]:
+                  - generic [ref=e308]:
+                    - generic [ref=e309]: −
+                    - text: 淘汰能力
+                    - generic [ref=e310]: "6"
+                  - generic [ref=e311]:
+                    - generic [ref=e312]: SSH 框架
+                    - generic [ref=e313]: Spring Boot 普及与配置简化使 SSH 失去工程优势。
+                  - generic [ref=e314]:
+                    - generic [ref=e315]: JSP / Servlet 原生页面开发
+                    - generic [ref=e316]: 前后端分离架构成为主流，模板引擎角色弱化。
+                  - generic [ref=e317]:
+                    - generic [ref=e318]: SVN 集中式版本控制
+                    - generic [ref=e319]: 分布式协作需求与开源生态驱动 Git 普及。
+                  - generic [ref=e320]:
+                    - generic [ref=e321]: SVN 集中式版本控制
+                    - generic [ref=e322]: 分布式协作需求与开源生态驱动 Git 普及。
+                  - generic [ref=e323]:
+                    - generic [ref=e324]: EJB
+                    - generic [ref=e325]: EJB 容器过重，Spring 提供了更轻量的替代。
+        - complementary [ref=e326]:
+          - generic [ref=e327]:
+            - generic [ref=e328]:
+              - generic [ref=e329]: Java 开发工程师
+              - generic [ref=e330]: 岗位概览
+            - generic [ref=e331]:
+              - generic [ref=e332]:
+                - generic [ref=e333]: 岗位类别
+                - generic [ref=e334]: 后端开发
+              - generic [ref=e335]:
+                - generic [ref=e336]: 在招职位数
+                - generic [ref=e337]: "1280"
+              - generic [ref=e338]:
+                - generic [ref=e339]: 薪资区间
+                - generic [ref=e340]: 18-32K
+              - generic [ref=e341]:
+                - generic [ref=e342]: 需求趋势
+                - generic [ref=e343]: +12%
+              - generic [ref=e344]:
+                - generic [ref=e345]: Spring Boot
+                - generic [ref=e346]: Kubernetes
+                - generic [ref=e347]: MySQL
+                - generic [ref=e348]: Redis
+                - generic [ref=e349]: Kafka
+                - generic [ref=e350]: 微服务
+          - generic [ref=e351]:
+            - generic [ref=e353]: 洞察结论
+            - generic [ref=e355]:
+              - generic [ref=e356] [cursor=pointer]:
+                - generic [ref=e357]: 新增趋势
+                - generic [ref=e358]: AI 辅助编程
+                - generic [ref=e359]: JD 中"AI 工具"关键词出现率从 8% 升至 35%，从加分项转为必选项。
+              - generic [ref=e360] [cursor=pointer]:
+                - generic [ref=e361]: 新增趋势
+                - generic [ref=e362]: RAG 与向量检索
+                - generic [ref=e363]: 招聘要求中"向量检索 / Embedding"关键词出现率提升 +150%。
+              - generic [ref=e364] [cursor=pointer]:
+                - generic [ref=e365]: 能力升级
+                - generic [ref=e366]: 分布式事务
+                - generic [ref=e367]: 从"了解"升级为"精通"，涉及 Seata、TCC、消息最终一致性。
+              - generic [ref=e368] [cursor=pointer]:
+                - generic [ref=e369]: 退出预警
+                - generic [ref=e370]: SSH 框架
+                - generic [ref=e371]: 出现率从 22% 降至 <2%，已基本被 Spring Boot 替代。
+              - generic [ref=e372] [cursor=pointer]:
+                - generic [ref=e373]: 新增趋势
+                - generic [ref=e374]: RAG 与向量检索
+                - generic [ref=e375]: 招聘要求中"向量检索 / Embedding"关键词出现率提升 +150%。
+  - button "播放背景音乐" [ref=e376] [cursor=pointer]:
+    - img [ref=e377]
+  - generic:
+    - button "打开智能问答" [ref=e379] [cursor=pointer]:
+      - img [ref=e380]
+      - generic [ref=e382]: 问答
+    - generic [ref=e383]:
+      - generic [ref=e384]:
+        - generic [ref=e385]:
+          - text: 智能问答
+          - generic [ref=e386]: 图谱 · RAG
+        - button [ref=e387] [cursor=pointer]:
+          - img [ref=e388]
+      - iframe [ref=e391]:
+        

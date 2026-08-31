@@ -1,0 +1,219 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - link "执图破局" [ref=e5] [cursor=pointer]:
+        - /url: home.html
+        - img "执图破局" [ref=e6]
+        - generic [ref=e7]: 执图破局
+      - navigation [ref=e9]:
+        - link "工作台" [ref=e10] [cursor=pointer]:
+          - /url: home.html
+          - img [ref=e11]
+          - generic [ref=e16]: 工作台
+        - link "数字人才地图" [ref=e17] [cursor=pointer]:
+          - /url: map.html
+          - img [ref=e18]
+          - generic [ref=e22]: 数字人才地图
+        - link "岗位洞察" [ref=e23] [cursor=pointer]:
+          - /url: insight.html?v=2
+          - img [ref=e24]
+          - generic [ref=e27]: 岗位洞察
+        - link "新岗位发现" [ref=e28] [cursor=pointer]:
+          - /url: discovery.html
+          - img [ref=e29]
+          - generic [ref=e33]: 新岗位发现
+        - link "人岗匹配" [ref=e34] [cursor=pointer]:
+          - /url: match.html
+          - img [ref=e35]
+          - generic [ref=e38]: 人岗匹配
+        - link "数据底座" [ref=e39] [cursor=pointer]:
+          - /url: more/data.html
+          - img [ref=e40]
+          - generic [ref=e44]: 数据底座
+      - generic [ref=e45]:
+        - link "访 访客" [ref=e46] [cursor=pointer]:
+          - /url: match.html?tab=profile
+          - generic [ref=e47]: 访
+          - generic [ref=e48]: 访客
+        - button "退出" [ref=e49] [cursor=pointer]:
+          - img [ref=e50]
+          - generic [ref=e53]: 退出
+    - main [ref=e55]:
+      - generic [ref=e58]:
+        - complementary [ref=e59]:
+          - generic [ref=e60]:
+            - generic [ref=e61]: 🔍
+            - textbox "搜索岗位…" [ref=e62]
+          - generic [ref=e63]:
+            - generic [ref=e64] [cursor=pointer]:
+              - generic [ref=e65]: Java 开发工程师
+              - generic [ref=e66]: 后端开发
+              - generic [ref=e67]: 热门
+            - generic [ref=e68] [cursor=pointer]:
+              - generic [ref=e69]: 前端开发工程师
+              - generic [ref=e70]: 前端开发
+            - generic [ref=e71] [cursor=pointer]:
+              - generic [ref=e72]: 算法工程师
+              - generic [ref=e73]: 人工智能
+            - generic [ref=e74] [cursor=pointer]:
+              - generic [ref=e75]: 数据工程师
+              - generic [ref=e76]: 数据
+            - generic [ref=e77] [cursor=pointer]:
+              - generic [ref=e78]: DevOps 工程师
+              - generic [ref=e79]: 运维
+              - generic [ref=e80]: 上升
+            - generic [ref=e81] [cursor=pointer]:
+              - generic [ref=e82]: 测试开发工程师
+              - generic [ref=e83]: 质量
+            - generic [ref=e84] [cursor=pointer]:
+              - generic [ref=e85]: 产品经理
+              - generic [ref=e86]: 产品
+            - generic [ref=e87] [cursor=pointer]:
+              - generic [ref=e88]: AI 应用工程师
+              - generic [ref=e89]: 人工智能
+              - generic [ref=e90]: 新增
+          - button "＋ 新增岗位" [ref=e91] [cursor=pointer]
+        - main [ref=e92]:
+          - generic [ref=e93]:
+            - generic [ref=e94]:
+              - heading "岗位能力动态洞察" [level=1] [ref=e95]
+              - generic [ref=e96]: 基于时序图谱，识别技能新增、删除与修改，追踪岗位能力结构变化
+            - generic [ref=e97]:
+              - generic [ref=e98]:
+                - generic [ref=e99] [cursor=pointer]: 近 6 月
+                - generic [ref=e100] [cursor=pointer]: 近 3 月
+                - generic [ref=e101] [cursor=pointer]: 近 1 年
+                - generic [ref=e102] [cursor=pointer]: 全部
+              - button "⬇ 导出报告" [ref=e103] [cursor=pointer]
+          - generic [ref=e104]:
+            - generic [ref=e105]:
+              - generic [ref=e106]: 新增能力
+              - generic [ref=e107]: "0"
+              - generic [ref=e108]: ▲ +0 较上期
+              - img [ref=e109]
+            - generic [ref=e111]:
+              - generic [ref=e112]: 能力增强
+              - generic [ref=e113]: "0"
+              - generic [ref=e114]: ▲ +0 较上期
+              - img [ref=e115]
+            - generic [ref=e117]:
+              - generic [ref=e118]: 能力弱化
+              - generic [ref=e119]: "0"
+              - generic [ref=e120]: ▼ -2 较上期
+              - img [ref=e121]
+            - generic [ref=e123]:
+              - generic [ref=e124]: 淘汰能力
+              - generic [ref=e125]: "0"
+              - generic [ref=e126]: ▼ -0 较上期
+              - img [ref=e127]
+          - generic [ref=e129]:
+            - generic [ref=e130]:
+              - generic [ref=e131]:
+                - generic [ref=e132]: 能力变化时间轴
+                - generic [ref=e133]:
+                  - generic [ref=e134]: ●
+                  - text: 能力总数 ● 新增能力
+              - img [ref=e137]:
+                - generic [ref=e138]: "80"
+                - generic [ref=e139]: "60"
+                - generic [ref=e140]: "40"
+                - generic [ref=e141]: "20"
+                - generic [ref=e142]: "0"
+                - generic [ref=e143]: 26-03
+                - generic [ref=e144]: 26-04
+                - generic [ref=e145]: 26-05
+                - generic [ref=e146]: 26-06
+                - generic [ref=e147]: 26-07
+                - generic [ref=e148]: 26-08
+            - generic [ref=e167]:
+              - generic [ref=e169]: 能力变化分布
+              - generic [ref=e170]:
+                - img [ref=e171]:
+                  - generic [ref=e175]: "3"
+                  - generic [ref=e176]: 能力变化总数
+                - generic [ref=e177]:
+                  - generic [ref=e178]:
+                    - text: 新增能力
+                    - generic [ref=e180]: 33%
+                  - generic [ref=e181]:
+                    - text: 能力增强
+                    - generic [ref=e183]: 33%
+                  - generic [ref=e184]:
+                    - text: 淘汰能力
+                    - generic [ref=e186]: 33%
+            - generic [ref=e189]: 能力领域变化 TOP5
+            - generic [ref=e191]:
+              - generic [ref=e193]: 能力图谱（示例）
+              - img [ref=e195]:
+                - generic [ref=e205]: 工程能力
+                - generic [ref=e206]: 架构设计
+                - generic [ref=e207]: 云原生
+                - generic [ref=e208]: AI 应用
+                - generic [ref=e209]: 稳定性
+                - generic [ref=e210]: 协作
+            - generic [ref=e211]:
+              - generic [ref=e213]: 能力关系网络
+              - img [ref=e215]:
+                - generic [ref=e217]: Java 开发工
+            - generic [ref=e218]:
+              - generic [ref=e220]: 能力变化全景
+              - generic [ref=e222]:
+                - generic [ref=e223]:
+                  - generic [ref=e224]:
+                    - generic [ref=e225]: ＋
+                    - text: 新增能力
+                    - generic [ref=e226]: "0"
+                  - generic [ref=e228]: 暂无数据
+                - generic [ref=e229]:
+                  - generic [ref=e230]:
+                    - generic [ref=e231]: ↑
+                    - text: 能力增强
+                    - generic [ref=e232]: "0"
+                  - generic [ref=e234]: 暂无数据
+                - generic [ref=e235]:
+                  - generic [ref=e236]:
+                    - generic [ref=e237]: −
+                    - text: 淘汰能力
+                    - generic [ref=e238]: "0"
+                  - generic [ref=e240]: 暂无数据
+        - complementary [ref=e241]:
+          - generic [ref=e242]:
+            - generic [ref=e243]:
+              - generic [ref=e244]: Java 开发工程师
+              - generic [ref=e245]: 岗位概览
+            - generic [ref=e246]:
+              - generic [ref=e247]:
+                - generic [ref=e248]: 岗位类别
+                - generic [ref=e249]: 后端开发
+              - generic [ref=e250]:
+                - generic [ref=e251]: 在招职位数
+                - generic [ref=e252]: "1280"
+              - generic [ref=e253]:
+                - generic [ref=e254]: 薪资区间
+                - generic [ref=e255]: 18-32K
+              - generic [ref=e256]:
+                - generic [ref=e257]: 需求趋势
+                - generic [ref=e258]: +12%
+              - generic [ref=e259]:
+                - generic [ref=e260]: Spring Boot
+                - generic [ref=e261]: Kubernetes
+                - generic [ref=e262]: MySQL
+                - generic [ref=e263]: Redis
+                - generic [ref=e264]: Kafka
+                - generic [ref=e265]: 微服务
+          - generic [ref=e268]: 洞察结论
+  - button "播放背景音乐" [ref=e270] [cursor=pointer]:
+    - img [ref=e271]
+  - generic:
+    - button "打开智能问答" [ref=e273] [cursor=pointer]:
+      - img [ref=e274]
+      - generic [ref=e276]: 问答
+    - generic [ref=e277]:
+      - generic [ref=e278]:
+        - generic [ref=e279]:
+          - text: 智能问答
+          - generic [ref=e280]: 图谱 · RAG
+        - button [ref=e281] [cursor=pointer]:
+          - img [ref=e282]
+      - iframe [ref=e285]:
+        
