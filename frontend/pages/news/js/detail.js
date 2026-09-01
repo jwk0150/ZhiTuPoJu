@@ -79,12 +79,9 @@
         '</div>' +
       '</section>';
 
-    var disclaimer =
-      '<p class="jn-disclaimer">注：本文为示例资讯，所引用岗位、技能与数据均为演示用途，不代表真实统计或新闻来源。</p>';
-
     document.getElementById('detail').innerHTML =
       '<div class="jn-detail">' +
-        breadcrumb + head + content + tags + disclaimer +
+        breadcrumb + head + content + tags +
         renderFoundJobs(a) +
       '</div>' +
       renderRelated(a);
@@ -242,8 +239,7 @@
           '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>' +
         '</button>' +
       '</div>' +
-      '<div class="jn-job-panel-body" id="job-body"></div>' +
-      '<div class="jn-job-panel-foot">示例岗位信息 · 仅供了解参考</div>';
+      '<div class="jn-job-panel-body" id="job-body"></div>';
 
     document.body.appendChild(mask);
     document.body.appendChild(panel);
