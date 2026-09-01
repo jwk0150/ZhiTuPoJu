@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>岗位大新闻 · 未来职业资讯中心</title>
+  <meta name="description" content="洞察岗位变化，把握职业趋势 —— 面向年轻人的未来职业资讯中心。" />
+  <link rel="stylesheet" href="../../css/tokens.css?v=49" />
+  <link rel="stylesheet" href="../../css/shell.css?v=49" />
+  <link rel="stylesheet" href="../../css/components.css?v=49" />
+  <link rel="stylesheet" href="css/news.css" />
+</head>
+<body data-page="news">
+  <div id="app-shell"></div>
+
+  <!-- 水墨滤镜定义（主图自然晕边 + 墨丝枯笔纹理） -->
+  <svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute;width:0;height:0;overflow:hidden">
+    <defs>
+      <filter id="jn-ink-edge" x="-12%" y="-12%" width="124%" height="124%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.009 0.014" numOctaves="2" seed="7" result="n" />
+        <feDisplacementMap in="SourceGraphic" in2="n" scale="9" xChannelSelector="R" yChannelSelector="G" />
+      </filter>
+      <filter id="jn-ink-stroke" x="-40%" y="-40%" width="180%" height="180%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.02 0.035" numOctaves="3" seed="11" result="n" />
+        <feDisplacementMap in="SourceGraphic" in2="n" scale="7" xChannelSelector="R" yChannelSelector="G" result="disp" />
+        <feTurbulence type="fractalNoise" baseFrequency="0.035 0.05" numOctaves="2" seed="4" result="tex" />
+        <feColorMatrix in="tex" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 -0.2" result="texA" />
+        <feComposite in="disp" in2="texA" operator="in" result="ink" />
+        <feGaussianBlur in="ink" stdDeviation="0.35" />
+      </filter>
+    </defs>
+  </svg>
+
+  <main class="page-main jn-page" id="page-main">
+    <!-- Loading 骨架 -->
+    <div class="jn-container" id="app-loading" aria-hidden="true">
+      <div class="jn-skeleton" style="height:118px;border-radius:18px;margin-top:26px"></div>
+      <div style="display:grid;grid-template-columns:1.55fr 1fr;gap:22px;margin-top:20px">
+        <div class="jn-skeleton" style="height:384px;border-radius:22px"></div>
+        <div class="jn-skeleton" style="height:384px;border-radius:22px"></div>
+      </div>
+      <div class="jn-skeleton" style="height:96px;border-radius:18px;margin-top:20px"></div>
+      <div class="jn-skeleton" style="height:96px;border-radius:18px;margin-top:14px"></div>
+    </div>
+
+    <!-- 内容 -->
+    <div id="app" hidden>
+      <!-- 全屏滚动容器 -->
+      <div class="jn-fullpage" id="jn-fullpage">
+        <section class="jn-screen jn-screen--hero" id="screen-focus" data-label="岗位头版">
+          <div class="jn-screen-inner">
+            <!-- 杂志式页头 -->
+            <header class="jn-hero-header">
+              <div class="jn-hero-brand">
+                <span class="jn-hero-logo" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 6.5C4 5.1 5.1 4 6.5 4h11C18.9 4 20 5.1 20 6.5V19a1 1 0 0 1-1 1H6.5A2.5 2.5 0 0 1 4 17.5v-11Z"/>
+                    <path d="M4 8.5h16"/>
+                    <path d="M8 13h5M8 16h7"/>
+                    <circle cx="17" cy="11.5" r="1.7" fill="currentColor" stroke="none"/>
+                  </svg>
+                </span>
+                <span class="jn-hero-brand-name">岗位大新闻</span>
+                <span class="jn-hero-brand-en">JOB NEWS</span>
+              </div>
+              <div class="jn-hero-update" id="jn-topbar-update"></div>
+              <a class="jn-hero-all" href="all.html">全部焦点 <span aria-hidden="true">→</span></a>
+            </header>
+
+            <!-- 主内容区：杂志式网格 -->
+            <div id="focus" class="jn-hero-magazine"></div>
+
+            <!-- 滚动提示 -->
+            <div class="jn-hero-scroll" aria-hidden="true">
+              <span class="jn-hero-scroll-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M6 13l6 6 6-6"/></svg>
+              </span>
+              <span>向下滑动 探索更多岗位趋势</span>
+            </div>
+          </div>
+        </section>
+        <section class="jn-screen" id="screen-industry" data-label="智能发现">
+          <div class="jn-screen-inner">
+            <div id="latest-cols"></div>
+            <div id="disc-status-bar"></div>
+          </div>
+        </section>
+
+        <!-- 发现日志抽屉 -->
+        <div class="jn-disc-overlay" id="home-disc-overlay"></div>
+        <aside class="jn-disc-drawer" id="home-disc-drawer" role="dialog" aria-modal="true" aria-labelledby="home-disc-title" aria-hidden="true">
+          <header class="jn-disc-head">
+            <div class="jn-disc-head-titles">
+              <h2 class="jn-disc-title" id="home-disc-title">发现日志</h2>
+              <p class="jn-disc-title-en">DISCOVERY LOG</p>
+            </div>
+            <button type="button" class="jn-disc-close" id="home-disc-close" aria-label="关闭发现日志">&times;</button>
+          </header>
+
+          <nav class="jn-disc-tabs" role="tablist">
+            <button type="button" class="jn-disc-tab is-active" data-tab="latest" role="tab" aria-selected="true">最新日志</button>
+            <button type="button" class="jn-disc-tab" data-tab="history" role="tab" aria-selected="false">历史日志</button>
+            <button type="button" class="jn-disc-export" id="home-disc-export" aria-label="全部导出">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="12" height="12"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
+              全部导出
+            </button>
+          </nav>
+
+          <div class="jn-disc-body">
+            <!-- 最新日志 tab -->
+            <section class="jn-disc-panel is-active" data-panel="latest">
+              <div class="jn-disc-summary">
+                <div class="jn-disc-summary-head">
+                  <h3>最近一次发现</h3>
+                  <span class="jn-disc-state" id="home-disc-state"><span class="jn-disc-dot"></span>等待中</span>
+                </div>
+                <div class="jn-disc-summary-meta">
+                  <span><b id="home-disc-start">—</b> 开始</span>
+                  <span><b id="home-disc-elapsed">—</b> 耗时</span>
+                </div>
+              </div>
+
+              <section class="jn-disc-block">
+                <header class="jn-disc-block-head">数据源 <span class="jn-disc-block-en">05 SOURCES</span></header>
+                <ol class="jn-disc-sources" id="home-disc-sources"></ol>
+              </section>
+
+              <section class="jn-disc-summary-card">
+                <header class="jn-disc-block-head">本次发现汇总 <span class="jn-disc-block-en">DISCOVERY SUMMARY</span></header>
+                <div class="jn-disc-summary-grid">
+                  <div><span class="jn-disc-summary-num" id="home-disc-sources-count">5</span><span class="jn-disc-summary-lbl">数据源</span></div>
+                  <div><span class="jn-disc-summary-num" id="home-disc-pages">47</span><span class="jn-disc-summary-lbl">扫描页面</span></div>
+                  <div><span class="jn-disc-summary-num" id="home-disc-raw">128</span><span class="jn-disc-summary-lbl">原始数据</span></div>
+                  <div><span class="jn-disc-summary-num" id="home-disc-valid">31</span><span class="jn-disc-summary-lbl">有效资讯</span></div>
+                  <div><span class="jn-disc-summary-num" id="home-disc-total">0</span><span class="jn-disc-summary-lbl">新增资讯</span></div>
+                  <div><span class="jn-disc-summary-num" id="home-disc-duration">00:00</span><span class="jn-disc-summary-lbl">耗时</span></div>
+                </div>
+                <div class="jn-disc-summary-foot">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="12" height="12"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                  更新频率：每小时自动发现
+                </div>
+              </section>
+
+              <section class="jn-disc-block">
+                <header class="jn-disc-block-head">采集记录 <span class="jn-disc-block-en">DISCOVERY LOG</span></header>
+                <ol class="jn-disc-timeline" id="home-disc-log"></ol>
+              </section>
+            </section>
+
+            <!-- 历史日志 tab -->
+            <section class="jn-disc-panel" data-panel="history">
+              <ol class="jn-disc-history" id="home-disc-history"></ol>
+            </section>
+          </div>
+        </aside>
+        <section class="jn-screen" id="screen-hot" data-label="热门资讯">
+          <div class="jn-screen-inner"><div id="hot-cols"></div></div>
+        </section>
+        <section class="jn-screen" id="screen-rank" data-label="热门排行">
+          <div class="jn-screen-inner"><div id="rank-cols"></div></div>
+        </section>
+        <section class="jn-screen" id="screen-related" data-label="延伸阅读">
+          <div class="jn-screen-inner">
+            <div id="related"></div>
+            <footer class="jn-footer jn-footer--inline">
+              <div class="jn-footer-brand">
+                <span class="jn-logo" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 6.5C4 5.1 5.1 4 6.5 4h11C18.9 4 20 5.1 20 6.5V19a1 1 0 0 1-1 1H6.5A2.5 2.5 0 0 1 4 17.5v-11Z"/>
+                    <path d="M4 8.5h16"/>
+                    <path d="M8 13h5M8 16h7"/>
+                    <circle cx="17" cy="11.5" r="1.7" fill="currentColor" stroke="none"/>
+                  </svg>
+                </span>
+                岗位大新闻
+              </div>
+            </footer>
+          </div>
+        </section>
+      </div>
+
+      <!-- 右侧导航圆点 -->
+      <nav class="jn-dots" id="jn-dots" aria-label="页面导航"></nav>
+
+      <!-- 悬浮搜索触发 -->
+      <button type="button" class="jn-fab-search" id="search-toggle" aria-label="打开搜索">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        <span>搜索</span>
+      </button>
+
+      <!-- 搜索抽屉 -->
+      <div class="jn-search-drawer-mask" id="search-mask" hidden></div>
+      <aside class="jn-search-drawer" id="search-drawer" aria-label="搜索与筛选">
+        <div class="jn-search-drawer-head">
+          <h2 class="jn-section-title">搜索 / 筛选</h2>
+          <button type="button" class="jn-search-drawer-close" id="search-close" aria-label="关闭">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+          </button>
+        </div>
+        <div class="jn-search" id="search-panel">
+          <div class="jn-search-field">
+            <label class="jn-search-label" for="search-kw">关键词</label>
+            <input type="text" id="search-kw" class="jn-search-input" placeholder="标题 / 机构 / 标签…" autocomplete="off" />
+          </div>
+          <div class="jn-search-field">
+            <label class="jn-search-label" for="search-date">发布日期</label>
+            <input type="date" id="search-date" class="jn-search-input jn-search-date" min="2026-08-10" max="2026-08-22" />
+          </div>
+          <div class="jn-search-field">
+            <span class="jn-search-label">排序方式</span>
+            <div class="jn-search-seg" role="group" aria-label="排序方式">
+              <button type="button" class="jn-search-seg-btn is-active" data-sort="date">最新优先</button>
+              <button type="button" class="jn-search-seg-btn" data-sort="hot">按热度</button>
+            </div>
+          </div>
+          <div class="jn-search-actions">
+            <button type="button" class="jn-search-btn" id="search-go">搜索</button>
+            <button type="button" class="jn-search-reset" id="search-reset">清除</button>
+          </div>
+        </div>
+        <div class="jn-search-results" id="search-results"></div>
+      </aside>
+    </div>
+  </main>
+
+  <script src="../../js/api.js"></script>
+<<<<<<< HEAD
+  <script src="../../js/cinema-bg.js"></script>
+  <script src="../../js/cinema-music.js"></script>
+  <script src="../../js/shell.js?v=20260824"></script>
+=======
+  <script src="../../js/cinema-bg.js?v=20260831bright"></script>
+  <script src="../../js/perf-guard.js?v=1"></script>
+  <script src="../../js/cinema-music.js?v=20260824mem"></script>
+  <script src="../../js/shell.js?v=20260826rx4"></script>
+>>>>>>> 15138b068570def027c568e35eaa3b658c61d09a
+  <script src="js/data.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/home.js"></script>
+  <script>
+    window.Shell && window.Shell.mount({ pageId: 'news', title: '岗位大新闻', subtitle: '洞察岗位变化，把握职业趋势' });
+  </script>
+</body>
+</html>

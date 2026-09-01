@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
+  <!--
+    结构以原版 raster logo 为准（不可再画成直角阶梯）：
+    左厚环 + 左节点网 | 斜向闪电光刃箭头 | 右侧折线电路 + 右下细弧
+  -->
+  <path d="M100 20c-44.2 0-80 35.8-80 80s35.8 80 80 80" stroke="#10C8D4" stroke-width="9" stroke-linecap="round"/>
+  <path d="M100 180c27 0 51.5-13.2 66.8-34.5" stroke="#0B2F53" stroke-width="5" stroke-linecap="round"/>
+
+  <path d="M52 154 L108 84 L122 96 L148 54" stroke="#10C8D4" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M148 54 L131 58 L140 74 Z" fill="#10C8D4"/>
+
+  <circle cx="78" cy="100" r="11.5" stroke="#10C8D4" stroke-width="5"/>
+  <line x1="78" y1="88.5" x2="78" y2="56" stroke="#0B2F53" stroke-width="3.1" stroke-linecap="round"/>
+  <line x1="68.5" y1="94" x2="46" y2="75" stroke="#0B2F53" stroke-width="3.1" stroke-linecap="round"/>
+  <line x1="68.5" y1="108" x2="44" y2="130" stroke="#0B2F53" stroke-width="3.1" stroke-linecap="round"/>
+  <line x1="78" y1="111.5" x2="78" y2="144" stroke="#0B2F53" stroke-width="3.1" stroke-linecap="round"/>
+  <circle cx="78" cy="52" r="6" fill="#F5A623"/>
+  <circle cx="42" cy="71" r="5.5" fill="#10C8D4"/>
+  <circle cx="40" cy="134" r="5.5" fill="#10C8D4"/>
+  <circle cx="78" cy="150" r="5.5" fill="#0B2F53"/>
+
+  <!-- 右侧折线：从光刃附近向右再折下，不是 H-V 阶梯 -->
+  <path d="M120 94 L146 94 L158 112" stroke="#0B2F53" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M124 114 L152 114 L162 134" stroke="#F5A623" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M128 136 L154 136 L164 156" stroke="#0B2F53" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="158" cy="112" r="5.5" fill="#0B2F53"/>
+  <circle cx="162" cy="134" r="5.5" fill="#F5A623"/>
+  <circle cx="164" cy="156" r="5.5" fill="#0B2F53"/>
+</svg>

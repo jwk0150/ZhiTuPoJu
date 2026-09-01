@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <title>执图破局 · 简历向导</title>
+  <script>
+    (function () {
+      try {
+        if (sessionStorage.getItem('zhitu_auth_transit') === '1') {
+          document.documentElement.classList.add('zhitu-transit-pending');
+        }
+      } catch (e) {}
+      // 非嵌入：首页窗口打开简历探索
+      try {
+        var q = new URLSearchParams(location.search || '');
+        var embedded = q.get('embed') === '1' || window.self !== window.top;
+        if (!embedded) {
+          sessionStorage.setItem('zhitu_open_resume', '1');
+          location.replace('news/index.html');
+        } else {
+          document.documentElement.classList.add('rb-embed');
+        }
+      } catch (e) {}
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&family=Noto+Serif+SC:wght@500;600;700&family=Outfit:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/tokens.css" />
+  <link rel="stylesheet" href="../css/resume-builder.css?v=20260826r5" />
+  <link rel="stylesheet" href="../css/auth-transit.css?v=4" />
+</head>
+<body>
+
+  <!-- ============== 场景背景（步骤插图，模糊铺底） ============== -->
+  <div class="rb-scene" aria-hidden="true">
+    <div class="rb-left-bg" id="rb-left-bg"></div>
+    <div class="rb-left-veil"></div>
+  </div>
+
+  <!-- ============== 环境氛围层 ============== -->
+  <div class="rb-env" aria-hidden="true">
+    <div class="rb-env-mist"></div>
+    <div class="rb-env-particles"></div>
+    <div class="rb-env-glow"></div>
+    <div class="rb-env-scanline"></div>
+  </div>
+
+  <!-- ============== 应用主体（整宽工作区） ============== -->
+  <div class="rb-app" id="rb-app">
+    <main class="rb-right">
+
+      <div class="rb-brandbar">
+        <div class="rb-brand">
+          <span class="rb-brand-dot"></span>
+          <span>执图破局 · 简历向导</span>
+        </div>
+      </div>
+      <div class="rb-scene-copy" hidden>
+        <h1 id="rb-left-title">基本<br/><em>信息</em></h1>
+        <p id="rb-left-desc">填写姓名、联系方式与学校专业，后续步骤会用到这些字段。</p>
+        <span id="rb-current-meta">01 / 05</span>
+        <span id="rb-left-step-eyebrow" hidden>步骤 01 / 05</span>
+        <span id="rb-status-time" hidden></span>
+        <span id="rb-arch-id" hidden>AX-0000-0000</span>
+      </div>
+
+      <!-- ============ 顶部步骤导航 ============ -->
+      <header class="rb-topnav">
+        <nav class="rb-topnav-steps" id="rb-topnav-steps" aria-label="生成步骤"></nav>
+      </header>
+
+      <!-- ============ 中央工作区 ============ -->
+      <div class="rb-main" id="rb-main">
+        <div class="rb-stage" id="rb-stage">
+
+          <!-- ===== STEP 01 · 基础信息 ===== -->
+          <section class="rb-step-view is-active" data-step="1">
+            <div class="rb-step-head">
+              <h2>填写基本信息</h2>
+              <p>先填姓名、联系方式与教育背景，可点「补全空缺」写入示例后再改。</p>
+            </div>
+
+            <div class="rb-fields">
+              <div class="rb-fields-row is-3">
+                <div class="rb-field">
+                  <label>姓名</label>
+                  <div class="rb-field-input"><input type="text" data-bind="basicInfo.name" placeholder="请输入姓名" /></div>
+                </div>
+                <div class="rb-field">
+                  <label>电话</label>
+                  <div class="rb-field-input"><input type="text" data-bind="basicInfo.phone" placeholder="138 0000 0000" /></div>
+                </div>
+                <div class="rb-field">
+                  <label>邮箱</label>
+                  <div class="rb-field-input"><input type="email" data-bind="basicInfo.email" placeholder="name@example.com" /></div>
+                </div>
+              </div>
+              <div class="rb-fields-row is-3">
+                <div class="rb-field">
+                  <label>所在城市</label>
+                  <div class="rb-field-input">
+                    <input type="text" data-bind="basicInfo.city" placeholder="北京 / 上海 / 杭州 …" />
+                  </div>
+                </div>
+                <div class="rb-field">
+                  <label>学历</label>
+                  <div class="rb-field-input">
+                    <select data-bind="basicInfo.degree">
+                      <option value="">请选择</option>
+                      <option>本科</option><option>硕士</option><option>博士</option><option>大专</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="rb-field">
+                  <label>毕业时间</label>
+                  <div class="rb-field-input"><input type="text" data-bind="basicInfo.graduate" placeholder="2025.06" /></div>
+                </div>
+              </div>
+              <div class="rb-fields-row is-2">
+                <div class="rb-field">
+                  <label>学校</label>
+                  <div class="rb-field-input"><input type="text" data-bind="basicInfo.school" placeholder="所在高校全称" /></div>
+                </div>
+                <div class="rb-field">
+                  <label>专业</label>
+                  <div class="rb-field-input"><input type="text" data-bind="basicInfo.major" placeholder="如：软件工程 / 计算机科学" /></div>
+                </div>
+              </div>
+
+              <div class="rb-ai-bar">
+                <div class="rb-ai-bar-info">
+                  <b>补全空缺</b>
+                  <span>未填字段可一键写入示例，生成后请核对</span>
+                </div>
+                <button class="rb-btn rb-btn-ai" id="rb-ai-basic" type="button">
+                  <span class="rb-ai-icon">↻</span><span class="rb-ai-label">补全空缺</span>
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <!-- ===== STEP 02 · 方向与技能 ===== -->
+          <section class="rb-step-view" data-step="2">
+            <div class="rb-step-head">
+              <h2>方向与技能</h2>
+              <p>自行勾选投递岗位（最多 3 个）和技能标签；可用搜索与分类缩小范围。</p>
+            </div>
+
+            <div class="rb-profile-card">
+              <div class="rb-profile-card-eyebrow">方向建议</div>
+              <p id="rb-persona-text">就读于 <em>某高校 软件工程专业</em> 本科。按常见课程结构，更适合工程实现类岗位，可优先考虑开发或测试方向。</p>
+            </div>
+
+            <div class="rb-section-title">
+              候选岗位 · <small>自行选择 1 - 3 个</small>
+              <button class="rb-btn rb-btn-ghost rb-clear-sel" id="rb-clear-selection" type="button">清除所选</button>
+            </div>
+            <div class="rb-job-toolbar">
+              <label class="rb-job-search">
+                <span class="rb-job-search-icon" aria-hidden="true">⌕</span>
+                <input type="search" id="rb-job-search" placeholder="搜索岗位名称…" autocomplete="off" />
+              </label>
+              <div class="rb-job-cats" id="rb-job-cats" role="tablist" aria-label="岗位分类"></div>
+              <div class="rb-job-count" id="rb-job-count">0 个岗位</div>
+            </div>
+            <div class="rb-positions" id="rb-positions"></div>
+
+            <div class="rb-section-title" style="margin-top:28px">补充说明</div>
+            <div class="rb-soft-skills">
+              <div class="rb-soft-row">
+                <div class="rb-soft-row-head"><label>性格特点</label></div>
+                <div class="rb-field-texarea-wrap">
+                  <textarea data-bind="profile.personality" placeholder="例：沉稳细致、喜欢拆解问题、善于沟通协作 …"></textarea>
+                </div>
+              </div>
+              <div class="rb-soft-row">
+                <div class="rb-soft-row-head"><label>职业意愿</label></div>
+                <div class="rb-field-texarea-wrap">
+                  <textarea data-bind="profile.intent" placeholder="例：希望做后端开发，倾向稳定技术栈与成长空间 …"></textarea>
+                </div>
+              </div>
+              <div class="rb-soft-row">
+                <div class="rb-soft-row-head"><label>不喜欢的方向</label></div>
+                <div class="rb-field-texarea-wrap">
+                  <textarea data-bind="profile.dislike" placeholder="例：纯销售、长期出差、加班强度过高 …"></textarea>
+                </div>
+              </div>
+              <div class="rb-soft-row">
+                <div class="rb-soft-row-head">
+                  <label>技能标签 · <small>搜索勾选，或手动输入</small></label>
+                </div>
+                <div class="rb-skill-toolbar">
+                  <label class="rb-job-search rb-skill-search">
+                    <span class="rb-job-search-icon" aria-hidden="true">⌕</span>
+                    <input type="search" id="rb-skill-search" placeholder="搜索技能标签…" autocomplete="off" />
+                  </label>
+                  <div class="rb-job-count" id="rb-skill-count">0 个技能</div>
+                </div>
+                <div class="rb-skill-pool" id="rb-skill-pool"></div>
+                <div class="rb-tags-input" id="rb-tags-input">
+                  <input type="text" id="rb-tags-input-el" placeholder="输入后回车添加自定义技能 …" />
+                </div>
+              </div>
+              <div class="rb-soft-row">
+                <div class="rb-soft-row-head">
+                  <label>自我评价</label>
+                  <button class="rb-btn rb-btn-ai" id="rb-ai-self" type="button">
+                    <span class="rb-ai-icon">↻</span><span class="rb-ai-label">生成一稿</span>
+                  </button>
+                </div>
+                <div class="rb-field-texarea-wrap">
+                  <textarea data-bind="profile.summary" id="rb-self-textarea" placeholder="用 2–4 句话写：擅长什么、做过什么、想找什么方向。"></textarea>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ===== STEP 03 · 经历 + STAR ===== -->
+          <section class="rb-step-view" data-step="3">
+            <div class="rb-step-head">
+              <h2>实践经历</h2>
+              <p>补充实习 / 项目 / 校园经历，下方可按 STAR 改写。</p>
+            </div>
+
+            <div class="rb-choice-buttons">
+              <button class="rb-choice-btn" id="rb-exp-mode-haved" type="button">
+                <span class="rb-choice-num">01</span>
+                <b>手动添加</b>
+                <span>新增一段经历</span>
+              </button>
+              <button class="rb-choice-btn" id="rb-exp-mode-none" type="button">
+                <span class="rb-choice-num">02</span>
+                <b>根据描述整理</b>
+                <span>写下要点后整理成条目</span>
+              </button>
+            </div>
+
+            <div class="rb-ai-input-block" id="rb-ai-input-block">
+              <textarea data-bind="ai.expHint" placeholder="例如：参加数学建模竞赛，负责数据处理；或某项目的后端接口开发。"></textarea>
+              <div class="rb-ai-input-actions">
+                <button class="rb-btn rb-btn-link" id="rb-ai-input-cancel" type="button">取消</button>
+                <button class="rb-btn rb-btn-ai" id="rb-ai-input-go" type="button">
+                  <span class="rb-ai-icon">↻</span><span class="rb-ai-label">整理</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="rb-exp-list" id="rb-exp-list"></div>
+            <button class="rb-add-btn" id="rb-exp-add" type="button">＋ 新增一段经历</button>
+
+            <div class="rb-section-title" style="margin-top:28px">STAR · <small>可编辑</small></div>
+            <div class="rb-star-loading" id="rb-star-loading" hidden>
+              <div class="rb-star-ring"></div>
+              <div class="rb-star-loading-text">正在整理 <span id="rb-star-num">0</span> 段经历 …</div>
+            </div>
+            <div class="rb-star-list" id="rb-star-list"></div>
+          </section>
+
+          <!-- ===== STEP 04 · 润色 ===== -->
+          <section class="rb-step-view" data-step="4">
+            <div class="rb-step-head">
+              <h2>润色检查</h2>
+              <p>压缩空话，保留可量化结果与岗位相关关键词。</p>
+            </div>
+
+            <div class="rb-polish-state">
+              <div>
+                <span class="rb-polish-state-eyebrow">检查进度</span>
+                <b id="rb-polish-state-title">正在检查简历 …</b>
+              </div>
+              <div class="rb-polish-state-icon" id="rb-polish-state-icon">
+                <span class="icon-dot"></span>
+                <span id="rb-polish-state-text">检查中</span>
+              </div>
+            </div>
+
+            <div class="rb-polish-list" id="rb-polish-list"></div>
+          </section>
+
+          <!-- ===== STEP 05 · 生成导出 ===== -->
+          <section class="rb-step-view" data-step="5">
+            <div class="rb-step-head">
+              <h2>生成与导出</h2>
+              <p>可选证件照，然后生成简历并导出或进入简历库。</p>
+            </div>
+
+            <div class="rb-section-title">证件照 · <small>可选</small></div>
+            <div class="rb-photo-grid">
+              <div class="rb-photo-frame" id="rb-photo-frame" tabindex="0" role="button" aria-label="上传证件照">
+                <div class="rb-photo-empty" id="rb-photo-empty">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6"/>
+                  </svg>
+                  <span>3 : 4</span>
+                </div>
+                <span class="rb-photo-tip" id="rb-photo-tip">点击上传</span>
+                <div class="rb-photo-overlay" id="rb-photo-overlay">
+                  <div class="rb-photo-overlay-text">上传中</div>
+                  <div class="rb-photo-overlay-pct" id="rb-photo-pct">0%</div>
+                  <div class="rb-photo-progress"><div class="rb-photo-progress-fill" id="rb-photo-progress-fill"></div></div>
+                </div>
+                <input type="file" id="rb-photo-input" accept="image/*" hidden />
+              </div>
+
+              <div class="rb-photo-actions">
+                <button class="rb-btn rb-btn-ai" id="rb-photo-upload" type="button">上传照片</button>
+                <button class="rb-btn rb-btn-ghost" id="rb-photo-placeholder" type="button">使用占位图</button>
+                <div class="rb-photo-info">
+                  <div class="rb-photo-info-row"><span>状态</span><b id="rb-photo-state">未上传</b></div>
+                  <div class="rb-photo-info-row"><span>格式</span><b>JPG / PNG</b></div>
+                  <div class="rb-photo-info-row"><span>比例</span><b>3 : 4</b></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="rb-include" style="margin-top:28px">
+              <div class="rb-include-head">本次包含</div>
+              <div class="rb-include-rows" id="rb-include-rows"></div>
+            </div>
+
+            <div class="rb-check">
+              <div class="rb-check-head">完整度检查</div>
+              <div class="rb-check-list" id="rb-check-list"></div>
+            </div>
+
+            <div class="rb-generate-stage" id="rb-generate-stage">
+              <div class="rb-progress-list" id="rb-progress-list"></div>
+            </div>
+
+            <div class="rb-success" id="rb-success">
+              <div class="rb-success-mark">✓</div>
+              <h3>简历已生成</h3>
+              <p>已写入本地，可下载，或进入人岗匹配查看左侧简历预览。</p>
+            </div>
+
+            <div class="rb-paper-stage" id="rb-paper-stage">
+              <div class="rb-paper-head">
+                <h4>A4 预览</h4>
+                <div class="rb-paper-head-actions">
+                  <button class="rb-btn rb-btn-ghost" id="rb-export-word" type="button">下载 Word (.docx)</button>
+                  <button class="rb-btn rb-btn-ghost" id="rb-export-pdf" type="button">下载 PDF</button>
+                  <button class="rb-btn rb-btn-ai" id="rb-go-match" type="button">进入人岗匹配 →</button>
+                </div>
+              </div>
+              <div class="rb-paper" id="rb-paper"></div>
+            </div>
+          </section>
+
+        </div>
+      </div>
+
+      <!-- ============ 底部操作栏 ============ -->
+      <footer class="rb-bottombar">
+        <div class="rb-bottombar-info">
+          <span>步骤 <b id="rb-bottom-step">01</b> / 05</span>
+          <span class="dot"></span>
+          <span><b id="rb-bottom-section">基础信息</b></span>
+          <span class="dot"></span>
+          <span>完成度 <b id="rb-bottom-progress">0%</b></span>
+        </div>
+        <div class="rb-bottombar-actions">
+          <button class="rb-step-back" id="rb-step-back" type="button">← 上一步</button>
+          <button class="rb-step-next" id="rb-step-next" type="button">下一步 →</button>
+        </div>
+      </footer>
+
+    </main>
+  </div>
+
+  <!-- ============== Toast ============== -->
+  <div class="rb-toast" id="rb-toast"></div>
+
+  <script src="../js/data/job-pool.js?v=20260826rx3"></script>
+  <script src="../js/user-vault.js?v=20260826vd1"></script>
+  <script src="../js/auth-transit.js?v=4"></script>
+  <script src="../js/resume-builder.js?v=20260826vd1"></script>
+  <script>
+    if (window.ZhituAuthTransit) window.ZhituAuthTransit.playEnterIfNeeded();
+  </script>
+</body>
+</html>

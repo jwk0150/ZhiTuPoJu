@@ -1,0 +1,15 @@
+.ability-graph-page{display:flex;flex-direction:column;flex:1;min-height:0}
+.ability-graph-bar{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:12px 20px;flex-shrink:0;
+    border-bottom:1px solid rgba(255,255,255,.06);
+}
+.ability-graph-title{font-size:15px;font-weight:700;color:#FFE9B0}
+.ability-graph-actions{display:flex;align-items:center;gap:10px}
+.ability-graph-wrap{flex:1;min-height:0;position:relative;overflow:hidden}
+.ability-graph-foot{
+    display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;
+    padding:10px 20px;flex-shrink:0;
+    border-top:1px solid rgba(255,255,255,.06);
+}
+.ability-graph-summary{font-size:12px;color:rgba(255,255,255,.5)}

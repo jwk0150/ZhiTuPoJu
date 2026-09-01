@@ -1,0 +1,1033 @@
+/* ============================================================
+ * AI Career OS · 学习路径工作台（人岗匹配）
+ * 深色未来科技风 · 黑蓝渐变 · 玻璃拟态 · 青绿 + 暖金
+ * 设计语言参考 Linear / Vercel / Notion AI / Figma Dashboard
+ * ============================================================ */
+
+.los {
+  --los-bg0: #04060c;
+  --los-bg1: #071022;
+  --los-teal: #35e0c8;
+  --los-teal-2: #1fc8d9;
+  --los-gold: #f0b429;
+  --los-gold-2: #f5ddb0;
+  --los-ink: #e8f2f8;
+  --los-ink-soft: #9db2c6;
+  --los-ink-faint: #5d738c;
+  --los-ok: #34d399;
+  --los-warn: #fbbf24;
+  --los-danger: #fb7185;
+  --los-line: rgba(140, 190, 255, 0.13);
+  --los-line-strong: rgba(140, 190, 255, 0.24);
+  --los-glass: rgba(13, 22, 44, 0.62);
+  --los-glass-2: rgba(20, 33, 62, 0.5);
+  --los-radius: 16px;
+  --los-radius-sm: 10px;
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 6px 2px 72px;
+  color: var(--los-ink);
+  font-family: "Outfit", "Noto Sans SC", system-ui, -apple-system, sans-serif;
+}
+
+.los *, .los *::before, .los *::after { box-sizing: border-box; }
+.los button { font-family: inherit; }
+
+/* ============ 背景氛围层 ============ */
+.los-bg {
+  position: absolute;
+  inset: -90px -70px 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(1100px 520px at 12% -10%, rgba(31, 200, 217, 0.1), transparent 60%),
+    radial-gradient(900px 500px at 88% 4%, rgba(240, 180, 41, 0.08), transparent 62%),
+    linear-gradient(180deg, rgba(5, 9, 20, 0) 0%, rgba(5, 9, 20, 0.6) 100%);
+}
+.los-bg-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.42;
+}
+.los-bg-orb--a { width: 480px; height: 480px; left: -140px; top: -180px; background: radial-gradient(circle, rgba(31, 200, 217, 0.26), transparent 68%); }
+.los-bg-orb--b { width: 540px; height: 540px; right: -160px; top: 60px; background: radial-gradient(circle, rgba(240, 180, 41, 0.14), transparent 68%); }
+.los-bg-orb--c { width: 420px; height: 420px; left: 30%; bottom: -220px; background: radial-gradient(circle, rgba(96, 130, 255, 0.16), transparent 66%); }
+.los-bg-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(31, 200, 217, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(31, 200, 217, 0.045) 1px, transparent 1px);
+  background-size: 46px 46px;
+  -webkit-mask-image: radial-gradient(ellipse 90% 62% at 50% 0%, #000 30%, transparent 78%);
+  mask-image: radial-gradient(ellipse 90% 62% at 50% 0%, #000 30%, transparent 78%);
+}
+.los > *:not(.los-bg) { position: relative; z-index: 1; }
+
+/* ============ 玻璃拟态卡片基类 ============ */
+.los-glass {
+  position: relative;
+  background: linear-gradient(165deg, rgba(18, 31, 60, 0.66), rgba(8, 15, 31, 0.72));
+  border: 1px solid var(--los-line);
+  border-radius: var(--los-radius);
+  backdrop-filter: blur(16px) saturate(1.15);
+  -webkit-backdrop-filter: blur(16px) saturate(1.15);
+  box-shadow:
+    0 12px 42px rgba(0, 0, 0, 0.38),
+    inset 0 1px 0 rgba(255, 255, 255, 0.055);
+  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.28s, box-shadow 0.28s;
+}
+.los-glow::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(53, 224, 200, 0.55), transparent 32%, transparent 68%, rgba(240, 180, 41, 0.5));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.los-glass:hover { border-color: var(--los-line-strong); transform: translateY(-2px); }
+
+.los-eyebrow {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10.5px;
+  letter-spacing: 2.2px;
+  color: var(--los-teal-2);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+.los-h2 { font-size: 19px; font-weight: 700; margin: 5px 0 0; letter-spacing: -0.2px; color: var(--los-ink); }
+.los-sec-sub { font-size: 12.5px; color: var(--los-ink-soft); margin: 5px 0 0; }
+
+.los-sec-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+/* ============ ① 顶部职业成长概览 Dashboard ============ */
+.los-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.12fr) minmax(0, 0.92fr) minmax(0, 1fr);
+  gap: 16px;
+  align-items: stretch;
+}
+
+/* ---- 左侧 · 职业概览 ---- */
+.los-hero-left { padding: 20px 22px; display: flex; flex-direction: column; gap: 15px; }
+.los-hero-title-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.los-hero-title { font-size: 19px; font-weight: 700; letter-spacing: -0.3px; line-height: 1.35; }
+.los-hero-title em { font-style: normal; color: var(--los-teal); }
+.los-hero-live {
+  flex: 0 0 auto;
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 10.5px; font-weight: 600; color: var(--los-ok);
+  border: 1px solid rgba(52, 211, 153, 0.3);
+  background: rgba(52, 211, 153, 0.08);
+  padding: 3px 9px; border-radius: 999px; white-space: nowrap;
+}
+.los-hero-live i { width: 6px; height: 6px; border-radius: 50%; background: var(--los-ok); box-shadow: 0 0 8px rgba(52, 211, 153, 0.9); animation: los-pulse 2s infinite; }
+
+.los-level {
+  display: flex; align-items: center; gap: 12px;
+  background: rgba(10, 18, 36, 0.6);
+  border: 1px solid var(--los-line);
+  border-radius: 12px;
+  padding: 11px 14px;
+  width: fit-content;
+}
+.los-level-tag { display: flex; flex-direction: column; gap: 2px; }
+.los-level-tag b { font-size: 13.5px; font-weight: 700; }
+.los-level-tag small { font-size: 10px; color: var(--los-ink-faint); letter-spacing: 1px; }
+.los-level-arrow {
+  display: grid; place-items: center;
+  width: 28px; height: 28px; border-radius: 50%;
+  background: linear-gradient(135deg, rgba(53, 224, 200, 0.18), rgba(240, 180, 41, 0.16));
+  border: 1px solid rgba(53, 224, 200, 0.4);
+  color: var(--los-gold); font-size: 12px;
+  box-shadow: 0 0 14px rgba(53, 224, 200, 0.25);
+}
+.los-level .los-level-eta { margin-left: auto; text-align: right; }
+.los-level-eta b { display: block; font-size: 14px; font-weight: 700; color: var(--los-gold-2); }
+.los-level-eta small { font-size: 10px; color: var(--los-ink-faint); }
+
+/* 关键指标网格 */
+.los-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: auto;
+}
+.los-stat {
+  position: relative;
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid var(--los-line);
+  border-radius: 12px;
+  padding: 12px 14px;
+  overflow: hidden;
+}
+.los-stat::after {
+  content: "";
+  position: absolute; left: 0; right: 0; top: 0; height: 2px;
+  background: linear-gradient(90deg, var(--los-teal), var(--los-gold));
+  opacity: 0.7;
+}
+.los-stat-label { font-size: 10.5px; color: var(--los-ink-faint); letter-spacing: 0.5px; }
+.los-stat-value { display: flex; align-items: baseline; gap: 4px; margin-top: 6px; }
+.los-stat-value b { font-size: 25px; font-weight: 800; letter-spacing: -0.5px; }
+.los-stat-value b.hot { color: var(--los-teal); }
+.los-stat-value b.gold { color: var(--los-gold-2); }
+.los-stat-value small { font-size: 12px; color: var(--los-ink-soft); }
+.los-stat-sub { font-size: 10px; color: var(--los-ink-faint); margin-top: 4px; }
+.los-stat-sub .up { color: var(--los-ok); font-weight: 600; }
+.los-stat-meter { height: 4px; border-radius: 999px; background: rgba(255, 255, 255, 0.07); margin-top: 8px; overflow: hidden; }
+.los-stat-meter i { display: block; height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--los-teal), var(--los-gold)); }
+
+/* ---- 中间 · 能力雷达 ---- */
+.los-radar { padding: 20px 16px 14px; display: flex; flex-direction: column; }
+.los-radar-head { display: flex; align-items: center; justify-content: space-between; padding: 0 6px 10px; }
+.los-radar-title { font-size: 13px; font-weight: 700; }
+.los-radar-title small { display: block; font-size: 10px; font-weight: 500; color: var(--los-ink-faint); margin-top: 2px; }
+.los-radar-badge {
+  font-size: 10px; font-weight: 600; color: var(--los-teal);
+  border: 1px solid rgba(53, 224, 200, 0.35);
+  background: rgba(53, 224, 200, 0.08);
+  padding: 3px 9px; border-radius: 999px;
+}
+.los-radar-canvas { flex: 1; min-height: 250px; width: 100%; }
+
+/* ---- 右侧 · AI 职业建议 ---- */
+.los-advice { padding: 20px 22px; display: flex; flex-direction: column; }
+.los-advice-head { display: flex; align-items: center; gap: 10px; }
+.los-ai-orb {
+  flex: 0 0 auto;
+  width: 34px; height: 34px; border-radius: 11px;
+  display: grid; place-items: center;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 12px; font-weight: 700; color: #06121a;
+  background: linear-gradient(135deg, var(--los-teal), var(--los-teal-2));
+  box-shadow: 0 6px 18px rgba(31, 200, 217, 0.45);
+}
+.los-advice-title b { font-size: 13.5px; display: block; }
+.los-advice-title small { font-size: 10.5px; color: var(--los-ink-faint); }
+.los-advice-state { margin-left: auto; display: inline-flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 600; color: var(--los-gold-2); border: 1px solid rgba(240, 180, 41, 0.3); background: rgba(240, 180, 41, 0.08); padding: 3px 9px; border-radius: 999px; }
+.los-advice-state i { width: 6px; height: 6px; border-radius: 50%; background: var(--los-gold); box-shadow: 0 0 8px rgba(240, 180, 41, 0.9); animation: los-pulse 2.4s infinite; }
+.los-advice-text {
+  flex: 1;
+  margin: 16px 0;
+  padding: 14px 16px;
+  font-size: 13.5px;
+  line-height: 1.7;
+  color: var(--los-ink);
+  background: linear-gradient(160deg, rgba(53, 224, 200, 0.07), rgba(240, 180, 41, 0.06));
+  border: 1px solid rgba(53, 224, 200, 0.18);
+  border-left: 3px solid var(--los-teal);
+  border-radius: 12px;
+}
+.los-advice-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+.los-tag {
+  font-size: 10.5px; font-weight: 600;
+  padding: 3px 9px; border-radius: 999px;
+  color: var(--los-ink-soft);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--los-line);
+}
+.los-tag--gap { color: var(--los-danger); background: rgba(251, 113, 133, 0.09); border-color: rgba(251, 113, 133, 0.3); }
+.los-tag--teal { color: var(--los-teal); background: rgba(53, 224, 200, 0.08); border-color: rgba(53, 224, 200, 0.3); }
+.los-tag--gold { color: var(--los-gold-2); background: rgba(240, 180, 41, 0.08); border-color: rgba(240, 180, 41, 0.3); }
+
+.los-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  font-size: 12.5px; font-weight: 600;
+  border-radius: 10px;
+  padding: 9px 16px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.los-btn--solid {
+  color: #04131c;
+  background: linear-gradient(135deg, var(--los-teal), var(--los-teal-2));
+  box-shadow: 0 8px 22px rgba(31, 200, 217, 0.35);
+}
+.los-btn--solid:hover { transform: translateY(-1px); box-shadow: 0 12px 28px rgba(31, 200, 217, 0.45); }
+.los-btn--gold {
+  color: #241803;
+  background: linear-gradient(135deg, var(--los-gold), #f7c948);
+  box-shadow: 0 8px 22px rgba(240, 180, 41, 0.32);
+}
+.los-btn--gold:hover { transform: translateY(-1px); box-shadow: 0 12px 28px rgba(240, 180, 41, 0.42); }
+.los-btn--ghost {
+  color: var(--los-ink-soft);
+  background: rgba(255, 255, 255, 0.04);
+  border-color: var(--los-line);
+}
+.los-btn--ghost:hover { color: var(--los-ink); border-color: var(--los-line-strong); background: rgba(255, 255, 255, 0.07); }
+
+/* ============ ② 学习路径主体：Timeline + Skill Cards ============ */
+.los-main {
+  display: grid;
+  grid-template-columns: 300px minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+
+/* ---- 左侧 · 垂直成长时间轴 ---- */
+.los-timeline {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 6px 0 6px 34px;
+}
+.los-timeline::before {
+  content: "";
+  position: absolute;
+  left: 13px; top: 16px; bottom: 16px;
+  width: 2px;
+  background: linear-gradient(180deg, rgba(53, 224, 200, 0.6), rgba(240, 180, 41, 0.4));
+  border-radius: 2px;
+}
+.los-stage {
+  position: relative;
+  padding: 14px 16px;
+  cursor: pointer;
+  border-radius: 14px;
+  background: rgba(11, 19, 38, 0.5);
+  border: 1px solid var(--los-line);
+  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.los-stage::before {
+  content: "";
+  position: absolute;
+  left: -27px; top: 19px;
+  width: 13px; height: 13px;
+  border-radius: 50%;
+  background: #0b1428;
+  border: 2px solid rgba(53, 224, 200, 0.55);
+  box-shadow: 0 0 0 4px rgba(53, 224, 200, 0.1);
+  transition: all 0.3s;
+}
+.los-stage:hover { border-color: var(--los-line-strong); transform: translateX(3px); }
+.los-stage.is-active {
+  border-color: rgba(53, 224, 200, 0.4);
+  background: linear-gradient(150deg, rgba(53, 224, 200, 0.12), rgba(11, 19, 38, 0.6));
+  box-shadow: 0 0 0 1px rgba(53, 224, 200, 0.12), 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+.los-stage.is-active::before {
+  background: var(--los-teal);
+  box-shadow: 0 0 0 4px rgba(53, 224, 200, 0.18), 0 0 16px rgba(53, 224, 200, 0.7);
+}
+.los-stage.is-selected { border-color: rgba(240, 180, 41, 0.45); }
+.los-stage-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.los-stage-name { font-size: 13.5px; font-weight: 700; }
+.los-stage-en {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 8.5px; letter-spacing: 1.4px;
+  color: var(--los-ink-faint); margin-top: 3px;
+}
+.los-stage-value {
+  font-size: 11px; font-weight: 700; color: var(--los-gold-2);
+  background: rgba(240, 180, 41, 0.1);
+  border: 1px solid rgba(240, 180, 41, 0.25);
+  padding: 2px 8px; border-radius: 999px;
+  white-space: nowrap;
+}
+.los-stage-meta { display: flex; gap: 10px; margin-top: 9px; font-size: 10.5px; color: var(--los-ink-faint); }
+.los-stage-meta b { color: var(--los-ink-soft); font-weight: 600; }
+.los-stage-bar { height: 5px; border-radius: 999px; background: rgba(255, 255, 255, 0.07); margin-top: 10px; overflow: hidden; }
+.los-stage-bar i { display: block; height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--los-teal), var(--los-teal-2)); transition: width 0.8s cubic-bezier(0.22, 1, 0.36, 1); }
+.los-stage.is-active .los-stage-bar i { background: linear-gradient(90deg, var(--los-teal), var(--los-gold)); box-shadow: 0 0 8px rgba(53, 224, 200, 0.5); }
+
+/* ---- 右侧 · 技能模块卡片区 ---- */
+.los-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
+  align-content: start;
+}
+.los-cards-head {
+  grid-column: 1 / -1;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; margin-bottom: 2px;
+}
+.los-cards-count { font-size: 11.5px; color: var(--los-ink-faint); }
+.los-cards-count b { color: var(--los-teal); font-weight: 700; }
+
+.los-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+  min-height: 220px;
+  padding: 16px 17px;
+  border-radius: var(--los-radius);
+  background: linear-gradient(165deg, rgba(19, 32, 62, 0.72), rgba(9, 16, 33, 0.78));
+  border: 1px solid var(--los-line);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 10px 34px rgba(0, 0, 0, 0.34), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  overflow: hidden;
+  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.28s, box-shadow 0.28s, opacity 0.3s;
+  animation: los-card-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+.los-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(420px 140px at 50% -30%, rgba(53, 224, 200, 0.1), transparent 70%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.los-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(53, 224, 200, 0.4);
+  box-shadow: 0 16px 44px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(53, 224, 200, 0.14), 0 0 26px rgba(31, 200, 217, 0.14);
+}
+.los-card:hover::after { opacity: 1; }
+.los-card.is-hidden { display: none; }
+.los-card.is-mastered { border-color: rgba(52, 211, 153, 0.3); }
+.los-card.is-mastered::after { opacity: 1; background: radial-gradient(420px 140px at 50% -30%, rgba(52, 211, 153, 0.12), transparent 70%); }
+.los-card.is-gap { border-color: rgba(251, 113, 133, 0.3); }
+.los-card.is-gap::after { opacity: 1; background: radial-gradient(420px 140px at 50% -30%, rgba(251, 113, 133, 0.1), transparent 70%); }
+
+/* AI 推荐角标 */
+.los-card-reco {
+  position: absolute;
+  top: -1px; right: 14px;
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 9.5px; font-weight: 700; letter-spacing: 0.5px;
+  color: #2c1a02;
+  background: linear-gradient(135deg, var(--los-gold), #f7c948);
+  padding: 3px 9px;
+  border-radius: 0 0 8px 8px;
+  box-shadow: 0 4px 12px rgba(240, 180, 41, 0.35);
+  z-index: 2;
+}
+.los-card-reco i { width: 5px; height: 5px; border-radius: 50%; background: #2c1a02; animation: los-pulse 1.6s infinite; }
+
+.los-card-head { display: flex; align-items: flex-start; gap: 12px; }
+.los-card-icon {
+  flex: 0 0 auto;
+  width: 42px; height: 42px;
+  display: grid; place-items: center;
+  font-size: 20px;
+  border-radius: 12px;
+  background: linear-gradient(150deg, rgba(53, 224, 200, 0.16), rgba(53, 224, 200, 0.05));
+  border: 1px solid rgba(53, 224, 200, 0.28);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+.los-card.is-mastered .los-card-icon { background: linear-gradient(150deg, rgba(52, 211, 153, 0.18), rgba(52, 211, 153, 0.05)); border-color: rgba(52, 211, 153, 0.32); }
+.los-card.is-gap .los-card-icon { background: linear-gradient(150deg, rgba(251, 113, 133, 0.16), rgba(251, 113, 133, 0.05)); border-color: rgba(251, 113, 133, 0.3); }
+
+.los-card-title { flex: 1; min-width: 0; }
+.los-card-title h3 { font-size: 14.5px; font-weight: 700; margin: 0 0 6px; letter-spacing: -0.2px; }
+.los-card-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+.los-tag--s { font-size: 9.5px; padding: 2px 7px; }
+.los-tag--mastered { color: var(--los-ok); background: rgba(52, 211, 153, 0.09); border-color: rgba(52, 211, 153, 0.28); }
+.los-tag--learning { color: var(--los-warn); background: rgba(251, 191, 36, 0.09); border-color: rgba(251, 191, 36, 0.28); }
+.los-tag--gap { color: var(--los-danger); background: rgba(251, 113, 133, 0.09); border-color: rgba(251, 113, 133, 0.28); }
+
+/* 进度环 */
+.los-ring-wrap { position: relative; flex: 0 0 auto; width: 46px; height: 46px; }
+.los-ring { width: 46px; height: 46px; transform: rotate(-90deg); }
+.los-ring-track { fill: none; stroke: rgba(255, 255, 255, 0.07); stroke-width: 4; }
+.los-ring-bar {
+  fill: none; stroke: var(--los-teal); stroke-width: 4; stroke-linecap: round;
+  transition: stroke-dashoffset 1s cubic-bezier(0.22, 1, 0.36, 1);
+  filter: drop-shadow(0 0 4px rgba(53, 224, 200, 0.5));
+}
+.los-card.is-mastered .los-ring-bar { stroke: var(--los-ok); filter: drop-shadow(0 0 4px rgba(52, 211, 153, 0.5)); }
+.los-card.is-gap .los-ring-bar { stroke: var(--los-danger); filter: drop-shadow(0 0 4px rgba(251, 113, 133, 0.5)); }
+.los-ring-num {
+  position: absolute; inset: 0;
+  display: grid; place-items: center;
+  font-size: 10px; font-weight: 700;
+  color: var(--los-ink-soft);
+}
+.los-ring-num small { font-size: 8px; color: var(--los-ink-faint); margin-left: 1px; }
+
+/* 技能价值 */
+.los-card-value { display: flex; align-items: center; gap: 8px; }
+.los-card-value-label { font-size: 10px; color: var(--los-ink-faint); letter-spacing: 0.5px; flex: 0 0 auto; }
+.los-card-value b {
+  font-size: 12.5px; font-weight: 700;
+  color: var(--los-gold-2);
+  background: rgba(240, 180, 41, 0.08);
+  border: 1px solid rgba(240, 180, 41, 0.24);
+  padding: 4px 10px; border-radius: 8px;
+}
+
+/* 学习进度 */
+.los-card-progress { }
+.los-card-progress-row { display: flex; align-items: center; justify-content: space-between; font-size: 10.5px; color: var(--los-ink-faint); margin-bottom: 6px; }
+.los-card-progress-row b { color: var(--los-teal); font-weight: 700; font-size: 11.5px; }
+.los-progress-bar { height: 5px; border-radius: 999px; background: rgba(255, 255, 255, 0.07); overflow: hidden; }
+.los-progress-bar i {
+  display: block; height: 100%; border-radius: 999px;
+  background: linear-gradient(90deg, var(--los-teal), var(--los-teal-2));
+  transition: width 1s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.los-card.is-mastered .los-progress-bar i { background: linear-gradient(90deg, var(--los-ok), #10b981); }
+.los-card.is-gap .los-progress-bar i { background: linear-gradient(90deg, var(--los-danger), #fb7185); }
+
+/* 操作按钮 */
+.los-card-actions {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 7px;
+  margin-top: auto;
+  padding-top: 10px;
+  border-top: 1px dashed var(--los-line);
+}
+.los-card-actions .los-btn { padding: 8px 6px; font-size: 11.5px; border-radius: 9px; }
+.los-card.is-mastered .los-card-actions .los-btn--solid {
+  color: var(--los-ok);
+  background: rgba(52, 211, 153, 0.1);
+  border: 1px solid rgba(52, 211, 153, 0.35);
+  box-shadow: none;
+  cursor: default;
+}
+
+/* 展开详情 */
+.los-card-detail {
+  display: none;
+  padding: 11px 12px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--los-line);
+  font-size: 11.5px; line-height: 1.7;
+  color: var(--los-ink-soft);
+}
+.los-card-detail b { color: var(--los-ink); }
+.los-card.is-expanded .los-card-detail { display: block; animation: los-fade-up 0.25s ease; }
+.los-card-detail-row { display: flex; gap: 8px; padding: 3px 0; }
+.los-card-detail-row .k { flex: 0 0 58px; color: var(--los-ink-faint); font-size: 10.5px; }
+
+/* 学习完成 / 解锁效果 */
+.los-card.is-complete {
+  border-color: rgba(52, 211, 153, 0.55);
+  box-shadow: 0 0 0 1px rgba(52, 211, 153, 0.2), 0 0 34px rgba(52, 211, 153, 0.18), 0 16px 44px rgba(0, 0, 0, 0.4);
+}
+.los-card.is-learning .los-card-icon { animation: los-icon-bounce 0.9s ease infinite; }
+.los-card.is-learning .los-progress-bar i,
+.los-card.is-learning .los-ring-bar { background: linear-gradient(90deg, var(--los-warn), var(--los-gold)); stroke: var(--los-gold); }
+
+.los-unlock-burst {
+  position: absolute; inset: 0; border-radius: inherit; pointer-events: none; overflow: hidden; z-index: 3;
+}
+.los-unlock-burst span {
+  position: absolute; left: 50%; top: 50%;
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--los-teal);
+  box-shadow: 0 0 10px rgba(53, 224, 200, 0.9);
+  animation: los-burst 0.7s ease-out forwards;
+}
+
+/* ============ ③ 岗位能力地图 ============ */
+.los-graph-sec { }
+.los-graph {
+  padding: 20px 18px 16px;
+  overflow: hidden;
+}
+.los-graph-legend {
+  display: flex; align-items: center; gap: 16px;
+  padding: 0 6px 10px;
+  font-size: 11px; color: var(--los-ink-soft);
+}
+.los-graph-legend i { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 5px; vertical-align: -1px; }
+.los-graph-legend .d-mastered { background: var(--los-ok); box-shadow: 0 0 8px rgba(52, 211, 153, 0.7); }
+.los-graph-legend .d-learning { background: var(--los-warn); box-shadow: 0 0 8px rgba(251, 191, 36, 0.7); }
+.los-graph-legend .d-gap { background: var(--los-danger); box-shadow: 0 0 8px rgba(251, 113, 133, 0.7); }
+.los-graph-legend .hint { margin-left: auto; color: var(--los-ink-faint); font-size: 10.5px; }
+
+.los-graph-svg { width: 100%; height: auto; display: block; }
+.los-gedge {
+  fill: none;
+  stroke: rgba(140, 190, 255, 0.22);
+  stroke-width: 1.6;
+  stroke-dasharray: 5 5;
+  transition: stroke 0.3s, opacity 0.3s;
+}
+.los-gedge.is-live { stroke: rgba(53, 224, 200, 0.55); stroke-dasharray: none; }
+.los-gnode { cursor: pointer; }
+.los-gnode-halo {
+  fill: rgba(255, 255, 255, 0.03);
+  stroke-width: 1.2;
+  transition: all 0.3s;
+}
+.los-gnode-core { transition: all 0.3s; }
+.los-gnode-label {
+  font-size: 13px; font-weight: 700;
+  fill: var(--los-ink);
+  text-anchor: middle;
+  pointer-events: none;
+}
+.los-gnode-sub {
+  font-size: 9px;
+  fill: var(--los-ink-faint);
+  text-anchor: middle;
+  pointer-events: none;
+  letter-spacing: 1px;
+}
+.los-gnode.is-mastered .los-gnode-core { fill: #0c3022; stroke: var(--los-ok); }
+.los-gnode.is-mastered .los-gnode-halo { stroke: rgba(52, 211, 153, 0.6); filter: drop-shadow(0 0 8px rgba(52, 211, 153, 0.45)); }
+.los-gnode.is-learning .los-gnode-core { fill: #33260a; stroke: var(--los-warn); }
+.los-gnode.is-learning .los-gnode-halo { stroke: rgba(251, 191, 36, 0.6); filter: drop-shadow(0 0 8px rgba(251, 191, 36, 0.45)); }
+.los-gnode.is-gap .los-gnode-core { fill: #34101a; stroke: var(--los-danger); }
+.los-gnode.is-gap .los-gnode-halo { stroke: rgba(251, 113, 133, 0.6); filter: drop-shadow(0 0 8px rgba(251, 113, 133, 0.45)); }
+.los-gnode:hover .los-gnode-halo { stroke-width: 2; filter: drop-shadow(0 0 14px currentColor); }
+.los-gnode:hover .los-gnode-core { stroke-width: 2.4; }
+.los-gnode.is-dim { opacity: 0.35; }
+
+/* 节点详情浮层 */
+.los-graph-info {
+  margin-top: 12px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: linear-gradient(160deg, rgba(18, 31, 60, 0.7), rgba(8, 15, 31, 0.7));
+  border: 1px solid rgba(53, 224, 200, 0.25);
+  font-size: 12.5px;
+  line-height: 1.75;
+  color: var(--los-ink-soft);
+  animation: los-fade-up 0.3s ease;
+}
+.los-graph-info b { color: var(--los-ink); }
+.los-graph-info .lg-title { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.los-graph-info .lg-title .dot { width: 10px; height: 10px; border-radius: 50%; }
+.los-graph-info .lg-title strong { font-size: 13.5px; color: var(--los-ink); }
+.los-graph-info .lg-row { display: flex; gap: 10px; padding: 4px 0; }
+.los-graph-info .lg-row .k { flex: 0 0 66px; color: var(--los-ink-faint); font-size: 10.5px; padding-top: 2px; }
+.los-graph-info .lg-cta { margin-top: 10px; }
+
+/* ============ ④ 能力提升预测 ============ */
+.los-forecast { padding: 16px 14px 10px; }
+.los-forecast-canvas { width: 100%; height: 260px; }
+
+/* ============ AI Career Coach 浮窗 ============ */
+.los-coach {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 90;
+  width: 330px;
+  border-radius: 18px;
+  background: linear-gradient(165deg, rgba(17, 29, 56, 0.92), rgba(8, 15, 31, 0.94));
+  border: 1px solid rgba(53, 224, 200, 0.28);
+  backdrop-filter: blur(20px) saturate(1.2);
+  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(53, 224, 200, 0.08), 0 0 40px rgba(31, 200, 217, 0.12);
+  overflow: hidden;
+  animation: los-coach-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.4s backwards;
+}
+.los-coach::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(53, 224, 200, 0.6), transparent 40%, transparent 65%, rgba(240, 180, 41, 0.55));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+}
+.los-coach-head {
+  display: flex; align-items: center; gap: 11px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--los-line);
+}
+.los-coach-orb {
+  width: 36px; height: 36px; border-radius: 12px;
+  display: grid; place-items: center;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 12px; font-weight: 700; color: #06121a;
+  background: linear-gradient(135deg, var(--los-teal), var(--los-teal-2));
+  box-shadow: 0 6px 20px rgba(31, 200, 217, 0.5);
+  position: relative;
+}
+.los-coach-orb::after {
+  content: "";
+  position: absolute; inset: -4px; border-radius: 14px;
+  border: 1px solid rgba(53, 224, 200, 0.35);
+  animation: los-ring-spin 3s linear infinite;
+}
+.los-coach-title b { font-size: 13px; display: block; }
+.los-coach-title small { font-size: 10px; color: var(--los-ink-faint); }
+.los-coach-live {
+  margin-left: auto;
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 9.5px; font-weight: 700; letter-spacing: 0.8px;
+  color: var(--los-ok);
+}
+.los-coach-live i { width: 6px; height: 6px; border-radius: 50%; background: var(--los-ok); box-shadow: 0 0 8px rgba(52, 211, 153, 0.9); animation: los-pulse 1.8s infinite; }
+
+.los-coach-body { padding: 14px 16px; display: flex; flex-direction: column; gap: 9px; }
+.los-coach-task-label { font-size: 10px; letter-spacing: 1.4px; color: var(--los-ink-faint); font-family: "IBM Plex Mono", monospace; }
+.los-coach-task {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 14px; font-weight: 700;
+  color: var(--los-ink);
+}
+.los-coach-task .tick { color: var(--los-gold); font-size: 13px; }
+.los-coach-reason {
+  font-size: 11.5px; line-height: 1.65;
+  color: var(--los-ink-soft);
+  padding: 9px 11px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.035);
+  border-left: 2px solid var(--los-gold);
+}
+.los-coach-progress .row { display: flex; justify-content: space-between; font-size: 10px; color: var(--los-ink-faint); margin-bottom: 5px; }
+.los-coach-progress .row b { color: var(--los-gold-2); }
+.los-coach-cta {
+  width: 100%;
+  display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+  padding: 11px;
+  border: 0; border-radius: 12px;
+  font-size: 13px; font-weight: 700;
+  color: #04131c;
+  background: linear-gradient(135deg, var(--los-teal), var(--los-teal-2));
+  cursor: pointer;
+  box-shadow: 0 10px 26px rgba(31, 200, 217, 0.35);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.los-coach-cta:hover { transform: translateY(-2px); box-shadow: 0 14px 32px rgba(31, 200, 217, 0.45); }
+
+/* ============ 动画 ============ */
+@keyframes los-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+@keyframes los-ring-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+@keyframes los-icon-bounce {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.12) rotate(-4deg); }
+}
+@keyframes los-card-in {
+  from { opacity: 0; transform: translateY(14px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes los-fade-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes los-coach-in {
+  from { opacity: 0; transform: translateY(26px) scale(0.96); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes los-burst {
+  0% { transform: translate(-50%, -50%) scale(0.4); opacity: 1; }
+  100% { transform: translate(calc(-50% + var(--dx, 30px)), calc(-50% + var(--dy, -46px))) scale(0); opacity: 0; }
+}
+.los-stage, .los-gnode { transition: opacity 0.25s; }
+
+/* ============ 响应式 ============ */
+@media (max-width: 1280px) {
+  .los-hero { grid-template-columns: 1fr 1fr; }
+  .los-advice { grid-column: 1 / -1; }
+  .los-advice-text { margin: 12px 0; }
+}
+@media (max-width: 980px) {
+  .los-main { grid-template-columns: 1fr; }
+  .los-timeline { flex-direction: row; flex-wrap: wrap; padding: 6px 0; }
+  .los-timeline::before { display: none; }
+  .los-stage { flex: 1 1 220px; }
+  .los-stage::before { display: none; }
+}
+@media (max-width: 760px) {
+  .los-hero { grid-template-columns: 1fr; }
+  .los-coach { width: calc(100vw - 32px); right: 16px; bottom: 16px; }
+  .los-cards { grid-template-columns: 1fr; }
+}
+
+/* 学习视图激活时隐藏全局问答按钮，避免遮挡 AI Career Coach */
+body:has(#view-learn.is-active) #qa-fab,
+body:has(#view-learn.is-active) .qa-fab {
+  display: none;
+}
+
+/* ============================================================
+ * AI 简历解析引擎 · Resume Processing
+ * 中央 AI 能量球 + 环形任务节点 + 实时识别流 + 生成内容预览
+ * ============================================================ */
+.rps {
+  position: relative;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 6px 0 40px;
+  color: var(--los-ink);
+  font-family: "Outfit", "Noto Sans SC", system-ui, -apple-system, sans-serif;
+}
+.rps *, .rps *::before, .rps *::after { box-sizing: border-box; }
+
+/* ---- 背景氛围 ---- */
+.rps-bg { position: absolute; inset: -80px -60px 0; overflow: hidden; pointer-events: none; z-index: 0; }
+.rps-bg-orb { position: absolute; border-radius: 50%; filter: blur(90px); }
+.rps-bg-orb--a { width: 540px; height: 540px; left: 50%; top: 20px; transform: translateX(-50%); background: radial-gradient(circle, rgba(31, 200, 217, 0.18), transparent 65%); animation: rps-breathe 4.5s ease-in-out infinite; }
+.rps-bg-orb--b { width: 440px; height: 440px; right: -70px; bottom: 30px; background: radial-gradient(circle, rgba(240, 180, 41, 0.11), transparent 65%); animation: rps-breathe 6s ease-in-out 1s infinite; }
+.rps-bg-grid {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(31, 200, 217, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(31, 200, 217, 0.04) 1px, transparent 1px);
+  background-size: 44px 44px;
+  -webkit-mask-image: radial-gradient(ellipse 75% 62% at 50% 28%, #000 30%, transparent 76%);
+  mask-image: radial-gradient(ellipse 75% 62% at 50% 28%, #000 30%, transparent 76%);
+}
+.rps > *:not(.rps-bg) { position: relative; z-index: 1; }
+
+/* ---- AI 扫描线 ---- */
+.rps-scanline {
+  position: absolute;
+  left: 3%; right: 3%; top: 6%;
+  height: 2px;
+  z-index: 2;
+  background: linear-gradient(90deg, transparent, rgba(53, 224, 200, 0.9) 40%, rgba(240, 180, 41, 0.7) 60%, transparent);
+  box-shadow: 0 0 20px rgba(53, 224, 200, 0.65);
+  opacity: 0.75;
+  animation: rps-scan 5s ease-in-out infinite;
+  pointer-events: none;
+}
+.rps-scanline::after {
+  content: "";
+  position: absolute; left: 0; right: 0; top: 1px; height: 70px;
+  background: linear-gradient(180deg, rgba(53, 224, 200, 0.12), transparent);
+}
+@keyframes rps-scan {
+  0%, 100% { top: 4%; opacity: 0.08; }
+  12%, 88% { opacity: 0.8; }
+  50% { top: 96%; opacity: 0.15; }
+}
+
+/* ---- 舞台（能量球 + 环形节点） ---- */
+.rps-stage {
+  position: relative;
+  height: 520px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* 环形节点层 */
+.rps-ring { position: absolute; inset: 0; z-index: 2; }
+.rps-node-svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.rps-node-line {
+  stroke: rgba(53, 224, 200, 0.2);
+  stroke-width: 1.2;
+  stroke-dasharray: 4 6;
+  transition: stroke 0.35s, stroke-dasharray 0.35s;
+}
+.rps-node-line.is-live { stroke: rgba(240, 180, 41, 0.65); stroke-dasharray: none; filter: drop-shadow(0 0 6px rgba(240, 180, 41, 0.5)); }
+.rps-node-line.is-done { stroke: rgba(52, 211, 153, 0.5); }
+
+.rps-node {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  display: flex; align-items: center; gap: 9px;
+  padding: 9px 13px;
+  border-radius: 13px;
+  background: linear-gradient(160deg, rgba(16, 28, 54, 0.85), rgba(8, 15, 31, 0.88));
+  border: 1px solid var(--los-line);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.35);
+  white-space: nowrap;
+  transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.35s;
+  z-index: 3;
+}
+.rps-node-icon { font-size: 16px; filter: grayscale(0.4); opacity: 0.7; }
+.rps-node-name { font-size: 12.5px; font-weight: 600; color: var(--los-ink-soft); }
+.rps-node-state { display: inline-flex; align-items: center; gap: 5px; font-size: 9.5px; font-weight: 600; color: var(--los-ink-faint); }
+.rps-node-state i { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.rps-node.is-todo { opacity: 0.5; }
+.rps-node.is-doing {
+  border-color: rgba(53, 224, 200, 0.55);
+  background: linear-gradient(160deg, rgba(21, 46, 80, 0.92), rgba(10, 20, 42, 0.92));
+  box-shadow: 0 0 0 1px rgba(53, 224, 200, 0.16), 0 0 26px rgba(31, 200, 217, 0.24), 0 10px 30px rgba(0, 0, 0, 0.4);
+  transform: translate(-50%, -50%) translateY(-2px) scale(1.04);
+}
+.rps-node.is-doing .rps-node-state { color: var(--los-teal); }
+.rps-node.is-doing .rps-node-state i { animation: rps-pulse 1.2s infinite; }
+.rps-node.is-doing .rps-node-icon { filter: none; opacity: 1; }
+.rps-node.is-done { opacity: 1; border-color: rgba(52, 211, 153, 0.4); }
+.rps-node.is-done .rps-node-name { color: var(--los-ink); }
+.rps-node.is-done .rps-node-state { color: var(--los-ok); }
+.rps-node.is-done .rps-node-state i { background: var(--los-ok); box-shadow: 0 0 8px rgba(52, 211, 153, 0.8); }
+.rps-node.is-done .rps-node-icon { filter: none; opacity: 1; }
+
+/* ---- 中央 AI 能量球 ---- */
+.rps-orb { position: relative; width: 170px; height: 170px; z-index: 4; }
+.rps-orb-halo { position: absolute; border-radius: 50%; }
+.rps-orb-halo--a { inset: -28px; background: radial-gradient(circle, rgba(31, 200, 217, 0.24), transparent 62%); animation: rps-breathe 3.2s ease-in-out infinite; }
+.rps-orb-halo--b { inset: -54px; background: radial-gradient(circle, rgba(240, 180, 41, 0.13), transparent 66%); animation: rps-breathe 4.8s ease-in-out 0.8s infinite; }
+.rps-orb-ring {
+  position: absolute; inset: 0; border-radius: 50%;
+  background: conic-gradient(from 0deg, transparent 0%, rgba(53, 224, 200, 0.9) 12%, transparent 26%, transparent 58%, rgba(240, 180, 41, 0.75) 74%, transparent 88%);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 2.4px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 2.4px));
+  animation: rps-spin 6s linear infinite;
+  opacity: 0.85;
+}
+.rps-orb-core {
+  position: absolute; inset: 22px; border-radius: 50%;
+  display: grid; place-items: center;
+  background: radial-gradient(circle at 35% 28%, rgba(53, 224, 200, 0.42), rgba(16, 44, 76, 0.94) 55%, rgba(9, 20, 44, 0.98));
+  border: 1px solid rgba(53, 224, 200, 0.42);
+  box-shadow: 0 0 42px rgba(31, 200, 217, 0.35), inset 0 0 30px rgba(31, 200, 217, 0.18);
+}
+.rps-orb-ai {
+  font-family: "IBM Plex Mono", "Noto Sans SC", monospace;
+  font-size: 30px; font-weight: 700;
+  color: #eafcf8;
+  text-shadow: 0 0 18px rgba(53, 224, 200, 0.9);
+}
+.rps-orb-pulse {
+  position: absolute; inset: 0; border-radius: 50%;
+  border: 1px solid rgba(53, 224, 200, 0.5);
+  animation: rps-orb-ping 2.4s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+@keyframes rps-orb-ping {
+  0% { transform: scale(0.82); opacity: 1; }
+  80%, 100% { transform: scale(1.4); opacity: 0; }
+}
+
+/* 神经网络节点 */
+.rps-neural { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.rps-neural-nodes circle { fill: var(--los-teal); filter: drop-shadow(0 0 4px rgba(53, 224, 200, 0.9)); animation: rps-node-pulse 2.6s ease-in-out infinite; }
+.rps-neural-nodes circle:nth-child(2) { animation-delay: 0.35s; }
+.rps-neural-nodes circle:nth-child(3) { animation-delay: 0.6s; }
+.rps-neural-nodes circle:nth-child(4) { animation-delay: 0.9s; }
+.rps-neural-nodes circle:nth-child(5) { animation-delay: 1.2s; }
+.rps-neural-nodes circle:nth-child(6) { animation-delay: 1.5s; }
+.rps-neural-nodes circle:nth-child(7) { animation-delay: 1.8s; }
+.rps-neural-links line { stroke: rgba(53, 224, 200, 0.32); stroke-width: 1; animation: rps-link-blink 3s ease-in-out infinite; }
+.rps-neural-links line:nth-child(2n) { animation-delay: 1.4s; }
+@keyframes rps-link-blink { 0%, 100% { opacity: 0.35; } 50% { opacity: 1; } }
+
+/* ---- 中心文案 + 环形进度 ---- */
+.rps-core-copy { position: relative; z-index: 4; text-align: center; margin-top: 6px; }
+.rps-title { font-size: 25px; font-weight: 800; letter-spacing: -0.4px; margin: 0; }
+.rps-title::after {
+  content: "";
+  display: inline-block;
+  width: 2px; height: 18px; margin-left: 4px;
+  background: var(--los-teal);
+  vertical-align: -2px;
+  animation: rps-caret 1s steps(2) infinite;
+}
+@keyframes rps-caret { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+.rps-direction { font-size: 13px; color: var(--los-ink-soft); margin: 8px 0 0; letter-spacing: 1.2px; }
+.rps-direction b { color: var(--los-gold-2); font-weight: 600; }
+.rps-progress { position: relative; width: 92px; height: 92px; margin: 16px auto 0; }
+.rps-ring-svg { width: 92px; height: 92px; transform: rotate(-90deg); }
+.rps-ring-track { fill: none; stroke: rgba(255, 255, 255, 0.07); stroke-width: 6; }
+.rps-ring-bar {
+  fill: none; stroke: var(--los-teal); stroke-width: 6; stroke-linecap: round;
+  transition: stroke-dashoffset 0.12s linear, stroke 0.3s;
+  filter: drop-shadow(0 0 6px rgba(53, 224, 200, 0.55));
+}
+.rps-progress-num { position: absolute; inset: 0; display: grid; place-items: center; }
+.rps-progress-num b { font-size: 25px; font-weight: 800; letter-spacing: -0.5px; }
+.rps-progress-num small { font-size: 11px; color: var(--los-ink-soft); margin-left: 2px; }
+
+/* ---- 动态内容区 ---- */
+.rps-dynamic { padding: 16px 20px; margin-top: 4px; }
+.rps-dyn-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 13px; }
+.rps-dyn-live { display: inline-flex; align-items: center; gap: 7px; font-size: 11px; font-weight: 700; letter-spacing: 1.6px; color: var(--los-teal); }
+.rps-dyn-live i { width: 7px; height: 7px; border-radius: 50%; background: var(--los-teal); box-shadow: 0 0 10px rgba(53, 224, 200, 0.9); animation: rps-pulse 1.6s infinite; }
+.rps-dyn-log { font-size: 11px; color: var(--los-ink-faint); font-family: "IBM Plex Mono", monospace; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 55%; }
+.rps-find { display: flex; align-items: center; gap: 10px; margin-bottom: 11px; }
+.rps-find-label { font-size: 11px; color: var(--los-ink-faint); flex: 0 0 auto; letter-spacing: 1px; }
+.rps-find-chips { display: flex; gap: 7px; overflow: hidden; flex: 1; min-height: 28px; scroll-behavior: smooth; }
+.rps-kw {
+  flex: 0 0 auto;
+  font-size: 12px; font-weight: 600;
+  padding: 4px 11px; border-radius: 999px;
+  color: var(--los-teal);
+  background: rgba(53, 224, 200, 0.08);
+  border: 1px solid rgba(53, 224, 200, 0.3);
+  animation: rps-kw-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+.rps-marquee {
+  overflow: hidden;
+  margin-bottom: 12px;
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px dashed var(--los-line);
+}
+.rps-marquee-track { display: inline-flex; align-items: center; gap: 20px; padding: 7px 0; white-space: nowrap; animation: rps-marquee 24s linear infinite; }
+.rps-mq-kw { font-size: 11px; color: var(--los-ink-faint); }
+.rps-mq-sep { font-size: 8px; color: var(--los-gold); }
+@keyframes rps-marquee { from { transform: translateX(0); } to { transform: translateX(-33.333%); } }
+@keyframes rps-kw-in { from { opacity: 0; transform: translateY(6px) scale(0.9); } to { opacity: 1; transform: none; } }
+
+.rps-counts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.rps-count { display: flex; align-items: baseline; gap: 6px; font-size: 11.5px; color: var(--los-ink-soft); padding: 9px 11px; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--los-line); border-radius: 10px; }
+.rps-count b { font-size: 19px; font-weight: 800; color: var(--los-gold-2); }
+
+/* ---- 预计生成内容 · 模糊预览卡 ---- */
+.rps-preview { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 4px; }
+.rps-preview-card { position: relative; padding: 18px 16px 20px; text-align: center; overflow: hidden; }
+.rps-preview-card .rps-preview-icon { font-size: 22px; color: var(--los-teal); filter: blur(0.6px); opacity: 0.85; }
+.rps-preview-card b { display: block; font-size: 14px; margin-top: 9px; filter: blur(0.5px); opacity: 0.9; }
+.rps-preview-card small { display: block; font-size: 11px; color: var(--los-ink-faint); margin-top: 5px; filter: blur(0.5px); }
+.rps-preview-shimmer {
+  position: absolute; left: 0; top: 0; width: 100%; height: 100%;
+  background: linear-gradient(100deg, transparent 32%, rgba(53, 224, 200, 0.09) 50%, transparent 68%);
+  background-size: 200% 100%;
+  animation: rps-shimmer 2.6s linear infinite;
+  pointer-events: none;
+}
+@keyframes rps-shimmer { from { background-position: 180% 0; } to { background-position: -80% 0; } }
+.rps-preview-card.is-ready { border-color: rgba(52, 211, 153, 0.45); }
+.rps-preview-card.is-ready .rps-preview-icon,
+.rps-preview-card.is-ready b,
+.rps-preview-card.is-ready small { filter: none; opacity: 1; }
+
+/* ---- 底部说明 ---- */
+.rps-foot { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 24px; font-size: 12px; color: var(--los-ink-faint); }
+.rps-foot-dot { display: inline-flex; align-items: center; }
+.rps-foot-dot i { width: 7px; height: 7px; border-radius: 50%; background: var(--los-teal); box-shadow: 0 0 10px rgba(53, 224, 200, 0.8); animation: rps-pulse 1.8s infinite; }
+
+/* ---- 动画 keyframes ---- */
+@keyframes rps-breathe { 0%, 100% { opacity: 0.5; transform: scale(1); } 50% { opacity: 0.95; transform: scale(1.05); } }
+@keyframes rps-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@keyframes rps-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+@keyframes rps-node-pulse { 0%, 100% { opacity: 0.45; } 50% { opacity: 1; } }
+
+/* ---- 响应式 ---- */
+@media (max-width: 980px) {
+  .rps-stage { height: 560px; }
+  .rps-node-name { font-size: 11px; }
+  .rps-counts { grid-template-columns: repeat(2, 1fr); }
+  .rps-preview { grid-template-columns: 1fr; }
+  .rps-dyn-log { max-width: 45%; }
+}
+@media (max-width: 640px) {
+  .rps-stage { height: 600px; }
+  .rps-title { font-size: 20px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .rps-scanline, .rps-orb-ring, .rps-orb-pulse, .rps-marquee-track, .rps-neural-nodes circle, .rps-neural-links line { animation: none !important; }
+}

@@ -1,0 +1,3 @@
+南昌: split_part=64, api条件=64
+九江: split_part=50, api条件=50
+赣州: split_part=42, api条件=42

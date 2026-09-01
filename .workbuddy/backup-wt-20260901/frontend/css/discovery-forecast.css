@@ -1,0 +1,529 @@
+/* 未来岗位预测 · 操作优先：少信息、强下一步 */
+
+#view-discovery-forecast.df-page {
+  --df-real: #2ec4b6;
+  --df-pred: #d4b07a;
+  --df-pred-soft: rgba(212, 176, 122, 0.14);
+  --df-pred-line: rgba(212, 176, 122, 0.45);
+  --df-surface: rgba(14, 18, 26, 0.82);
+  --df-line: rgba(255, 255, 255, 0.09);
+  --df-ease: cubic-bezier(.22, 1, .36, 1);
+  --df-radius: 14px;
+  max-width: 1180px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-height: 0;
+}
+
+#view-discovery-forecast .enter {
+  opacity: 0;
+  transform: translateY(10px);
+  animation: dfEnter 0.8s var(--df-ease) forwards;
+  animation-delay: var(--d, 0s);
+}
+
+@keyframes dfEnter {
+  to { opacity: 1; transform: none; }
+}
+
+html:has(body.df-cockpit-page),
+body.standalone-view.df-cockpit-page,
+body.df-cockpit-page {
+  height: 100%;
+  overflow: hidden !important;
+}
+
+body.df-cockpit-page .page-main--cockpit {
+  box-sizing: border-box;
+  height: calc(100vh - var(--topbar-h, 56px));
+  max-height: calc(100vh - var(--topbar-h, 56px));
+  overflow: hidden !important;
+  display: flex;
+  flex-direction: column;
+  padding: 16px 22px 18px;
+}
+
+#view-discovery-forecast.df-page {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.df-topbar {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.df-path {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 3px;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.28);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.df-path a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: 9px;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.df-path a i {
+  font-style: normal;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 10px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.df-path a[aria-disabled="true"] {
+  opacity: 0.45;
+  pointer-events: none;
+  cursor: default;
+}
+
+.df-path a.is-active {
+  color: #1a1208;
+  background: linear-gradient(135deg, #ecc984, #c4a574);
+}
+
+.df-path a.is-active i {
+  background: rgba(0, 0, 0, 0.18);
+  color: #1a1208;
+}
+
+.df-back {
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 650;
+  text-decoration: none;
+  padding: 8px 12px;
+  border-radius: 9px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.df-back:hover {
+  border-color: var(--df-pred-line);
+  color: #f5e6c8;
+}
+
+.df-hero { flex-shrink: 0; }
+
+.df-title {
+  margin: 0 0 6px;
+  font-family: var(--font-display);
+  font-size: clamp(22px, 2.4vw, 30px);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: #f4f8fb;
+  line-height: 1.25;
+  max-width: 18em;
+}
+
+.df-sub {
+  margin: 0;
+  font-size: 14px;
+  color: rgba(170, 190, 205, 0.95);
+  max-width: 36em;
+  line-height: 1.5;
+}
+
+.df-howto {
+  flex-shrink: 0;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.df-howto li {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.df-howto .n {
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.df-howto strong {
+  display: block;
+  font-size: 13px;
+  color: #eef4f8;
+  margin-bottom: 2px;
+}
+
+.df-howto em {
+  font-style: normal;
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.df-howto li.is-done {
+  opacity: 0.72;
+}
+
+.df-howto li.is-now {
+  border-color: var(--df-pred-line);
+  background: linear-gradient(145deg, rgba(212, 176, 122, 0.12), transparent 70%);
+  box-shadow: 0 0 0 1px rgba(212, 176, 122, 0.08);
+}
+
+.df-howto li.is-now .n {
+  color: #1a1208;
+  background: linear-gradient(135deg, #ecc984, #c4a574);
+}
+
+.df-workspace {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.75fr);
+  gap: 12px;
+  overflow: hidden;
+}
+
+.df-list-panel,
+.df-action-panel {
+  min-height: 0;
+  border-radius: var(--df-radius);
+  border: 1px solid var(--df-line);
+  background: var(--df-surface);
+}
+
+.df-list-panel {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 12px 12px 10px;
+}
+
+.df-list-head {
+  flex-shrink: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+  padding: 0 4px;
+}
+
+.df-list-head h2 {
+  margin: 0;
+  font-size: 15px;
+  color: #f2f7fb;
+}
+
+.df-list-head h2 span {
+  color: var(--df-pred);
+  font-variant-numeric: tabular-nums;
+}
+
+.df-list-head p {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.df-mini-filter {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.df-mini-filter select {
+  border: 1px solid var(--df-line);
+  border-radius: 8px;
+  padding: 6px 8px;
+  background: rgba(0, 0, 0, 0.35);
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.df-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-right: 2px;
+  scrollbar-width: thin;
+}
+
+.df-row {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  width: 100%;
+  text-align: left;
+  padding: 12px 12px;
+  border-radius: 11px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(0, 0, 0, 0.18);
+  color: inherit;
+  cursor: pointer;
+  transition: border-color .2s, background .2s, transform .2s;
+}
+
+.df-row:hover {
+  border-color: rgba(212, 176, 122, 0.35);
+  background: rgba(212, 176, 122, 0.06);
+}
+
+.df-row.is-selected {
+  border-color: var(--df-pred);
+  background: linear-gradient(135deg, rgba(212, 176, 122, 0.14), rgba(212, 176, 122, 0.04));
+  box-shadow: 0 0 0 1px rgba(212, 176, 122, 0.12);
+}
+
+.df-row .rank {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.df-row.is-selected .rank,
+.df-row.is-hot .rank {
+  color: var(--df-pred);
+}
+
+.df-row .name {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+  color: #f2f7fb;
+  margin-bottom: 3px;
+}
+
+.df-row .meta {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.df-row .conf {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--df-pred);
+  white-space: nowrap;
+}
+
+.df-action-panel {
+  padding: 18px 18px 16px;
+  display: flex;
+  flex-direction: column;
+  border-color: var(--df-pred-line);
+  background:
+    linear-gradient(160deg, rgba(212, 176, 122, 0.1), transparent 50%),
+    var(--df-surface);
+}
+
+.df-action-kicker {
+  margin: 0 0 6px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--df-pred);
+}
+
+.df-action-panel h2 {
+  margin: 0 0 12px;
+  font-size: 20px;
+  line-height: 1.3;
+  color: #f4f8fb;
+}
+
+.df-sel-meta {
+  margin: 0 0 12px;
+  display: grid;
+  gap: 8px;
+}
+
+.df-sel-meta div {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 13px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.df-sel-meta dt { color: var(--text-muted); }
+.df-sel-meta dd {
+  margin: 0;
+  color: #e8f0f4;
+  font-weight: 600;
+  text-align: right;
+}
+
+.df-sel-why {
+  margin: 0 0 auto;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--text-secondary);
+}
+
+.df-primary,
+.df-secondary {
+  width: 100%;
+  margin-top: 10px;
+  border-radius: 11px;
+  padding: 12px 14px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: filter .2s, opacity .2s, border-color .2s;
+}
+
+.df-primary {
+  border: 0;
+  color: #1a1208;
+  background: linear-gradient(135deg, #ecc984, #c4a574);
+  box-shadow: 0 10px 24px rgba(212, 176, 122, 0.25);
+}
+
+.df-primary:hover:not(:disabled) { filter: brightness(1.05); }
+
+.df-primary:disabled,
+.df-secondary:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.df-secondary {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: transparent;
+  color: var(--text-secondary);
+}
+
+.df-secondary:hover:not(:disabled) {
+  border-color: var(--df-pred-line);
+  color: #f5e6c8;
+}
+
+.df-why-panel {
+  flex-shrink: 0;
+  max-height: 42%;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: 12px 14px;
+  border-radius: var(--df-radius);
+  border: 1px solid var(--df-line);
+  background: var(--df-surface);
+}
+
+.df-why-panel[hidden] { display: none !important; }
+
+.df-why-head {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.df-why-head h2 {
+  margin: 0;
+  font-size: 14px;
+  color: #eef4f8;
+}
+
+.df-close-why {
+  border: 0;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.df-close-why:hover { color: var(--df-pred); }
+
+.df-why-grid {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.df-why-grid h3 {
+  margin: 0 0 4px;
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 650;
+}
+
+.df-chart {
+  height: 140px;
+}
+
+@media (max-width: 900px) {
+  .df-howto { grid-template-columns: 1fr; }
+  .df-workspace { grid-template-columns: 1fr; }
+  .df-why-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-height: 760px), (max-width: 900px) {
+  html:has(body.df-cockpit-page),
+  body.standalone-view.df-cockpit-page,
+  body.df-cockpit-page {
+    height: auto;
+    overflow: auto !important;
+  }
+  body.df-cockpit-page .page-main--cockpit {
+    height: auto;
+    max-height: none;
+    overflow: auto !important;
+  }
+  #view-discovery-forecast.df-page { overflow: visible; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #view-discovery-forecast .enter {
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
+}
