@@ -215,6 +215,148 @@ def _explain(intent: str, user_question: str, data_blob: Any, fallback: str) -> 
     return content
 
 
+def build_final_reply(user: dict, task: dict, steps: list, evidence: list,
+                      completed: int, total: int) -> str:
+    """基于真实执行结果生成任务最终自然语言回复（Phase 5）。
+
+    保证：即使 LLM 调用失败或返回极短内容，fallback 也包含技能/岗位/匹配度等真实数据，
+    用户始终能看到实质内容（不再输出"任务已完成"等机械/空壳字符串）。
+    """
+    intent = task.get("intent") or "profile"
+    question = ((task.get("input") or {}).get("message")) or ""
+    # knowledge 类工具已产出最终答案，直接复用，避免二次解释
+    if intent == "knowledge":
+        for s in steps:
+            if s.get("tool") == "knowledge.ask" and s.get("result"):
+                ans = (s.get("result") or {}).get("answer")
+                if ans:
+                    return str(ans)
+    extracted = _extract_step_data(steps)
+    blob = {
+        "intent": intent,
+        "completed_steps": completed,
+        "total_steps": total,
+        "steps_data": extracted,
+        "evidence": [ev_mod.normalize_evidence(e) for e in evidence][:20],
+    }
+    fallback = _build_rich_fallback(intent, extracted, completed, total, len(evidence))
+    reply = _explain(intent, question, blob, fallback)
+    # 兜底再校验：若 LLM 返回过短或机械摘要，仍使用丰富 fallback
+    if not reply or len(reply.strip()) < 12 or reply.strip().startswith("任务已完成"):
+        return fallback
+    return reply
+
+
+def _extract_step_data(steps: list) -> dict:
+    """从已执行步骤的真实 result 中提炼关键数据，供 LLM 与 fallback 共用。"""
+    out: dict = {}
+    for s in steps:
+        tool = s.get("tool"); r = s.get("result")
+        if not isinstance(r, dict):
+            continue
+        if tool == "context.get_current":
+            cg = r.get("career_goal") or {}
+            skills = r.get("skills") or []
+            out["profile"] = {
+                "target_job": cg.get("target_job") or r.get("target_job"),
+                "skill_count": len(skills),
+                "skills": [{"name": (sk.get("skill_name") or sk.get("name")),
+                            "score": sk.get("score"), "level": sk.get("level")}
+                           for sk in skills[:10]],
+                "ability_count": len(r.get("abilities") or []),
+                "overall_score": (r.get("latest_report") or {}).get("overall_score"),
+                "completion": r.get("completion"),
+            }
+        elif tool == "job.search":
+            jobs = r.get("jobs") or []
+            out["jobs"] = {
+                "total": r.get("total"),
+                "top": [{"title": j.get("job_title"), "company": j.get("company_name"),
+                         "city": j.get("city")}
+                        for j in jobs[:5]],
+            }
+        elif tool == "job.recall":
+            jobs = r.get("jobs") or []
+            out["recalled_jobs"] = {"count": len(jobs),
+                                    "top": [j.get("job_title") for j in jobs[:5]]}
+        elif tool == "match.analyze":
+            matches = r.get("matches") or []
+            if matches:
+                top = matches[0]
+                job = top.get("job") or {}
+                out["match"] = {
+                    "score": top.get("score"),
+                    "title": job.get("title"),
+                    "company": job.get("company"),
+                    "city": job.get("city"),
+                    "matched": top.get("matched") or [],
+                    "missing": top.get("missing") or [],
+                    "top3": [{"title": (m.get("job") or {}).get("title"),
+                              "score": m.get("score")} for m in matches[:3]],
+                }
+        elif tool == "match.skill_gap":
+            out["skill_gap"] = {
+                "missing": (r.get("missing") or [])[:8],
+                "gap_paths": (r.get("gap_paths") or [])[:6],
+            }
+        elif tool == "resume.analyze":
+            out["resume"] = {
+                "skill_count": len(r.get("skills") or []),
+                "overall_score": r.get("overall_score"),
+                "advantages": (r.get("advantages") or [])[:5],
+                "weaknesses": (r.get("weaknesses") or [])[:5],
+            }
+    return out
+
+
+def _build_rich_fallback(intent: str, data: dict, completed: int, total: int, ev_count: int) -> str:
+    """即使 LLM 不可用，也输出含真实技能/岗位/匹配度的具体内容。"""
+    lines: list[str] = [f"任务已完成（执行 {completed}/{total} 步，证据 {ev_count} 条）。"]
+    p = (data or {}).get("profile") or {}
+    j = (data or {}).get("jobs") or {}
+    rj = (data or {}).get("recalled_jobs") or {}
+    m = (data or {}).get("match") or {}
+    sg = (data or {}).get("skill_gap") or {}
+    res = (data or {}).get("resume") or {}
+
+    if p:
+        if p.get("target_job"):
+            lines.append(f"你的目标岗位是「{p['target_job']}」。")
+        if p.get("skill_count"):
+            names = "、".join((s.get("name") or "?") for s in (p.get("skills") or [])[:8])
+            lines.append(f"已识别技能 {p['skill_count']} 项：{names}。")
+        if p.get("overall_score") is not None:
+            lines.append(f"最近职业报告综合分 {p['overall_score']}。")
+        if not any([p.get("target_job"), p.get("skill_count")]):
+            lines.append("当前画像数据较少，建议先完善简历或填写能力问卷。")
+    if j.get("top"):
+        lines.append(f"为你找到 {j.get('total') or len(j['top'])} 条相关岗位，前几名：")
+        for x in j["top"][:5]:
+            lines.append(f"- {x.get('title')} @ {x.get('company')}（{x.get('city') or '?'}）")
+    elif rj.get("count"):
+        lines.append(f"召回候选岗位 {rj['count']} 个：{('、'.join(rj['top'][:5]))}。")
+    if m.get("title"):
+        score = m.get("score")
+        lines.append(f"最佳匹配「{m['title']}」@ {m.get('company')}（{m.get('city') or '?'}），匹配度 {score}。")
+        if m.get("matched"):
+            lines.append("优势：" + "、".join(str(s) for s in m["matched"][:6]))
+        if m.get("missing"):
+            lines.append("差距：" + "、".join(str(s) for s in m["missing"][:6]))
+    if sg.get("missing"):
+        lines.append("技能缺口：" + "、".join(str(s) for s in sg["missing"][:8]))
+        if sg.get("gap_paths"):
+            lines.append("可迁移路径：" + "；".join(
+                f"{p.get('from')}→{p.get('to')}" for p in sg["gap_paths"][:4]))
+    if res:
+        if res.get("skill_count") is not None:
+            lines.append(f"简历识别到技能 {res['skill_count']} 项，综合分 {res.get('overall_score')}。")
+        if res.get("weaknesses"):
+            lines.append("主要不足：" + "、".join(str(w) for w in res["weaknesses"][:3]))
+
+    out = "\n".join(lines).strip()
+    return out or f"任务已完成（执行 {completed}/{total} 步）。"
+
+
 # ============================================================
 # 各意图 Pipeline
 # ============================================================

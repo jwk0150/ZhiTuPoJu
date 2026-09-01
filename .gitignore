@@ -50,6 +50,7 @@ temp-techrel-*.cjs
 temp-verify-*.cjs
 temp-echarts-src/
 backend.err
+backend_new.err
 frontend.err
 /after-back.png
 /current-state.png

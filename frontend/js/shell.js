@@ -174,52 +174,29 @@
   }
 
   function ensureQaUi() {
-    if (document.getElementById('shell-qa-root')) return;
-    const root = document.createElement('div');
-    root.id = 'shell-qa-root';
-    root.innerHTML =
-      '<button type="button" class="qa-fab" id="qa-fab" aria-label="打开智能问答">' +
-        ICONS.qa +
-        '<span>问答</span>' +
-      '</button>' +
-      '<div class="qa-drawer" id="qa-drawer" aria-hidden="true">' +
-        '<div class="qa-drawer-head">' +
-          '<div class="qa-drawer-title">智能问答<small>图谱 · RAG</small></div>' +
-          '<button type="button" class="qa-drawer-close" id="qa-drawer-close" aria-label="关闭">' + ICONS.close + '</button>' +
-        '</div>' +
-        '<iframe class="qa-drawer-frame" id="qa-drawer-frame" title="智能问答" src="about:blank"></iframe>' +
-      '</div>' +
-      '<div class="qa-drawer-mask" id="qa-drawer-mask" hidden></div>';
-    document.body.appendChild(root);
-
-    const fab = document.getElementById('qa-fab');
-    const drawer = document.getElementById('qa-drawer');
-    const mask = document.getElementById('qa-drawer-mask');
-    const frame = document.getElementById('qa-drawer-frame');
-    const closeBtn = document.getElementById('qa-drawer-close');
-
-    function setOpen(open) {
-      drawer.classList.toggle('is-open', open);
-      drawer.setAttribute('aria-hidden', open ? 'false' : 'true');
-      mask.hidden = !open;
-      fab.classList.toggle('is-hidden', open);
-      if (open && (!frame.getAttribute('src') || frame.getAttribute('src') === 'about:blank')) {
-        frame.setAttribute('src', qaSrc());
+    // Phase 5：旧的「智能问答 · 图谱·RAG」抽屉已由 Global Agent（AI 浮层工作台）取代。
+    // 保留 ShellQA 接口名，让既有入口（页面内按钮、Shell.openQA）全部进入新 UI。
+    if (window.ShellQA) return;
+    window.ShellQA = {
+      open: openGlobalAgent,
+      close: function () {
+        loadAgentUI();
+        if (window.AgentUI) window.AgentUI.close();
       }
-      try { sessionStorage.setItem('shell_qa_open', open ? '1' : '0'); } catch (_) {}
+    };
+  }
+
+  function openGlobalAgent() {
+    if (!window.zhituGetToken || !window.zhituGetToken()) {
+      if (window.showToast) window.showToast('请先登录后使用 Global AI', 'amber');
+      return;
     }
-
-    fab.addEventListener('click', function () { setOpen(true); });
-    closeBtn.addEventListener('click', function () { setOpen(false); });
-    mask.addEventListener('click', function () { setOpen(false); });
-
-    try {
-      if (sessionStorage.getItem('shell_qa_open') === '1' || location.hash === '#qa') {
-        setOpen(true);
-      }
-    } catch (_) {}
-
-    window.ShellQA = { open: function () { setOpen(true); }, close: function () { setOpen(false); } };
+    loadAgentUI();
+    if (window.AgentUI) {
+      window.AgentUI.open();
+      return;
+    }
+    window.__agentOpenPending = true; // agent-ui.js 加载完成后自动打开
   }
 
   function resumeSrc() {
@@ -457,6 +434,31 @@
     openResume: function (opts) {
       ensureResumeExplorer();
       window.ShellRX && window.ShellRX.open(opts || {});
+    },
+    openAgent: function () {
+      loadAgentUI();
+      window.AgentUI && window.AgentUI.open();
     }
   };
+
+  // ---- Global Agent UI（Phase 5）：全局 AI 操作层 ----
+  function agentAssetBase() {
+    // 按页面层级计算到 frontend/ 根的相对前缀
+    const p = String(location.pathname || '').replace(/\\/g, '/');
+    if (/\/pages\/(more|news)\//.test(p)) return '../../';
+    if (/\/pages\//.test(p)) return '../';
+    return '';
+  }
+  function loadAgentUI() {
+    if (document.getElementById('agent-ui-js')) return;
+    const s = document.createElement('script');
+    s.id = 'agent-ui-js';
+    s.src = agentAssetBase() + 'js/agent-ui.js?v=20260901';
+    s.defer = true;
+    document.head.appendChild(s);
+  }
+  // Phase 5：无条件加载 Global Agent 入口（未登录时按钮仍显示，点击提示登录）
+  try {
+    loadAgentUI();
+  } catch (_) {}
 })();

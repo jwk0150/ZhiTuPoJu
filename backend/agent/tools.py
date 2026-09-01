@@ -235,6 +235,7 @@ def _job_get(user: dict, params: dict, ctx: Optional[dict]) -> dict:
     if not detail:
         return _err("job.get", "JOB_NOT_FOUND", "岗位不存在或已下线")
     evidence = [{
+        "evidence_id": f"job_{detail.get('id')}",
         "type": "job",
         "source_id": detail.get("id"),
         "source_name": detail.get("source_name"),

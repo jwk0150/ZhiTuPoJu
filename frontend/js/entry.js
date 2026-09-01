@@ -859,6 +859,10 @@
 
   const finishAuth = (payload) => {
     const data = payload && typeof payload === 'object' ? payload : {};
+    // 保存 JWT（与 api.js 的 zhituGetToken 同一 key，Global Agent 等接口鉴权依赖它）
+    if (data.token) {
+      try { localStorage.setItem('zhitu_token', data.token); } catch (_) {}
+    }
     localStorage.setItem('zhitu_user', JSON.stringify({
       username: data.username || 'user',
       role: data.role || 'user',
@@ -951,10 +955,22 @@
   const devSkip = document.getElementById('entryDevSkip');
   if (devSkip && isLocalHost()) {
     devSkip.hidden = false;
-    devSkip.addEventListener('click', (event) => {
+    devSkip.addEventListener('click', async (event) => {
       event.preventDefault();
       event.stopPropagation();
-      finishAuth({ username: 'developer', role: 'dev' });
+      const errorEl = document.getElementById('entryLoginError');
+      try {
+        // 本地跳过登录：确保 developer 账号存在并走真实后端签发 JWT
+        let login = await postAuth('/api/auth/login', { username: 'developer', password: '123456' });
+        if (login.code !== 0) {
+          await postAuth('/api/auth/register', { username: 'developer', password: '123456' });
+          login = await postAuth('/api/auth/login', { username: 'developer', password: '123456' });
+        }
+        if (login.code === 0) finishAuth(login.data);
+        else showAuthError(errorEl, '开发账号不可用，请注册后登录');
+      } catch (_) {
+        showAuthError(errorEl, '网络错误，请稍后重试');
+      }
     });
   }
 

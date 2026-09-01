@@ -909,6 +909,254 @@
     }
   }
 
+  // ============================================================
+  // 「Git Diff」专用接口（供新版 evolution.html 调用）
+  // ============================================================
+
+  // 比较两版本的完整差异（added / modified / deleted / stable）
+  function getFullDiff(fromVersionId, toVersionId) {
+    const from = getCapabilitySnapshot('Java开发工程师', fromVersionId);
+    const to = getCapabilitySnapshot('Java开发工程师', toVersionId);
+    const fromMap2 = {}; from.skills.forEach(s => { fromMap2[s.id] = s; });
+    const toMap = {}; to.skills.forEach(s => { toMap[s.id] = s; });
+
+    // 使用 label 字符串比较（如 '2025.03'）识别区间，
+    // 这样能正确处理 V2025.02 / V2025.03 这类不在 VERSIONS 显式列表中的版本
+    const norm = (s) => String(s || '').replace(/^V/i, '');
+    const fromLabel = norm(versionById(fromVersionId).label);
+    const toLabel = norm(versionById(toVersionId).label);
+    const inRange = (label) => {
+      const l = norm(label);
+      return l && l > fromLabel && l <= toLabel;
+    };
+
+    const added = [], modified = [], removed = [], stable = [];
+
+    // 先识别 removed：依靠 skill.versionRemoved 字段识别时间边界事件
+    SKILLS.forEach(function (skill) {
+      if (!skill.versionRemoved) return;
+      if (!inRange(skill.versionRemoved)) return;
+      const fs = fromMap2[skill.id];
+      removed.push({
+        id: skill.id, name: skill.name, en: skill.en,
+        from: fs ? fs.demand : 0, to: 0,
+        reason: skill.reason, confidence: skill.confidence || 0.85,
+        status: 'del', sourceIds: skill.evidence || [],
+        versionRemoved: skill.versionRemoved,
+      });
+    });
+
+    // 识别 added：依靠 skill.versionAdded 字段识别时间边界事件
+    SKILLS.forEach(function (skill) {
+      if (skill.status !== 'added' || !skill.versionAdded) return;
+      if (!inRange(skill.versionAdded)) return;
+      const ts = toMap[skill.id];
+      if (ts) {
+        added.push({
+          id: skill.id, name: skill.name, en: skill.en,
+          demandFrom: 0, demandTo: ts.demand,
+          growthStr: '+' + ts.demand + '%',
+          why: skill.reason, tech: skill.tech || [],
+          confidence: skill.confidence || 0.85,
+          status: 'add', sourceIds: skill.evidence || [],
+        });
+      }
+    });
+
+    // 再处理 modified / stable（避开已记为删除/添加的）
+    const removedIds = new Set(removed.map(r => r.id));
+    const addedIds = new Set(added.map(a => a.id));
+
+    // modified: status=modified 且 versionAdded 在 (fromIdx, toIdx] 之前
+    const CHG_MOD = CHANGES.modified || [];
+    CHG_MOD.forEach(function (cm) {
+      const skill = SKILL_MAP[cm.id];
+      if (!skill) return;
+      // 不属于 status=modified 而 series 偶尔波动:用 CHANGES 作为锚定
+      addedIds.add(cm.id);
+      const ts = toMap[cm.id];
+      const fs = fromMap2[cm.id];
+      if (!ts || !fs) return;
+      removedIds.add(cm.id); // 占位防止重复
+      modified.push({
+        id: skill.id, name: skill.name, en: skill.en,
+        fromValue: Math.max(cm.demandFrom, fs.demand),
+        toValue: Math.max(cm.demandTo, ts.demand),
+        delta: Math.max(cm.demandTo, ts.demand) - Math.max(cm.demandFrom, fs.demand),
+        deltaStr: (cm.depth && cm.depth.startsWith('+')) ? cm.depth : ('+' + (cm.demandTo - cm.demandFrom)),
+        before: cm.before || '',
+        after: cm.after || '',
+        depth: cm.depth || '',
+        addLinks: cm.addLinks || [],
+        reason: cm.reason || skill.reason,
+        evidence: cm.evidence || skill.evidence || [],
+        confidence: cm.confidence || skill.confidence || 0.85,
+        status: 'mod',
+        sourceIds: cm.evidence || skill.evidence || [],
+      });
+    });
+
+    // stable: 剩下的 demand>=50 且未被识别的
+    to.skills.forEach(function (ts) {
+      const skill = SKILL_MAP[ts.id];
+      if (!skill) return;
+      if (removedIds.has(ts.id)) return;
+      if (addedIds.has(ts.id)) return;
+      if (ts.demand >= 50) {
+        stable.push({
+          id: ts.id, name: ts.name, en: skill.en,
+          value: ts.demand, status: skill.status || 'stable',
+          category: skill.category || '',
+        });
+      }
+    });
+
+    // 限制 modified 显示数量：按 confidence 降序，最多 6 项
+    if (modified.length > 6) {
+      modified.sort((a, b) => (b.confidence || 0) - (a.confidence || 0));
+      const top = modified.slice(0, 6);
+      const restCount = modified.length - 6;
+      return {
+        from: fromVersionId, to: toVersionId,
+        added: added, modified: top, removed: removed, stable: stable,
+        _restCount: restCount,
+      };
+    }
+
+    return {
+      from: fromVersionId, to: toVersionId,
+      added: added, modified: modified, removed: removed, stable: stable,
+    };
+  }
+
+  // 未来可能进入核心模型的能力（predictions）
+  function getPredictions(horizonMonths) {
+    const h = horizonMonths || 6;
+    const list = forecastRanking(h).filter(function (r) {
+      const skill = SKILL_MAP[r.id];
+      return skill && skill.status === 'added' && r.growth >= 25;
+    });
+    // 如果不足 3 条，补充一些 status=stable 且未来也增长的能力
+    if (list.length < 3) {
+      const stable = forecastRanking(h).filter(function (r) {
+        const skill = SKILL_MAP[r.id];
+        return skill && skill.status === 'stable' && r.growth >= 15;
+      });
+      stable.forEach(function (s) {
+        if (!list.find(function (x) { return x.id === s.id; }) && list.length < 4) {
+          list.push(s);
+        }
+      });
+    }
+    return list.slice(0, 4).map(function (r) {
+      const skill = SKILL_MAP[r.id];
+      return {
+        id: r.id, name: r.name, en: skill ? skill.en : '',
+        currentValue: r.current, futureValue: r.future,
+        growth: r.growth, confidence: r.confidence,
+        horizonMonths: h,
+        reason: skill ? skill.reason : '',
+        tech: skill ? (skill.tech || []) : [],
+        status: 'pred', sourceIds: skill ? skill.evidence : [],
+      };
+    });
+  }
+
+  // 当前版本的稳定核心能力（按 demand 排序）
+  function getCoreSkills(versionId, top) {
+    const t = top || 6;
+    const snap = getCapabilitySnapshot('Java开发工程师', versionId);
+    return snap.skills
+      .filter(s => s.demand >= 50 && (s.status === 'stable' || s.status === 'modified'))
+      .sort((a, b) => b.demand - a.demand)
+      .slice(0, t)
+      .map(s => {
+        const skill = SKILL_MAP[s.id];
+        return {
+          id: s.id, name: s.name, en: skill ? skill.en : '',
+          value: s.demand, category: skill ? skill.category : '',
+        };
+      });
+  }
+
+  // 当前版本下的新兴（增长）能力
+  function getEmergingSkills(versionId, top) {
+    const t = top || 4;
+    const snap = getCapabilitySnapshot('Java开发工程师', versionId);
+    const items = [];
+    snap.skills.forEach(function (s) {
+      const skill = SKILL_MAP[s.id];
+      if (skill && skill.status === 'added' && s.demand > 0) {
+        items.push(s);
+      }
+    });
+    items.sort((a, b) => b.demand - a.demand);
+    return items.slice(0, t).map(s => {
+      const skill = SKILL_MAP[s.id];
+      return {
+        id: s.id, name: s.name, en: skill ? skill.en : '',
+        value: s.demand,
+        growth: skill ? futureGrowth(skill) : 0,
+      };
+    });
+  }
+
+  // 获取某版本相邻上一版本（用于显示 period）
+  function getAdjacentVersion(versionId, dir) {
+    const vs = VERSIONS;
+    const i = vs.findIndex(v => v.id === versionId);
+    if (i < 0) return vs[vs.length - 2];
+    const target = dir === 'prev' ? i - 1 : i + 1;
+    if (target < 0 || target >= vs.length) return null;
+    return vs[target];
+  }
+
+  // 整合「VIEW EVIDENCE」数据：按能力汇总相关证据
+  function gatherEvidenceForSkill(skillId, sourceIds) {
+    const ids = sourceIds && sourceIds.length ? sourceIds : (SKILL_MAP[skillId] ? SKILL_MAP[skillId].evidence : []);
+    return (ids || []).map(function (sid) {
+      return EVIDENCE_MAP[sid] || null;
+    }).filter(Boolean);
+  }
+
+  // 整合「VIEW EVIDENCE」数据（无指定技能，按整体变化汇总）
+  function gatherEvidenceForChanges(changeIds) {
+    const ids = new Set();
+    (changeIds || []).forEach(function (cid) {
+      const skill = SKILL_MAP[cid];
+      if (skill && skill.evidence) skill.evidence.forEach(function (e) { ids.add(e); });
+    });
+    return Array.from(ids).map(function (sid) {
+      return EVIDENCE_MAP[sid] || null;
+    }).filter(Boolean);
+  }
+
+  // 获取指定技能用于详情面板
+  function getSkillInfo(skillId) {
+    const skill = SKILL_MAP[skillId];
+    if (!skill) return null;
+    const ver = versionById('V2025.07');
+    const val = (skill.series || [])[ver.idx] || 0;
+    const growth = futureGrowth(skill);
+    const rel = Math.min(99, Math.round(42 + val * 0.52));
+    const counts = evidenceCounts(skill, 'V2025.07');
+    return {
+      id: skill.id, name: skill.name, en: skill.en, category: skill.category,
+      value: val, growth: growth, rel: rel,
+      firstVersion: skill.versionAdded,
+      status: skill.status,
+      reason: skill.reason,
+      related: (skill.related || []).map(function (rid) {
+        const r = SKILL_MAP[rid];
+        return r ? { id: r.id, name: r.name } : null;
+      }).filter(Boolean),
+      counts: counts,
+      tech: skill.tech || [],
+      evidence: skill.evidence || [],
+      confidence: skill.confidence || 0.85,
+    };
+  }
+
   // ---------- 暴露 ----------
   window.EVData = {
     MONTHS, FORECAST_MONTHS, N, VERSIONS, SKILLS, SKILL_MAP,
@@ -918,6 +1166,9 @@
     forecastCapabilityTrend, forecastRanking, graphAt, indexOfMonth, versionForIndex,
     chartNodeById, chartValue, chartStatusAt, chartFilterMatch,
     evidenceCounts, relevance, futureGrowth,
+    getFullDiff, getPredictions, getCoreSkills, getEmergingSkills,
+    getAdjacentVersion, gatherEvidenceForSkill, gatherEvidenceForChanges,
+    getSkillInfo,
     fetchServer,
     isDemo: function () { return window.__EV_DATA_SOURCE !== 'db'; },
   };
