@@ -60,3 +60,18 @@ frontend.err
 /u3.json
 serve_nocache.py
 frontend/index_backup_old.html
+
+# WorkBuddy 项目数据目录（临时缓存/备份/记忆，不入库）
+.workbuddy/
+
+# 根目录 UI QA 截图
+/*.png
+
+# 本地调试脚本与产物（不入库）
+/scripts/shots/
+/scripts/devtools/
+/scripts/test_discovery_wiring.js
+/scripts/disco_payload.json
+/serve_8080.js
+/serve_profile.js
+/start_all.cmd

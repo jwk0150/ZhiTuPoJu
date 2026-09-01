@@ -60,7 +60,7 @@
         '<div class="jn-detail-meta">' +
           '<span>' + esc(a.date) + '</span><span class="jn-meta-sep">·</span>' +
           '<span>阅读时间 ' + esc(a.readTime) + '</span><span class="jn-meta-sep">·</span>' +
-          '<span class="jn-detail-source">示例数据</span>' +
+          '<span class="jn-detail-source">' + esc(a.source) + '</span>' +
         '</div>' +
       '</header>';
 
@@ -79,27 +79,58 @@
         '</div>' +
       '</section>';
 
-    var disclaimer =
-      '<p class="jn-disclaimer">注：本文为示例资讯，所引用岗位、技能与数据均为演示用途，不代表真实统计或新闻来源。</p>';
-
     document.getElementById('detail').innerHTML =
       '<div class="jn-detail">' +
-        breadcrumb + head + content + tags + disclaimer +
+        breadcrumb + head + content + tags +
+        renderFoundJobs(a) +
       '</div>' +
       renderRelated(a);
   }
 
+  /* ---------- 新发现的岗位（与资讯关联） ---------- */
+  function renderFoundJobs(a) {
+    var ids = a.foundJobs;
+    if (!ids || !ids.length) return '';
+    var cards = ids.map(function (jid) {
+      var j = D.findJob(jid);
+      if (!j) return '';
+      return (
+        '<article class="jn-job-card" data-job="' + j.id + '">' +
+          '<div class="jn-job-card-top">' +
+            '<span class="jn-job-cat">' + esc(j.cat) + '</span>' +
+            '<span class="jn-job-demand">需求 ' + esc(j.demand) + '</span>' +
+          '</div>' +
+          '<h3 class="jn-job-name">' + esc(j.name) + '</h3>' +
+          '<p class="jn-job-reason"><span class="jn-job-reason-label">怎么被发现的</span>' + esc(j.foundReason) + '</p>' +
+          '<span class="jn-job-more">查看岗位详情 <span aria-hidden="true">→</span></span>' +
+        '</article>'
+      );
+    }).join('');
+    if (!cards) return '';
+    return (
+      '<section class="jn-found-job" aria-label="新发现的岗位">' +
+        '<div class="jn-section-head">' +
+          '<h2 class="jn-section-title">新发现的岗位</h2>' +
+          '<span class="jn-found-job-count">本篇关联 ' + ids.length + ' 个岗位</span>' +
+        '</div>' +
+        '<div class="jn-found-job-list">' + cards + '</div>' +
+      '</section>'
+    );
+  }
+
   function renderRelated(a) {
-    var rel = D.relatedById(a.id);
+    var rel = D.recommendFor(a.id);
     if (!rel.length) return '';
     var cards = rel.map(function (n) {
       return (
         '<article class="jn-related-card" data-go="' + n.id + '">' +
-          '<div class="jn-related-card-thumb">' + JN.artVisual(n.cover) + '</div>' +
           '<div class="jn-related-card-body">' +
-            catTag(n.category) +
+            (n.source ? '<span class="jn-readmore-source">' + esc(n.source) + '</span>' : '') +
             '<h3 class="jn-related-card-title">' + esc(n.title) + '</h3>' +
-            '<span class="jn-related-card-date">' + esc(n.date) + '</span>' +
+            '<div class="jn-readmore-foot">' +
+              '<span>' + esc(n.date) + '</span>' +
+              '<span class="jn-readmore-read">' + JN.fmtRead(n.readCount) + '阅读</span>' +
+            '</div>' +
           '</div>' +
         '</article>'
       );
@@ -189,6 +220,85 @@
     });
   }
 
+  /* ---------- 新发现岗位：详情抽屉 ---------- */
+  function buildJobPanel() {
+    if (document.getElementById('job-panel')) return;
+    var mask = document.createElement('div');
+    mask.className = 'jn-job-mask';
+    mask.id = 'job-mask';
+    mask.hidden = true;
+
+    var panel = document.createElement('aside');
+    panel.className = 'jn-job-panel';
+    panel.id = 'job-panel';
+    panel.setAttribute('aria-hidden', 'true');
+    panel.innerHTML =
+      '<div class="jn-job-panel-head">' +
+        '<span class="jn-job-panel-title">岗位详情</span>' +
+        '<button type="button" class="jn-job-close" id="job-close" aria-label="关闭">' +
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>' +
+        '</button>' +
+      '</div>' +
+      '<div class="jn-job-panel-body" id="job-body"></div>';
+
+    document.body.appendChild(mask);
+    document.body.appendChild(panel);
+  }
+
+  function setJob(job) {
+    var body = document.getElementById('job-body');
+    if (!body) return;
+    body.innerHTML =
+      '<div class="jn-job-d-head">' +
+        '<span class="jn-job-d-cat">' + esc(job.cat) + '</span>' +
+        '<span class="jn-job-d-demand">需求 ' + esc(job.demand) + '</span>' +
+        '<h3 class="jn-job-d-name">' + esc(job.name) + '</h3>' +
+      '</div>' +
+      '<div class="jn-job-block"><h4>怎么被发现的</h4><p>' + esc(job.foundReason) + '</p></div>' +
+      '<div class="jn-job-block"><h4>岗位是做什么的</h4><p>' + esc(job.overview) + '</p></div>' +
+      '<div class="jn-job-block"><h4>主要工作职责</h4><ul>' +
+        job.responsibilities.map(function (r) { return '<li>' + esc(r) + '</li>'; }).join('') +
+      '</ul></div>' +
+      '<div class="jn-job-block"><h4>任职要求</h4><ul>' +
+        job.requirements.map(function (r) { return '<li>' + esc(r) + '</li>'; }).join('') +
+      '</ul></div>' +
+      '<div class="jn-job-meta">' +
+        '<div class="jn-job-meta-item"><span>薪资区间</span><b>' + esc(job.salary) + '</b></div>' +
+        '<div class="jn-job-meta-item"><span>需求热度</span><b>' + esc(job.demand) + '</b></div>' +
+        '<div class="jn-job-meta-item"><span>来源</span><b>' + esc(job.source) + '</b></div>' +
+      '</div>';
+  }
+
+  function openJob(job) {
+    buildJobPanel();
+    setJob(job);
+    var panel = document.getElementById('job-panel');
+    var mask = document.getElementById('job-mask');
+    mask.hidden = false;
+    panel.classList.add('is-open');
+    panel.setAttribute('aria-hidden', 'false');
+  }
+
+  function closeJob() {
+    var panel = document.getElementById('job-panel');
+    var mask = document.getElementById('job-mask');
+    if (!panel) return;
+    panel.classList.remove('is-open');
+    panel.setAttribute('aria-hidden', 'true');
+    if (mask) mask.hidden = true;
+  }
+
+  function bindJob() {
+    buildJobPanel();
+    var closeBtn = document.getElementById('job-close');
+    var mask = document.getElementById('job-mask');
+    if (closeBtn) closeBtn.addEventListener('click', closeJob);
+    if (mask) mask.addEventListener('click', closeJob);
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') closeJob();
+    });
+  }
+
   /* ---------- 错误 / 空状态 ---------- */
   function renderError(msg) {
     document.getElementById('detail').innerHTML =
@@ -228,6 +338,12 @@
       var el = e.target;
       if (!el || !el.closest) return;
       if (el.closest('[data-fav]')) return;
+      var job = el.closest('[data-job]');
+      if (job) {
+        var j = D.findJob(job.getAttribute('data-job'));
+        if (j) { e.preventDefault(); openJob(j); }
+        return;
+      }
       var go = el.closest('[data-go]');
       if (!go) return;
       location.href = 'detail.html?id=' + encodeURIComponent(go.getAttribute('data-go'));
@@ -253,6 +369,7 @@
       bindFav(a);
       bindDigest(a);
       bindNavigation();
+      bindJob();
       document.title = a.title + ' · 岗位大新闻';
     }, 320);
   }

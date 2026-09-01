@@ -19,6 +19,9 @@
       .replace(/'/g, '&#39;');
   }
 
+  /* 同模块内便捷别名（catTag / newsRowHtml / sectionHead 等共用） */
+  var esc = escapeHtml;
+
   /* ---------- Toast 提示 ---------- */
   var toastTimer = null;
   function toast(msg, type) {
@@ -83,43 +86,20 @@
 
   /* ---------- 收藏（前端 localStorage 状态） ---------- */
   var FAV_KEY = 'jobnews_favs';
-  var FAV_META_KEY = 'jobnews_fav_meta';
   function getFavs() {
     try {
       var raw = localStorage.getItem(FAV_KEY);
       return raw ? JSON.parse(raw) : [];
     } catch (e) { return []; }
   }
-  function getFavMeta() {
-    try {
-      var raw = localStorage.getItem(FAV_META_KEY);
-      var m = raw ? JSON.parse(raw) : {};
-      return m && typeof m === 'object' ? m : {};
-    } catch (e) { return {}; }
-  }
   function isFav(id) { return getFavs().indexOf(id) >= 0; }
-  function toggleFav(id, meta) {
+  function toggleFav(id) {
     var favs = getFavs();
     var idx = favs.indexOf(id);
     var added = false;
-    var map = getFavMeta();
-    if (idx >= 0) {
-      favs.splice(idx, 1);
-      delete map[String(id)];
-    } else {
-      favs.push(id);
-      added = true;
-      if (meta && meta.title) {
-        map[String(id)] = {
-          title: String(meta.title),
-          savedAt: Date.now()
-        };
-      }
-    }
-    try {
-      localStorage.setItem(FAV_KEY, JSON.stringify(favs));
-      localStorage.setItem(FAV_META_KEY, JSON.stringify(map));
-    } catch (e) {}
+    if (idx >= 0) { favs.splice(idx, 1); }
+    else { favs.push(id); added = true; }
+    try { localStorage.setItem(FAV_KEY, JSON.stringify(favs)); } catch (e) {}
     return added;
   }
 
@@ -141,15 +121,7 @@
     if (!btn) return;
     e.stopPropagation();
     var id = btn.getAttribute('data-id');
-    var title = btn.getAttribute('data-title') || '';
-    if (!title) {
-      var card = btn.closest('.jn-card, .jn-item, article, .jn-detail');
-      if (card) {
-        var tEl = card.querySelector('h1, h2, h3, .jn-title, .jn-card-title');
-        if (tEl) title = (tEl.textContent || '').trim();
-      }
-    }
-    var added = toggleFav(id, title ? { title: title } : null);
+    var added = toggleFav(id);
     btn.classList.toggle('is-on', added);
     toast(added ? '已收藏' : '已取消收藏', 'success');
   });
@@ -334,6 +306,72 @@
     };
   }
 
+  /* ---------- 栏目标题（带「更多」/ 标题链接） ---------- */
+  function sectionHead(title, sub, more, ext, titleHref) {
+    var moreHref = '#';
+    var moreText = '更多 <span aria-hidden="true">→</span>';
+    if (more && typeof more === 'object') {
+      moreHref = more.href || '#';
+      moreText = more.text || '更多 <span aria-hidden="true">→</span>';
+    } else if (more === true) {
+      moreHref = '#';
+      moreText = '更多 <span aria-hidden="true">→</span>';
+    }
+    return (
+      '<div class="jn-section-head">' +
+        (titleHref ? '<a class="jn-section-title-link" href="' + escapeHtml(titleHref) + '">' : '') +
+        '<h2 class="jn-section-title">' + title +
+          (ext ? '<span class="jn-ext-badge" title="以下均为真实来源外链，点击整行跳转原文">↗ 真实外链</span>' : '') +
+          (sub ? '<span class="jn-section-count">' + sub + '</span>' : '') +
+        '</h2>' +
+        (titleHref ? '</a>' : '') +
+        (more ? '<a class="jn-more" href="' + escapeHtml(moreHref) + '">' + moreText + '</a>' : '') +
+      '</div>'
+    );
+  }
+
+  /* ---------- 资讯行（首页 / 行业快讯页 共享） ---------- */
+  function catTag(key) {
+    var D = window.JOB_NEWS_DATA;
+    var c = D.catByKey(key);
+    return '<span class="jn-cat-tag" style="color:' + esc(c.color) + ';border-color:' + esc(c.color) + '">' + esc(c.label) + '</span>';
+  }
+
+  function newsRowHtml(n, rank) {
+    if (!n) return '';
+    var D = window.JOB_NEWS_DATA;
+    var isExt = !!n.external;
+    var open, close;
+    if (isExt) {
+      open = '<a class="jn-news-row jn-news-row--ext" href="' + esc(n.url) + '" target="_blank" rel="noopener noreferrer">';
+      close = '</a>';
+    } else {
+      open = '<article class="jn-news-row" data-go="' + n.id + '">';
+      close = '</article>';
+    }
+    var fav = isExt
+      ? '<img class="jn-news-favicon" src="https://api.iowen.cn/favicon/' + esc(n.host || '') + '.png" alt="" loading="lazy" onerror="this.remove()">'
+      : '';
+    var meta =
+      fav +
+      (n.source ? '<span class="jn-news-source">' + esc(n.source) + '</span>' : '') +
+      (n.date ? '<span>' + esc(n.date) + '</span>' : '') +
+      (isExt
+        ? '<span class="jn-news-ext"><span class="jn-news-host">' + esc(n.host || '') + '</span><span class="jn-news-goto">↗ 在源站查看原文</span></span>'
+        : '<span class="jn-news-read">' + fmtRead(n.readCount) + '阅读</span>');
+    return (
+      open +
+        (rank ? '<span class="jn-news-rank">' + (rank < 10 ? '0' + rank : rank) + '</span>' : '') +
+        '<div class="jn-news-body">' +
+          catTag(n.category) +
+          '<h3 class="jn-news-title">' + esc(n.title) + '</h3>' +
+          '<p class="jn-news-summary">' + esc(n.summary) + '</p>' +
+          '<div class="jn-news-meta">' + meta + '</div>' +
+        '</div>' +
+      close
+    );
+  }
+
   window.JN = {
     $: $,
     $$: $$,
@@ -349,6 +387,9 @@
     favButton: favButton,
     artVisual: artVisual,
     trendBadge: trendBadge,
-    debounce: debounce
+    debounce: debounce,
+    catTag: catTag,
+    newsRowHtml: newsRowHtml,
+    sectionHead: sectionHead
   };
 })();
