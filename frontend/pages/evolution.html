@@ -2,9 +2,137 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
-  <meta http-equiv="refresh" content="0; url=insight.html" />
-  <script>location.replace('insight.html');</script>
-  <title>跳转中</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <title>岗位能力演化 · 执图破局</title>
+  <link rel="stylesheet" href="../css/tokens.css" />
+  <link rel="stylesheet" href="../css/shell.css" />
+  <link rel="stylesheet" href="../css/components.css" />
+  <link rel="stylesheet" href="../css/evolution-workbench.css?v=2026090201" />
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
 </head>
-<body><a href="insight.html">进入岗位洞察</a></body>
+<body class="standalone-view" data-page="evolution">
+  <div id="app-shell"></div>
+  <main class="page-main" id="page-main">
+
+    <div id="ce-app">
+
+      <!-- 顶部二级 Tab（替代底部悬浮导航） -->
+      <nav class="ce-tabs" id="ce-tabs" aria-label="功能视图"></nav>
+
+      <!-- 紧凑岗位信息 Header -->
+      <header class="ce-header">
+        <div class="ce-h-left">
+          <div class="ce-h-kicker" id="ce-head-kicker">岗位能力演化</div>
+          <h1 id="ce-job-title">Java 开发工程师</h1>
+          <div class="ce-h-en" id="ce-job-en">Career Evolution / Java Engineer</div>
+          <div class="ce-h-meta">
+            <span class="ce-h-meta-item"><i class="dot"></i>数据更新时间 <b id="ce-updated">2025.07</b></span>
+            <span class="ce-h-meta-item"><i class="dot alt"></i>数据可信度 <b id="ce-confidence">91%</b></span>
+            <span class="ce-h-meta-item"><i class="dot src"></i><span id="ce-data-source">Demo 演示数据</span></span>
+          </div>
+        </div>
+        <div class="ce-h-right">
+          <div class="ce-h-chip">
+            <span class="ce-h-chip-k">当前版本</span>
+            <span class="ce-h-chip-v" id="ce-cur-version">V2025.07</span>
+          </div>
+          <div class="ce-h-chip">
+            <span class="ce-h-chip-k">岗位成熟度</span>
+            <span class="ce-h-chip-v" id="ce-cur-maturity">76%</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- 能力版本时间轴 -->
+      <div class="ce-version-strip-wrap">
+        <div class="ce-version-strip" id="ce-version-strip"></div>
+      </div>
+
+      <!-- 内容区：12 列 Grid -->
+      <div class="ce-layout" id="ce-view-evolution">
+        <!-- 左侧 8 列：核心演化图 -->
+        <section class="ce-main">
+          <div class="ce-chart-card">
+            <div class="ce-chart-toolbar">
+              <div class="ce-ct-left">
+                <span class="ce-ct-title">能力演化趋势</span>
+                <span class="ce-ct-range" id="ce-ct-range">2024.01 → 2025.07</span>
+              </div>
+              <div class="ce-ct-filters" id="ce-chart-filters"></div>
+              <div class="ce-ct-zoom">
+                <button type="button" id="ce-zoom-out" title="缩小">−</button>
+                <button type="button" id="ce-zoom-in" title="放大">＋</button>
+                <button type="button" id="ce-zoom-reset" title="重置">⤾</button>
+              </div>
+            </div>
+            <div class="ce-chart-legend" id="ce-chart-legend"></div>
+            <div class="ce-chart-wrap" id="ce-chart-wrap">
+              <svg id="ce-chart-svg" preserveAspectRatio="xMidYMid meet"></svg>
+              <div class="ce-tooltip" id="ce-tooltip"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 右侧 4 列：岗位洞察 -->
+        <aside class="ce-insight">
+          <div class="ce-insight-head">
+            <span class="ce-insight-title">岗位洞察</span>
+            <span class="ce-insight-sub" id="ce-insight-version">V2025.07</span>
+          </div>
+          <div class="ce-insight-body" id="ce-insight-body"></div>
+        </aside>
+      </div>
+
+      <!-- 其余 Tab 内容区 -->
+      <section class="ce-view ce-tab-view" id="ce-view-changes">
+        <div class="ce-view-title-row">
+          <h2>这次岗位能力发生了什么变化？</h2>
+          <span class="ce-view-sub" id="ce-changes-period"></span>
+        </div>
+        <div id="ce-changes-body"></div>
+      </section>
+
+      <section class="ce-view ce-tab-view" id="ce-view-trends">
+        <div class="ce-view-title-row">
+          <h2>技术趋势：某技能过去 N 个月的需求变化</h2>
+          <span class="ce-view-sub">保留真实时间粒度，支持多技能对比与预测区间</span>
+        </div>
+        <div id="ce-trends-body"></div>
+      </section>
+
+      <section class="ce-view ce-tab-view" id="ce-view-forecast">
+        <div id="ce-forecast-body"></div>
+      </section>
+
+      <section class="ce-view ce-tab-view" id="ce-view-evidence">
+        <div id="ce-evidence-body"></div>
+      </section>
+
+      <section class="ce-view ce-tab-view" id="ce-view-gap">
+        <div id="ce-gap-body"></div>
+      </section>
+
+      <!-- 证据抽屉 -->
+      <div class="ce-drawer-mask" id="ce-drawer-mask"></div>
+      <aside class="ce-drawer" id="ce-drawer" role="dialog" aria-modal="true"></aside>
+
+      <div class="ce-toast" id="ce-toast"></div>
+    </div>
+
+  </main>
+
+  <script src="../js/api.js"></script>
+  <script src="../js/runtime-core.js"></script>
+  <script src="../js/shell.js"></script>
+  <script src="../js/pages/ev-data.js?v=2026090201"></script>
+  <script src="../js/pages/ev-app.js?v=2026090201"></script>
+  <script src="../js/pages/ev-chart.js?v=2026090201"></script>
+  <script src="../js/pages/ev-insight.js?v=2026090201"></script>
+  <script src="../js/pages/ev-evidence.js?v=2026090201"></script>
+  <script src="../js/pages/ev-views.js?v=2026090201"></script>
+  <script>
+    window.Shell && window.Shell.mount({ pageId: 'evolution', title: '岗位能力演化', subtitle: '岗位在进化，能力也需要进化' });
+  </script>
+</body>
 </html>

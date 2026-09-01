@@ -1,10 +1,21 @@
 # -*- coding: utf-8 -*-
-"""用户认证：仅注册过的账号可登录，用户持久化到本地文件。"""
+"""用户认证：仅注册过的账号可登录，用户持久化到本地文件。
+
+Phase 1（Global Agent）：新增 JWT Bearer Token 认证（纯标准库 HS256，无新依赖）。
+- login 返回结构保持向后兼容（原 username/role/loginTime 字段不变，新增 token/user）。
+- get_current_user 作为 FastAPI 依赖，供 Global Agent API 统一取当前用户。
+"""
+import base64
+import hashlib
+import hmac
 import json
+import time
 from pathlib import Path
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Header, HTTPException
 from pydantic import BaseModel
+
+from backend.config import config
 
 router = APIRouter()
 
@@ -59,6 +70,71 @@ def error(code: int, message: str):
     return {"code": code, "message": message, "data": None}
 
 
+# ============================================================
+# JWT（HS256，纯标准库）
+# ============================================================
+def _b64url(data: bytes) -> str:
+    return base64.urlsafe_b64encode(data).rstrip(b"=").decode("ascii")
+
+
+def _b64url_decode(text: str) -> bytes:
+    padding = "=" * (-len(text) % 4)
+    return base64.urlsafe_b64decode(text + padding)
+
+
+def create_token(username: str, role: str) -> str:
+    """签发 JWT（HS256）。payload: sub=username, role, iat, exp。"""
+    header = {"alg": "HS256", "typ": "JWT"}
+    now = int(time.time())
+    payload = {"sub": username, "role": role, "iat": now, "exp": now + config.JWT_TTL}
+    encoded_header = _b64url(json.dumps(header, separators=(",", ":")).encode("utf-8"))
+    encoded_payload = _b64url(json.dumps(payload, separators=(",", ":")).encode("utf-8"))
+    signing_input = f"{encoded_header}.{encoded_payload}".encode("ascii")
+    signature = hmac.new(config.JWT_SECRET.encode("utf-8"), signing_input, hashlib.sha256).digest()
+    return f"{encoded_header}.{encoded_payload}.{_b64url(signature)}"
+
+
+def verify_token(token: str) -> dict | None:
+    """校验 JWT，返回 payload；无效/过期返回 None。"""
+    try:
+        header_b64, payload_b64, signature_b64 = token.split(".")
+    except (ValueError, AttributeError):
+        return None
+    signing_input = f"{header_b64}.{payload_b64}".encode("ascii")
+    expected = hmac.new(config.JWT_SECRET.encode("utf-8"), signing_input, hashlib.sha256).digest()
+    try:
+        actual = _b64url_decode(signature_b64)
+    except Exception:
+        return None
+    if not hmac.compare_digest(actual, expected):
+        return None
+    try:
+        payload = json.loads(_b64url_decode(payload_b64))
+    except Exception:
+        return None
+    if not isinstance(payload, dict) or int(payload.get("exp", 0)) < int(time.time()):
+        return None
+    return payload
+
+
+def get_current_user(authorization: str | None = Header(default=None)) -> dict:
+    """FastAPI 依赖：解析 Authorization: Bearer <token>，返回 {username, role}。
+
+    Global Agent 相关 API 必须依赖它取当前用户；前端传入的任何 user_id 一律不作为权限依据。
+    """
+    if not authorization or not authorization.lower().startswith("bearer "):
+        raise HTTPException(status_code=401, detail="未登录或缺少认证信息")
+    token = authorization.split(" ", 1)[1].strip()
+    payload = verify_token(token)
+    if not payload:
+        raise HTTPException(status_code=401, detail="登录已过期或凭证无效")
+    username = str(payload.get("sub") or "")
+    user = USERS.get(username)
+    if not user:
+        raise HTTPException(status_code=401, detail="用户不存在")
+    return {"username": user["username"], "role": user["role"]}
+
+
 @router.post("/login")
 def login(req: LoginRequest):
     username = req.username.strip()
@@ -71,7 +147,11 @@ def login(req: LoginRequest):
     if not user or user["password"] != password:
         return error(40101, "用户名或密码错误")
 
+    token = create_token(user["username"], user["role"])
     return ok({
+        "token": token,
+        "user": {"username": user["username"], "role": user["role"]},
+        # —— 兼容旧字段（原前端 localStorage.zhitu_user = 整个 data 对象）——
         "username": user["username"],
         "role": user["role"],
         "loginTime": None,

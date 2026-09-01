@@ -38,11 +38,11 @@
       home: b + 'news/index.html',
       // ?v= busts stale HTML caches (encoding-corrupt copies broke mount)
       map: b + 'map.html?v=' + v,
-      insight: b + 'insight.html?v=2',
-      evolution: b + 'insight.html?v=2',
+      insight: b + 'evolution.html?v=2',
+      evolution: b + 'evolution.html?v=2',
       learningPath: b + 'learning-path.html?v=' + v,
       newSkill: b + 'new-skill.html?v=' + v,
-      analysis: b + 'insight.html?v=2&tab=trends',
+      analysis: b + 'evolution.html?v=2&tab=trends',
       discovery: b + 'discovery.html?v=' + v,
       match: b + 'match.html?v=' + v,
       warehouse: b + 'warehouse.html?v=' + v,
@@ -364,6 +364,7 @@
     if (logoutBtn) {
       logoutBtn.addEventListener('click', function () {
         try { localStorage.removeItem('zhitu_user'); } catch (_) {}
+        try { localStorage.removeItem('zhitu_token'); } catch (_) {}
         window.location.href = hrefBase() + '../index.html';
       });
     }

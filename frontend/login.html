@@ -1358,6 +1358,10 @@
         const result = await res.json();
                 if (result.code === 0) {
                     localStorage.setItem('zhitu_user', JSON.stringify(result.data));
+          // Global Agent Phase 1：保存 JWT Token（apiFetch 自动附带 Authorization）
+          if (result.data && result.data.token) {
+            try { localStorage.setItem('zhitu_token', result.data.token); } catch (_) {}
+          }
           btn.innerHTML = '<span>登录成功</span>';
           goResume();
                 } else {

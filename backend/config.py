@@ -41,6 +41,10 @@ class Config:
     # 最低相关度阈值：低于此分数的查询返回 INSUFFICIENT_EVIDENCE
     # （考虑向量腿贡献上限 0.5、关键词腿 0.3，0.22 兼顾召回与低噪）
     HYBRID_MIN_SCORE: float = float(os.getenv("HYBRID_MIN_SCORE", "0.22"))
+    # RAG 证据相关度下限（Global Agent knowledge.ask 二次过滤）
+    # 实测：keyword-only 模式下命中标题的 final_score = w_k * kw = 0.3，
+    #       向量腿可用时最高可达 0.8；默认 0.25 在两种模式下均保留有效命中。
+    RAG_MIN_RELEVANCE: float = float(os.getenv("RAG_MIN_RELEVANCE", "0.25"))
 
     # ============ PostgreSQL ============
     PG_HOST: str = os.getenv("PG_HOST", "127.0.0.1")
@@ -57,6 +61,16 @@ class Config:
     # ============ 表名前缀配置 ============
     # 不同环境可能使用不同的表名前缀（如：zhilian_、boss_、lagou_）
     TABLE_PREFIX: str = os.getenv("TABLE_PREFIX", "zhilian_")
+
+    # ============ JWT 认证 ============
+    # 生产环境务必通过环境变量覆盖（生成方式：python -c "import secrets; print(secrets.token_urlsafe(48))"）
+    JWT_SECRET: str = os.getenv("JWT_SECRET", "zhitu-dev-secret-change-me")
+    # Token 有效期（秒），默认 7 天
+    JWT_TTL: int = int(os.getenv("JWT_TTL", str(7 * 24 * 3600)))
+
+    # ============ 数字人才地图主表 ============
+    # 岗位主表（含 skills 技能列），供岗位聚合 / 我的能力技术目录使用
+    PG_JOB_TABLE: str = os.getenv("PG_JOB_TABLE", "map_data_table")
 
     @classmethod
     def get_db_url(cls) -> str:

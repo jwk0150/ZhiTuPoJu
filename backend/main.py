@@ -3,7 +3,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from backend.routers import agent, collection, discovery, evolution, graph, matching, data, talent_map, auth, profile, trends, ability, knowledge
+from backend.routers import agent, collection, discovery, evolution, graph, matching, data, talent_map, auth, profile, trends, ability, knowledge, career_evolution, global_agent
 from backend.db_async import close_pool
 from backend.config import config
 from backend.init_database import ensure_view_only
@@ -85,3 +85,9 @@ app.include_router(ability.router, prefix="/api/ability", tags=["ability"])
 
 # 新增：RAG 知识库检索（Phase 02）
 app.include_router(knowledge.router, prefix="/api/knowledge", tags=["knowledge"])
+
+# 新增：岗位能力演化工作台（版本化能力模型 / 时序 / 预测 / 证据）
+app.include_router(career_evolution.router, prefix="/api/career", tags=["career-evolution"])
+
+# 新增：Global Agent（Phase 1 —— 统一鉴权 + 上下文读取；后续阶段扩展 Chat/Task）
+app.include_router(global_agent.router, prefix="/api/global-agent", tags=["global-agent"])
