@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>执图破局 · 跳转中</title>
+  <script>
+    (function () {
+      var h = (location.hash || '').replace(/^#view-/, '').replace(/^#/, '');
+      var map = {
+        dashboard: 'pages/news/index.html',
+        home: 'pages/news/index.html',
+        map: 'pages/map.html',
+        evolution: 'pages/insight.html?v=2',
+        learningPath: 'pages/learning-path.html',
+        newSkill: 'pages/new-skill.html',
+        analysis: 'pages/insight.html?tab=trends&v=2',
+        discovery: 'pages/discovery.html',
+        match: 'pages/match.html',
+        news: 'pages/news/index.html',
+        qa: 'pages/news/index.html#qa',
+        collection: 'pages/more/data.html',
+        quality: 'pages/more/data.html?tab=quality',
+        settings: 'pages/more/settings.html',
+        profile: 'pages/match.html?tab=profile',
+        insight: 'pages/insight.html?v=2',
+        data: 'pages/more/data.html',
+        resume: 'pages/resume.html',
+        resumeBuilder: 'pages/resume.html',
+        resumeLibrary: 'pages/resume-library.html'
+      };
+      var target = map[h] || 'pages/news/index.html';
+      if (h === 'qa') {
+        try { sessionStorage.setItem('shell_qa_open', '1'); } catch (e) {}
+      }
+      location.replace(target);
+    })();
+  </script>
+</head>
+<body>
+  <p style="font:14px/1.5 system-ui,sans-serif;padding:24px">
+    正在跳转… <a href="pages/news/index.html">进入岗位大新闻</a>
+  </p>
+</body>
+</html>

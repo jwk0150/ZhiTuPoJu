@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>终端 · 简历库 · 未来生态都市档案库</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&family=Noto+Serif+SC:wght@500;600;700&family=Outfit:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/tokens.css" />
+  <link rel="stylesheet" href="../css/resume-builder.css" />
+  <link rel="stylesheet" href="../css/resume-library.css" />
+</head>
+<body class="rbl-body">
+
+  <!-- 环境背景层 -->
+  <div class="rb-env" aria-hidden="true">
+    <div class="rb-env-bg"></div>
+    <div class="rb-env-water-reflect"></div>
+    <div class="rb-env-mist"></div>
+    <div class="rb-env-particles"></div>
+    <div class="rb-env-glow"></div>
+    <div class="rb-env-scanline"></div>
+  </div>
+
+  <!-- 顶部导航 -->
+  <header class="rbl-topnav">
+    <div class="rbl-topnav-brand">
+      <span class="dot"></span>
+      <span>NEXUS · RESUME ARCHIVE</span>
+    </div>
+    <div class="rbl-topnav-actions">
+      <span class="rbl-topnav-count">共 <b id="rbl-count">0</b> 份档案</span>
+      <button class="rb-btn rb-btn-ai" id="rbl-create" type="button">＋ 新建简历</button>
+      <button class="rb-btn rb-btn-ghost" id="rbl-back-builder" type="button">返回生成器</button>
+      <button class="rb-btn rb-btn-ghost" id="rbl-go-home" type="button">⌂ 返回工作台</button>
+    </div>
+  </header>
+
+  <!-- 主体 -->
+  <main class="rbl-main">
+    <div class="rbl-head">
+      <h1>简历库</h1>
+      <p>在这里查看、预览与分析已生成的简历档案。所有档案均来自 AI 简历生成器，可随时重新编辑。</p>
+    </div>
+
+    <div class="rbl-grid" id="rbl-grid"></div>
+
+    <div class="rbl-empty" id="rbl-empty" hidden>
+      <div class="rbl-empty-mark">＋</div>
+      <h3>档案库为空</h3>
+      <p>还没有生成过简历，点击上方「新建简历」开始你的第一份档案。</p>
+    </div>
+  </main>
+
+  <!-- 详情浮层 -->
+  <div class="rbl-detail-mask" id="rbl-detail-mask" hidden></div>
+  <div class="rbl-detail" id="rbl-detail" hidden role="dialog" aria-modal="true" aria-label="简历详情">
+    <div class="rbl-detail-head">
+      <h3 id="rbl-detail-title">简历详情</h3>
+      <button class="rbl-detail-close" id="rbl-detail-close" type="button" aria-label="关闭">✕</button>
+    </div>
+    <div id="rbl-detail-paper"></div>
+    <div class="rbl-detail-actions">
+      <button class="rb-btn rb-btn-ghost" id="rbl-detail-delete" type="button">删除档案</button>
+      <button class="rb-btn rb-btn-primary" id="rbl-detail-edit" type="button">继续编辑 →</button>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="rb-toast" id="rb-toast"></div>
+
+  <script src="../js/resume-library.js"></script>
+</body>
+</html>

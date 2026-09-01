@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>执图破局 · 未来岗位预测</title>
+  <link rel="stylesheet" href="../css/tokens.css?v=50" />
+  <link rel="stylesheet" href="../css/shell.css?v=50" />
+  <link rel="stylesheet" href="../css/components.css?v=50" />
+  <link rel="stylesheet" href="../css/page-polish.css?v=50" />
+  <link rel="stylesheet" href="../css/discovery-forecast.css?v=5" />
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+</head>
+<body class="standalone-view df-cockpit-page" data-page="discovery">
+  <div id="app-shell"></div>
+  <main class="page-main page-main--cockpit" id="page-main">
+    <section class="view active df-page" id="view-discovery-forecast">
+
+      <div class="df-topbar enter" style="--d:.02s">
+        <nav class="df-path" aria-label="未来预测线">
+          <a href="discovery.html?v=fix25"><i>1</i>新岗位发现</a>
+          <a class="is-active" href="discovery-forecast.html"><i>2</i>未来预测列表</a>
+          <a href="#" id="df-stage-detail" aria-disabled="true"><i>3</i>预测岗位详情</a>
+        </nav>
+        <a class="df-back" href="discovery.html?v=fix25">← 返回发现首页</a>
+      </div>
+
+      <header class="df-hero enter" style="--d:.05s">
+        <h1 class="df-title">这是未来预测线：选一个方向继续看</h1>
+        <p class="df-sub">和「真实发现」分开。不会跳去演化图谱；选中后只进入该预测岗位的详情。</p>
+      </header>
+
+      <ol class="df-howto enter" style="--d:.08s" aria-label="操作步骤">
+        <li class="is-done"><span class="n">1</span><div><strong>入口</strong><em>首页切到「未来预测」</em></div></li>
+        <li class="is-now"><span class="n">2</span><div><strong>现在</strong><em>在列表里点选一个预测岗位</em></div></li>
+        <li><span class="n">3</span><div><strong>下一步</strong><em>进入详情；随时可返回本列表</em></div></li>
+      </ol>
+
+      <div class="df-workspace enter" style="--d:.11s">
+        <section class="df-list-panel" aria-label="预测岗位列表">
+          <div class="df-list-head">
+            <div>
+              <h2>可选岗位 <span id="df-count">0</span></h2>
+              <p>金色标记置信更高 · 先点一行再点右侧按钮</p>
+            </div>
+            <label class="df-mini-filter">置信度
+              <select id="df-conf">
+                <option value="60">≥ 60%</option>
+                <option value="70" selected>≥ 70%</option>
+                <option value="80">≥ 80%</option>
+              </select>
+            </label>
+          </div>
+          <div class="df-list" id="df-cards" role="listbox" aria-label="预测岗位"></div>
+        </section>
+
+        <aside class="df-action-panel" aria-live="polite">
+          <p class="df-action-kicker" id="df-action-kicker">先从左侧选一个岗位</p>
+          <h2 id="df-sel-title">还没选择</h2>
+          <dl class="df-sel-meta" id="df-sel-meta"></dl>
+          <p class="df-sel-why" id="df-sel-why">点左侧任意一行，这里会告诉你该点哪里、接下来会去哪。</p>
+          <button type="button" class="df-primary" id="df-go-detail" disabled>进入岗位详情 →</button>
+          <button type="button" class="df-secondary" id="df-toggle-why" disabled>看看为什么会预测它</button>
+        </aside>
+      </div>
+
+      <section class="df-why-panel enter" id="df-why-panel" hidden style="--d:.14s">
+        <div class="df-why-head">
+          <h2>为什么预测这个岗位？</h2>
+          <button type="button" class="df-close-why" id="df-close-why">收起</button>
+        </div>
+        <div class="df-why-grid">
+          <div>
+            <h3>出现概率趋势</h3>
+            <div class="df-chart" id="df-prob-chart"></div>
+          </div>
+          <div>
+            <h3>预计出现窗口</h3>
+            <div class="df-chart" id="df-gantt"></div>
+          </div>
+          <div>
+            <h3>从既有岗位怎么长出来</h3>
+            <div class="df-chart" id="df-sankey"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- kept for filter API compatibility, visually unused defaults -->
+      <select id="df-horizon" hidden><option value="12" selected>12</option></select>
+      <select id="df-industry" hidden><option value="all" selected>all</option></select>
+    </section>
+  </main>
+  <script src="../js/api.js"></script>
+  <script src="../js/runtime-core.js"></script>
+  <script src="../js/cinema-bg.js?v=20260831bright"></script>
+  <script src="../js/perf-guard.js?v=1"></script>
+  <script src="../js/cinema-music.js?v=20260824mem"></script>
+  <script src="../js/shell.js?v=20260825rx5"></script>
+  <script src="../js/pages/discovery-forecast.js?v=5"></script>
+  <script>
+    window.Shell && window.Shell.mount({ pageId: 'discovery', title: '未来岗位预测', subtitle: '新岗位发现' });
+    window.initDiscoveryForecast && window.initDiscoveryForecast();
+  </script>
+</body>
+</html>

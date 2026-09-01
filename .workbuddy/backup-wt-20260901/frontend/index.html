@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>执图破局</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600&family=Noto+Serif+SC:wght@500;600;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./css/cinema.css?v=51" />
+  <link rel="stylesheet" href="./css/auth-transit.css?v=4" />
+</head>
+<body>
+  <main class="site-shell" aria-label="场景滚动式入口">
+    <div class="video-stage" aria-hidden="true">
+      <!-- 仅首页视频预载；其余按场景按需加载，避免五路大视频同时解码卡顿 -->
+      <video id="scene1Video" class="bg-video is-visible" src="./assets/bg/scene1.mp4" muted playsinline autoplay loop preload="auto"></video>
+      <video id="transitionVideo" class="bg-video" src="./assets/bg/transition_1_2.mp4" muted playsinline preload="none"></video>
+      <video id="scene2Video" class="bg-video" src="./assets/bg/scene2.mp4" muted playsinline preload="none"></video>
+      <video id="scene2IdleVideo" class="bg-video" src="./assets/bg/scene2_idle_loop.mp4" muted playsinline loop preload="none"></video>
+      <video id="scene3Video" class="bg-video" src="./assets/bg/scene3.mp4" muted playsinline preload="none"></video>
+      <div class="cinema-vignette"></div>
+      <div class="grain"></div>
+</div>
+
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="执图破局首页">
+        <div class="brand-mark" id="brand-mark">
+          <span class="logo-halo" aria-hidden="true"></span>
+          <span class="logo-orbit logo-orbit--a" aria-hidden="true"></span>
+          <span class="logo-orbit logo-orbit--b" aria-hidden="true"></span>
+          <span class="logo-orbit logo-orbit--c" aria-hidden="true"></span>
+          <span class="logo-spark" aria-hidden="true"></span>
+          <span class="logo-node logo-node--a" aria-hidden="true"></span>
+          <span class="logo-node logo-node--b" aria-hidden="true"></span>
+          <div class="brand-mark-core">
+            <img src="./assets/brand/logo-gold.png?v=1" width="104" height="104" alt="" />
+</div>
+</div>
+        <span class="brand-copy">
+          <span class="brand-name">执图破局</span>
+          <span class="brand-en">DIGITAL TALENT INTELLIGENCE</span>
+        </span>
+      </a>
+      <nav class="platform-nav" aria-label="六大功能模块" hidden>
+        <button type="button" class="platform-link" data-go-login>数字人才地图</button>
+        <button type="button" class="platform-link" data-go-login>岗位洞察</button>
+        <button type="button" class="platform-link" data-go-login>新岗位发现</button>
+        <button type="button" class="platform-link" data-go-login>人岗匹配</button>
+        <button type="button" class="platform-link" data-go-login>智能问答</button>
+        <button type="button" class="platform-link" data-go-login>数据底座</button>
+</nav>
+      <button type="button" class="platform-enter" data-go-login>立即登录</button>
+</header>
+
+    <div id="contentTrack" class="content-track" style="width: 300vw;">
+      <!-- 欢迎首页：品牌四字为主，自上端落下 -->
+      <section class="page page-home" aria-labelledby="home-title">
+        <div class="welcome-hero">
+          <p class="welcome-kicker">岗位能力图谱</p>
+          <h1 id="home-title" class="welcome-brand">执图破局</h1>
+          <p class="welcome-lead">点击或向下滚动，进入介绍</p>
+</div>
+</section>
+
+      <!-- 项目介绍 -->
+      <section class="page page-work" aria-labelledby="work-title">
+        <div class="work-layout">
+          <div class="section-header intro-panel">
+            <h2 id="work-title">让人才、能力与岗位关系<br>变得可洞察、可预测</h2>
+            <p class="platform-lead typewriter">
+              <span id="introTypewriter" class="typewriter-text"></span>
+              <span class="typewriter-caret" aria-hidden="true"></span>
+            </p>
+</div>
+
+          <div class="project-cards-grid" aria-label="关于我们"></div>
+</div>
+
+        <!-- Project detail overlay -->
+        <div class="project-modal-overlay" id="projectModal" style="display: none;" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="projectModalTitle">
+          <div class="project-modal-backdrop" id="projectModalBackdrop"></div>
+          <div class="project-modal-card" id="projectModalCard" tabindex="-1">
+            <button class="project-modal-close" id="projectModalClose" type="button" aria-label="关闭详情">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 6L6 18M6 6l12 12"/>
+              </svg>
+</button>
+            <div class="project-modal-media" id="projectModalMedia"></div>
+            <div class="project-modal-content">
+              <div class="project-modal-kicker" id="projectModalType"></div>
+              <h3 class="project-modal-title" id="projectModalTitle"></h3>
+              <p class="project-modal-summary" id="projectModalSummary"></p>
+              <div class="project-modal-grid">
+                <section class="project-detail-section">
+                  <h4>模块定位</h4>
+                  <p id="projectModalBackground"></p>
+</section>
+                <section class="project-detail-section">
+                  <h4>能力要点</h4>
+                  <ul id="projectModalFeatures"></ul>
+</section>
+                <section class="project-detail-section">
+                  <h4>服务对象</h4>
+                  <ul id="projectModalRole"></ul>
+</section>
+                <section class="project-detail-section">
+                  <h4>技术支撑</h4>
+                  <div class="project-tech-list" id="projectModalTech"></div>
+                </section>
+</div>
+              <div class="project-modal-footer">
+                <div class="project-modal-actions">
+                  <button class="project-modal-cta" id="projectModalDemo" type="button">登录体验</button>
+                  <button class="project-modal-cta project-modal-cta-secondary" id="projectModalCloseText" type="button">关闭</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+      <!-- 登录 -->
+      <section class="page page-gallery" aria-labelledby="loginTitle">
+        <div class="login-stage">
+          <div class="login-card" aria-labelledby="loginTitle">
+            <h2 id="loginTitle">登录</h2>
+            <p class="login-lead">登录后进入地图、洞察、发现、匹配、问答与数据底座。</p>
+            <div class="login-tabs" role="tablist" aria-label="登录或注册">
+              <button type="button" class="login-tab is-active" data-auth-tab="login" role="tab" aria-selected="true">登录</button>
+              <button type="button" class="login-tab" data-auth-tab="register" role="tab" aria-selected="false">注册</button>
+</div>
+            <form class="login-form" id="entryLoginForm">
+              <label>
+                <span>用户名</span>
+                <input type="text" name="username" autocomplete="username" placeholder="请输入用户名" />
+              </label>
+              <label>
+                <span>密码</span>
+                <input type="password" name="password" autocomplete="current-password" placeholder="请输入密码" />
+              </label>
+              <p class="login-error" id="entryLoginError" hidden></p>
+              <button type="submit" class="login-submit">登录</button>
+            </form>
+            <form class="login-form" id="entryRegisterForm" hidden>
+              <label>
+                <span>用户名</span>
+                <input type="text" name="username" autocomplete="username" placeholder="3-20个字符" />
+              </label>
+              <label>
+                <span>密码</span>
+                <input type="password" name="password" autocomplete="new-password" placeholder="至少6位" />
+              </label>
+              <label>
+                <span>确认密码</span>
+                <input type="password" name="confirm" autocomplete="new-password" placeholder="再次输入密码" />
+              </label>
+              <p class="login-error" id="entryRegisterError" hidden></p>
+              <button type="submit" class="login-submit">注册</button>
+            </form>
+            <button type="button" class="login-dev" id="entryDevSkip" hidden>开发者入口</button>
+</div>
+</div>
+</section>
+</div>
+
+    <aside class="platform-status" aria-label="数据底座口径">
+      <em>截至目前</em>
+      <span>已采集 <strong>1280万+</strong>条招聘与行业文本</span>
+      <span>清洗去重后入库 · 质量合格率 <strong>98.6%</strong></span>
+      <span>图谱 <strong>18,529</strong>节点 / <strong>2,364</strong>岗位实体</span>
+      <span class="platform-status-live">持续增量更新</span>
+</aside>
+
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/TextPlugin.min.js"></script>
+  <script src="./js/auth-transit.js?v=4"></script>
+  <script src="./js/entry.js?v=resume20260825"></script>
+  <script src="./js/project-cards.js?v=resume20260825"></script>
+<script>
+    (function initLogoMotion() {
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const mark = document.getElementById('brand-mark');
+      const img = document.querySelector('.brand-mark-core img');
+      if (reduce || !mark || !img || typeof gsap === 'undefined') return;
+
+      gsap.set([mark, img], { transformOrigin: '50% 50%' });
+      gsap.set(mark, { scale: 0.86, opacity: 0 });
+
+      const enter = gsap.timeline({ delay: 0.06 });
+      enter
+        .to(mark, {
+          opacity: 1,
+          scale: 1,
+          duration: 1.15,
+          ease: 'power3.out'
+        })
+        .fromTo(img,
+          {
+            scale: 0.72,
+            rotation: -16,
+            filter: 'blur(12px) drop-shadow(0 0 0 rgba(236,201,132,0))'
+          },
+          {
+            scale: 1,
+            rotation: 0,
+            filter: 'blur(0px) drop-shadow(0 8px 18px rgba(72,48,12,0.38))',
+            duration: 1.25,
+            ease: 'expo.out'
+          },
+          0.05
+        )
+        .from('.logo-orbit, .logo-spark, .logo-node, .logo-halo', {
+          opacity: 0,
+          duration: 1,
+          stagger: 0.06,
+          ease: 'power2.out',
+          clearProps: 'opacity'
+        }, 0.2);
+
+      enter.eventCallback('onComplete', function () {
+        const breath = gsap.timeline({ repeat: -1, yoyo: true });
+        breath
+          .to(img, { scale: 1.1, duration: 2.8, ease: 'sine.inOut' }, 0)
+          .to(img, { rotation: 10, duration: 5.6, ease: 'sine.inOut' }, 0)
+          .to(img, {
+            filter: 'blur(0px) drop-shadow(0 0 22px rgba(236,201,132,0.62)) drop-shadow(0 12px 24px rgba(72,48,12,0.3))',
+            duration: 2.8,
+            ease: 'sine.inOut'
+          }, 0);
+      });
+    })();
+</script>
+</body>
+</html>

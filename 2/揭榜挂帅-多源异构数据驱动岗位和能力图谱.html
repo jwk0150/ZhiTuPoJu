@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>多源异构数据驱动岗位和能力图谱构建与动态演化分析研究</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <style>
+        :root[data-theme="vibrant"] {
+            --bg: linear-gradient(135deg, #667eea 0%, #764ba2 15%, #f093fb 30%, #f5576c 45%, #4facfe 60%, #00f2fe 75%, #43e97b 90%, #feca57 100%);
+            --text: #fff;
+            --card-bg: rgba(255,255,255,0.98);
+            --card-text: #1a1a2e;
+            --accent: #6c5ce7;
+            --accent2: #e84393;
+            --accent3: #00b894;
+            --accent4: #fdcb6e;
+            --code-bg: #2d3436;
+            --quote-bg: linear-gradient(135deg, rgba(108,92,231,0.08), rgba(232,67,147,0.08));
+            --quote-border: #6c5ce7;
+            --table-header: linear-gradient(135deg, #667eea, #764ba2, #f093fb);
+            --table-stripe: rgba(108,92,231,0.05);
+            --highlight: #ff6b6b;
+            --success: #00b894;
+            --warning: #fdcb6e;
+            --info: #4facfe;
+            --tag-bg: linear-gradient(135deg, rgba(108,92,231,0.15), rgba(232,67,147,0.15));
+            --tag-text: #6c5ce7;
+            --toc-bg: rgba(255,255,255,0.98);
+            --toc-hover: rgba(108,92,231,0.12);
+            --divider: linear-gradient(90deg, transparent, #667eea, #6c5ce7, #e84393, #f5576c, #feca57, transparent);
+        }
+        :root[data-theme="dark"] {
+            --bg: #0f0f1a;
+            --text: #e0e0e0;
+            --card-bg: #1a1a2e;
+            --card-text: #e0e0e0;
+            --accent: #7c3aed;
+            --accent2: #a78bfa;
+            --code-bg: #0d1117;
+            --quote-bg: rgba(124,58,237,0.1);
+            --quote-border: #7c3aed;
+            --table-header: #7c3aed;
+            --table-stripe: rgba(124,58,237,0.05);
+            --highlight: #ef4444;
+            --success: #34d399;
+            --warning: #fbbf24;
+            --tag-bg: rgba(124,58,237,0.15);
+            --tag-text: #a78bfa;
+            --toc-bg: rgba(26,26,46,0.98);
+            --toc-hover: rgba(124,58,237,0.15);
+            --divider: linear-gradient(90deg, transparent, #7c3aed, transparent);
+        }
+        :root[data-theme="light"] {
+            --bg: #f8f9fa;
+            --text: #333;
+            --card-bg: #fff;
+            --card-text: #333;
+            --accent: #2563eb;
+            --accent2: #3b82f6;
+            --code-bg: #282c34;
+            --quote-bg: rgba(37,99,235,0.05);
+            --quote-border: #2563eb;
+            --table-header: #2563eb;
+            --table-stripe: rgba(37,99,235,0.03);
+            --highlight: #dc2626;
+            --success: #059669;
+            --warning: #d97706;
+            --tag-bg: rgba(37,99,235,0.08);
+            --tag-text: #2563eb;
+            --toc-bg: rgba(255,255,255,0.98);
+            --toc-hover: rgba(37,99,235,0.08);
+            --divider: linear-gradient(90deg, transparent, #2563eb, transparent);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.8;
+            scroll-behavior: smooth;
+        }
+
+        /* Theme Switcher */
+        .theme-switcher {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            gap: 8px;
+            background: rgba(0,0,0,0.3);
+            padding: 6px 10px;
+            border-radius: 25px;
+            backdrop-filter: blur(10px);
+        }
+        .theme-btn {
+            width: 30px;
+            height: 30px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0;
+        }
+        .theme-btn:hover { transform: scale(1.2); border-color: #fff; }
+        .theme-btn.active { border-color: #fff; box-shadow: 0 0 10px rgba(255,255,255,0.5); }
+        .fullscreen-btn {
+            width: 30px;
+            height: 30px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: rgba(255,255,255,0.15);
+            color: #fff;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 4px;
+        }
+        .fullscreen-btn:hover { transform: scale(1.2); border-color: #fff; background: rgba(255,255,255,0.25); }
+
+        /* TOC */
+        .toc-toggle {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1001;
+            width: 44px;
+            height: 44px;
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+        }
+        .toc-toggle:hover { transform: scale(1.1); }
+
+        .toc-panel {
+            position: fixed;
+            top: 0;
+            left: -360px;
+            width: 340px;
+            height: 100vh;
+            background: var(--toc-bg);
+            color: var(--card-text);
+            z-index: 1000;
+            padding: 80px 24px 40px;
+            overflow-y: auto;
+            transition: left 0.3s ease;
+            box-shadow: 4px 0 20px rgba(0,0,0,0.15);
+        }
+        .toc-panel.open { left: 0; }
+        .toc-panel h3 {
+            font-size: 1.1em;
+            color: var(--accent);
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--accent);
+        }
+        .toc-panel a {
+            display: block;
+            padding: 8px 12px;
+            color: var(--card-text);
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 0.9em;
+            transition: all 0.2s;
+            margin-bottom: 2px;
+        }
+        .toc-panel a:hover { background: var(--toc-hover); color: var(--accent); }
+        .toc-panel a.toc-h2 { font-weight: 600; margin-top: 8px; }
+        .toc-panel a.toc-h3 { padding-left: 28px; font-size: 0.85em; opacity: 0.85; }
+
+        /* Container */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 24px 80px;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            padding: 120px 24px 80px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        header h1 {
+            font-size: 3em;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 24px;
+            letter-spacing: -0.02em;
+        }
+        [data-theme="vibrant"] header h1 {
+            background: linear-gradient(135deg, #2d3436, #6c5ce7, #e84393);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        header .subtitle {
+            font-size: 1.25em;
+            opacity: 0.85;
+            max-width: 700px;
+            margin: 0 auto 32px;
+            line-height: 1.6;
+        }
+        [data-theme="vibrant"] header .subtitle {
+            color: #2d3436;
+            opacity: 0.75;
+        }
+        header .meta {
+            font-size: 0.9em;
+            opacity: 0.6;
+        }
+        [data-theme="vibrant"] header .meta {
+            color: #2d3436;
+        }
+        .tags { margin-top: 24px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+        .tag {
+            display: inline-block;
+            padding: 6px 18px;
+            background: var(--tag-bg);
+            color: var(--tag-text);
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 500;
+            transition: transform 0.2s;
+        }
+        .tag:hover { transform: translateY(-2px); }
+        [data-theme="vibrant"] .tag {
+            background: rgba(255,255,255,0.85);
+            color: var(--t-color, #6c5ce7);
+            border: 2px solid var(--t-color, #6c5ce7);
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+        }
+
+        /* Sections */
+        section {
+            background: var(--card-bg);
+            color: var(--card-text);
+            padding: 48px 48px;
+            margin-bottom: 32px;
+            border-radius: 16px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            transition: transform 0.2s;
+        }
+
+        h2 {
+            font-size: 2em;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 24px;
+            padding-bottom: 12px;
+            border-bottom: 3px solid var(--accent);
+            line-height: 1.3;
+        }
+        [data-theme="vibrant"] h2 {
+            background: linear-gradient(135deg, #6c5ce7, #e84393);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            border-bottom: 3px solid;
+            border-image: linear-gradient(135deg, #6c5ce7, #e84393) 1;
+        }
+        h3 {
+            font-size: 1.5em;
+            font-weight: 600;
+            color: var(--accent);
+            margin: 36px 0 16px;
+            line-height: 1.4;
+        }
+        h4 {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: var(--card-text);
+            margin: 28px 0 12px;
+        }
+
+        p { margin-bottom: 16px; font-size: 1.05em; }
+
+        /* Lists */
+        ul, ol { margin: 12px 0 20px 28px; }
+        li { margin-bottom: 8px; font-size: 1.02em; }
+
+        /* Blockquotes */
+        blockquote {
+            background: var(--quote-bg);
+            border-left: 4px solid var(--quote-border);
+            padding: 20px 24px;
+            margin: 24px 0;
+            border-radius: 0 10px 10px 0;
+            font-size: 1.1em;
+            line-height: 1.8;
+        }
+        blockquote p { margin-bottom: 8px; }
+        blockquote p:last-child { margin-bottom: 0; }
+
+        /* Code */
+        pre {
+            background: var(--code-bg);
+            padding: 20px 24px;
+            border-radius: 10px;
+            overflow-x: auto;
+            margin: 20px 0;
+            font-size: 0.92em;
+            line-height: 1.6;
+        }
+        code {
+            font-family: "Fira Code", "JetBrains Mono", "SF Mono", Consolas, monospace;
+        }
+        p code, li code {
+            background: rgba(0,0,0,0.06);
+            padding: 2px 7px;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 0.95em;
+        }
+        th {
+            background: var(--table-header);
+            color: #fff;
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 600;
+        }
+        td {
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(0,0,0,0.06);
+        }
+        tr:nth-child(even) { background: var(--table-stripe); }
+
+        /* Images */
+        .article-image {
+            width: 100%;
+            max-width: 100%;
+            border-radius: 12px;
+            margin: 24px 0;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+        }
+        .image-wrapper {
+            text-align: center;
+            margin: 32px 0;
+        }
+        .image-caption {
+            font-size: 0.88em;
+            color: var(--accent);
+            margin-top: 10px;
+            font-style: italic;
+        }
+
+        /* Highlight boxes */
+        .highlight-box {
+            background: linear-gradient(135deg, rgba(102,126,234,0.08), rgba(118,75,162,0.08));
+            border: 1px solid rgba(102,126,234,0.2);
+            border-radius: 12px;
+            padding: 24px 28px;
+            margin: 24px 0;
+        }
+        .highlight-box.warning {
+            background: linear-gradient(135deg, rgba(245,158,11,0.08), rgba(239,68,68,0.08));
+            border-color: rgba(245,158,11,0.3);
+        }
+        .highlight-box.success {
+            background: linear-gradient(135deg, rgba(16,185,129,0.08), rgba(52,211,153,0.08));
+            border-color: rgba(16,185,129,0.3);
+        }
+
+        /* Formula */
+        .formula {
+            text-align: center;
+            font-size: 1.6em;
+            font-weight: 700;
+            color: var(--accent);
+            padding: 32px;
+            margin: 32px 0;
+            background: var(--quote-bg);
+            border-radius: 12px;
+        }
+        [data-theme="vibrant"] .formula {
+            background: linear-gradient(135deg, rgba(108,92,231,0.08), rgba(232,67,147,0.08));
+            color: #6c5ce7;
+            border: 2px solid transparent;
+            background-clip: padding-box;
+            position: relative;
+        }
+        [data-theme="vibrant"] .formula::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #6c5ce7, #e84393, #f5576c);
+            z-index: -1;
+        }
+        [data-theme="vibrant"] th {
+            background: linear-gradient(135deg, #6c5ce7, #e84393);
+        }
+
+        /* Divider */
+        .section-divider {
+            height: 3px;
+            background: var(--divider);
+            margin: 48px 0;
+            border: none;
+        }
+
+        /* Comparison */
+        .vs-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 24px 0;
+        }
+        .vs-card {
+            padding: 20px 24px;
+            border-radius: 10px;
+            border: 2px solid;
+        }
+        .vs-card.bad { border-color: var(--highlight); background: rgba(231,76,60,0.05); }
+        .vs-card.good { border-color: var(--success); background: rgba(16,185,129,0.05); }
+        .vs-card h4 { margin-top: 0; color: inherit; }
+
+        /* Steps */
+        .step {
+            display: flex;
+            gap: 20px;
+            margin: 24px 0;
+            align-items: flex-start;
+        }
+        .step-number {
+            flex-shrink: 0;
+            width: 48px;
+            height: 48px;
+            background: var(--accent);
+            color: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+            font-weight: 700;
+        }
+        .step-content { flex: 1; }
+        .step-content h4 { margin-top: 4px; }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 60px 24px;
+            opacity: 0.7;
+            font-size: 0.9em;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            header { padding: 80px 20px 60px; }
+            header h1 { font-size: 2em; }
+            section { padding: 28px 24px; }
+            h2 { font-size: 1.6em; }
+            h3 { font-size: 1.25em; }
+            .vs-grid { grid-template-columns: 1fr; }
+            .toc-panel { width: 280px; }
+        }
+
+        /* Scroll progress */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: var(--accent);
+            z-index: 9999;
+            transition: width 0.1s;
+        }
+        [data-theme="vibrant"] .progress-bar {
+            height: 4px;
+            background: linear-gradient(90deg, #6c5ce7, #e84393, #f5576c, #fdcb6e, #00b894);
+        }
+        [data-theme="vibrant"] blockquote {
+            background: linear-gradient(135deg, rgba(108,92,231,0.06), rgba(232,67,147,0.06));
+            border-left: 4px solid;
+            border-image: linear-gradient(180deg, #6c5ce7, #e84393) 1;
+        }
+        [data-theme="vibrant"] .step-number {
+            background: linear-gradient(135deg, #6c5ce7, #e84393);
+        }
+        [data-theme="vibrant"] .highlight-box {
+            background: linear-gradient(135deg, rgba(108,92,231,0.06), rgba(232,67,147,0.06));
+            border: 1px solid rgba(108,92,231,0.2);
+        }
+        [data-theme="vibrant"] .highlight-box.success {
+            background: linear-gradient(135deg, rgba(0,184,148,0.06), rgba(0,206,201,0.06));
+            border-color: rgba(0,184,148,0.3);
+        }
+        [data-theme="vibrant"] .highlight-box.warning {
+            background: linear-gradient(135deg, rgba(253,203,110,0.1), rgba(255,107,107,0.06));
+            border-color: rgba(253,203,110,0.3);
+        }
+        [data-theme="vibrant"] .vs-card.good {
+            border-color: #00b894;
+            background: linear-gradient(135deg, rgba(0,184,148,0.04), rgba(0,206,201,0.04));
+        }
+        [data-theme="vibrant"] .vs-card.bad {
+            border-color: #e84393;
+            background: linear-gradient(135deg, rgba(232,67,147,0.04), rgba(255,107,107,0.04));
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progressBar"></div>
+
+    <div class="theme-switcher">
+        <button class="theme-btn" onclick="setTheme('vibrant')" style="background: linear-gradient(135deg, #6c5ce7, #e84393, #f5576c);" title="活泼"></button>
+        <button class="theme-btn" onclick="setTheme('dark')" style="background: #1a1a2e;" title="暗黑"></button>
+        <button class="theme-btn" onclick="setTheme('light')" style="background: #f5f5f5;" title="明亮"></button>
+        <button class="fullscreen-btn" id="fsBtn" onclick="toggleFullscreen()" title="全屏">⛶</button>
+    </div>
+
+    <button class="toc-toggle" id="tocToggle" onclick="toggleToc()">☰</button>
+    <nav class="toc-panel" id="tocPanel">
+        <h3>目录导航</h3>
+        <a href="#section1" class="toc-h2" onclick="closeToc()">一、发榜单位</a>
+        <a href="#section2" class="toc-h2" onclick="closeToc()">二、题目名称</a>
+        <a href="#section3" class="toc-h2" onclick="closeToc()">三、题目介绍</a>
+        <a href="#s3-1" class="toc-h3" onclick="closeToc()">三大核心难题</a>
+        <a href="#section4" class="toc-h2" onclick="closeToc()">四、参赛对象</a>
+        <a href="#section5" class="toc-h2" onclick="closeToc()">五、答题要求</a>
+        <a href="#s5-1" class="toc-h3" onclick="closeToc()">作品要求</a>
+        <a href="#s5-2" class="toc-h3" onclick="closeToc()">作品提交形式</a>
+        <a href="#section6" class="toc-h2" onclick="closeToc()">六、作品评选标准</a>
+        <a href="#s6-1" class="toc-h3" onclick="closeToc()">作品完整性（30分）</a>
+        <a href="#s6-2" class="toc-h3" onclick="closeToc()">技术创新性（25分）</a>
+        <a href="#s6-3" class="toc-h3" onclick="closeToc()">用户体验（15分）</a>
+        <a href="#s6-4" class="toc-h3" onclick="closeToc()">实用价值（30分）</a>
+        <a href="#section7" class="toc-h2" onclick="closeToc()">七、作品提交时间</a>
+        <a href="#section8" class="toc-h2" onclick="closeToc()">八、参赛报名及作品提交方式</a>
+        <a href="#section9" class="toc-h2" onclick="closeToc()">九、赛事保障</a>
+        <a href="#section10" class="toc-h2" onclick="closeToc()">十、设奖情况及奖励措施</a>
+        <a href="#section11" class="toc-h2" onclick="closeToc()">十一、比赛专班联系方式</a>
+        <a href="#section12" class="toc-h2" onclick="closeToc()">附：发榜单位简介</a>
+        <a href="#tech-analysis" class="toc-h2" onclick="closeToc()" style="margin-top:12px;border-top:1px solid rgba(0,0,0,0.1);padding-top:12px;">赛题技术深度解读</a>
+        <a href="#ta-1" class="toc-h3" onclick="closeToc()">核心技术挑战分析</a>
+        <a href="#ta-2" class="toc-h3" onclick="closeToc()">推荐技术栈</a>
+        <a href="#ta-3" class="toc-h3" onclick="closeToc()">推荐模型方案</a>
+        <a href="#ta-4" class="toc-h3" onclick="closeToc()">系统架构建议</a>
+        <a href="#ta-5" class="toc-h3" onclick="closeToc()">得分策略与建议</a>
+    </nav>
+
+    <header>
+        <h1>多源异构数据驱动岗位和能力图谱构建与动态演化分析研究</h1>
+              <div class="tags">
+            <span class="tag" style="--t-color: #6c5ce7;">知识图谱</span>
+            <span class="tag" style="--t-color: #e84393;">大模型</span>
+            <span class="tag" style="--t-color: #0984e3;">能力图谱</span>
+            <span class="tag" style="--t-color: #00b894;">数据驱动</span>
+            <span class="tag" style="--t-color: #fdcb6e; --t-text: #d35400;">动态演化</span>
+           
+        </div>
+            </header>
+
+    <div class="container">
+
+        <section id="section1">
+            <h2>一、单位</h2>
+            <p><strong>公司</strong></p>
+        </section>
+
+        <section id="section2">
+            <h2>二、题目名称</h2>
+            <p>多源异构数据驱动岗位和能力图谱构建与动态演化分析研究</p>
+        </section>
+
+        <section id="section3">
+            <h2>三、题目介绍</h2>
+            <p>在当前国家从"人口红利"向"人才红利"转型的关键期，随着"新质生产力"概念的提出、"人工智能+"行动的深入实施以及数字经济的蓬勃发展，以新一代信息技术为代表的新兴领域正成为数字经济与产业升级的核心引擎。</p>
+
+            <div class="highlight-box warning">
+                <strong>核心痛点</strong>
+                <p>数字经济的快速发展使得技术迭代速度远超人才培养周期，导致劳动力市场出现了严重的"结构性矛盾"——企业在新兴岗位上面临"招不到合适的人"的困境，尤其是以新兴领域青年、新就业形态劳动者等为代表的群体，其职业发展路径模糊、技能需求动态性强。</p>
+            </div>
+
+            <p>传统的人才盘点与招聘手段多依赖关键词匹配，缺乏对技术趋势的实时感知能力，难以回答"技术A的爆发会导致新兴岗位B产生哪些新技能需求"这一动态关联问题，已无法适配数字经济时代对人才能力的动态评估与精准匹配需求。</p>
+
+            <div class="highlight-box success">
+                <strong>技术机遇</strong>
+                <p>随着大模型的强语义理解与信息抽取能力、知识图谱对复杂关系的结构化表达能力，以及多源数据融合与交叉验证技术的深度应用，构建一个能够自我进化的"人才能力大脑"，实现从"静态画像"向"动态感知"的跨越已成为可能。</p>
+            </div>
+
+            <h3 id="s3-1">三大核心难题</h3>
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h4>新兴岗位发现与定义</h4>
+                    <p>如何从海量多源数据中精准发现并定义新兴岗位，更新既有岗位的能力要求，构建可动态更新的岗位能力图谱</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h4>数据质量与幻觉防控</h4>
+                    <p>如何解决招聘数据中的"时滞"、"噪声"与"抄袭"问题，并通过技术手段有效防控AI生成内容"幻觉"的产生，提升图谱构建的科学性</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h4>精准匹配与差距分析</h4>
+                    <p>如何实现高精度的简历解析与细粒度的人岗差距分析</p>
+                </div>
+            </div>
+
+            <div class="formula">新岗位发现 &#x2192; 能力图谱动态更新 &#x2192; 全景可视化 &#x2192; 人岗匹配诊断 &#x2192; 改进建议与学习路径</div>
+        </section>
+
+        <section id="section4">
+            <h2>四、参赛对象</h2>
+        </section>
+
+        <section id="section5">
+            <h2>五、答题要求</h2>
+
+            <h3 id="s5-1">1. 作品要求</h3>
+            <p><strong>岗位选择范围：</strong>立足数字经济发展，瞄准新一代信息技术领域（围绕人工智能、大数据、智能系统、物联网等）。</p>
+
+            <h4>核心功能要求</h4>
+            <table>
+                <tr><th>功能模块</th><th>具体要求</th></tr>
+                <tr><td><strong>新岗位发现与定义</strong></td><td>识别市场上正在萌芽但尚未被标准化或逐渐兴起的新岗位，生成岗位定义（含岗位名称、核心职责、必备技能、加分技能、典型行业应用场景），支持人工优化与动态更新</td></tr>
+                <tr><td><strong>既有岗位能力动态更新</strong></td><td>针对现有岗位（如Java开发工程师），识别其能力要求的变化，提供更新说明及数据源，明确标注新增、删除、修改的能力项</td></tr>
+                <tr><td><strong>全景图谱可视化</strong></td><td>展示领域内岗位的能力要求，颗粒度到"技能点"级别，可以按技术栈和级别切换视图</td></tr>
+                <tr><td><strong>人岗匹配度诊断</strong></td><td>支持解析简历（PDF/Word），提取准确率&#x2265;90%；支持多维度匹配分析，提供改进建议与学习路径规划</td></tr>
+            </table>
+
+            <h4>创新性要求</h4>
+            <ol>
+                <li>探索多源异构数据清洗与交叉验证融合机制，解决数据的"时滞"与"噪音"问题</li>
+                <li>能力"幻觉"防控，提升能力图谱构建科学性</li>
+            </ol>
+
+            <h4>可验证性要求</h4>
+            <div class="highlight-box success">
+                <p>提供完整测试方案（含至少<strong>100条</strong>岗位JD及测试用例），核心指标可量化验证：</p>
+                <ul>
+                    <li>JD解析准确率 &#x2265; <strong>90%</strong></li>
+                    <li>简历提取准确率 &#x2265; <strong>90%</strong></li>
+                    <li>匹配准确率 &#x2265; <strong>90%</strong></li>
+                </ul>
+            </div>
+
+            <h3 id="s5-2">2. 作品提交形式</h3>
+            <ol>
+                <li><strong>材料文档：</strong>作品设计实现方案、PPT作品介绍、10分钟以内的图谱演示视频等</li>
+                <li><strong>软件模块：</strong>源代码、可执行程序、部署说明（如Dockerfile）、单元测试用例（覆盖率&#x2265;60%）</li>
+                <li><strong>测试数据：</strong>1个新岗位和1个既有岗位的能力图谱及岗位数据源（含输入输出示例）</li>
+            </ol>
+        </section>
+
+        <section id="section6">
+            <h2>六、作品评选标准</h2>
+            <p>作品以<strong>100分制</strong>进行打分，根据分数决定团体奖名次。</p>
+
+            <h3 id="s6-1">1. 作品完整性：30分</h3>
+            <p>研发并完成全流程闭环系统：多源数据采集 &#x2192; 新岗位发现与定义 &#x2192; 能力图谱动态 &#x2192; 简历解析 &#x2192; 精准匹配与差距分析</p>
+            <table>
+                <tr><th>得分</th><th>标准</th></tr>
+                <tr><td><strong>30分</strong></td><td>基础功能无缺失、系统可正常部署运行</td></tr>
+                <tr><td><strong>扣5-15分</strong></td><td>核心功能基本齐全，仅存在流程衔接不畅或次要功能缺失</td></tr>
+                <tr><td><strong>扣15-30分</strong></td><td>核心功能缺失、岗位覆盖不足，或系统无法正常部署运行</td></tr>
+            </table>
+
+            <h3 id="s6-2">2. 技术创新性：25分</h3>
+            <table>
+                <tr><th>得分</th><th>标准</th></tr>
+                <tr><td><strong>25分</strong></td><td>核心技术方案具备突破性与可行性，幻觉防控与合规方案完善</td></tr>
+                <tr><td><strong>扣5-10分</strong></td><td>有一定技术创新，但未突破传统模式</td></tr>
+                <tr><td><strong>扣10-25分</strong></td><td>技术创新不足或缺失，核心问题未解决</td></tr>
+            </table>
+
+            <h3 id="s6-3">3. 用户体验：15分</h3>
+            <table>
+                <tr><th>得分</th><th>标准</th></tr>
+                <tr><td><strong>15分</strong></td><td>界面简洁友好、图谱可视化交互流畅、差距分析结果展示清晰</td></tr>
+                <tr><td><strong>扣3-5分</strong></td><td>存在少量操作繁琐或展示不清晰问题</td></tr>
+                <tr><td><strong>扣5-15分</strong></td><td>界面混乱、交互卡顿、无法正常完成操作</td></tr>
+            </table>
+
+            <h3 id="s6-4">4. 实用价值：30分</h3>
+            <table>
+                <tr><th>得分</th><th>标准</th></tr>
+                <tr><td><strong>30分</strong></td><td>测试方案完整（&#x2265;100条JD），三项准确率均&#x2265;90%，技术方案可迁移</td></tr>
+                <tr><td><strong>扣5-10分</strong></td><td>三项准确率有1项未达标（80%-90%）</td></tr>
+                <tr><td><strong>扣10-20分</strong></td><td>测试方案不完整，多项准确率未达标（70%-80%）</td></tr>
+                <tr><td><strong>扣20-30分</strong></td><td>无测试方案，准确率均未达标（&lt;70%）</td></tr>
+            </table>
+        </section>
+
+        <section id="section7">
+            <h2>七、作品提交时间</h2>
+         
+        </section>
+
+        <section id="section8">
+            <h2>八、参赛报名及作品提交方式</h2>
+            
+            
+        </section>
+
+        <section id="section9">
+            <h2>九、赛事保障</h2>
+            
+        </section>
+
+        <section id="section10">
+            <h2>十、设奖情况及奖励措施</h2>
+                        
+        </section>
+
+        <section id="section11">
+            <h2>十一、比赛专班联系方式</h2>
+            
+        </section>
+
+        
+        <hr class=”section-divider”>
+
+        <section id=”tech-analysis”>
+            <h2>赛题技术深度解读</h2>
+            <p>本赛题的核心是构建一个<strong>从数据采集到智能应用的全链路系统</strong>，涉及多源异构数据融合、知识图谱构建、大模型推理、动态演化分析和人岗智能匹配五大技术领域。以下从技术视角对赛题进行深度拆解，并给出落地建议。</p>
+
+            <div class=”highlight-box success”>
+                <strong>赛题本质</strong>
+                <p>这不是一个单纯的”知识图谱”项目，而是要求参赛者构建一个<strong>数据驱动的智能决策系统</strong>——以岗位和能力为核心实体，以图谱为知识载体，以大模型为推理引擎，最终实现人岗匹配和趋势预测的闭环。</p>
+            </div>
+
+            <h3 id=”ta-1”>核心技术挑战分析</h3>
+
+            <h4>挑战一：多源异构数据的采集与融合</h4>
+            <p>赛题要求处理招聘平台、企业官网、行业报告、政策文件、学术论文等多种来源的数据，这些数据格式各异（结构化表格、半结构化JSON/XML、非结构化文本/PDF），需要统一的数据治理方案。</p>
+            <div class=”vs-grid”>
+                <div class=”vs-card bad”>
+                    <h4>常见误区</h4>
+                    <ul>
+                        <li>只爬取单一招聘网站数据</li>
+                        <li>忽略数据清洗和去重</li>
+                        <li>未考虑数据时效性标注</li>
+                        <li>缺乏数据质量评估机制</li>
+                    </ul>
+                </div>
+                <div class=”vs-card good”>
+                    <h4>推荐做法</h4>
+                    <ul>
+                        <li>至少覆盖3类以上数据源</li>
+                        <li>建立ETL管道，统一Schema</li>
+                        <li>为每条数据标注时间戳和来源</li>
+                        <li>设计数据质量评分体系</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h4>挑战二：岗位-能力知识图谱的自动构建</h4>
+            <p>需要从非结构化文本中抽取岗位名称、技能要求、能力维度等实体及其关系，构建领域知识图谱。关键难点在于<strong>实体消歧</strong>（如”Java开发”和”Java工程师”是同一岗位）和<strong>关系推理</strong>（如隐含的能力层级关系）。</p>
+
+            <h4>挑战三：图谱的动态演化追踪</h4>
+            <p>赛题明确要求分析岗位和能力的<strong>时序变化趋势</strong>，这意味着图谱不是静态快照，而是需要支持版本化管理和时间维度查询。需要设计时序图谱存储方案，支持”某技能在过去N个月的需求变化”等查询。</p>
+
+            <h4>挑战四：人岗匹配的准确性要求</h4>
+            <div class=”highlight-box warning”>
+                <strong>硬性指标</strong>
+                <p>赛题要求简历解析准确率 ≥ 90%，人岗匹配准确率 ≥ 90%。这意味着不能仅依赖关键词匹配，需要结合语义理解和图谱推理实现深层匹配。</p>
+            </div>
+
+            <h3 id=”ta-2”>推荐技术栈</h3>
+
+            <table>
+                <tr><th>技术层</th><th>推荐方案</th><th>说明</th></tr>
+                <tr><td><strong>数据采集</strong></td><td>Scrapy + Playwright</td><td>Scrapy处理静态页面，Playwright处理JS动态渲染页面；配合代理池和反爬策略</td></tr>
+                <tr><td><strong>数据存储</strong></td><td>MySQL + Elasticsearch</td><td>MySQL存储结构化数据，ES支持全文检索和聚合分析</td></tr>
+                <tr><td><strong>NLP处理</strong></td><td>HanLP / LAC + 讯飞星火API</td><td>HanLP做中文分词和NER基础处理，星火大模型做复杂语义理解和关系抽取</td></tr>
+                <tr><td><strong>知识图谱</strong></td><td>Neo4j + py2neo</td><td>Neo4j是最成熟的图数据库，Cypher查询语言直观，py2neo提供Python接口</td></tr>
+                <tr><td><strong>图谱可视化</strong></td><td>AntV G6 / ECharts Graph</td><td>G6专为图可视化设计，支持力导向布局、节点聚类、交互探索；ECharts更轻量</td></tr>
+                <tr><td><strong>RAG框架</strong></td><td>LangChain + ChromaDB</td><td>LangChain编排LLM调用链，ChromaDB做向量存储，实现检索增强生成</td></tr>
+                <tr><td><strong>后端框架</strong></td><td>FastAPI / Flask</td><td>FastAPI性能优异，自带OpenAPI文档；Flask更灵活轻量</td></tr>
+                <tr><td><strong>前端框架</strong></td><td>Vue 3 + Vite + Pinia</td><td>Vue生态成熟，Vite构建快，Pinia状态管理简洁</td></tr>
+                <tr><td><strong>数据分析</strong></td><td>Pandas + NetworkX</td><td>Pandas做数据清洗和统计分析，NetworkX做图算法（中心性、社区发现等）</td></tr>
+                <tr><td><strong>简历解析</strong></td><td>讯飞文档解析 + 自定义NER</td><td>讯飞OCR处理PDF/图片简历，结合微调NER模型提取结构化字段</td></tr>
+            </table>
+
+            <div class=”highlight-box”>
+                <strong>技术选型原则</strong>
+                <p>赛题建议优先使用相关工具。在核心AI能力（NLP、OCR、语音等）上优先接入开放平台API，在通用工具层面可自由选择开源方案。这样既满足赛题要求，又保证开发效率。</p>
+            </div>
+
+            <h3 id=”ta-3”>推荐模型方案</h3>
+
+            <h4>大语言模型选型</h4>
+            <table>
+                <tr><th>模型</th><th>用途</th><th>优势</th></tr>
+                <tr><td><strong>讯飞星火 X2 / 4.0 Turbo</strong></td><td>核心推理引擎：实体抽取、关系推理、人岗匹配语义分析、趋势预测</td><td>赛题方推荐，中文能力强，API稳定，可能提供参赛资源支持</td></tr>
+                <tr><td><strong>讯飞星火 X1.5（推理模型）</strong></td><td>复杂推理任务：多跳关系推理、能力差距分析、学习路径规划</td><td>深度推理能力强，适合需要链式思考的复杂分析场景</td></tr>
+                <tr><td><strong>BGE-M3 / bge-large-zh</strong></td><td>文本向量化：简历和岗位描述的语义编码</td><td>开源免费，中文效果好，支持本地部署，适合向量检索</td></tr>
+                <tr><td><strong>ChatGLM3-6B</strong></td><td>本地备用模型：离线场景下的NLP处理</td><td>可本地部署，无API调用成本，适合开发调试阶段</td></tr>
+            </table>
+
+            <h4>专用模型推荐</h4>
+            <div class=”highlight-box success”>
+                <strong>NER实体识别方案</strong>
+                <p>推荐采用<strong>”大模型 + 小模型”协同策略</strong>：先用讯飞星火对少量样本做few-shot标注生成训练数据，再微调BERT-CRF/GlobalPointer等轻量NER模型用于大规模批量处理。这样兼顾了标注质量和推理效率。</p>
+            </div>
+
+            <h3 id=”ta-4”>系统架构建议</h3>
+
+            <div class=”step”>
+                <div class=”step-number”>1</div>
+                <div class=”step-content”>
+                    <h4>数据层：多源采集与治理</h4>
+                    <p>Scrapy爬虫集群 → 数据清洗管道（去重/格式统一/质量评分）→ MySQL结构化存储 + ES全文索引 + 文件系统存储原始文档</p>
+                </div>
+            </div>
+            <div class=”step”>
+                <div class=”step-number”>2</div>
+                <div class=”step-content”>
+                    <h4>知识层：图谱构建与管理</h4>
+                    <p>NER实体抽取 → 关系抽取（讯飞星火 + Prompt Engineering）→ 实体对齐与消歧 → Neo4j图谱存储（带时间戳属性）→ 图谱版本管理</p>
+                </div>
+            </div>
+            <div class=”step”>
+                <div class=”step-number”>3</div>
+                <div class=”step-content”>
+                    <h4>智能层：大模型推理引擎</h4>
+                    <p>RAG检索增强（ChromaDB向量库 + LangChain编排）→ 讯飞星火API调用 → 结果结构化解析 → 幻觉检测与事实校验（基于图谱回查）</p>
+                </div>
+            </div>
+            <div class=”step”>
+                <div class=”step-number”>4</div>
+                <div class=”step-content”>
+                    <h4>分析层：动态演化与匹配</h4>
+                    <p>时序图谱快照对比 → NetworkX图算法（PageRank/社区发现）→ 趋势预测（时间序列分析）→ 人岗匹配评分（语义相似度 + 图谱路径距离）</p>
+                </div>
+            </div>
+            <div class=”step”>
+                <div class=”step-number”>5</div>
+                <div class=”step-content”>
+                    <h4>应用层：可视化与交互</h4>
+                    <p>Vue 3前端 → AntV G6图谱可视化 → ECharts趋势图表 → 对话式查询界面（接入讯飞星火实现自然语言问答）</p>
+                </div>
+            </div>
+
+            <div class=”formula”>数据采集 → 知识图谱构建 → 大模型推理 → 动态演化分析 → 人岗智能匹配</div>
+
+            <h3 id=”ta-5”>得分策略与建议</h3>
+
+            <blockquote>
+                <p>评分权重：作品完整性（30分）+ 技术创新性（25分）+ 用户体验（15分）+ 实用价值（30分）= 100分</p>
+            </blockquote>
+
+            <h4>完整性（30分）—— 确保每个功能模块都有</h4>
+            <ul>
+                <li>数据采集模块要能演示实际爬取过程，展示多源数据样例</li>
+                <li>图谱构建要有完整的Pipeline演示，从原始文本到图谱可视化</li>
+                <li>动态演化要有时间维度的对比展示（如”2024 vs 2025 AI岗位技能变化”）</li>
+                <li>人岗匹配要有端到端的演示：上传简历 → 解析 → 匹配 → 推荐</li>
+            </ul>
+
+            <h4>创新性（25分）—— 重点突破方向</h4>
+            <div class=”highlight-box success”>
+                <strong>建议创新点</strong>
+                <ul>
+                    <li><strong>图谱+RAG融合推理</strong>：不只是简单调用大模型，而是将图谱结构化知识注入RAG流程，实现”图谱引导的检索增强生成”</li>
+                    <li><strong>动态演化预测</strong>：不只是展示历史变化，还能预测未来趋势（如”未来6个月哪些技能需求将上升”）</li>
+                    <li><strong>能力差距可视化</strong>：将求职者能力与目标岗位要求的差距以图谱路径的形式直观展示</li>
+                    <li><strong>大模型幻觉防控</strong>：设计基于图谱事实的校验机制，确保生成内容的准确性</li>
+                </ul>
+            </div>
+
+            <h4>实用价值（30分）—— 落地场景要真实</h4>
+            <ul>
+                <li>选择一个具体行业（如IT互联网）深入做，比泛泛覆盖多行业效果更好</li>
+                <li>准备真实数据集（至少1000+岗位、500+简历样本）</li>
+                <li>设计可量化的评估指标，用数据证明系统效果</li>
+                <li>考虑实际部署场景，提供Docker一键部署方案</li>
+            </ul>
+        </section>
+
+    </div>
+
+    <footer>
+        <p> 多源异构数据驱动岗位和能力图谱构建与动态演化分析研究</p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>
+        hljs.highlightAll();
+
+        // Theme switcher
+        function setTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('article-theme', theme);
+            document.querySelectorAll('.theme-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+        const savedTheme = localStorage.getItem('article-theme') || 'vibrant';
+        setTheme(savedTheme);
+
+        // TOC toggle
+        function toggleToc() {
+            document.getElementById('tocPanel').classList.toggle('open');
+        }
+        function closeToc() {
+            document.getElementById('tocPanel').classList.remove('open');
+        }
+        document.addEventListener('click', function(e) {
+            const panel = document.getElementById('tocPanel');
+            const toggle = document.getElementById('tocToggle');
+            if (!panel.contains(e.target) && !toggle.contains(e.target)) {
+                panel.classList.remove('open');
+            }
+        });
+
+        // Scroll progress bar
+        window.addEventListener('scroll', function() {
+            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (winScroll / height) * 100;
+            document.getElementById('progressBar').style.width = scrolled + '%';
+        });
+
+        // Fullscreen
+        function toggleFullscreen() {
+            const btn = document.getElementById('fsBtn');
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().then(() => {
+                    btn.textContent = '⛶';
+                    btn.title = '退出全屏';
+                }).catch(() => {});
+            } else {
+                document.exitFullscreen().then(() => {
+                    btn.textContent = '⛶';
+                    btn.title = '全屏';
+                }).catch(() => {});
+            }
+        }
+        document.addEventListener('fullscreenchange', function() {
+            const btn = document.getElementById('fsBtn');
+            if (document.fullscreenElement) {
+                btn.innerHTML = '✕';
+                btn.title = '退出全屏';
+            } else {
+                btn.innerHTML = '⛶';
+                btn.title = '全屏';
+            }
+        });
+        // F11 快捷键
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'F11') {
+                e.preventDefault();
+                toggleFullscreen();
+            }
+        });
+    </script>
+</body>
+</html>

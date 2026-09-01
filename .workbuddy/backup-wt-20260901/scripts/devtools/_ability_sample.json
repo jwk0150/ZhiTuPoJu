@@ -1,0 +1,107 @@
+{
+  "code": 0,
+  "message": "success",
+  "data": {
+    "categories": [
+      {
+        "name": "编程语言",
+        "type": "category",
+        "technologies": [
+          {
+            "name": "计算机数据分析excelsql数学数据收集数据报表数据模型tableauit系统",
+            "frequency": 1,
+            "id": 1
+          },
+          {
+            "name": "销售计算机办公软件数据分析excelsql英语信息管理powerpoint销售数据",
+            "frequency": 1,
+            "id": 3
+          },
+          {
+            "name": "JavaLinux开发/部署经验编译器开发经验Python分布式经验架构设计经验微服务经验数据库开发经验OracleMySQLPostgreSQLRedisMongoDB",
+            "frequency": 1,
+            "id": 7
+          },
+          {
+            "name": "计算机数据分析excelsql数学统计数据可视化pandas对比分析bi",
+            "frequency": 1,
+            "id": 8
+          },
+          {
+            "name": "Oracle",
+            "frequency": 1,
+            "id": 9
+          },
+          {
+            "name": "计算机oracle数据分析sql数学理工科交互设计分析报告hive数据收集",
+            "frequency": 1,
+            "id": 10
+          },
+          {
+            "name": "计算机java数据分析编程软件工程大数据编程语言算法人工智能机器学习",
+            "frequency": 1,
+            "id": 11
+          },
+          {
+            "name": "数据分析excel解决方案统计分析分析tableau数据平台帆软数据分析系统数据报告",
+            "frequency": 1,
+            "id": 12
+          },
+          {
+            "name": "数据分析excelmysql数据库电商广告投放产品运营零售数据管理数据vlookup",
+            "frequency": 1,
+            "id": 13
+          },
+          {
+            "name": "c++自动化测试aimatlab图像处理深度学习信号处理计算机视觉isp回归验证",
+            "frequency": 1,
+            "id": 14
+          },
+          {
+            "name": "sql统计分析数据挖掘数据分析模型python统计学可视化报告javaR语言MySQL",
+            "frequency": 1,
+            "id": 17
+          }
+        ]
+      },
+      {
+        "name": "数据存储与处理",
+        "type": "category",
+        "technologies": [
+          {
+            "name": "SQL数据数据开发数据提取分析大数据挖掘统计ETL",
+            "frequency": 1,
+            "id": 2
+          },
+          {
+            "name": "数据分析sql市场营销数据报表数据清洗o2o分析数据用户画像tableau",
+            "frequency": 1,
+            "id": 4
+          },
+          {
+            "name": "数据大数据分析数据处理数据挖掘统计数据分析师sql",
+            "frequency": 1,
+            "id": 5
+          },
+          {
+            "name": "计算机数据分析sql金融ppt数学互联网经济学分析报告零售",
+            "frequency": 1,
+            "id": 6
+          },
+          {
+            "name": "sql",
+            "frequency": 1,
+            "id": 15
+          },
+          {
+            "name": "数据分析sql数据处理",
+            "frequency": 1,
+            "id": 16
+          }
+        ]
+      }
+    ],
+    "total": 17,
+    "maxFrequency": 1
+  }
+}

@@ -47,7 +47,8 @@
       match: b + 'match.html?v=' + v,
       warehouse: b + 'warehouse.html?v=' + v,
       news: b + 'news/index.html',
-      profile: b + 'match.html?v=' + v + '&tab=profile',
+      // 「我的资料」独立页面：编辑式数字职业档案，点击顶部头像进入
+      profile: b + 'my-profile.html?v=' + v,
       resume: b + 'resume.html',
       resumeBuilder: b + 'resume.html',
       resumeLibrary: b + 'resume-library.html',

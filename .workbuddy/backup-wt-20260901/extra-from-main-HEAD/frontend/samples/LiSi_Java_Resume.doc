@@ -1,0 +1,37 @@
+<html xmlns:o="urn:schemas-microsoft-com:office:office"
+xmlns:w="urn:schemas-microsoft-com:office:word"
+xmlns="http://www.w3.org/TR/REC-html40">
+<head><meta charset="utf-8">
+<!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View></w:WordDocument></xml><![endif]-->
+<style>
+body { font-family: "Microsoft YaHei", SimSun, sans-serif; font-size: 11pt; color: #0f172a; line-height: 1.6; }
+h1 { font-size: 22pt; color: #0B1220; margin-bottom: 4pt; }
+.sub { color: #64748B; font-size: 10pt; margin-bottom: 16pt; }
+h2 { font-size: 13pt; color: #0D9488; border-bottom: 1.5pt solid #2DD4BF; padding-bottom: 4pt; margin-top: 18pt; }
+table.info td { padding: 3pt 12pt 3pt 0; font-size: 10.5pt; }
+</style></head>
+<body>
+<h1>李四</h1>
+<p class="sub">个人简历 · 执图破局演示样本 · 仅供人岗匹配诊断拖入测试</p>
+<table class="info" cellspacing="0" cellpadding="0">
+<tr><td><b>性别</b> 女</td><td><b>年龄</b> 26</td><td><b>工作年限</b> 3年</td></tr>
+<tr><td><b>城市</b> 上海</td><td><b>学历</b> 本科·软件工程</td><td><b>期望薪资</b> 20-35K</td></tr>
+<tr><td colspan="3"><b>电话</b> 139-0000-2002　　<b>邮箱</b> lisi@example.com</td></tr>
+</table>
+<h2>求职意向</h2>
+<p>Java 后端开发工程师 / 微服务 / 电商业务后端</p>
+<h2>专业技能</h2>
+<p>Java、Spring Boot、MySQL、Redis、Kafka、Docker、MyBatis</p>
+<h2>教育背景</h2>
+<p><b>某重点高校</b> · 软件工程 · 本科<br>
+<span style="color:#64748B">2017.09 - 2021.06</span><br>主修课程：数据结构、操作系统、数据库、软件体系结构；曾获校级优秀毕业生。</p>
+<h2>工作经历</h2>
+<h3 style="font-size:14pt;color:#0D9488;margin:14pt 0 6pt">后端开发工程师 · 阿里巴巴</h3>
+<p style="margin:0 0 4pt;color:#64748B;font-size:10pt">2021.07 - 至今 | 上海</p>
+<p style="margin:0 0 10pt;line-height:1.7">负责电商交易与履约相关后端服务开发，参与订单链路重构与接口治理；通过缓存与异步化降低热点接口 P99 延迟；配合压测与稳定性专项保障大促。</p>
+<h2>项目经历</h2>
+<ul><li style="margin-bottom:6pt">订单中心微服务改造：Spring Boot + Kafka 异步解耦，提升峰值吞吐。</li><li style="margin-bottom:6pt">库存缓存一致性方案：Redis + 本地缓存双层策略，降低 DB 压力。</li><li style="margin-bottom:6pt">容器化部署：Docker 镜像标准化与灰度发布支持。</li></ul>
+<h2>自我评价</h2>
+<p>熟悉高并发电商后端开发，掌握 Spring Cloud 微服务与常见中间件，注重代码质量与稳定性建设。</p>
+<p style="margin-top:24pt;font-size:9pt;color:#94A3B8">文档编号：R002 · 生成用途：挑战杯「执图破局」人岗匹配演示</p>
+</body></html>

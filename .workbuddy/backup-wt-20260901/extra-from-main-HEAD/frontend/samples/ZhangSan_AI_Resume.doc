@@ -1,0 +1,39 @@
+<html xmlns:o="urn:schemas-microsoft-com:office:office"
+xmlns:w="urn:schemas-microsoft-com:office:word"
+xmlns="http://www.w3.org/TR/REC-html40">
+<head><meta charset="utf-8">
+<!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View></w:WordDocument></xml><![endif]-->
+<style>
+body { font-family: "Microsoft YaHei", SimSun, sans-serif; font-size: 11pt; color: #0f172a; line-height: 1.6; }
+h1 { font-size: 22pt; color: #0B1220; margin-bottom: 4pt; }
+.sub { color: #64748B; font-size: 10pt; margin-bottom: 16pt; }
+h2 { font-size: 13pt; color: #0D9488; border-bottom: 1.5pt solid #2DD4BF; padding-bottom: 4pt; margin-top: 18pt; }
+table.info td { padding: 3pt 12pt 3pt 0; font-size: 10.5pt; }
+</style></head>
+<body>
+<h1>张三</h1>
+<p class="sub">个人简历 · 执图破局演示样本 · 仅供人岗匹配诊断拖入测试</p>
+<table class="info" cellspacing="0" cellpadding="0">
+<tr><td><b>性别</b> 男</td><td><b>年龄</b> 28</td><td><b>工作年限</b> 5年</td></tr>
+<tr><td><b>城市</b> 北京</td><td><b>学历</b> 硕士·计算机</td><td><b>期望薪资</b> 30-50K</td></tr>
+<tr><td colspan="3"><b>电话</b> 138-0000-1001　　<b>邮箱</b> zhangsan@example.com</td></tr>
+</table>
+<h2>求职意向</h2>
+<p>AI算法工程师 / 推荐算法 / NLP算法相关岗位</p>
+<h2>专业技能</h2>
+<p>Python、深度学习、PyTorch、机器学习、TensorFlow、NLP、SQL、Git、Linux、CUDA</p>
+<h2>教育背景</h2>
+<p><b>某重点高校</b> · 计算机科学与技术 · 硕士<br>
+<span style="color:#64748B">2017.09 - 2020.06</span><br>研究方向：机器学习 / 自然语言处理；学位论文方向涉及文本表示与排序学习。</p>
+<h2>工作经历</h2>
+<h3 style="font-size:14pt;color:#0D9488;margin:14pt 0 6pt">高级算法工程师 · 字节跳动</h3>
+<p style="margin:0 0 4pt;color:#64748B;font-size:10pt">2022.07 - 至今 | 北京</p>
+<p style="margin:0 0 10pt;line-height:1.7">负责推荐系统 CTR/CVR 模型优化，主导特征工程与模型迭代；引入多任务学习与序列建模，核心场景 CTR 提升约 3.2%；参与推理链路性能优化，线上延迟下降 18%。</p><h3 style="font-size:14pt;color:#0D9488;margin:14pt 0 6pt">算法工程师 · 美团</h3>
+<p style="margin:0 0 4pt;color:#64748B;font-size:10pt">2020.07 - 2022.06 | 北京</p>
+<p style="margin:0 0 10pt;line-height:1.7">负责搜索排序与 NLP 文本理解相关工作，完成 Query 意图识别与语义召回改造；沉淀可复用的特征与评测体系，支撑业务周级迭代。</p>
+<h2>项目经历</h2>
+<ul><li style="margin-bottom:6pt">推荐系统 CTR 优化项目：DeepFM / DIN 改造，A/B 实验全流程负责。</li><li style="margin-bottom:6pt">搜索 NLP 语义召回：BERT 微调 + ANN 检索，长尾 Query 召回率提升。</li><li style="margin-bottom:6pt">模型训练平台工具链：PyTorch 训练脚本标准化与实验追踪。</li></ul>
+<h2>自我评价</h2>
+<p>具备扎实的机器学习与深度学习基础，熟悉推荐与搜索场景落地，善于将算法能力转化为业务指标提升。</p>
+<p style="margin-top:24pt;font-size:9pt;color:#94A3B8">文档编号：R001 · 生成用途：挑战杯「执图破局」人岗匹配演示</p>
+</body></html>

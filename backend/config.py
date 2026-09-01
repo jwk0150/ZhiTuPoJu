@@ -51,7 +51,9 @@ class Config:
     PG_PORT: int = int(os.getenv("PG_PORT", "5432"))  # 标准PostgreSQL端口
     PG_USER: str = os.getenv("PG_USER", "postgres")
     PG_PASSWORD: str = os.getenv("PG_PASSWORD", "")
-    PG_DB: str = os.getenv("PG_DB", "zhilian_crawl_db")
+    PG_DB: str = os.getenv("PG_DB", "zhitu_crawl_db")
+    # 数字人才地图主数据表（云库 zhitu_crawl_db.map_data_table）
+    PG_JOB_TABLE: str = os.getenv("PG_JOB_TABLE", "map_data_table")
 
     # ============ 后端服务 ============
     BACKEND_HOST: str = os.getenv("BACKEND_HOST", "127.0.0.1")

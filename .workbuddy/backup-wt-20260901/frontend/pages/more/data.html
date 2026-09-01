@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>执图破局 · 数据底座</title>
+  <link rel="stylesheet" href="../../css/tokens.css?v=48" />
+  <link rel="stylesheet" href="../../css/shell.css?v=48" />
+  <link rel="stylesheet" href="../../css/components.css?v=48" />
+  <link rel="stylesheet" href="../../css/legacy-views.css?v=48" />
+</head>
+<body class="standalone-view" data-page="data">
+  <div id="app-shell"></div>
+  <main class="page-main" id="page-main">
+    <div class="hub-tabs" data-hub="data">
+      <button type="button" class="hub-tab active" data-hub-tab="collection">数据采集</button>
+      <button type="button" class="hub-tab" data-hub-tab="quality">质量监控</button>
+    </div>
+    <div class="hub-panel active" data-hub-panel="collection">
+<section class="view active" id="view-collection">
+<!-- 列表子页 -->
+<div class="sub-page active" id="collection-list-page">
+<div class="page-header">
+<div class="page-title-block">
+<h1>多源异构数据采集</h1>
+<div class="subtitle">Scrapy + Playwright · 4个核心源 · 日均采集 <strong id="collect-total">0</strong> 条 · <span style="color:var(--accent-cyan);font-family:var(--font-mono),monospace">点击卡片查看详情 →</span></div>
+</div>
+<div class="page-actions">
+<button class="btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/></svg>全局配置</button>
+<button class="btn btn-primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>一键启动</button>
+</div>
+</div>
+<div class="kpi-grid">
+<div class="kpi-card k1"><div class="kpi-head"><div class="kpi-label">数据源总数</div><div class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/></svg></div></div><div class="kpi-value">4<span class="kpi-unit">个</span></div><div class="kpi-foot">3运行 · 1暂停</div></div>
+<div class="kpi-card k2"><div class="kpi-head"><div class="kpi-label">今日采集</div><div class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div></div><div class="kpi-value" data-val="0">0<span class="kpi-unit">条</span></div><div class="kpi-foot">较昨日 <span class="kpi-trend up">+18.4%</span></div></div>
+<div class="kpi-card k3"><div class="kpi-head"><div class="kpi-label">质量合格率</div><div class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div></div><div class="kpi-value">94.2<span class="kpi-unit">%</span></div><div class="kpi-foot">超过指标</div></div>
+<div class="kpi-card k4"><div class="kpi-head"><div class="kpi-label">代理池可用</div><div class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/></svg></div></div><div class="kpi-value">128<span class="kpi-unit">/150</span></div><div class="kpi-foot">自动健康检查中</div></div>
+</div>
+<div class="source-grid" id="source-grid"></div>
+<div class="row cols-2">
+<div class="card"><div class="card-header"><div class="card-title">采集趋势</div><span class="tag">近7天</span></div><div class="card-body"><div class="chart" id="chart-collect"></div></div></div>
+<div class="card"><div class="card-header"><div class="card-title">采集日志（合并）</div><span class="tag tag-cyan"><span class="live-dot"></span>LIVE</span></div><div class="card-body" style="font-family:var(--font-mono),monospace;font-size:11px;line-height:2;max-height:300px;overflow-y:auto" id="collect-log"></div></div>
+</div>
+</div>
+<!-- 详情子页 -->
+<div class="sub-page" id="collection-detail-page"></div>
+</section>
+    </div>
+    <div class="hub-panel" data-hub-panel="quality">
+<section class="view" id="view-quality">
+<div class="page-header">
+<div class="page-title-block">
+<h1>准确率与质量监控</h1>
+<div class="subtitle">三大硬性指标 · 持续评测 · 自动告警 · 超过指标即告警</div>
+</div>
+<div class="page-actions">
+<button class="btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10"/></svg>重新评测</button>
+<button class="btn btn-primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>查看报告</button>
+</div>
+</div>
+<div class="quality-grid">
+<div class="quality-card q1 anim-glow"><div class="quality-head"><div class="quality-title">JD解析准确率</div><div class="quality-target">目标 ≥ 90%</div></div><div class="quality-value" id="q-jd">93.2%</div><div class="quality-meta"><div class="quality-meta-item"><div class="quality-meta-label">测试集</div><div class="quality-meta-val">100 / 100</div></div><div class="quality-meta-item"><div class="quality-meta-label">正确</div><div class="quality-meta-val">93</div></div><div class="quality-meta-item"><div class="quality-meta-label">差距</div><div class="quality-meta-val" style="color:var(--accent-mint)">+3.2%</div></div></div></div>
+<div class="quality-card q2"><div class="quality-head"><div class="quality-title">简历提取准确率</div><div class="quality-target">目标 ≥ 90%</div></div><div class="quality-value" id="q-resume">91.7%</div><div class="quality-meta"><div class="quality-meta-item"><div class="quality-meta-label">测试集</div><div class="quality-meta-val">50 / 50</div></div><div class="quality-meta-item"><div class="quality-meta-label">正确</div><div class="quality-meta-val">46</div></div><div class="quality-meta-item"><div class="quality-meta-label">差距</div><div class="quality-meta-val" style="color:var(--accent-mint)">+1.7%</div></div></div></div>
+<div class="quality-card q3"><div class="quality-head"><div class="quality-title">匹配准确率</div><div class="quality-target">目标 ≥ 90%</div></div><div class="quality-value" id="q-match">93.7%</div><div class="quality-meta"><div class="quality-meta-item"><div class="quality-meta-label">测试集</div><div class="quality-meta-val">100 / 100</div></div><div class="quality-meta-item"><div class="quality-meta-label">正确</div><div class="quality-meta-val">94</div></div><div class="quality-meta-item"><div class="quality-meta-label">差距</div><div class="quality-meta-val" style="color:var(--accent-mint)">+3.7%</div></div></div></div>
+</div>
+<div class="row cols-2">
+<div class="card"><div class="card-header"><div class="card-title">准确率趋势</div><span class="tag">近30天</span></div><div class="card-body"><div class="chart" id="chart-accuracy"></div></div></div>
+<div class="card"><div class="card-header"><div class="card-title">错误类型分布</div><span class="tag tag-amber">优化</span></div><div class="card-body"><div class="chart" id="chart-error"></div></div></div>
+</div>
+<div class="card"><div class="card-header"><div class="card-title">测试报告详情</div><div class="card-tools"><span class="tag tag-mint">全部通过</span></div></div><div class="card-body"><div class="detail-grid" style="grid-template-columns:repeat(4,1fr)"><div><dt>JD测试集</dt><dd style="font-weight:600">100条 · v2026.07</dd></div><div><dt>简历样本</dt><dd style="font-weight:600">50份 · 多格式</dd></div><div><dt>匹配用例</dt><dd style="font-weight:600">100条 · 跨行业</dd></div><div><dt>单元测试</dt><dd style="font-weight:600">628个 · 覆盖67%</dd></div></div></div></div>
+</section>
+    </div>
+  </main>
+  <script src="../../js/api.js"></script>
+  <script src="../../js/runtime-core.js"></script>
+  <script src="../../js/cinema-bg.js?v=20260831bright"></script>
+  <script src="../../js/perf-guard.js?v=1"></script>
+  <script src="../../js/cinema-music.js?v=20260824mem"></script>
+  <script src="../../js/shell.js?v=20260824"></script>
+  <script src="../../js/pages/collection.js"></script>
+  <script src="../../js/pages/quality.js"></script>
+  <script src="../../js/pages/hub-tabs.js"></script>
+  <script>
+    window.Shell && window.Shell.mount({ pageId: 'data', title: '数据底座', subtitle: '采集任务与质量覆盖' });
+    window.initHubTabs && window.initHubTabs({
+      root: '[data-hub=data]',
+      onChange: function (tab) {
+        if (tab === 'collection') window.initCollection && window.initCollection();
+        if (tab === 'quality') {
+          var view = document.getElementById('view-quality');
+          if (view) view.classList.add('active');
+          window.initQuality && window.initQuality();
+        }
+      },
+      initial: (new URLSearchParams(location.search).get('tab') === 'quality') ? 'quality' : 'collection'
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>我的资料 · MY PROFILE · 执图破局</title>
+  <meta name="description" content="我的职业档案 —— 数字化的职业身份记录。" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- 字体异步加载：media=print 避免阻塞渲染；onload 切回 all；超时 1.5s 兜底 -->
+  <link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=Noto+Serif+SC:wght@500;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&family=DM+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap"
+    media="print"
+    onload="this.media='all'"
+  />
+  <noscript>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=Noto+Serif+SC:wght@500;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&family=DM+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap"
+    />
+  </noscript>
+  <script>
+    // 兜底：1.5s 内外部字体未加载完成时强制切到 all（即便 onload 未触发也不阻塞本地字体回退）
+    setTimeout(function () {
+      var l = document.querySelector('link[rel="stylesheet"][href*="fonts.googleapis.com"]');
+      if (l && l.media === 'print') l.media = 'all';
+    }, 1500);
+  </script>
+  <link rel="stylesheet" href="../css/my-profile.css?v=20260831c" />
+</head>
+<body>
+  <div id="mp-root" class="mp-root">
+    <!-- 占位：脚本启动前避免空白闪烁 -->
+    <div style="padding:32px 36px;color:#8a8576;font-family:var(--mp-font-mono,'IBM Plex Mono',monospace);font-size:12px;letter-spacing:.12em">
+      LOADING · MY PROFILE
+    </div>
+  </div>
+
+  <script src="../js/pages/my-profile.js?v=20260831c"></script>
+</body>
+</html>
