@@ -38,7 +38,6 @@ crawler/exports/
 
 # 本地注册用户（含密码，禁止入库）
 backend/data/
-<<<<<<< HEAD
 
 # 本地 UI QA 截图（Playwright 调试产物，不入库）
 frontend/_qa/
@@ -61,10 +60,3 @@ frontend.err
 /u3.json
 serve_nocache.py
 frontend/index_backup_old.html
-=======
-# 本地虚拟环境
-venv/
-*.pyc
-__pycache__/
-
->>>>>>> f8604147bbee5a11b2628701d49db4d16047526e

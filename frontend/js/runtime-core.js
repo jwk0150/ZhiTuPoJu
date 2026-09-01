@@ -122,18 +122,10 @@ window.viewNames = window.viewNames || {
   newSkill: '新增技能'
 };
 window.switchView = window.switchView || function (viewId) {
-<<<<<<< HEAD
   // 学习路径 / 新增技能已拆分为独立页面
   if (viewId === 'learningPath') { location.href = 'learning-path.html'; return; }
   if (viewId === 'newSkill') { location.href = 'new-skill.html'; return; }
   if (viewId === 'evolution' || viewId === 'insight') { location.href = 'insight.html'; return; }
-=======
-  // 学习路径 / 新增技能已拆分为独立页面，此处改为整页跳转
-  if (viewId === 'learningPath') { location.href = 'learning-path.html'; return; }
-  if (viewId === 'newSkill') { location.href = 'new-skill.html'; return; }
-  // 演化 / 趋势统一使用带版本号的洞察页面，避免回到旧缓存
-  if (viewId === 'evolution' || viewId === 'insight') { location.href = 'insight.html?v=2'; return; }
->>>>>>> f8604147bbee5a11b2628701d49db4d16047526e
   var map = { evolution: 'view-evolution' };
   var target = map[viewId] || ('view-' + viewId);
   document.querySelectorAll('#page-main section.view').forEach(function (v) {

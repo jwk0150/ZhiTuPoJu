@@ -1,0 +1,99 @@
+- generic [ref=f3e2]:
+  - complementary [ref=f3e3]:
+    - generic [ref=f3e13]:
+      - generic [ref=f3e14]: 执图破局
+      - generic [ref=f3e15]: Tuzhupoju · Demo
+    - navigation [ref=f3e16]:
+      - generic [ref=f3e17]:
+        - generic [ref=f3e18]: 核心功能
+        - generic [ref=f3e19] [cursor=pointer]: 总览看板
+        - generic [ref=f3e26] [cursor=pointer]:
+          - generic [ref=f3e34]: 图谱可视化
+          - generic [ref=f3e35]: HOT
+        - generic [ref=f3e36] [cursor=pointer]: 新岗位发现
+        - generic [ref=f3e42] [cursor=pointer]: 能力动态演化
+      - generic [ref=f3e47]:
+        - generic [ref=f3e48]: 智能服务
+        - generic [ref=f3e49] [cursor=pointer]:
+          - generic [ref=f3e53]: 人岗匹配诊断
+          - generic [ref=f3e54]: P0
+        - generic [ref=f3e55] [cursor=pointer]: 智能问答
+      - generic [ref=f3e59]:
+        - generic [ref=f3e60]: 数据管理
+        - generic [ref=f3e61] [cursor=pointer]: 数据采集
+        - generic [ref=f3e67] [cursor=pointer]: 趋势分析
+        - generic [ref=f3e70] [cursor=pointer]: 质量监控
+      - generic [ref=f3e75]:
+        - generic [ref=f3e76]: 系统
+        - generic [ref=f3e77] [cursor=pointer]: 系统设置
+    - generic [ref=f3e82]:
+      - generic [ref=f3e83]: YL
+      - generic [ref=f3e84]:
+        - generic [ref=f3e85]: 御龙 · Tech Lead
+        - generic [ref=f3e86]: administrator
+  - main [ref=f3e87]:
+    - generic [ref=f3e88]:
+      - generic [ref=f3e89]:
+        - generic [ref=f3e90]: 执图破局
+        - generic [ref=f3e93]: 图谱可视化
+      - textbox "搜索岗位、技能、简历..." [ref=f3e98]
+      - generic [ref=f3e99]:
+        - button [ref=f3e100] [cursor=pointer]
+        - button [ref=f3e105] [cursor=pointer]
+    - generic [ref=f3e110]:
+      - generic [ref=f3e111]:
+        - generic [ref=f3e112]:
+          - heading "数字人才地图" [level=1] [ref=f3e113]
+          - generic [ref=f3e114]: 全国人才分布 · 省份岗位洞察 · 岗位-能力知识图谱 · --
+        - button "导出数据" [ref=f3e116] [cursor=pointer]
+      - generic [ref=f3e120]:
+        - generic [ref=f3e121]:
+          - generic "展开筛选" [ref=f3e122] [cursor=pointer]: 筛选
+          - generic:
+            - generic:
+              - generic: 数据筛选
+              - button "✕"
+            - generic:
+              - generic: 省份
+              - combobox:
+                - option "全部省份" [selected]
+            - generic:
+              - generic: 城市
+              - combobox:
+                - option "全部城市" [selected]
+            - generic:
+              - generic: 岗位
+              - combobox:
+                - option "全部岗位" [selected]
+            - generic:
+              - generic: 学历要求
+              - combobox:
+                - option "不限学历" [selected]
+                - option "本科"
+                - option "硕士"
+                - option "博士"
+                - option "大专"
+            - generic:
+              - generic: 经验要求
+              - combobox:
+                - option "不限经验" [selected]
+                - option "应届生"
+                - option "1-3年"
+                - option "3-5年"
+                - option "5-10年"
+                - option "10年以上"
+            - generic:
+              - button "重置筛选"
+              - button "应用筛选"
+              - generic: 省份 → 城市 → 岗位 级联筛选 · 应用筛选进入对应岗位分析
+          - generic [ref=f3e126]:
+            - generic [ref=f3e127]: 港澳区域
+            - generic [ref=f3e128] [cursor=pointer]:
+              - generic [ref=f3e129]: 香港
+              - generic [ref=f3e132]: "--"
+            - generic [ref=f3e133] [cursor=pointer]:
+              - generic [ref=f3e134]: 澳门
+              - generic [ref=f3e137]: "--"
+        - generic [ref=f3e139]:
+          - heading "悬停省份预览数据" [level=4] [ref=f3e143]
+          - paragraph [ref=f3e144]: 将鼠标移到地图上的省份查看实时人才数据概览

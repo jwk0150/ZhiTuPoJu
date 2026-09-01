@@ -35,7 +35,6 @@
     const b = hrefBase();
     const v = 'fix25c5';
     return {
-<<<<<<< HEAD
       home: b + 'news/index.html',
       // ?v= busts stale HTML caches (encoding-corrupt copies broke mount)
       map: b + 'map.html?v=' + v,
@@ -52,18 +51,6 @@
       resume: b + 'resume.html',
       resumeBuilder: b + 'resume.html',
       resumeLibrary: b + 'resume-library.html',
-=======
-      home: b + 'home.html',
-      map: b + 'map.html',
-      insight: b + 'insight.html?v=2',
-      evolution: b + 'insight.html?v=2',
-      learningPath: b + 'learning-path.html',
-      newSkill: b + 'new-skill.html',
-      analysis: b + 'insight.html?tab=trends&v=2',
-      discovery: b + 'discovery.html',
-      match: b + 'match.html',
-      profile: b + 'match.html?tab=profile',
->>>>>>> f8604147bbee5a11b2628701d49db4d16047526e
       qa: b + 'qa-embed.html',
       data: b + 'more/data.html?v=' + v,
       collection: b + 'more/data.html?v=' + v,
