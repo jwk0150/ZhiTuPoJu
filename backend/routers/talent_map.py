@@ -111,7 +111,7 @@ async def search_graph(keyword: str = Query(...)):
     async with pool.acquire() as conn:
         rows = await conn.fetch("""
             SELECT job_title, count(*)::int AS cnt
-            FROM the_total_table
+            FROM map_data_table
             WHERE job_title ILIKE $1
             GROUP BY job_title ORDER BY cnt DESC LIMIT 20
         """, f"%{keyword}%")

@@ -1,20 +1,13 @@
-"""导入 JSONL.gz 包到主 PG 库（3309/zhilian_crawl_db）。
+"""导入 JSONL.gz 包到主 PG 库（v2 兼容）。
 
-工作流程
-========
-1. 读每个 .jsonl.gz 包的第 1 行 _meta，校验 source 与包名一致（防张冠李戴）
-2. 流式读剩余行：先 upsert job_postings（拿回 DB id），再用 DB id upsert job_posting_details
-3. 同一岗位多次合并：以 (source_name, source_id_hash) upsert；job_postings 的 id 可能变化
-   （冲突时用 RETURNING 拿新 id），job_posting_details 跟着 job_id 重映射
-4. 触发器自动重算 fingerprint/completeness
-5. 冲突策略：
-   - ON CONFLICT DO UPDATE：覆盖；保留 updated_at = NOW()
-   - 想保留两源对比，可加 --mode preserve（仅 INSERT，跳过已存在的）
+支持：
+  * v2 master_id + job_unified 宽表（优先）
+  * v1 仅 job_postings + job_posting_details
+  * 相对路径媒体（相对 jsonl.gz 所在目录解析）
 
 用法：
+  python -m crawler.exchange.merge --input exports/zhilian_*.jsonl.gz
   python -m crawler.merge --input exports/zhilian_*.jsonl.gz
-  python -m crawler.merge --input a.jsonl.gz b.jsonl.gz c.jsonl.gz
-  python -m crawler.merge --input xxx.jsonl.gz --dry-run --batch 200
 """
 
 from __future__ import annotations
@@ -28,43 +21,11 @@ from typing import Iterable
 
 import psycopg
 
-
-def _iter_records(path: Path) -> Iterable[dict]:
-    """流式读 gzip jsonl，逐行 yield dict。"""
-    opener = gzip.open if str(path).endswith(".gz") else open
-    with opener(path, "rt", encoding="utf-8") as f:
-        for line in f:
-            line = line.strip()
-            if not line:
-                continue
-            yield json.loads(line)
-
-
-def _validate_meta(path: Path, expected_site: str | None) -> dict:
-    """读包头并校验。返回 meta dict。"""
-    head = next(_iter_records(path))
-    if not head.get("_meta"):
-        raise ValueError(f"{path}: 首行不是 _meta 包头，格式错")
-    src = head.get("source")
-    if expected_site and src != expected_site:
-        raise ValueError(f"{path}: 包 source={src} 与期望 {expected_site} 不一致")
-    print(f"  • {path.name}  source={src}  exported_at={head.get('exported_at')}  "
-          f"since={head.get('since')}  db_count_pre={head.get('db_count_pre')}")
-    return head
-
-
-# -------- upsert SQL --------
-_INSERT_POSTING = """
-INSERT INTO {tbl} ({cols})
-VALUES ({phs})
-ON CONFLICT (source_name, source_id_hash) DO UPDATE SET {updates}
-RETURNING id
-"""
-_INSERT_DETAIL = """
-INSERT INTO {tbl} (job_id, {cols})
-VALUES (%s, {phs})
-ON CONFLICT (job_id) DO UPDATE SET {updates}
-"""
+from crawler.exchange.common import (
+    resolve_media_paths,
+    split_unified_record,
+    validate_master_id,
+)
 
 _POSTING_UPDATABLE = (
     "job_title", "company_name", "city", "district",
@@ -89,77 +50,176 @@ _DETAIL_UPDATABLE = (
 )
 
 
-def _build_posting_insert(tbl: str):
+def _iter_records(path: Path) -> Iterable[dict]:
+    opener = gzip.open if str(path).endswith(".gz") else open
+    with opener(path, "rt", encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            yield json.loads(line)
+
+
+def _validate_meta(path: Path, expected_site: str | None) -> dict:
+    head = next(_iter_records(path))
+    if not head.get("_meta"):
+        raise ValueError(f"{path}: 首行不是 _meta 包头，格式错")
+    src = head.get("source")
+    if expected_site and src != expected_site:
+        raise ValueError(f"{path}: 包 source={src} 与期望 {expected_site} 不一致")
+    enc = head.get("encoding", "utf-8")
+    if enc.lower() != "utf-8":
+        raise ValueError(f"{path}: 仅支持 utf-8 编码包，当前 {enc}")
+    print(f"  • {path.name}  source={src}  schema={head.get('schema_version', 1)}  "
+          f"exported_at={head.get('exported_at')}  since={head.get('since')}  "
+          f"db_count_pre={head.get('db_count_pre')}")
+    return head
+
+
+def _build_posting_insert(tbl: str) -> str:
     cols = ("source_name", "source_id", "source_id_hash") + _POSTING_UPDATABLE
     col_list = ", ".join(cols)
     placeholders = ", ".join(f"%({c})s" for c in cols)
     updates = ", ".join(f"{c}=EXCLUDED.{c}" for c in _POSTING_UPDATABLE)
-    return _INSERT_POSTING.format(tbl=tbl, cols=col_list, phs=placeholders, updates=updates)
+    return (
+        f"INSERT INTO {tbl} ({col_list}) VALUES ({placeholders}) "
+        f"ON CONFLICT (source_name, source_id_hash) DO UPDATE SET {updates} RETURNING id"
+    )
 
 
-def _build_detail_insert(tbl: str):
-    cols = _DETAIL_UPDATABLE
-    col_list = ", ".join(cols)
-    placeholders = ", ".join(f"%({c})s" for c in cols)
-    updates = ", ".join(f"{c}=EXCLUDED.{c}" for c in cols)
-    return _INSERT_DETAIL.format(tbl=tbl, cols=col_list, phs=placeholders, updates=updates)
+def _build_detail_insert(tbl: str) -> str:
+    col_list = ", ".join(_DETAIL_UPDATABLE)
+    placeholders = ", ".join(f"%({c})s" for c in _DETAIL_UPDATABLE)
+    updates = ", ".join(f"{c}=EXCLUDED.{c}" for c in _DETAIL_UPDATABLE)
+    return (
+        f"INSERT INTO {tbl} (job_id, {col_list}) VALUES (%s, {placeholders}) "
+        f"ON CONFLICT (job_id) DO UPDATE SET {updates}"
+    )
 
 
-def _adapt_detail_for_psycopg(rec: dict) -> dict:
-    out = dict(rec)
-    if "extra" in out and out["extra"] is not None and not isinstance(out["extra"], dict):
-        # JSONB 字段已经是 dict 形态可走 Jsonb；也兜底字符串
-        pass
-    return out
+def _clean_posting(rec: dict) -> dict:
+    return {k: rec[k] for k in ("source_name", "source_id", "source_id_hash") + _POSTING_UPDATABLE if k in rec}
 
 
-def merge_file(conn: psycopg.Connection, path: Path, mode: str, batch: int,
-               postings_tbl: str, details_tbl: str) -> dict:
-    """处理一个导出包，返回统计。"""
-    _validate_meta(path, expected_site=None)
+def _clean_detail(rec: dict) -> dict:
+    return {k: rec[k] for k in _DETAIL_UPDATABLE if k in rec}
+
+
+def _load_package(path: Path) -> tuple[dict, list[dict], list[dict], list[dict]]:
+    meta = _validate_meta(path, expected_site=None)
+    package_dir = path.parent
+    unified: list[dict] = []
+    postings: list[dict] = []
+    details: list[dict] = []
+
+    for rec in _iter_records(path):
+        table = rec.get("_table")
+        if table == "job_unified":
+            rec = resolve_media_paths(rec, package_dir)
+            unified.append(rec)
+        elif table == "job_postings":
+            postings.append(rec)
+        elif table == "job_posting_details":
+            rec = resolve_media_paths(rec, package_dir)
+            details.append(rec)
+    return meta, unified, postings, details
+
+
+def merge_file(
+    conn: psycopg.Connection,
+    path: Path,
+    mode: str,
+    batch: int,
+    postings_tbl: str,
+    details_tbl: str,
+) -> dict:
+    meta, unified_rows, postings_rows, details_rows = _load_package(path)
     posting_sql = _build_posting_insert(postings_tbl)
     detail_sql = _build_detail_insert(details_tbl)
 
-    stats = {"postings_new": 0, "postings_updated": 0, "details_upserted": 0, "skipped": 0}
+    stats = {
+        "postings_upserted": 0,
+        "details_upserted": 0,
+        "unified_upserted": 0,
+        "skipped": 0,
+        "master_id_mismatch": 0,
+    }
 
-    # 先 buffer 所有记录；详情按 source_id 关联（source_id 在包内唯一）
-    postings: list[dict] = []
+    # v2：优先 job_unified 宽表
+    if unified_rows:
+        sid_to_jid: dict[str, int] = {}
+        with conn.cursor() as cur:
+            for u in unified_rows:
+                mid = u.get("master_id")
+                if mid and not validate_master_id(str(mid)):
+                    stats["skipped"] += 1
+                    continue
+                posting, detail = split_unified_record(u)
+                if not posting.get("source_name") or not posting.get("source_id_hash"):
+                    stats["skipped"] += 1
+                    continue
+                try:
+                    row = cur.execute(posting_sql, posting).fetchone()
+                    if not row:
+                        stats["skipped"] += 1
+                        continue
+                    jid = row[0]
+                    sid = str(posting.get("source_id") or "")
+                    sid_to_jid[sid] = jid
+                    stats["postings_upserted"] += 1
+                    if detail:
+                        cur.execute(detail_sql, (jid, detail))
+                        stats["details_upserted"] += 1
+                    stats["unified_upserted"] += 1
+                except Exception as e:
+                    conn.rollback()
+                    stats["skipped"] += 1
+                    print(f"    ! skip unified {mid}: {e}")
+                    cur = conn.cursor()
+            conn.commit()
+        return stats
+
+    # v1 / 分表：postings + details，支持 master_id 校验
+    details_by_mid: dict[str, dict] = {}
     details_by_sid: dict[str, dict] = {}
-    for rec in _iter_records(path):
-        table = rec.pop("_table", None)
-        if table == "job_postings":
-            postings.append(rec)
-        elif table == "job_posting_details":
-            sid = rec.pop("job_id_source", None) or rec.get("source_id")
-            if sid is not None:
-                details_by_sid[str(sid)] = rec
+    for d in details_rows:
+        mid = str(d.get("master_id") or "")
+        sid = str(d.pop("job_id_source", None) or d.get("source_id") or "")
+        if mid:
+            details_by_mid[mid] = d
+        if sid:
+            details_by_sid[sid] = d
 
-    # 写 postings：source_id -> DB job_id 映射
     sid_to_jid: dict[str, int] = {}
     with conn.cursor() as cur:
-        for p in postings:
+        for p in postings_rows:
             if not p.get("source_name") or not p.get("source_id_hash"):
                 stats["skipped"] += 1
                 continue
+            mid = str(p.get("master_id") or "")
+            sid = str(p.get("source_id") or "")
             try:
-                row = cur.execute(posting_sql, p).fetchone()
+                row = cur.execute(posting_sql, _clean_posting(p)).fetchone()
                 if row:
-                    sid_to_jid[str(p["source_id"])] = row[0]
-                    stats["postings_new"] += 1
+                    sid_to_jid[sid] = row[0]
+                    stats["postings_upserted"] += 1
             except Exception as e:
                 conn.rollback()
                 stats["skipped"] += 1
-                print(f"    ! skip posting {p.get('source_id')}: {e}")
+                print(f"    ! skip posting {sid}: {e}")
                 cur = conn.cursor()
+                continue
 
-        # 再写 details
-        for sid, jid in sid_to_jid.items():
-            d = details_by_sid.get(sid)
+            d = details_by_sid.get(sid) or (details_by_mid.get(mid) if mid else None)
             if not d:
                 continue
-            d = _adapt_detail_for_psycopg(d)
+            d_mid = str(d.get("master_id") or "")
+            if mid and d_mid and mid != d_mid:
+                stats["master_id_mismatch"] += 1
+                print(f"    ! master_id mismatch posting={mid} detail={d_mid} sid={sid}")
+                continue
             try:
-                cur.execute(detail_sql, (jid, d))
+                cur.execute(detail_sql, (sid_to_jid[sid], _clean_detail(d)))
                 stats["details_upserted"] += 1
             except Exception as e:
                 conn.rollback()
@@ -171,13 +231,10 @@ def merge_file(conn: psycopg.Connection, path: Path, mode: str, batch: int,
 
 
 def main() -> None:
-    ap = argparse.ArgumentParser(description="导入导出包到主 PG 库")
-    ap.add_argument("--input", required=True, nargs="+",
-                    help="一个或多个导出包路径（支持 .gz）")
-    ap.add_argument("--mode", choices=["upsert", "preserve"], default="upsert",
-                    help="upsert 覆盖；preserve 仅新增")
-    ap.add_argument("--dry-run", action="store_true",
-                    help="试跑：只校验包头，不写库")
+    ap = argparse.ArgumentParser(description="导入 JSONL.gz 导出包到主 PG 库（v2）")
+    ap.add_argument("--input", required=True, nargs="+", help="一个或多个 .jsonl.gz")
+    ap.add_argument("--mode", choices=["upsert", "preserve"], default="upsert")
+    ap.add_argument("--dry-run", action="store_true", help="仅校验包头")
     args = ap.parse_args()
 
     from crawler.config import DB
@@ -191,8 +248,8 @@ def main() -> None:
         print(f"\n(dry-run) 校验通过 {len(paths)} 个包，未写库")
         return
 
-    total = {"postings_new": 0, "postings_updated": 0,
-             "details_upserted": 0, "skipped": 0}
+    total = {"postings_upserted": 0, "details_upserted": 0, "unified_upserted": 0,
+             "skipped": 0, "master_id_mismatch": 0}
     with psycopg.connect(dsn) as conn:
         for p in paths:
             print(f"\n→ 导入 {p}")

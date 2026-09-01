@@ -12,7 +12,7 @@
     const pageId = opts.pageId || opts.view || 'home';
     const b = hrefBase();
     const map = {
-      home: b + 'home.html',
+      home: b + 'news/index.html',
       map: b + 'map.html',
       evolution: b + 'evolution.html',
       discovery: b + 'discovery.html',

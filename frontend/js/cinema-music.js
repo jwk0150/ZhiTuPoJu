@@ -5,8 +5,8 @@
 
   function base() {
     const path = String(location.pathname || '').replace(/\\/g, '/');
-    if (/\/pages\/more\//.test(path)) return '../../';
-    if (/\/pages\//.test(path) || /\/news\//.test(path)) return '../';
+    if (/\/pages\/more\//.test(path) || /\/pages\/news\//.test(path)) return '../../';
+    if (/\/pages\//.test(path)) return '../';
     return './';
   }
 
@@ -17,10 +17,11 @@
 
   function ensureAudio() {
     if (audio) return audio;
-    audio = new Audio(SRC);
+    audio = new Audio();
+    audio.preload = 'none';
     audio.loop = true;
     audio.volume = DEFAULT_VOLUME;
-    audio.preload = 'auto';
+    audio.src = SRC;
     return audio;
   }
 

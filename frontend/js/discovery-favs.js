@@ -229,14 +229,13 @@
     });
   }
 
-  function initBar(options) {
+  function initBar() {
+    /* 收藏栏已废弃：收藏直接进入个人仓库 */
     const root = document.getElementById('dd-fav-bar');
-    if (!root) return;
-    if (options && options.activeId) {
-      root.dataset.activeId = String(options.activeId);
+    if (root) {
+      root.hidden = true;
+      root.style.display = 'none';
     }
-    bindBar(root, options);
-    renderBar(root, options);
   }
 
   window.DiscoveryFavs = {

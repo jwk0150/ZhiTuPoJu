@@ -1,0 +1,95 @@
+/* 登录 → 简历：短暂光晕过渡（仅光 + 执图破局） */
+
+.zhitu-transit {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.zhitu-transit.is-active {
+  pointer-events: auto;
+  opacity: 1;
+  visibility: visible;
+}
+
+.zhitu-transit__veil {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 58% 48% at 50% 46%, rgba(245, 217, 154, 0.28), rgba(212, 176, 122, 0.08) 42%, transparent 68%),
+    #070a0f;
+  opacity: 0;
+}
+
+.zhitu-transit__glow {
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  width: min(52vw, 520px);
+  height: min(52vw, 520px);
+  transform: translate(-50%, -50%) scale(0.82);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(245, 217, 154, 0.42) 0%, rgba(212, 176, 122, 0.12) 38%, transparent 68%);
+  filter: blur(8px);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.zhitu-transit__brand {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(10px) scale(0.96);
+}
+
+.zhitu-transit__title {
+  margin: 0;
+  font-family: "Noto Serif SC", "Songti SC", "STSong", serif;
+  font-size: clamp(40px, 6.5vw, 72px);
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  color: #f7e2a8;
+  text-indent: 0.22em;
+  text-shadow:
+    0 0 28px rgba(236, 201, 132, 0.45),
+    0 0 64px rgba(212, 176, 122, 0.28);
+}
+
+/* 目标页：短暂藏内容，防闪白 */
+html.zhitu-transit-pending,
+html.zhitu-transit-pending body {
+  background: #070a0f !important;
+}
+
+html.zhitu-transit-pending .rb-app,
+html.zhitu-transit-pending .rb-env {
+  opacity: 0 !important;
+}
+
+html.zhitu-transit-enter .rb-app,
+html.zhitu-transit-enter .rb-env {
+  transition: opacity 0.55s cubic-bezier(.22, 1, .36, 1);
+}
+
+html.zhitu-transit-enter.is-revealed .rb-app,
+html.zhitu-transit-enter.is-revealed .rb-env {
+  opacity: 1 !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .zhitu-transit__veil,
+  .zhitu-transit__glow,
+  .zhitu-transit__brand,
+  html.zhitu-transit-enter .rb-app,
+  html.zhitu-transit-enter .rb-env {
+    transition: opacity 0.2s ease !important;
+    transform: none !important;
+    filter: none !important;
+  }
+}

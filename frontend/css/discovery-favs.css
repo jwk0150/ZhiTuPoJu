@@ -1,5 +1,19 @@
-/* 收藏栏 · 黑金情报台 */
-.dd-fav-bar {
+/* 收藏栏已废弃：发现页收藏直接进入个人仓库 */
+.dd-fav-bar,
+#view-discovery-detail .dd-fav-bar,
+#view-discovery .dd-fav-bar,
+#view-discovery-detail:has(.dd-mod-layout) .dd-fav-bar {
+  display: none !important;
+  visibility: hidden !important;
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  border: 0 !important;
+}
+
+/* legacy fav-bar rules kept below but unused */
+.dd-fav-bar-legacy-unused {
   flex-shrink: 0;
   margin-bottom: 8px;
   padding: 8px 12px 7px;

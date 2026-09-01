@@ -8,7 +8,8 @@
   <link rel="stylesheet" href="../css/shell.css" />
   <link rel="stylesheet" href="../css/components.css" />
   <link rel="stylesheet" href="../css/legacy-views.css" />
-  <link rel="stylesheet" href="../css/match.css" />
+  <link rel="stylesheet" href="../css/match.css?v=20260826ai1" />
+  <link rel="stylesheet" href="../css/learning-os.css" />
   <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js" defer></script>
 </head>
 <body class="standalone-view" data-page="match">
@@ -27,9 +28,7 @@
         <nav class="wks-progress" id="wks-progress" aria-label="诊断进度">
           <!-- 由 JS 渲染进度节点 -->
         </nav>
-        <div class="wks-topbar-actions">
-          <button class="btn-sm btn-sm--solid" id="md-start-match-top" type="button">开始匹配 →</button>
-        </div>
+        <!-- 顶部右侧的"开始匹配"已迁移到右侧工具栏（仅本页显示）-->
       </header>
 
       <!-- 左窄导航 -->
@@ -46,10 +45,7 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
           <span>岗位</span>
         </button>
-        <button class="wks-nav-item" data-nav="capability" type="button">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="6" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><circle cx="18" cy="6" r="3"/><path d="M9 6h6M6 9v6a3 3 0 0 0 3 3h6"/></svg>
-          <span>能力</span>
-        </button>
+        <!-- 能力节点已并入\"岗位 → 学习 → 面试\"通路（学习/面试构成循环），不在左侧单独显示 -->
         <button class="wks-nav-item" data-nav="learn" type="button">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
           <span>学习</span>
@@ -77,40 +73,38 @@
         </div>
 
         <!-- ===== STATE 1 · 简历入口 ===== -->
-        <!-- 默认显示：即使 JS 初始化失败或延迟，也不出现空白 -->
         <div class="wks-view is-active" id="view-resume">
+
+          <div class="wks-step-guide" id="wks-step-guide" data-step="resume">
+            <span class="wks-step-guide-k">STEP 01 · 确认简历</span>
+            <p class="wks-step-guide-t" id="wks-step-guide-t">左侧预览简历，右侧查看 AI 改善建议；确认后点「开始匹配」。换份简历可点「选择简历」。</p>
+          </div>
 
           <!-- 顶部操作条 -->
           <div class="rw-toolbar" id="rw-toolbar">
             <div class="rw-toolbar-actions">
               <button class="btn-sm" id="md-view-resume" type="button">查看原件</button>
               <button class="btn-sm btn-sm--ghost" id="md-change-resume" type="button">重新上传</button>
+              <button class="btn-sm btn-sm--ghost" id="md-pick-resume" type="button">选择简历</button>
               <span class="rw-toolbar-sep"></span>
               <span class="rw-file-badge" id="rw-file-badge"></span>
+              <span id="resume-head-metrics"></span>
             </div>
             <div class="rw-toolbar-filters">
-              <span class="rw-filter-label">投递目标</span>
-              <span class="chip is-on" data-filter="target">Java 后端开发</span>
-              <span class="rw-filter-label">重点企业</span>
-              <span class="chip" data-filter="company">全部</span>
+              <button class="btn-sm btn-sm--solid rw-start-match" id="md-start-match-top" type="button">开始匹配 →</button>
             </div>
           </div>
 
-          <!-- 三栏工作台 -->
-          <div class="rw-grid">
-            <!-- 左：完整简历预览（纸质简历样式） -->
+          <!-- 默认：预览 + 词条 + AI 改善三栏 -->
+          <div class="rw-grid is-refine" id="rw-grid">
             <div class="rw-col rw-col--preview">
               <div class="rw-preview" id="rw-preview"></div>
             </div>
-
-            <!-- 中：词条导航 -->
-            <div class="rw-col rw-col--nav">
+            <div class="rw-col rw-col--nav" id="rw-col-nav">
               <div class="mod-head"><span class="mod-label">简历词条</span></div>
               <div class="rw-nav" id="rw-nav"></div>
             </div>
-
-            <!-- 右：分析 + 编辑区 -->
-            <div class="rw-col rw-col--editor">
+            <div class="rw-col rw-col--editor" id="rw-col-editor">
               <div class="mod-head">
                 <span class="mod-label">ANALYSIS & EDIT</span>
                 <span class="mod-tag mod-tag--warn" id="rw-editor-state">未选择</span>
@@ -128,6 +122,7 @@
               <div class="upload-compact-text">拖入或点击上传简历</div>
               <div class="upload-compact-fmt"><span>PDF</span><span>DOC</span><span>TXT</span></div>
               <button class="btn-sm btn-sm--ghost" id="md-sample-resume" type="button">使用示例简历</button>
+              <button class="btn-sm btn-sm--solid" id="md-open-vault" type="button">从个人仓库选择</button>
             </div>
           </div>
 
@@ -136,101 +131,214 @@
           <div class="resume-summary" id="resume-summary" hidden></div>
         </div>
 
-        <!-- ===== STATE 2 · 匹配条件 ===== -->
+        <!-- ===== STATE 2 · 岗位匹配条件工作台 ===== -->
         <div class="wks-view" id="view-match" hidden>
-          <div class="wks-view-head">
-            <div>
-              <div class="wks-eyebrow">MATCH CONDITIONS · 匹配条件</div>
-              <h1 class="wks-h1">求职条件编辑器</h1>
+          <div class="wks-step-guide" data-step="match">
+            <span class="wks-step-guide-k">STEP 02 · 设定条件</span>
+            <p class="wks-step-guide-t">确认城市与方向后直接运行匹配。细则可展开调整，不影响主流程。</p>
+          </div>
+          <div class="cond-wk">
+            <header class="cond-wk-head">
+              <div class="cond-wk-title">
+                <div class="wks-eyebrow">MATCH CONDITIONS · 岗位匹配条件</div>
+                <h1 class="wks-h1">一键跑出适合你的岗位</h1>
+                <p class="cond-wk-sub">默认沿用简历方向；改完点右下角运行即可</p>
+              </div>
+              <div class="cond-wk-completeness">
+                <b id="cond-completeness">0%</b>
+                <span>条件完整度</span>
+              </div>
+            </header>
+
+            <div class="cond-wk-grid">
+              <section class="cond-panel cond-panel--edit">
+                <div class="cond-panel-head"><b>条件编辑</b><small>配置求职条件</small></div>
+                <div class="cond-editor" id="cond-editor"></div>
+              </section>
+              <section class="cond-panel cond-panel--impact">
+                <div class="cond-panel-head"><b>条件影响分析</b><small>修改条件后，岗位覆盖范围将实时变化</small></div>
+                <div class="cond-impact" id="cond-impact"></div>
+              </section>
+              <section class="cond-panel cond-panel--target">
+                <div class="cond-panel-head"><b>目标岗位画像</b><button class="cond-panel-btn" id="cond-edit-job" type="button">编辑岗位</button></div>
+                <div class="cond-target" id="cond-target"></div>
+              </section>
             </div>
-            <button class="btn-sm btn-sm--solid" id="match-run" type="button">运行 AI 匹配 →</button>
-          </div>
 
-          <div class="cond-bar" id="cond-bar"></div>
-
-          <div class="cond-add">
-            <span class="cond-add-label">+ 添加条件</span>
-            <button class="chip-add" data-add="city" type="button">城市</button>
-            <button class="chip-add" data-add="salary" type="button">薪资</button>
-            <button class="chip-add" data-add="jobtype" type="button">工作性质</button>
-            <button class="chip-add" data-add="must" type="button">必备技能</button>
-            <button class="chip-add" data-add="prefer" type="button">发展技能</button>
-            <button class="chip-add" data-add="other" type="button">其他偏好</button>
+            <footer class="cond-wk-foot">
+              <div class="cond-checks" id="cond-checks"></div>
+              <div class="cond-run">
+                <button class="btn-sm btn-sm--solid btn-lg" id="cond-run-match" type="button">运行 AI 人岗匹配 →</button>
+                <span>将生成岗位匹配度、能力缺口与学习建议</span>
+              </div>
+            </footer>
           </div>
-          <div class="match-overview-strip" aria-label="匹配流程说明">
-            <div><span class="overview-icon">A</span><b>简历能力</b><small>提取技能与项目证据</small></div>
-            <span class="overview-arrow">→</span>
-            <div><span class="overview-icon">B</span><b>岗位要求</b><small>对照岗位能力图谱</small></div>
-            <span class="overview-arrow">→</span>
-            <div><span class="overview-icon">C</span><b>可解释结果</b><small>输出匹配分与补强建议</small></div>
-          </div>
-          <section class="match-workbench" id="match-workbench" aria-label="匹配准备面板"></section>
         </div>
 
-        <!-- ===== STATE 3 · AI 分析 ===== -->
+        <!-- ===== STATE 3 · AI 简历解析引擎（AI Processing） ===== -->
         <div class="wks-view" id="view-analysis" hidden>
-          <div class="wks-view-head">
-            <div>
-              <div class="wks-eyebrow">AI ANALYSIS · 能力构建过程</div>
-              <h1 class="wks-h1" id="analysis-title">正在构建你的能力图谱</h1>
+          <div class="rps" id="rps">
+            <!-- 背景氛围层 -->
+            <div class="rps-bg" aria-hidden="true">
+              <span class="rps-bg-orb rps-bg-orb--a"></span>
+              <span class="rps-bg-orb rps-bg-orb--b"></span>
+              <div class="rps-bg-grid"></div>
             </div>
-            <div class="analysis-pct" id="analysis-pct">0%</div>
-          </div>
 
-          <div class="analysis-grid">
-            <div class="mod mod-build">
-              <div class="mod-head"><span class="mod-label">CAPABILITY BUILDING</span></div>
-              <div class="build-lines" id="build-lines"></div>
-            </div>
-            <div class="mod mod-steps">
-              <div class="mod-head"><span class="mod-label">ANALYSIS STAGES</span></div>
-              <ul class="step-list" id="step-list"></ul>
-            </div>
-          </div>
-        </div>
-
-        <!-- ===== STATE 4 · 岗位推荐 + 详情合并（左侧列表 / 右侧详情） ===== -->
-        <div class="wks-view" id="view-jobs" hidden>
-          <div class="jobs-split">
-            <aside class="jobs-list-pane">
-              <div class="jobs-list-head">
-                <div class="jobs-list-head-text">
-                  <div class="wks-eyebrow">JOB RECOMMENDATION · 岗位结果</div>
-                  <h1 class="wks-h1">岗位推荐</h1>
-                  <p class="jobs-list-sub">点击列表中的岗位，右侧即时展示详情</p>
-                </div>
-                <div class="jobs-sort">
-                  <span class="jobs-sort-label">排序</span>
-                  <select id="jobs-sort" class="mini-select">
-                    <option value="match">匹配度</option>
-                    <option value="salary">薪资</option>
-                    <option value="city">地区</option>
-                  </select>
+            <!-- 中央 AI 分析核心 + 环形任务节点 -->
+            <section class="rps-stage" id="rps-stage" aria-label="AI 分析引擎">
+              <div class="rps-scanline" id="rps-scanline" aria-hidden="true"></div>
+              <!-- 环形任务节点（JS 渲染） -->
+              <div class="rps-ring" id="rps-ring"></div>
+              <!-- 中心能量球 -->
+              <div class="rps-orb" id="rps-orb">
+                <span class="rps-orb-halo rps-orb-halo--a"></span>
+                <span class="rps-orb-halo rps-orb-halo--b"></span>
+                <svg class="rps-neural" viewBox="0 0 120 120" aria-hidden="true">
+                  <g class="rps-neural-nodes">
+                    <circle cx="60" cy="60" r="3" />
+                    <circle cx="26" cy="34" r="2.2" />
+                    <circle cx="94" cy="32" r="2.2" />
+                    <circle cx="24" cy="86" r="2.2" />
+                    <circle cx="96" cy="86" r="2.2" />
+                    <circle cx="60" cy="16" r="2" />
+                    <circle cx="60" cy="104" r="2" />
+                  </g>
+                  <g class="rps-neural-links">
+                    <line x1="60" y1="60" x2="26" y2="34" />
+                    <line x1="60" y1="60" x2="94" y2="32" />
+                    <line x1="60" y1="60" x2="24" y2="86" />
+                    <line x1="60" y1="60" x2="96" y2="86" />
+                    <line x1="60" y1="60" x2="60" y2="16" />
+                    <line x1="60" y1="60" x2="60" y2="104" />
+                  </g>
+                </svg>
+                <span class="rps-orb-ring" aria-hidden="true"></span>
+                <div class="rps-orb-core">
+                  <span class="rps-orb-ai">AI</span>
+                  <span class="rps-orb-pulse" aria-hidden="true"></span>
                 </div>
               </div>
 
-              <div class="jobs-filter" id="jobs-filter"></div>
+              <!-- 中心文案 + 环形进度 -->
+              <div class="rps-core-copy">
+                <h2 class="rps-title" id="analysis-title">正在分析你的简历</h2>
+                <p class="rps-direction" id="analysis-direction">Java 后端开发方向</p>
+                <div class="rps-progress">
+                  <svg class="rps-ring-svg" viewBox="0 0 92 92" aria-hidden="true">
+                    <circle class="rps-ring-track" cx="46" cy="46" r="40"></circle>
+                    <circle class="rps-ring-bar" id="rps-ring-bar" cx="46" cy="46" r="40" stroke-dasharray="251.2" stroke-dashoffset="251.2"></circle>
+                  </svg>
+                  <div class="rps-progress-num"><b id="analysis-pct">0</b><small>%</small></div>
+                </div>
+              </div>
+            </section>
 
-              <div class="jobs-tabs" id="jobs-tabs">
-                <button class="jobs-tab active" data-rec-tab="now" type="button">当前适合</button>
-                <button class="jobs-tab" data-rec-tab="future" type="button">潜力岗位</button>
-                <button class="jobs-tab" data-rec-tab="top" type="button">匹配度最高</button>
-                <button class="jobs-tab" data-rec-tab="high" type="button">高薪</button>
+            <!-- 动态内容区：AI 实时识别 -->
+            <section class="rps-dynamic los-glass" id="rps-dynamic" aria-label="AI 实时识别">
+              <div class="rps-dyn-head">
+                <span class="rps-dyn-live"><i></i>AI 实时识别</span>
+                <span class="rps-dyn-log" id="rps-dyn-log">正在扫描简历内容…</span>
+              </div>
+              <div class="rps-find">
+                <span class="rps-find-label">正在发现</span>
+                <div class="rps-find-chips" id="rps-find-chips"></div>
+              </div>
+              <div class="rps-marquee" id="rps-marquee">
+                <div class="rps-marquee-track" id="rps-marquee-track"></div>
+              </div>
+              <div class="rps-counts">
+                <div class="rps-count"><b data-count="3">0</b><span>个项目经历</span></div>
+                <div class="rps-count"><b data-count="42">0</b><span>个技术关键词</span></div>
+                <div class="rps-count"><b data-count="6">0</b><span>维能力模型</span></div>
+                <div class="rps-count"><b data-count="3">0</b><span>年经验沉淀</span></div>
+              </div>
+            </section>
+
+            <!-- 预计生成内容预览 -->
+            <section class="rps-preview" id="rps-preview" aria-label="预计生成内容">
+              <div class="rps-preview-card los-glass">
+                <span class="rps-preview-icon">◈</span>
+                <b>能力画像</b>
+                <small>技能雷达图生成中…</small>
+                <span class="rps-preview-shimmer" aria-hidden="true"></span>
+              </div>
+              <div class="rps-preview-card los-glass">
+                <span class="rps-preview-icon">◉</span>
+                <b>岗位推荐</b>
+                <small>匹配算法计算中…</small>
+                <span class="rps-preview-shimmer" aria-hidden="true"></span>
+              </div>
+              <div class="rps-preview-card los-glass">
+                <span class="rps-preview-icon">◇</span>
+                <b>学习路径</b>
+                <small>成长方案生成中…</small>
+                <span class="rps-preview-shimmer" aria-hidden="true"></span>
+              </div>
+            </section>
+
+            <!-- 底部说明 -->
+            <footer class="rps-foot">
+              <span class="rps-foot-dot"><i></i></span>
+              <span>AI 正在为你构建职业画像… 通常需要 10-20 秒</span>
+            </footer>
+          </div>
+        </div>
+
+        <!-- ===== STATE 4 · AI 求职决策中心（左：AI 推荐岗位中心 / 右：岗位智能分析工作区） ===== -->
+        <div class="wks-view" id="view-jobs" hidden>
+          <div class="wks-step-guide" data-step="jobs">
+            <span class="wks-step-guide-k">STEP 03 · 选岗决策</span>
+            <p class="wks-step-guide-t">点左侧岗位看匹配原因；选定后可去「学习」补缺口，或直接「面试」演练。</p>
+          </div>
+          <!-- 全局 SVG 渐变定义：匹配度圆环 青绿→金 -->
+          <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+            <defs>
+              <linearGradient id="match-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#2a9d8f" />
+                <stop offset="100%" stop-color="#d4b07a" />
+              </linearGradient>
+            </defs>
+          </svg>
+          <div class="jobs-split">
+
+            <!-- ===== 左侧 32% · AI 推荐岗位中心 ===== -->
+            <aside class="jobs-list-pane">
+              <div class="jobs-list-head">
+                <div class="jobs-list-head-text">
+                  <div class="wks-eyebrow">AI RECOMMENDATION · 智能推荐</div>
+                  <h1 class="wks-h1">AI 推荐岗位</h1>
+                  <p class="jobs-list-sub">点击岗位卡片，右侧即时分析匹配原因</p>
+                </div>
+                <span class="rec-live"><i></i>实时刷新</span>
+              </div>
+
+              <!-- 你的画像 -->
+              <div class="rec-profile" id="rec-profile"></div>
+
+              <!-- AI 排序 -->
+              <div class="jobs-sort" id="jobs-sort">
+                <span class="jobs-sort-label">AI排序</span>
+                <button class="jobs-sort-chip is-active" data-sort="match" type="button">最高匹配</button>
+                <button class="jobs-sort-chip" data-sort="quick" type="button">最快入职</button>
+                <button class="jobs-sort-chip" data-sort="salary" type="button">最高薪资</button>
+                <button class="jobs-sort-chip" data-sort="growth" type="button">成长空间</button>
               </div>
 
               <div class="jobs-list" id="jobs-list"></div>
             </aside>
 
+            <!-- ===== 右侧 68% · 岗位智能分析工作区 ===== -->
             <section class="jobs-detail-pane" id="jobs-detail-pane">
-              <div class="detail-top">
-                <div class="detail-title" id="detail-job-title">选择一个岗位查看详情</div>
-                <div class="detail-score" id="detail-job-score"></div>
-              </div>
 
+              <!-- 岗位 Header -->
+              <div class="jd-header" id="jd-header"></div>
+
+              <!-- Tab 导航 -->
               <div class="jobs-detail-tabs" id="jobs-detail-tabs">
-                <button class="jd-tab is-active" data-jd-tab="info" type="button">岗位信息</button>
-                <button class="jd-tab" data-jd-tab="resume" type="button">简历诊断</button>
-                <button class="jd-tab" data-jd-tab="interview" type="button">面试准备</button>
+                <button class="jd-tab is-active" data-jd-tab="info" type="button">岗位画像</button>
+                <button class="jd-tab" data-jd-tab="resume" type="button">能力匹配</button>
+                <button class="jd-tab" data-jd-tab="interview" type="button">AI 面试训练</button>
               </div>
 
               <div class="jobs-detail-body">
@@ -238,20 +346,90 @@
                 <div class="jd-pane" data-jd-pane="resume" id="jd-pane-resume"></div>
                 <div class="jd-pane" data-jd-pane="interview" id="jd-pane-interview"></div>
               </div>
+
+              <!-- 底部：职业决策路径 -->
+              <div class="jd-decision" id="jd-decision"></div>
             </section>
+          </div>
+
+          <!-- AI Interview Coach · 右侧固定浮窗 -->
+          <div class="interview-coach" id="interview-coach" hidden>
+            <div class="interview-coach-head">
+              <span class="interview-coach-orb">AI</span>
+              <div class="interview-coach-title">
+                <b>AI Interview Coach</b>
+                <small>面试教练 · 实时在线</small>
+              </div>
+              <button class="interview-coach-close" id="interview-coach-close" type="button" aria-label="关闭">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
+            </div>
+            <div class="interview-coach-body" id="interview-coach-body"></div>
+            <button class="interview-coach-cta" id="interview-coach-start" type="button">开始训练 →</button>
           </div>
         </div>
 
-        <!-- ===== STATE 6 · 学习路径 ===== -->
+        <!-- ===== STATE 6 · 学习路径 · AI Career OS ===== -->
         <div class="wks-view" id="view-learn" hidden>
-          <div class="wks-view-head">
-            <div>
-              <div class="wks-eyebrow">LEARNING PATH · 能力补强</div>
-              <h1 class="wks-h1" id="learn-title">学习路径</h1>
-            </div>
-            <div class="learn-impact" id="learn-impact"></div>
+          <div class="wks-step-guide" data-step="learn">
+            <span class="wks-step-guide-k">STEP 04 · 针对岗位提升</span>
+            <p class="wks-step-guide-t">围绕当前岗位补能力缺口；学完可切到面试演练，面完再回来学——可循环。</p>
           </div>
-          <div class="learn-timeline" id="learn-timeline"></div>
+          <div class="los" id="los">
+            <!-- 背景氛围层 -->
+            <div class="los-bg" aria-hidden="true">
+              <span class="los-bg-orb los-bg-orb--a"></span>
+              <span class="los-bg-orb los-bg-orb--b"></span>
+              <span class="los-bg-orb los-bg-orb--c"></span>
+              <div class="los-bg-grid"></div>
+            </div>
+
+            <!-- ① 顶部职业成长概览 Dashboard -->
+            <section class="los-hero" id="los-hero" aria-label="职业成长概览"></section>
+
+            <!-- ② 学习路径主体：Timeline + Skill Cards -->
+            <section class="los-path-sec" id="los-path-sec" aria-label="学习路径">
+              <header class="los-sec-head">
+                <div>
+                  <div class="los-eyebrow">CAREER GROWTH TIMELINE · 成长时间轴</div>
+                  <h2 class="los-h2">职业成长路线</h2>
+                  <p class="los-sec-sub">按岗位价值排序的进阶路径 · 点击阶段筛选对应技能模块</p>
+                </div>
+                <button class="los-btn los-btn--ghost" id="los-filter-all" type="button">显示全部阶段</button>
+              </header>
+              <div class="los-main">
+                <aside class="los-timeline" id="los-timeline" aria-label="成长阶段"></aside>
+                <div class="los-cards" id="los-cards"></div>
+              </div>
+            </section>
+
+            <!-- ③ 岗位能力地图 -->
+            <section class="los-graph-sec" id="los-graph-sec" aria-label="岗位能力地图">
+              <header class="los-sec-head">
+                <div>
+                  <div class="los-eyebrow">SKILL RELATION MAP · 能力地图</div>
+                  <h2 class="los-h2">岗位能力地图</h2>
+                  <p class="los-sec-sub">看清每个技能在能力链中的位置，理解"为什么学习它"</p>
+                </div>
+              </header>
+              <div class="los-graph los-glass" id="los-graph"></div>
+            </section>
+
+            <!-- ④ 能力提升预测 -->
+            <section class="los-forecast-sec" id="los-forecast-sec" aria-label="能力提升预测">
+              <header class="los-sec-head">
+                <div>
+                  <div class="los-eyebrow">MATCH FORECAST · 匹配度预测</div>
+                  <h2 class="los-h2">能力提升预测</h2>
+                  <p class="los-sec-sub">按推荐路径推进，岗位匹配度动态提升</p>
+                </div>
+              </header>
+              <div class="los-forecast los-glass" id="los-forecast"></div>
+            </section>
+          </div>
+
+          <!-- AI Career Coach 浮窗 -->
+          <div class="los-coach" id="los-coach" role="complementary" aria-label="AI Career Coach"></div>
         </div>
 
         <!-- ===== STATE 7 · 优秀简历对比 ===== -->
@@ -293,74 +471,251 @@
     <!-- Popover 容器（技能级别编辑等） -->
     <div class="popover" id="wks-popover" hidden></div>
 
-    <!-- 沉浸式模拟面试 -->
-    <div class="md-interview" id="md-interview" hidden>
-      <div class="md-int-top">
-        <div class="md-int-job" id="int-job-label"></div>
-        <div class="md-int-progress" id="int-progress">01 / 08</div>
-      </div>
-      <div class="md-int-cameras">
-        <div class="md-int-cam md-int-cam--ai">
-          <div class="md-int-avatar" id="int-avatar">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6"/></svg>
-          </div>
-          <div class="md-int-cam-wave" id="int-ai-wave" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
-          <div class="md-int-cam-tag">AI 面试官</div>
-          <video id="int-ai-video" autoplay muted playsinline></video>
+    <!-- 岗位画像编辑浮层（匹配条件工作台内使用） -->
+    <div class="cond-job-modal" id="cond-job-modal" hidden role="dialog" aria-modal="true" aria-label="编辑目标岗位">
+      <div class="cond-job-mask"></div>
+      <div class="cond-job-dialog">
+        <div class="cond-job-head">
+          <h3>编辑目标岗位</h3>
+          <button class="md-drawer-close" id="cond-job-close" type="button" aria-label="关闭">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
         </div>
-        <div class="md-int-cam md-int-cam--user">
-          <video id="int-user-video" autoplay muted playsinline></video>
-          <div class="md-int-cam-placeholder" id="int-user-placeholder">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6"/></svg>
-            <span>求职者</span>
-          </div>
-          <div class="md-int-cam-tag">求职者</div>
+        <div class="cond-job-body" id="cond-job-body"></div>
+        <div class="cond-job-foot">
+          <button class="btn-sm btn-sm--ghost" id="cond-job-cancel" type="button">取消</button>
+          <button class="btn-sm btn-sm--solid" id="cond-job-save" type="button">保存画像 →</button>
         </div>
-      </div>
-      <div class="md-int-question">
-        <div class="md-int-q-label" id="int-q-label">AI 正在提问</div>
-        <div class="md-int-q-text" id="int-question-text">请介绍一下你在简历中提到的项目。</div>
-        <div class="md-int-live" id="int-live-caption"></div>
-        <div class="md-int-rec" id="int-rec-state"><span class="md-int-rec-dot"></span>正在录音</div>
-      </div>
-      <div class="md-int-controls">
-        <button class="md-int-ctrl" id="btn-mic" type="button" aria-pressed="true">
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10v1a7 7 0 0 0 14 0v-1"/><line x1="12" y1="19" x2="12" y2="22"/></svg>
-          <span>麦克风</span>
-        </button>
-        <button class="md-int-ctrl" id="btn-cam" type="button" aria-pressed="true">
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
-          <span>摄像头</span>
-        </button>
-        <button class="md-int-ctrl" id="btn-speaker" type="button" aria-pressed="true">
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M19 5a9 9 0 0 1 0 14"/></svg>
-          <span>扬声器</span>
-        </button>
-      </div>
-      <div class="md-int-footer">
-        <button class="md-int-btn md-int-btn--ghost" id="int-exit" type="button">结束面试</button>
-        <button class="md-int-btn md-int-btn--solid" id="int-next" type="button">下一问 →</button>
       </div>
     </div>
 
-    <!-- 面试报告层 -->
-    <div class="md-report" id="md-report" hidden>
-      <div class="md-report-inner">
-        <div class="md-report-head">
-          <span class="md-report-kicker">本次面试</span>
-          <div class="md-report-meta" id="report-meta"></div>
-        </div>
-        <div class="md-report-score-row">
-          <div class="md-report-score">
-            <div class="md-report-score-num" id="report-score">78</div>
-            <div class="md-report-score-lbl">综合评价</div>
+    <!-- AI 模拟面试 · AI Interview OS -->
+    <div class="md-interview" id="md-interview" hidden>
+      <div class="md-int-wrap">
+
+        <!-- 顶部 · 面试状态栏 -->
+        <div class="md-int-topbar">
+          <div class="md-int-job" id="int-job-label">
+            <span class="md-int-job-dot"></span>
+            <span id="int-job-text">Java 后端开发工程师模拟面试</span>
           </div>
-          <div class="md-report-dims" id="report-dims"></div>
+
+          <div class="md-int-stage">
+            <span class="md-int-stage-lbl">面试进度</span>
+            <b class="md-int-progress" id="int-progress">01 / 08</b>
+            <div class="md-int-steps" id="int-steps"></div>
+          </div>
+
+          <div class="md-int-live">
+            <span class="md-int-live-lbl"><i></i>AI 面试评分实时计算</span>
+            <div class="md-int-live-row">
+              <b class="md-int-live-score" id="int-live-score">0</b>
+              <span class="md-int-live-state" id="int-live-state"><i></i>AI 分析中...</span>
+            </div>
+          </div>
         </div>
-        <div class="md-report-issues" id="report-issues"></div>
-        <div class="md-report-actions">
-          <button class="btn-sm btn-sm--ghost" id="report-restart" type="button">再面一次</button>
-          <button class="btn-sm btn-sm--solid" id="report-back" type="button">返回岗位分析</button>
+
+        <!-- 主体 · 左右 AI 双角色 + 中间实时分析层 -->
+        <div class="md-int-main">
+
+          <!-- 左 · AI 面试官 -->
+          <div class="md-int-role md-int-role--ai">
+            <div class="md-int-role-head">
+              <div class="md-int-role-title">
+                <b>AI Interviewer</b>
+                <small>智能面试官 · 人才评估中心</small>
+              </div>
+              <span class="md-int-role-state"><i></i>正在提问</span>
+            </div>
+
+            <div class="md-int-ai-stage">
+              <div class="md-int-ai-ring" id="int-ai-ring" aria-hidden="true"><span></span><span></span><span></span></div>
+              <div class="md-int-ai-core" id="int-avatar">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6"/><path d="M17 2l1 1-1 1M20 4l1 1-1 1M14 3l.7.7-.7.7"/></svg>
+              </div>
+              <div class="md-int-ai-wave" id="int-ai-wave" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+              <div class="md-int-ai-status">正在聆听你的回答</div>
+            </div>
+
+            <div class="md-int-ai-metrics" id="int-ai-metrics">
+              <div class="md-int-metric" data-k="tech"><span>技术深度</span><span class="bar"><i data-w="75"></i></span><b data-w="75">0</b></div>
+              <div class="md-int-metric" data-k="expr"><span>表达能力</span><span class="bar"><i data-w="68"></i></span><b data-w="68">0</b></div>
+              <div class="md-int-metric" data-k="proj"><span>项目经验</span><span class="bar"><i data-w="82"></i></span><b data-w="82">0</b></div>
+            </div>
+
+            <div class="md-int-question">
+              <div class="md-int-q-label" id="int-q-label">AI 正在提问 · 第 1 题</div>
+              <div class="md-int-q-text" id="int-question-text">请介绍一下你在简历中提到的项目。</div>
+            </div>
+          </div>
+
+          <!-- 中 · AI 实时分析层 -->
+          <div class="md-int-analysis">
+            <div class="md-int-analysis-card">
+              <div class="md-int-analysis-head"><span class="ai-orb sm">AI</span><b>实时分析</b><span class="md-int-analysis-live"><i></i>LIVE</span></div>
+
+              <div class="md-int-analysis-sec">
+                <span class="md-int-analysis-label">正在分析 · 关键词</span>
+                <div class="md-int-keywords" id="int-keywords">
+                  <span>Spring Boot</span><span>Redis</span><span>微服务</span>
+                </div>
+              </div>
+
+              <div class="md-int-analysis-sec">
+                <span class="md-int-analysis-label">检测能力</span>
+                <div class="md-int-detect" id="int-detect">
+                  <span>✓ 技术表达</span><span>✓ 项目真实性</span><span>✓ 架构理解</span>
+                </div>
+              </div>
+
+              <div class="md-int-analysis-score">
+                <span>实时评分</span>
+                <div class="md-int-analysis-score-num"><b id="int-analysis-score">0</b><small>/ 100</small></div>
+                <div class="md-int-analysis-gauge"><i data-w="78" id="int-analysis-gauge"></i></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 右 · 候选人 -->
+          <div class="md-int-role md-int-role--user">
+            <div class="md-int-role-head">
+              <div class="md-int-role-title">
+                <b>候选人</b>
+                <small>Candidate · 正在回答</small>
+              </div>
+              <span class="md-int-role-state is-user"><i></i>AI 识别中</span>
+            </div>
+
+            <div class="md-int-user-stage">
+              <video id="int-user-video" autoplay muted playsinline></video>
+              <div class="md-int-cam-placeholder" id="int-user-placeholder">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6"/></svg>
+                <span>正在连接摄像头...</span>
+              </div>
+              <div class="md-int-voice-wave" id="int-voice-wave" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+              <div class="md-int-cam-tag">求职者</div>
+            </div>
+
+            <div class="md-int-caption">
+              <span class="md-int-caption-dot"></span>
+              <span id="int-live-caption">正在识别回答内容...</span>
+            </div>
+            <div class="md-int-rec" id="int-rec-state"><span class="md-int-rec-dot"></span>正在录音</div>
+          </div>
+        </div>
+
+        <!-- 底部 · AI 控制台 -->
+        <div class="md-int-console">
+          <div class="md-int-console-group">
+            <button class="md-int-ctrl" id="btn-mic" type="button" aria-pressed="true">
+              <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10v1a7 7 0 0 0 14 0v-1"/><line x1="12" y1="19" x2="12" y2="22"/></svg>
+              <span>麦克风</span>
+            </button>
+            <button class="md-int-ctrl" id="btn-cam" type="button" aria-pressed="true">
+              <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+              <span>摄像头</span>
+            </button>
+            <button class="md-int-ctrl" id="btn-speaker" type="button" aria-pressed="true">
+              <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M19 5a9 9 0 0 1 0 14"/></svg>
+              <span>语音状态</span>
+            </button>
+          </div>
+
+          <div class="md-int-console-actions">
+            <button class="md-int-btn md-int-btn--ghost" id="int-exit" type="button">结束面试</button>
+            <button class="md-int-btn md-int-btn--hint" id="int-hint" type="button">
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.4 1 2.3h6c0-.9.4-1.8 1-2.3A7 7 0 0 0 12 2z"/></svg>
+              查看回答建议
+            </button>
+            <button class="md-int-btn md-int-btn--solid" id="int-next" type="button">下一题 →</button>
+          </div>
+
+          <button class="md-int-assistant-toggle" id="int-assistant-toggle" type="button">
+            <span class="ai-orb sm">AI</span><span>面试助手</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 右侧隐藏抽屉 · AI 面试助手 -->
+      <div class="md-int-drawer" id="int-drawer" hidden>
+        <div class="md-int-drawer-head">
+          <div class="md-int-drawer-title">
+            <span class="ai-orb sm">AI</span>
+            <div><b>AI 面试助手</b><small>实时辅导 · 回答洞察</small></div>
+          </div>
+          <button class="md-int-drawer-close" id="int-drawer-close" type="button" aria-label="关闭">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+        <div class="md-int-drawer-body" id="int-drawer-body"></div>
+      </div>
+    </div>
+
+    <!-- AI 面试分析报告 · 职业能力分析 Dashboard -->
+    <div class="md-report" id="md-report" hidden>
+      <div class="md-report-dialog">
+        <div class="md-report-head">
+          <div>
+            <div class="md-report-kicker">AI INTERVIEW REPORT · 人才评估报告</div>
+            <div class="md-report-title">职业能力分析 Dashboard</div>
+          </div>
+          <div class="md-report-actions">
+            <button class="btn-sm btn-sm--ghost" id="report-restart" type="button">再面一次</button>
+            <button class="btn-sm btn-sm--solid" id="report-back" type="button">返回岗位分析</button>
+          </div>
+        </div>
+
+        <div class="md-report-scroll">
+
+          <!-- 顶部 · 个人评估概览 -->
+          <div class="rpt-overview">
+            <div class="rpt-overview-metrics">
+              <div class="rpt-metric">
+                <span class="rpt-metric-lbl">综合评分</span>
+                <div class="rpt-metric-val"><b id="report-score">0</b><small>分</small></div>
+                <span class="rpt-metric-sub" id="report-score-tag">良好 · 具备竞争力</span>
+              </div>
+              <div class="rpt-metric">
+                <span class="rpt-metric-lbl">岗位匹配</span>
+                <div class="rpt-metric-val gold"><b id="report-match">0</b><small>%</small></div>
+                <span class="rpt-metric-sub">高于同岗位平均</span>
+              </div>
+              <div class="rpt-metric">
+                <span class="rpt-metric-lbl">面试等级</span>
+                <div class="rpt-metric-val lvl" id="report-level">中级 Java 工程师</div>
+                <span class="rpt-metric-sub" id="report-level-sub">可冲刺高级岗位</span>
+              </div>
+            </div>
+            <div class="rpt-ai-summary">
+              <span class="ai-orb">AI</span>
+              <div class="rpt-ai-summary-text">
+                <b>AI 总结</b>
+                <p id="report-summary">候选人具备企业级 Java 开发能力，但系统设计经验不足。</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- 能力雷达图 -->
+          <div class="rpt-card rpt-radar-card">
+            <div class="rpt-sec-head"><b>能力雷达</b><small>六维职业能力画像 · 基于面试实时评估</small></div>
+            <div class="rpt-radar" id="report-radar"></div>
+          </div>
+
+          <!-- 能力分析列表 -->
+          <div class="rpt-sec-head"><b>能力分析</b><small>点击卡片展开详细报告</small></div>
+          <div class="rpt-skills" id="report-skills"></div>
+
+          <!-- AI 面试洞察 -->
+          <div class="rpt-sec-head"><b>AI 面试洞察</b><small>Insights & Growth</small></div>
+          <div class="rpt-insights" id="report-insights"></div>
+
+          <!-- 职业发展路径 -->
+          <div class="rpt-card rpt-career">
+            <div class="rpt-sec-head"><b>职业发展路径</b><small>Career Path · 下一站</small></div>
+            <div class="rpt-career-path" id="report-career"></div>
+            <button class="btn-sm btn-sm--solid rpt-career-btn" id="report-path-btn" type="button">生成学习路线 →</button>
+          </div>
+
         </div>
       </div>
     </div>
@@ -396,92 +751,107 @@
       </div>
     </div>
 
-    <!-- 学习画像悬浮窗（知识掌握图谱） -->
-    <div class="rp-modal" id="rp-modal" hidden role="dialog" aria-modal="true" aria-label="学习画像">
+    <!-- ===== AI 人岗能力诊断工作台（学习画像重构） ===== -->
+    <div class="rp-modal" id="rp-modal" hidden role="dialog" aria-modal="true" aria-label="AI 人岗能力诊断工作台">
       <div class="rp-mask"></div>
       <div class="rp-dialog">
-        <div class="rp-head">
+        <!-- 顶栏：返回 / 标题 / 搜索 / 时间 / 数据来源 / 更新时间 -->
+        <header class="rp-head">
           <div class="rp-head-left">
             <button class="rp-back" id="rp-close" type="button">← 返回</button>
-            <div>
-              <h2 class="rp-title" id="rp-title">学习画像 · 知识掌握图谱</h2>
-              <p class="rp-sub">把诊断、练习与复盘证据连成一张可追踪的知识网络</p>
+            <div class="rp-head-title">
+              <h2 class="rp-title" id="rp-title">Java 后端开发 · 学习画像</h2>
+              <p class="rp-sub">人岗匹配能力诊断 · 学习路径</p>
             </div>
           </div>
           <div class="rp-head-right">
             <div class="rp-search">
               <span class="rp-search-icon">⌕</span>
-              <input type="text" placeholder="搜索知识点、题目、概念..." id="rp-search-input" />
+              <input type="text" placeholder="搜索知识点、题目、概念..." id="rp-search-input" autocomplete="off" />
             </div>
-            <button class="rp-time" type="button">近 30 天 ▾</button>
+            <button class="rp-time rp-pop-toggle" id="rp-time-btn" data-pop="rp-time-pop" type="button"><span id="rp-time-label">近 30 天</span> ▾</button>
+            <button class="rp-ghost rp-pop-toggle" id="rp-source-btn" data-pop="rp-source-pop" type="button">数据来源 ▾</button>
+            <button class="rp-ghost rp-pop-toggle" id="rp-updated-btn" data-pop="rp-updated-pop" type="button">数据更新于 <b id="rp-updated-time">08/24 23:36</b></button>
           </div>
-        </div>
+        </header>
+
+        <!-- 顶部 KPI 概览：能力总览 / 当前岗位匹配 / 能力缺口 -->
+        <section class="rp-kpis">
+          <div class="rp-kpi">
+            <span class="rp-kpi-label">能力总览</span>
+            <span class="rp-kpi-val" id="rp-kpi-overall">76%</span>
+            <span class="rp-kpi-delta up" id="rp-kpi-overall-delta">↑ 较上次 +6%</span>
+          </div>
+          <div class="rp-kpi">
+            <span class="rp-kpi-label">当前岗位匹配</span>
+            <span class="rp-kpi-val" id="rp-kpi-match">88%</span>
+            <span class="rp-kpi-delta up" id="rp-kpi-match-delta">↑ 核心能力匹配</span>
+          </div>
+          <div class="rp-kpi">
+            <span class="rp-kpi-label">能力缺口</span>
+            <span class="rp-kpi-val warn" id="rp-kpi-gaps">3 项</span>
+            <span class="rp-kpi-delta warn" id="rp-kpi-gaps-delta">2 项高优先级</span>
+          </div>
+        </section>
+
+        <!-- 主区：能力地图（可筛选导航器） + AI 能力诊断（独立滚动） -->
         <div class="rp-body">
-          <div class="rp-graph-pane">
+          <section class="rp-graph-pane">
             <div class="rp-graph-toolbar">
-              <button class="rp-cat is-active" type="button">岗位核心能力</button>
-            </div>
-            <div class="rp-graph" id="rp-graph"></div>
-          </div>
-          <aside class="rp-ai-pane">
-            <div class="rp-ai-head">
-              <div class="rp-ai-title">⚡ AI 判断</div>
-              <div class="rp-ai-meta">数据更新时间：<span id="rp-ai-time">—</span></div>
-            </div>
-            <div class="rp-ai-metrics">
-              <div class="rp-metric">
-                <div class="rp-metric-label">整体掌握度</div>
-                <div class="rp-metric-val" id="rp-overall">0%</div>
-                <div class="rp-metric-hint" id="rp-overall-hint">—</div>
+              <span class="rp-graph-title">能力地图</span>
+              <div class="rp-filters" id="rp-filters">
+                <button class="rp-cat is-active" data-filter="all" type="button">全部</button>
+                <button class="rp-cat" data-filter="core" type="button">核心能力</button>
+                <button class="rp-cat" data-filter="gap" type="button">存在缺口</button>
+                <button class="rp-cat" data-filter="mastered" type="button">已掌握</button>
+                <button class="rp-cat" data-filter="unlearned" type="button">未学习</button>
               </div>
-              <div class="rp-metric">
-                <div class="rp-metric-label">判断置信度</div>
-                <div class="rp-metric-val" id="rp-confidence">94%</div>
-                <div class="rp-metric-hint">较高</div>
+              <div class="rp-sort">
+                <span>排序</span>
+                <select id="rp-sort" class="mini-select">
+                  <option value="impact">岗位影响</option>
+                  <option value="gap">缺口大小</option>
+                  <option value="alpha">名称</option>
+                </select>
               </div>
             </div>
-            <div class="rp-ai-section">
-              <div class="rp-section-title">判断依据</div>
-              <div class="rp-evidence-chips" id="rp-evidence"></div>
-            </div>
-            <div class="rp-ai-section">
-              <div class="rp-section-title" id="rp-evalskill">薄弱技能评估</div>
-              <div class="rp-ai-eval" id="rp-eval"></div>
-              <div class="rp-ai-rel" id="rp-rel"></div>
-            </div>
-            <div class="rp-ai-section">
-              <div class="rp-section-title">下一步建议</div>
-              <div class="rp-next-card">
-                <div class="rp-next-head">
-                  <span class="rp-next-tag">⊕ 攻克薄弱点</span>
-                  <b id="rp-next-skill">—</b>
-                </div>
-                <div class="rp-next-meta">当前掌握度 <b id="rp-next-pct">0%</b>，建议先针对薄弱项练习</div>
-                <div class="rp-next-steps" id="rp-next-steps"></div>
-                <button class="btn-sm btn-sm--solid btn-lg rp-plan-btn" id="rp-plan-btn" type="button">查看学习计划 →</button>
+            <div class="rp-graph" id="rp-graph">
+              <div class="rp-graph-legend" aria-hidden="true">
+                <span><i class="d teal"></i>已达标</span>
+                <span><i class="d orange"></i>存在缺口</span>
+                <span><i class="d gray"></i>未学习</span>
+                <span class="rp-graph-hint">点击节点查看 AI 诊断</span>
               </div>
+              <div class="rp-search-hint" id="rp-search-hint" hidden></div>
             </div>
-          </aside>
+          </section>
+
+          <aside class="rp-ai-pane" id="rp-ai-pane" aria-label="AI 能力诊断"></aside>
         </div>
-        <div class="rp-foot">
-          <div class="rp-foot-left">
-            <span class="rp-foot-title">掌握程度</span>
-            <div class="rp-legend">
-              <span class="rp-leg"><span class="rp-leg-dot" style="background:#2faa6a"></span>优秀 80%+</span>
-              <span class="rp-leg"><span class="rp-leg-dot" style="background:#e8a13a"></span>中等 40-79%</span>
-              <span class="rp-leg"><span class="rp-leg-dot" style="background:#c84c5a"></span>薄弱 &lt;40%</span>
-              <span class="rp-leg"><span class="rp-leg-dot" style="background:#7a7e88"></span>待学习</span>
-            </div>
+
+        <!-- 底部缺口栏 + 主操作 -->
+        <footer class="rp-foot">
+          <div class="rp-gaps" id="rp-gaps"></div>
+          <div class="rp-actions">
+            <button class="btn-sm" id="rp-evidence-btn" type="button">查看能力证据</button>
+            <button class="btn-sm" id="rp-impact-btn" type="button">查看岗位影响</button>
+            <button class="btn-sm btn-sm--solid" id="rp-path-btn" type="button">生成学习路径 →</button>
           </div>
-          <div class="rp-foot-right">
-            <span class="rp-foot-title">关联</span>
-            <div class="rp-legend">
-              <span class="rp-leg-line" style="border-top:2px solid #2faa6a"></span>强关联
-              <span class="rp-leg-line" style="border-top:1px dashed #e8a13a"></span>中等关联
-              <span class="rp-leg-line" style="border-top:1px dotted #c84c5a"></span>弱关联
-            </div>
+        </footer>
+
+        <!-- 页内证据 Drawer（右侧滑入） -->
+        <div class="rp-ev-drawer" id="rp-ev-drawer" hidden role="dialog" aria-modal="true" aria-label="能力证据">
+          <div class="rp-ev-head">
+            <h3 id="rp-ev-title">能力证据</h3>
+            <button class="rp-ev-close" id="rp-ev-close" type="button" aria-label="关闭">✕</button>
           </div>
+          <div class="rp-ev-body" id="rp-ev-body"></div>
         </div>
+
+        <!-- 浮层：数据来源 / 更新时间 / 时间范围 -->
+        <div class="rp-pop" id="rp-source-pop" hidden></div>
+        <div class="rp-pop" id="rp-updated-pop" hidden></div>
+        <div class="rp-pop" id="rp-time-pop" hidden></div>
       </div>
     </div>
 
@@ -552,8 +922,9 @@
   <script src="../js/runtime-core.js"></script>
   <script src="../js/cinema-bg.js"></script>
   <script src="../js/cinema-music.js"></script>
-  <script src="../js/shell.js?v=20260824"></script>
-  <script src="../js/pages/match.js"></script>
+  <script src="../js/user-vault.js?v=20260826demo1"></script>
+  <script src="../js/shell.js?v=20260826ai1"></script>
+  <script src="../js/pages/match.js?v=20260826demo1"></script>
   <script>
     window.Shell && window.Shell.mount({ pageId: 'match', title: '人岗匹配诊断', subtitle: '简历 → 匹配 → 岗位 → 学习 → 面试' });
     window.initMatch && window.initMatch();

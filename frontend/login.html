@@ -54,6 +54,7 @@
       background-size: cover;
       background-position: 48% 46%;
       background-repeat: no-repeat;
+      filter: brightness(1.28) contrast(1.02) saturate(1.08);
       animation: bgPhotoDrift 42s ease-in-out infinite alternate;
       will-change: transform, background-position;
     }
@@ -917,6 +918,7 @@
       .feature-copy strong { font-size: 15px; }
         }
     </style>
+  <link rel="stylesheet" href="./css/auth-transit.css?v=4" />
 </head>
 <body>
   <div class="bg-scene" aria-hidden="true">
@@ -1114,8 +1116,9 @@
     </div>
   </div>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+    <script src="./js/auth-transit.js?v=4"></script>
     <script>
-    const API_BASE = window.API_BASE || ((location.hostname === '127.0.0.1' || location.hostname === 'localhost') ? 'http://127.0.0.1:5000' : location.origin);
+    const API_BASE = window.API_BASE || ((location.hostname === '127.0.0.1' || location.hostname === 'localhost') ? 'http://127.0.0.1:8000' : location.origin);
 
     (function initLogoMotion() {
       const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -1314,12 +1317,22 @@
       input.type = input.type === 'password' ? 'text' : 'password';
     }
 
+        function goResume() {
+          try { sessionStorage.setItem('zhitu_open_resume', '1'); } catch (e) {}
+          const dest = 'pages/news/index.html';
+          if (window.ZhituAuthTransit && window.ZhituAuthTransit.go) {
+            window.ZhituAuthTransit.go(dest);
+          } else {
+            location.href = dest;
+          }
+        }
+
         function devLogin() {
       if (!isLocalHost()) return;
             localStorage.setItem('zhitu_user', JSON.stringify({
         username: 'developer', role: 'dev', loginTime: Date.now()
             }));
-            window.location.href = 'pages/home.html';
+            goResume();
         }
 
         async function handleLogin() {
@@ -1346,7 +1359,7 @@
                 if (result.code === 0) {
                     localStorage.setItem('zhitu_user', JSON.stringify(result.data));
           btn.innerHTML = '<span>登录成功</span>';
-          setTimeout(() => { window.location.href = 'pages/home.html'; }, 400);
+          goResume();
                 } else {
                     btn.disabled = false;
           btn.innerHTML = original;

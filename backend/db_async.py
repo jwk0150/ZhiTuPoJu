@@ -1,19 +1,17 @@
 """数据库连接池 (asyncpg) —— 用于数字人才地图查询"""
-import os
 import asyncpg
-from dotenv import load_dotenv
 
-load_dotenv()
+from backend.config import config
 
 # 数据库连接池
 _pool: asyncpg.Pool | None = None
 
 DB_CONFIG = {
-    "host": os.getenv("PG_HOST") or os.getenv("DB_HOST", "127.0.0.1"),
-    "port": int(os.getenv("PG_PORT") or os.getenv("DB_PORT", "5433")),
-    "database": os.getenv("PG_DB") or os.getenv("DB_NAME", "zhitu_crawl_db"),
-    "user": os.getenv("PG_USER") or os.getenv("DB_USER", "postgres"),
-    "password": os.getenv("PG_PASSWORD") or os.getenv("DB_PASSWORD", "20051122"),
+    "host": config.PG_HOST,
+    "port": config.PG_PORT,
+    "database": config.PG_DB,
+    "user": config.PG_USER,
+    "password": config.PG_PASSWORD,
 }
 
 

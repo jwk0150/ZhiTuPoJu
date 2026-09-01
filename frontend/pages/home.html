@@ -3,125 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>执图破局 · 工作台</title>
-  <link rel="stylesheet" href="../css/tokens.css?v=48" />
-  <link rel="stylesheet" href="../css/shell.css?v=48" />
-  <link rel="stylesheet" href="../css/components.css?v=48" />
-  <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+  <title>执图破局 · 岗位大新闻</title>
+  <meta http-equiv="refresh" content="0;url=news/index.html" />
+  <script>
+    // 首页面改为岗位大新闻（保留上栏的新闻页）
+    location.replace('news/index.html');
+  </script>
 </head>
-<body data-page="home">
-  <div id="app-shell"></div>
-  <main class="page-main home-dash" id="page-main">
-    <section class="home-banner enter" style="--d:.06s">
-      <div class="home-banner-copy">
-        <h2>数字人才地图</h2>
-        <p>多维度数据可视化，洞察区域人才分布与岗位供需关系，助力精准决策。</p>
-        <a class="btn btn-primary home-banner-cta" href="map.html">进入地图</a>
-      </div>
-      <div class="home-banner-visual" aria-hidden="true">
-        <div class="home-globe-wrap">
-          <img class="home-globe" src="../assets/brand/home-globe-deepblue.png?v=4" alt="" width="280" height="280" />
-          <span class="home-globe-orbit home-globe-orbit--a" aria-hidden="true"></span>
-          <span class="home-globe-orbit home-globe-orbit--b" aria-hidden="true"></span>
-          <span class="home-globe-orbit home-globe-orbit--c" aria-hidden="true"></span>
-          <span class="home-bubble home-bubble--a">数据分析</span>
-          <span class="home-bubble home-bubble--b">人工智能</span>
-          <span class="home-bubble home-bubble--c">产品设计</span>
-        </div>
-      </div>
-    </section>
-
-    <div class="home-quick-grid">
-      <a class="home-quick enter" style="--d:.14s" href="insight.html">
-        <span class="home-quick-icon home-quick-icon--blue" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="3 17 9 11 13 15 21 7"/><polyline points="14 7 21 7 21 14"/></svg>
-        </span>
-        <strong>岗位洞察</strong>
-        <p>深度分析岗位需求变化与能力演化趋势</p>
-        <span class="home-quick-go" aria-hidden="true">→</span>
-      </a>
-      <a class="home-quick enter" style="--d:.2s" href="discovery.html">
-        <span class="home-quick-icon home-quick-icon--cyan" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="m20 20-3-3"/><path d="M11 8v6M8 11h6"/></svg>
-        </span>
-        <strong>新岗位发现</strong>
-        <p>智能识别新兴岗位与市场机会信号</p>
-        <span class="home-quick-go" aria-hidden="true">→</span>
-      </a>
-      <a class="home-quick enter" style="--d:.26s" href="match.html">
-        <span class="home-quick-icon home-quick-icon--violet" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-        </span>
-        <strong>人岗匹配</strong>
-        <p>精准匹配人才能力与岗位要求</p>
-        <span class="home-quick-go" aria-hidden="true">→</span>
-      </a>
-      <a class="home-quick enter" style="--d:.32s" href="more/data.html">
-        <span class="home-quick-icon home-quick-icon--orange" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg>
-        </span>
-        <strong>数据底座</strong>
-        <p>多源数据汇聚与质量监控管理</p>
-        <span class="home-quick-go" aria-hidden="true">→</span>
-      </a>
-      <a class="home-quick enter" style="--d:.38s" href="match.html?tab=profile">
-        <span class="home-quick-icon home-quick-icon--green" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-        </span>
-        <strong>就业指导</strong>
-        <p>个性化职业发展路径规划建议</p>
-        <span class="home-quick-go" aria-hidden="true">→</span>
-      </a>
-      <button type="button" class="home-quick enter" style="--d:.44s" id="home-open-qa">
-        <span class="home-quick-icon home-quick-icon--pink" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8z"/></svg>
-        </span>
-        <strong>智能问答</strong>
-        <p>AI驱动的智能咨询与知识问答</p>
-        <span class="home-quick-go" aria-hidden="true">→</span>
-      </button>
-    </div>
-
-    <div class="home-bottom enter" style="--d:.52s">
-      <section class="home-panel home-overview" aria-label="平台概览">
-        <h3>平台概览</h3>
-        <div class="home-kpi-grid">
-          <article class="home-kpi">
-            <div class="home-kpi-label">人才总量</div>
-            <div class="home-kpi-value" data-count="128560">0</div>
-            <div class="home-kpi-trend is-up">↑ 12.5%</div>
-          </article>
-          <article class="home-kpi">
-            <div class="home-kpi-label">岗位总量</div>
-            <div class="home-kpi-value" data-count="35892">0</div>
-            <div class="home-kpi-trend is-up">↑ 8.3%</div>
-          </article>
-          <article class="home-kpi">
-            <div class="home-kpi-label">匹配成功率</div>
-            <div class="home-kpi-value"><span data-count="786">0</span><small>%</small></div>
-            <div class="home-kpi-trend is-up">↑ 5.2%</div>
-          </article>
-          <article class="home-kpi">
-            <div class="home-kpi-label">活跃用户</div>
-            <div class="home-kpi-value" data-count="24568">0</div>
-            <div class="home-kpi-trend is-up">↑ 15.7%</div>
-          </article>
-        </div>
-      </section>
-
-      <section class="home-panel home-trend" aria-label="匹配趋势">
-        <div class="home-trend-head">
-          <h3>匹配趋势</h3>
-          <span class="home-trend-tag">近7天</span>
-        </div>
-        <div class="home-trend-chart" id="home-trend-chart" role="img" aria-label="近7天匹配趋势"></div>
-      </section>
-    </div>
-  </main>
-  <script src="../js/api.js"></script>
-  <script src="../js/cinema-bg.js"></script>
-  <script src="../js/cinema-music.js"></script>
-  <script src="../js/shell.js?v=20260824"></script>
-  <script src="../js/pages/home.js"></script>
+<body>
+  <p style="font-family:sans-serif;color:#ccc;padding:24px">
+    正在进入岗位大新闻…
+    <a href="news/index.html" style="color:#ecc984">点击继续</a>
+  </p>
 </body>
 </html>

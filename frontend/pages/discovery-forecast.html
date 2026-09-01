@@ -2,6 +2,7 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>执图破局 · 未来岗位预测</title>
   <link rel="stylesheet" href="../css/tokens.css?v=50" />
@@ -9,7 +10,7 @@
   <link rel="stylesheet" href="../css/components.css?v=50" />
   <link rel="stylesheet" href="../css/page-polish.css?v=50" />
   <link rel="stylesheet" href="../css/discovery-forecast.css?v=5" />
-  <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 </head>
 <body class="standalone-view df-cockpit-page" data-page="discovery">
@@ -19,11 +20,11 @@
 
       <div class="df-topbar enter" style="--d:.02s">
         <nav class="df-path" aria-label="未来预测线">
-          <a href="discovery.html"><i>1</i>新岗位发现</a>
+          <a href="discovery.html?v=fix25"><i>1</i>新岗位发现</a>
           <a class="is-active" href="discovery-forecast.html"><i>2</i>未来预测列表</a>
           <a href="#" id="df-stage-detail" aria-disabled="true"><i>3</i>预测岗位详情</a>
         </nav>
-        <a class="df-back" href="discovery.html">← 返回发现首页</a>
+        <a class="df-back" href="discovery.html?v=fix25">← 返回发现首页</a>
       </div>
 
       <header class="df-hero enter" style="--d:.05s">
@@ -93,9 +94,10 @@
   </main>
   <script src="../js/api.js"></script>
   <script src="../js/runtime-core.js"></script>
-  <script src="../js/cinema-bg.js"></script>
-  <script src="../js/cinema-music.js"></script>
-  <script src="../js/shell.js?v=20260824"></script>
+  <script src="../js/cinema-bg.js?v=20260831bright"></script>
+  <script src="../js/perf-guard.js?v=1"></script>
+  <script src="../js/cinema-music.js?v=20260824mem"></script>
+  <script src="../js/shell.js?v=20260825rx5"></script>
   <script src="../js/pages/discovery-forecast.js?v=5"></script>
   <script>
     window.Shell && window.Shell.mount({ pageId: 'discovery', title: '未来岗位预测', subtitle: '新岗位发现' });

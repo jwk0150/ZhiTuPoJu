@@ -3,7 +3,7 @@
 
 提供：
   1. 全量技术目录（GET /api/ability/catalog）
-     从系统真实岗位技术数据（the_total_table.skills）聚合，按统一分类组织，
+     从地图主表 map_data_table.skills 聚合，按统一分类组织，
      并落库到 user_center.tech_abilities（技术主表，id 稳定）。
   2. 用户能力读取/保存（GET/POST /api/ability/{username}）
      用户问卷结果保存到 user_center.user_abilities（user_id -> tech_abilities.id），
@@ -76,21 +76,40 @@ def _ensure_tables() -> None:
         db.close()
 
 
+def _skill_token_ok(name: str) -> bool:
+    """过滤粘连脏词条（无逗号长串、过长短语），保留正常技术名。"""
+    s = (name or "").strip()
+    if not s or len(s) < 1 or len(s) > 28:
+        return False
+    # 明显粘连：同时含较长中文段与英文段且无分隔
+    has_cjk = any("\u4e00" <= ch <= "\u9fff" for ch in s)
+    has_latin = any("a" <= ch.lower() <= "z" for ch in s)
+    if has_cjk and has_latin and len(s) > 14 and ("/" not in s and "+" not in s and "." not in s):
+        return False
+    return True
+
+
 def _aggregate_skills() -> Counter:
-    """从 the_total_table 全量聚合岗位技能（数据库端 unnest 展开逗号分隔字段）"""
+    """从地图主表 map_data_table 聚合岗位技能（逗号分隔 skills）。"""
+    from backend.config import config
+
+    table = (config.PG_JOB_TABLE or "map_data_table").strip()
+    if not table.replace("_", "").isalnum():
+        table = "map_data_table"
+
     db = SessionLocal()
     try:
         rows = db.execute(text(
-            "SELECT trim(skill) AS name, count(*) AS cnt"
-            " FROM (SELECT unnest(string_to_array(skills, ',')) AS skill"
-            "       FROM the_total_table"
-            "       WHERE skills IS NOT NULL AND skills <> '') t"
-            " WHERE trim(skill) <> ''"
-            " GROUP BY trim(skill)"
+            f"SELECT trim(skill) AS name, count(*) AS cnt"
+            f" FROM (SELECT unnest(string_to_array(skills, ',')) AS skill"
+            f"       FROM {table}"
+            f"       WHERE skills IS NOT NULL AND skills <> '') t"
+            f" WHERE trim(skill) <> ''"
+            f" GROUP BY trim(skill)"
         )).fetchall()
     finally:
         db.close()
-    return Counter({r[0]: r[1] for r in rows})
+    return Counter({r[0]: r[1] for r in rows if _skill_token_ok(r[0])})
 
 
 def _load_tech_catalog(force: bool = False) -> dict:
@@ -185,6 +204,57 @@ def _read_user_abilities(username: str) -> list:
 
 class AbilitySaveRequest(BaseModel):
     abilityIds: List[int] = []
+
+
+@router.get("/job-pool")
+def get_job_pool():
+    """全景岗位池（前端简历向导 / 方向选择用，不依赖爬虫库表）"""
+    try:
+        from backend.job_pool import JOB_POOL
+        jobs = []
+        for i, j in enumerate(JOB_POOL):
+            jobs.append({
+                "id": f"jp{i+1:03d}",
+                "name": j.get("title") or "",
+                "cat": j.get("cat") or "其他",
+                "meta": j.get("cat") or "其他",
+                "skills": list(j.get("skills") or []),
+                "hot": float(j.get("hot") or 0.5),
+            })
+        # 可选：合并库里爬到的岗位名（失败则忽略）
+        try:
+            db = SessionLocal()
+            try:
+                rows = db.execute(text(
+                    "SELECT DISTINCT job_title AS t FROM the_total_table "
+                    "WHERE job_title IS NOT NULL AND btrim(job_title) <> '' "
+                    "ORDER BY t LIMIT 800"
+                )).mappings().all()
+            finally:
+                db.close()
+            known = {x["name"] for x in jobs}
+            extra_i = 0
+            for r in rows:
+                title = (r.get("t") or "").strip()
+                if not title or title in known:
+                    continue
+                known.add(title)
+                extra_i += 1
+                jobs.append({
+                    "id": f"db{extra_i:04d}",
+                    "name": title,
+                    "cat": "爬取岗位",
+                    "meta": "爬取岗位",
+                    "skills": [],
+                    "hot": 0.5,
+                })
+        except Exception:
+            pass
+        cats = sorted({j["cat"] for j in jobs if j.get("cat")})
+        jobs.sort(key=lambda x: (-float(x.get("hot") or 0), x.get("name") or ""))
+        return {"code": 0, "message": "success", "data": {"categories": cats, "jobs": jobs, "total": len(jobs)}}
+    except Exception as exc:
+        return {"code": 1, "message": f"岗位池加载失败: {exc}", "data": None}
 
 
 @router.get("/catalog")
