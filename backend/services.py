@@ -401,8 +401,21 @@ async def fetch_cities_summary(
     education: Optional[str] = None,
     experience: Optional[str] = None,
 ) -> list:
-    """某省下各城市岗位汇总"""
-    cities_list = [c for c, p in CITY_TO_PROVINCE.items() if p == province_name]
+    """某省下各城市岗位汇总（province_name 支持中文省名或行政区划码）"""
+    # 与 fetch_province_detail 一致：支持 "440000" / "广东" / "广东省"
+    prov_name = next((n for n, c in PROVINCE_CODE.items() if c == province_name), None)
+    if not prov_name:
+        if province_name in PROVINCE_CODE:
+            prov_name = province_name
+    if not prov_name:
+        for n in PROVINCE_CODE:
+            if n == province_name or n == province_name + "省" or n == province_name + "市":
+                prov_name = n
+                break
+    if not prov_name:
+        return []
+
+    cities_list = [c for c, p in CITY_TO_PROVINCE.items() if p == prov_name]
     if not cities_list:
         return []
 
@@ -1813,17 +1826,26 @@ async def fetch_tech_detail(
         job_count = matched_count
         job_ratio = round(matched_count / total_cnt * 100, 1) if total_cnt > 0 else 0
         
-        # 相关城市
+        # 相关城市（规范化：去掉「市·区」后缀，去重）
         city_rows = await conn.fetch("""
-            SELECT city, count(*)::int AS cnt FROM the_total_table
-            WHERE job_title IS NOT NULL AND job_title <> ''
-            GROUP BY city ORDER BY cnt DESC LIMIT 10
+            SELECT split_part(city, '·', 1) AS city_short, count(*)::int AS cnt
+            FROM the_total_table
+            WHERE city IS NOT NULL AND city <> ''
+            GROUP BY split_part(city, '·', 1)
+            ORDER BY cnt DESC LIMIT 20
         """)
+        city_short_self = (city_name or "").split("·")[0].replace("市", "").strip()
+        seen_cities = set()
         for r in city_rows:
-            if r["city"] != city_name:
-                related_cities.append(r["city"])
-        related_cities = related_cities[:5]
-        
+            raw = (r["city_short"] or "").strip()
+            short = raw[:-1] if raw.endswith("市") and len(raw) > 2 else raw
+            if not short or short == city_short_self or short in seen_cities:
+                continue
+            seen_cities.add(short)
+            related_cities.append(short)
+            if len(related_cities) >= 5:
+                break
+
         # 相关岗位
         job_rows = await conn.fetch("""
             SELECT job_title, count(*)::int AS cnt FROM the_total_table

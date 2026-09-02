@@ -1,0 +1,8 @@
+【说明】主文档已改为 Word 论文体例，请使用：
+  作品设计实现方案_提交版.docx  （或关闭 Word 后重新生成 作品设计实现方案.docx）
+
+生成命令：
+  python scripts/devtools/generate_design_doc.py
+
+体例参照：作品设计实现方案_参考.pdf
+用途：评委阅读用设计实现方案（非答辩稿）

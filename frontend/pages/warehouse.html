@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <title>执图破局 · 个人仓库</title>
+  <link rel="stylesheet" href="../css/tokens.css?v=lightfix1" />
+  <link rel="stylesheet" href="../css/shell.css?v=lightfix1" />
+  <link rel="stylesheet" href="../css/components.css?v=50" />
+  <link rel="stylesheet" href="../css/legacy-views.css?v=lightfix1" />
+  <link rel="stylesheet" href="../css/warehouse.css?v=vault2" />
+<link rel="stylesheet" href="../css/news-light-overrides.css?v=typo1" />
+</head>
+<body class="standalone-view" data-page="warehouse">
+  <div id="app-shell"></div>
+  <main class="page-main" id="page-main">
+    <section class="vault" id="view-warehouse" aria-label="个人仓库">
+      <div class="vault-ambient" aria-hidden="true"></div>
+
+      <header class="vault-hero enter" style="--d:.02s">
+        <p class="vault-kicker">资料整理</p>
+        <h1 class="vault-title">个人仓库</h1>
+        <p class="vault-lead" id="vault-lead">把浏览过的岗位、新闻和写过的简历集中放在一处。各模块里点「收藏」或「存入仓库」，内容会自动汇总到这里，方便随时回看与用于匹配。</p>
+        <div class="vault-stats enter" style="--d:.05s" id="vault-stats" aria-label="仓库概览"></div>
+        <p class="vault-user" id="vault-user">当前账号 · —</p>
+      </header>
+
+      <nav class="vault-tabs enter" style="--d:.08s" role="tablist" aria-label="仓库分区">
+        <button type="button" class="vault-tab is-on" data-tab="favs" role="tab" aria-selected="true">我的收藏</button>
+        <button type="button" class="vault-tab" data-tab="resumes" role="tab" aria-selected="false">简历档案</button>
+      </nav>
+
+      <div class="vault-panel is-on enter" style="--d:.12s" data-panel="favs" role="tabpanel">
+        <div class="vault-quick" id="vault-quick" aria-label="快捷入口"></div>
+        <div class="vault-lanes" id="vault-fav-lanes"></div>
+      </div>
+
+      <div class="vault-panel enter" style="--d:.12s" data-panel="resumes" role="tabpanel" hidden>
+        <div class="vault-resume-toolbar">
+          <p class="vault-hint" id="vault-resume-hint">简历探索、人岗匹配改写与自行上传的稿件都会保存在这里，可按时间查看各次修订。</p>
+          <div class="vault-resume-actions-bar">
+            <input type="file" id="vault-upload-input" accept=".txt,.pdf,.doc,.docx,text/plain" hidden />
+            <button type="button" class="vault-btn" id="vault-upload-btn">上传简历</button>
+            <a class="vault-cta" id="vault-go-resume" href="resume.html">打开简历探索 →</a>
+          </div>
+        </div>
+        <div class="vault-resume-list" id="vault-resume-list"></div>
+      </div>
+    </section>
+  </main>
+
+  <script src="../js/api.js"></script>
+  <script src="../js/runtime-core.js"></script>
+  <script src="../js/cinema-bg.js?v=lightfix2"></script>
+  <script src="../js/user-vault.js?v=vault2"></script>
+  <script src="../js/shell.js?v=20260826ai1"></script>
+  <script src="../js/pages/warehouse.js?v=vault2"></script>
+  <script>
+    window.Shell && window.Shell.mount({ pageId: 'warehouse', title: '个人仓库', subtitle: '收藏与简历档案' });
+  </script>
+</body>
+</html>

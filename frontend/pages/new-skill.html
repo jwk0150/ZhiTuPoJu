@@ -1,7 +1,8 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>执图破局 · 新增技能详情</title>
   <link rel="stylesheet" href="../css/tokens.css" />
@@ -13,13 +14,14 @@
   <script src="https://cdn.jsdelivr.net/npm/@antv/g6@4.8.24/dist/g6.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
   <script src="../trends-mock.js"></script>
+<link rel="stylesheet" href="../css/news-light-overrides.css?v=typo1" />
 </head>
 <body class="standalone-view" data-page="newSkill">
   <div id="app-shell"></div>
   <main class="page-main" id="page-main">
     <section class="view active" id="view-newSkill">
       <div class="page-header">
-        <a class="btn" id="ns-back-link" href="insight.html?v=2">← 返回演化分析</a>
+        <a class="btn" id="ns-back-link" href="evolution.html?v=2">← 返回演化分析</a>
         <div class="page-title-block">
           <h1>新增技能详情</h1>
           <div class="subtitle">基于岗位能力演化趋势，深入分析新增技能的影响、趋势与关联</div>
@@ -107,7 +109,7 @@
   <script src="../js/runtime-core.js"></script>
   <script src="../js/cinema-bg.js"></script>
   <script src="../js/cinema-music.js"></script>
-  <script src="../js/shell.js"></script>
+  <script src="../js/shell.js?v=20260825rx5"></script>
   <script src="../js/pages/evolution.js"></script>
   <script>
     window.Shell && window.Shell.mount({ pageId: 'newSkill', title: '新增技能详情', subtitle: '能力演化与宏观趋势' });
@@ -115,7 +117,7 @@
     (function () {
       var back = document.getElementById('ns-back-link');
       if (back) {
-        var base = (window.PAGE_HREF && window.PAGE_HREF.evolution) || 'insight.html?v=2';
+        var base = (window.PAGE_HREF && window.PAGE_HREF.evolution) || 'evolution.html?v=2';
         back.href = base + (base.indexOf('?') > -1 ? '&' : '?') + '_t=' + Date.now();
       }
     })();

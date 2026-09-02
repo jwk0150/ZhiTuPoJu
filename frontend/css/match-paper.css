@@ -1,0 +1,1015 @@
+/* ==========================================================================
+   match-paper.css · 人岗匹配视觉层（已对齐全站墨金 Cinema）
+   --------------------------------------------------------------------------
+   保留工作台信息架构；底色 / 字色 / 纸面改为墨青绿 + 香槟金，
+   避免与新闻 / 地图 / 发现割裂。
+   ========================================================================== */
+
+/* ==========================================================================
+   一、基础重置 · 字体 / 颜色 / 滚动条
+   ========================================================================== */
+
+body[data-page="match"],
+body[data-page="match"] *,
+body[data-page="match"] *::before,
+body[data-page="match"] *::after {
+  /* 大幅收敛 SaaS 阴影 / 圆角 */
+}
+
+body[data-page="match"] {
+  background: transparent;
+  color: #1A1A1A;
+  font-family: "Noto Sans SC", "Source Han Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body[data-page="match"]::-webkit-scrollbar,
+body[data-page="match"] *::-webkit-scrollbar { width: 8px; height: 8px; }
+body[data-page="match"]::-webkit-scrollbar-thumb,
+body[data-page="match"] *::-webkit-scrollbar-thumb {
+  background: rgba(201, 168, 106, 0.28); border-radius: 4px;
+}
+body[data-page="match"]::-webkit-scrollbar-thumb:hover,
+body[data-page="match"] *::-webkit-scrollbar-thumb:hover {
+  background: rgba(201, 168, 106, 0.42);
+}
+
+/* ==========================================================================
+   二、顶部 Topbar · 米白纸张 · 极细边框
+   ========================================================================== */
+
+body[data-page="match"] .wks-topbar {
+  background: #FBF8F1;
+  border-bottom: 1px solid #DDD4C5;
+  box-shadow: none;
+  padding: 14px 28px;
+  backdrop-filter: none;
+}
+
+body[data-page="match"] .wks-brand { gap: 11px; }
+body[data-page="match"] .wks-brand-dot {
+  background: #C84738;
+  box-shadow: 0 0 0 4px rgba(200, 71, 56, 0.08);
+  width: 8px; height: 8px;
+}
+body[data-page="match"] .wks-brand-name {
+  font-family: "Noto Serif SC", "Songti SC", serif;
+  font-size: 15px; font-weight: 500;
+  color: #29261F;
+  letter-spacing: 0.2px;
+}
+
+/* ===== 顶部流程 Stepper · 编辑部流程图 ===== */
+body[data-page="match"] .wks-progress { gap: 2px; }
+
+body[data-page="match"] .wks-prog-node {
+  padding: 7px 12px;
+  font-size: 12px;
+  color: #91887B;
+  background: transparent;
+  font-family: "Noto Sans SC", sans-serif;
+  font-weight: 400;
+  letter-spacing: 0.2px;
+  position: relative;
+  border-radius: 4px;
+  transition: color 180ms ease, background 180ms ease;
+}
+body[data-page="match"] .wks-prog-node:hover {
+  color: #29261F;
+  background: #F6F0E5;
+}
+
+body[data-page="match"] .wks-prog-dot {
+  width: 7px; height: 7px;
+  background: #C8BDAE;
+  border: none;
+  box-shadow: none;
+}
+body[data-page="match"] .wks-prog-node.is-done .wks-prog-dot {
+  background: #8A806F;
+}
+body[data-page="match"] .wks-prog-node.is-active {
+  color: #29261F;
+  font-weight: 500;
+}
+body[data-page="match"] .wks-prog-node.is-active .wks-prog-dot {
+  background: #C84738;
+  box-shadow: 0 0 0 3px rgba(200, 71, 56, 0.16);
+}
+
+body[data-page="match"] .wks-prog-line {
+  width: 32px; height: 1px;
+  background: #D8CFC2;
+  margin: 0 4px;
+}
+body[data-page="match"] .wks-prog-line.is-filled {
+  background: #C84738;
+}
+
+body[data-page="match"] .wks-prog-loop {
+  background: transparent;
+  color: #91887B;
+  border: 1px solid #DDD4C5;
+  border-radius: 6px;
+  transition: all 180ms ease;
+}
+body[data-page="match"] .wks-prog-loop:hover {
+  color: #C84738;
+  border-color: #C84738;
+  background: #F4E4DF;
+  transform: none;
+}
+
+/* ==========================================================================
+   三、左侧导航栏 · 极细纸质节点
+   ========================================================================== */
+
+body[data-page="match"] .wks-leftnav {
+  background: #FBF8F1;
+  border-right: 1px solid #DDD4C5;
+  padding: 22px 10px;
+  box-shadow: none;
+}
+
+body[data-page="match"] .wks-nav-item {
+  font-family: "Noto Sans SC", sans-serif;
+  font-size: 13px; font-weight: 400;
+  color: #766E62;
+  padding: 11px 12px;
+  background: transparent;
+  border-radius: 6px;
+  border-left: 2px solid transparent;
+  transition: all 180ms ease;
+}
+body[data-page="match"] .wks-nav-item svg {
+  width: 18px; height: 18px;
+  stroke-width: 1.5;
+  color: #81786B;
+}
+body[data-page="match"] .wks-nav-item:hover {
+  background: #F6F0E5;
+  color: #29261F;
+}
+body[data-page="match"] .wks-nav-item:hover svg { color: #A97845; }
+body[data-page="match"] .wks-nav-item.is-active {
+  background: #F0E6D7;
+  color: #29261F;
+  font-weight: 500;
+  border-left: 2px solid #C84738;
+}
+body[data-page="match"] .wks-nav-item.is-active svg { color: #C84738; }
+body[data-page="match"] .wks-nav-sep {
+  background: #DDD4C5;
+  width: 28px;
+}
+
+/* ==========================================================================
+   四、中央主工作区
+   ========================================================================== */
+
+body[data-page="match"] .wks-center {
+  background: #F4EFE5;
+  padding: 30px clamp(20px, 2.2vw, 40px) 44px;
+}
+
+/* ===== 视觉氛围层弱化 ===== */
+body[data-page="match"] .match-art-layer { opacity: 0.18; }
+body[data-page="match"] .match-art-illustration { filter: brightness(0.55) saturate(0.65) opacity(0.55); }
+
+/* ==========================================================================
+   五、标题体系 · 编辑部标识
+   ========================================================================== */
+
+/* 英文 Eyebrow Label */
+.wks-eyebrow,
+body[data-page="match"] .wks-eyebrow {
+  color: #A97845 !important;
+  letter-spacing: 0.16em !important;
+  font-size: 11px !important;
+  font-weight: 500;
+  font-family: "Noto Sans SC", sans-serif;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.wks-eyebrow::before,
+body[data-page="match"] .wks-eyebrow::before {
+  content: "";
+  width: 18px; height: 1px;
+  background: #C84738;
+  display: inline-block;
+}
+
+/* 主标题 · Serif */
+body[data-page="match"] .wks-h1,
+.wks-h1 {
+  font-family: "Noto Serif SC", "Songti SC", serif !important;
+  font-size: clamp(28px, 2.3vw, 36px) !important;
+  font-weight: 500 !important;
+  color: #29261F;
+  margin: 6px 0 0;
+  letter-spacing: -0.4px;
+  line-height: 1.2;
+  position: relative;
+  padding-left: 14px;
+}
+body[data-page="match"] .wks-h1::before,
+.wks-h1::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 8px; bottom: 8px;
+  width: 3px;
+  background: #C84738;
+  border-radius: 1px;
+}
+
+/* ===== 子标题 / Card 标题 ===== */
+body[data-page="match"] h2,
+body[data-page="match"] .los-h2 {
+  font-family: "Noto Serif SC", serif;
+  color: #29261F;
+  font-weight: 500;
+  letter-spacing: -0.2px;
+}
+
+/* ==========================================================================
+   六、Card / Panel 通用 · 纸张感
+   ========================================================================== */
+
+body[data-page="match"] .mod,
+body[data-page="match"] .cond-panel,
+body[data-page="match"] .job-row,
+body[data-page="match"] .detail-col,
+body[data-page="match"] .detail-next-item,
+body[data-page="match"] .compare-roadmap,
+body[data-page="match"] .rec-profile,
+body[data-page="match"] .jobs-list-head {
+  background: #FBF8F1 !important;
+  background-image: none !important;
+  border: 1px solid #DDD4C5 !important;
+  border-radius: 10px !important;
+  box-shadow: 0 2px 10px rgba(60, 45, 30, 0.04) !important;
+  backdrop-filter: none !important;
+  transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+}
+
+/* ===== Card 头部 / 分隔线 ===== */
+body[data-page="match"] .mod-head,
+body[data-page="match"] .cond-panel-head {
+  border-bottom: 1px solid #DDD4C5 !important;
+  background: transparent !important;
+  padding: 12px 16px !important;
+}
+body[data-page="match"] .mod-label,
+body[data-page="match"] .cond-panel-head b {
+  font-family: "Noto Sans SC", sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  color: #A97845;
+  text-transform: uppercase;
+}
+body[data-page="match"] .cond-panel-head small {
+  color: #91887B;
+  font-size: 11px;
+}
+
+/* ==========================================================================
+   七、左侧 AI 推荐岗位中心
+   ========================================================================== */
+
+body[data-page="match"] .jobs-list-pane {
+  background: transparent;
+}
+
+body[data-page="match"] .jobs-list-head {
+  background: transparent;
+  border: 0;
+  padding: 0 4px 14px;
+}
+body[data-page="match"] .jobs-list-head-text h2,
+body[data-page="match"] .jobs-list-head-text h1 {
+  font-family: "Noto Serif SC", serif !important;
+  font-size: clamp(24px, 1.9vw, 30px) !important;
+  font-weight: 500 !important;
+  color: #29261F;
+  letter-spacing: -0.3px;
+  padding-left: 14px;
+  position: relative;
+}
+body[data-page="match"] .jobs-list-head-text h2::before,
+body[data-page="match"] .jobs-list-head-text h1::before {
+  content: ""; position: absolute;
+  left: 0; top: 7px; bottom: 7px;
+  width: 3px; background: #C84738; border-radius: 1px;
+}
+body[data-page="match"] .jobs-list-head-text p {
+  color: #91887B;
+  font-size: 13px;
+}
+
+body[data-page="match"] .rec-live {
+  background: #F1EADF;
+  color: #5F765D;
+  font-size: 11px;
+  padding: 4px 10px;
+  border: 1px solid #DDD4C5;
+  border-radius: 6px;
+}
+body[data-page="match"] .rec-live i { background: #5F765D; }
+
+/* ===== AI 排序 Chips ===== */
+body[data-page="match"] .jobs-sort {
+  background: transparent;
+  padding: 4px 2px;
+  gap: 6px;
+}
+body[data-page="match"] .jobs-sort-label {
+  color: #91887B;
+  font-size: 12px;
+}
+body[data-page="match"] .jobs-sort-chip {
+  background: #F7F2E9;
+  border: 1px solid #DED5C6;
+  color: #6A6258;
+  font-size: 12.5px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-family: "Noto Sans SC", sans-serif;
+  transition: all 180ms ease;
+}
+body[data-page="match"] .jobs-sort-chip:hover {
+  border-color: #C8B49A;
+  background: #F1EADF;
+}
+body[data-page="match"] .jobs-sort-chip.is-active {
+  background: #EFE4D5;
+  border-color: #C84738;
+  color: #C84738;
+  font-weight: 500;
+}
+
+/* ===== Job Row ===== */
+body[data-page="match"] .job-row {
+  padding: 14px 16px !important;
+  border-radius: 10px !important;
+  gap: 14px;
+  background: #FBF8F1 !important;
+}
+body[data-page="match"] .job-row:hover {
+  border-color: #C84738 !important;
+  box-shadow: 0 4px 14px rgba(60, 45, 30, 0.06) !important;
+  transform: translateY(-1px);
+}
+body[data-page="match"] .job-row.is-active,
+body[data-page="match"] .job-row.is-selected {
+  border-color: #C84738 !important;
+  box-shadow: 0 0 0 1px #C84738, 0 2px 10px rgba(200, 71, 56, 0.06) !important;
+}
+
+body[data-page="match"] .job-title {
+  font-family: "Noto Serif SC", serif !important;
+  font-size: 17px !important;
+  font-weight: 500 !important;
+  color: #29261F;
+  letter-spacing: -0.1px;
+}
+body[data-page="match"] .job-co {
+  font-size: 12px;
+  color: #91887B;
+  margin-top: 3px;
+}
+body[data-page="match"] .job-meta {
+  font-size: 11.5px;
+  color: #665F55;
+  margin-top: 6px;
+  gap: 10px;
+}
+
+body[data-page="match"] .job-match-badge {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  min-width: 56px;
+}
+body[data-page="match"] .job-match-num {
+  font-family: "Inter", "Noto Sans SC", sans-serif !important;
+  font-size: 26px !important;
+  font-weight: 500 !important;
+  color: #A97845 !important;
+  letter-spacing: -1px;
+  line-height: 1;
+}
+body[data-page="match"] .job-match-lbl {
+  color: #91887B;
+  font-size: 10px;
+  letter-spacing: 0.5px;
+  margin-top: 2px;
+}
+
+/* ===== Skill mini-bars ===== */
+body[data-page="match"] .job-skill-mini .nm {
+  color: #665F55;
+  font-size: 11px;
+  width: 64px;
+}
+body[data-page="match"] .job-skill-mini .bar {
+  height: 5px !important;
+  background: #E8E1D5 !important;
+  border-radius: 3px;
+  border: 1px solid rgba(105, 85, 60, 0.08);
+}
+body[data-page="match"] .job-skill-mini .bar i {
+  background: #6FA69A !important;
+  border-radius: 3px;
+  height: 100%;
+}
+body[data-page="match"] .job-skill-mini .v { color: #91887B; font-size: 11px; }
+
+/* ===== Pill / 标签 ===== */
+body[data-page="match"] .job-pill {
+  font-size: 10.5px;
+  padding: 3px 8px !important;
+  border-radius: 5px !important;
+  font-weight: 400;
+  white-space: nowrap;
+  border: 1px solid transparent;
+}
+body[data-page="match"] .job-pill--strong {
+  background: #E8EEE7;
+  color: #5F765D;
+  border-color: #CBD8C9;
+}
+body[data-page="match"] .job-pill--gap {
+  background: #F4E4DF;
+  color: #B14B3D;
+  border-color: #E5C7C0;
+}
+body[data-page="match"] .job-fav { color: #91887B; }
+body[data-page="match"] .job-fav:hover { color: #C84738; }
+body[data-page="match"] .job-fav.is-fav { color: #C84738; }
+body[data-page="match"] .job-go { color: #A97845; font-weight: 500; }
+
+/* ==========================================================================
+   八、右侧 JD 详情面板
+   ========================================================================== */
+
+body[data-page="match"] .jobs-detail-pane {
+  background: transparent;
+}
+
+body[data-page="match"] .jd-header {
+  background: #FBF8F1;
+  border: 1px solid #DDD4C5;
+  border-radius: 10px;
+  padding: 22px 26px;
+  box-shadow: 0 2px 10px rgba(60, 45, 30, 0.04);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+body[data-page="match"] .jd-header .jd-avatar,
+body[data-page="match"] .jd-header .jd-icon {
+  width: 52px; height: 52px;
+  background: #F1EADF;
+  border: 1px solid #DDD4C5;
+  border-radius: 8px;
+  color: #A97845;
+  display: flex; align-items: center; justify-content: center;
+  font-family: "Noto Serif SC", serif;
+  font-size: 22px; font-weight: 500;
+}
+
+body[data-page="match"] .jd-header h1,
+body[data-page="match"] .jd-header .jd-title {
+  font-family: "Noto Serif SC", serif !important;
+  font-size: clamp(22px, 1.8vw, 30px) !important;
+  font-weight: 500 !important;
+  color: #29261F !important;
+  letter-spacing: -0.3px;
+  margin: 0;
+}
+body[data-page="match"] .jd-header .jd-meta {
+  color: #665F55;
+  font-size: 13px;
+  margin-top: 6px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+body[data-page="match"] .jd-header .jd-meta span { color: #91887B; }
+
+/* ===== JD Tabs · 纸张分层 ===== */
+body[data-page="match"] .jobs-detail-tabs {
+  border-bottom: 1px solid #DDD4C5;
+  padding: 0 4px;
+  gap: 0;
+}
+body[data-page="match"] .jd-tab {
+  background: transparent;
+  color: #91887B;
+  font-family: "Noto Sans SC", sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  padding: 12px 18px;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  border-radius: 0;
+  transition: color 180ms ease, border-color 180ms ease;
+}
+body[data-page="match"] .jd-tab:hover { color: #29261F; }
+body[data-page="match"] .jd-tab.is-active {
+  color: #29261F !important;
+  font-weight: 500;
+  border-bottom-color: #C84738 !important;
+  position: relative;
+}
+body[data-page="match"] .jd-tab.is-active::after {
+  content: "";
+  position: absolute;
+  left: 50%; bottom: -2px;
+  transform: translateX(-50%);
+  width: 16px; height: 2px;
+  background: #C84738;
+  border-radius: 1px;
+}
+
+/* ===== JD Detail Body / Detail-col ===== */
+body[data-page="match"] .jd-pane {
+  background: transparent;
+  padding-top: 18px;
+}
+
+body[data-page="match"] .jd-info-grid { gap: 14px; }
+body[data-page="match"] .jd-info-col {
+  background: #FBF8F1;
+  border: 1px solid #DDD4C5;
+  border-radius: 10px;
+  padding: 18px 20px;
+  box-shadow: 0 2px 10px rgba(60, 45, 30, 0.04);
+}
+body[data-page="match"] .jd-info-col--ai,
+body[data-page="match"] .detail-col--ai {
+  background: #FBF8F1 !important;
+  border-color: #DDD4C5 !important;
+  position: relative;
+}
+body[data-page="match"] .jd-info-col--ai::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 16px; bottom: 16px;
+  width: 3px;
+  background: #C84738;
+  border-radius: 1px;
+}
+
+body[data-page="match"] .detail-section-title {
+  font-family: "Noto Sans SC", sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  color: #A97845;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  margin: 0 0 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+body[data-page="match"] .detail-section-title::before {
+  content: "";
+  width: 14px; height: 1px;
+  background: #A97845;
+}
+
+body[data-page="match"] .detail-kv { font-size: 13px; margin-bottom: 8px; }
+body[data-page="match"] .detail-kv .k {
+  color: #91887B;
+  width: 70px;
+  font-size: 12px;
+}
+body[data-page="match"] .detail-kv .v { color: #29261F; }
+
+body[data-page="match"] .aip-p {
+  font-size: 13px;
+  line-height: 1.7;
+  color: #665F55;
+}
+body[data-page="match"] .jd-sub { font-size: 11.5px; color: #91887B; }
+body[data-page="match"] .jd-duty-li {
+  font-size: 13px;
+  color: #665F55;
+  line-height: 1.95;
+}
+
+/* ===== Detail Next Grid ===== */
+body[data-page="match"] .detail-next-grid { gap: 12px; margin-top: 14px; }
+body[data-page="match"] .detail-next-item {
+  background: #F8F3EA !important;
+  border: 1px solid #DED4C5 !important;
+  border-radius: 10px !important;
+  padding: 16px 18px !important;
+  box-shadow: none !important;
+  min-height: 130px;
+}
+body[data-page="match"] .detail-next-item--accent {
+  background: #F5E8E2 !important;
+  border-color: #C84738 !important;
+}
+body[data-page="match"] .detail-next-kicker {
+  color: #C84738;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+body[data-page="match"] .detail-next-item b {
+  display: block;
+  margin-top: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #29261F;
+  font-family: "Noto Serif SC", serif;
+}
+body[data-page="match"] .detail-next-item p {
+  color: #665F55;
+  font-size: 12px;
+  line-height: 1.65;
+  margin: 6px 0 0;
+}
+
+/* ===== 福利 / 招聘亮点 ===== */
+body[data-page="match"] .jd-welfare {
+  background: transparent;
+  border: 0;
+  padding: 14px 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+body[data-page="match"] .jd-welfare span {
+  background: #F8F3EA;
+  border: 1px solid #DED4C5;
+  color: #665F55;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 12px;
+}
+
+/* ==========================================================================
+   九、底部职业决策路径 · 流程图风格
+   ========================================================================== */
+
+body[data-page="match"] .jd-decision,
+body[data-page="match"] .compare-roadmap {
+  background: #FBF8F1 !important;
+  border: 1px solid #DDD4C5 !important;
+  border-radius: 10px !important;
+  padding: 18px 22px !important;
+  box-shadow: 0 2px 10px rgba(60, 45, 30, 0.04);
+}
+body[data-page="match"] .compare-roadmap-steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 14px;
+}
+body[data-page="match"] .compare-roadmap-steps > div {
+  background: #F8F3EA;
+  border: 1px solid #DED4C5;
+  border-radius: 8px;
+  padding: 14px 16px;
+  position: relative;
+  transition: all 180ms ease;
+}
+body[data-page="match"] .compare-roadmap-steps > div:hover {
+  border-color: #C84738;
+  transform: translateY(-1px);
+}
+body[data-page="match"] .compare-roadmap-steps strong {
+  color: #C84738;
+  font-size: 11px;
+  font-family: "Inter", monospace;
+  letter-spacing: 0.1em;
+}
+body[data-page="match"] .compare-roadmap-steps b {
+  display: block;
+  font-family: "Noto Serif SC", serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: #29261F;
+  margin-top: 6px;
+}
+body[data-page="match"] .compare-roadmap-steps small {
+  color: #665F55;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+/* ==========================================================================
+   十、按钮 Button
+   ========================================================================== */
+
+/* 主按钮 */
+body[data-page="match"] .btn-sm--solid,
+body[data-page="match"] .jde-start,
+body[data-page="match"] .btn-primary,
+.rp-path-btn,
+#cond-run-match {
+  background: #C84738 !important;
+  color: #FFF9EE !important;
+  border: 0 !important;
+  border-radius: 6px !important;
+  padding: 0 18px !important;
+  height: 40px !important;
+  font-family: "Noto Sans SC", sans-serif !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.04em;
+  box-shadow: none !important;
+  background-image: none !important;
+  transition: all 180ms ease !important;
+}
+body[data-page="match"] .btn-sm--solid:hover,
+body[data-page="match"] .jde-start:hover {
+  background: #B83D31 !important;
+  transform: translateY(-1px);
+}
+
+/* Ghost / 次级按钮 */
+body[data-page="match"] .btn-sm,
+body[data-page="match"] .btn-sm--ghost,
+body[data-page="match"] .btn-ghost {
+  background: #FBF8F1 !important;
+  background-image: none !important;
+  color: #665F55 !important;
+  border: 1px solid #DDD4C5 !important;
+  border-radius: 6px !important;
+  height: 34px;
+  padding: 0 14px !important;
+  font-family: "Noto Sans SC", sans-serif !important;
+  font-weight: 400 !important;
+  box-shadow: none !important;
+  transition: all 180ms ease !important;
+}
+body[data-page="match"] .btn-sm:hover,
+body[data-page="match"] .btn-sm--ghost:hover {
+  background: #F6F0E5 !important;
+  border-color: #C8B49A !important;
+  color: #29261F !important;
+}
+
+/* ==========================================================================
+   十一、Badge · Tag
+   ========================================================================== */
+
+body[data-page="match"] .mod-tag,
+body[data-page="match"] .jd-pill,
+body[data-page="match"] .rec-tag {
+  background: #F3EBDD !important;
+  color: #75634A !important;
+  border: 1px solid #DDD0BC !important;
+  border-radius: 5px !important;
+  padding: 3px 9px !important;
+  font-size: 11px !important;
+  font-weight: 400 !important;
+}
+body[data-page="match"] .mod-tag--ok,
+body[data-page="match"] .tag-ok {
+  background: #E8EEE7 !important;
+  color: #5F765D !important;
+  border-color: #CBD8C9 !important;
+}
+body[data-page="match"] .mod-tag--warn,
+body[data-page="match"] .tag-warn {
+  background: #F4E4DF !important;
+  color: #B14B3D !important;
+  border-color: #E5C7C0 !important;
+}
+
+/* ==========================================================================
+   十二、Interivew Coach 浮窗
+   ========================================================================== */
+
+body[data-page="match"] .interview-coach {
+  background: #FBF8F1 !important;
+  border: 1px solid #DDD4C5 !important;
+  border-radius: 10px !important;
+  box-shadow: 0 4px 18px rgba(60, 45, 30, 0.08) !important;
+  backdrop-filter: none !important;
+  background-image: none !important;
+}
+body[data-page="match"] .interview-coach-head {
+  border-bottom: 1px solid #DDD4C5;
+  padding: 12px 16px;
+}
+body[data-page="match"] .interview-coach-orb {
+  background: #C84738;
+  color: #FFF9EE;
+  font-weight: 500;
+  border-radius: 6px;
+}
+body[data-page="match"] .interview-coach-title b {
+  font-family: "Noto Serif SC", serif;
+  font-size: 14px;
+  color: #29261F;
+}
+body[data-page="match"] .interview-coach-title small { color: #91887B; }
+body[data-page="match"] .interview-coach-close svg { stroke: #665F55; }
+
+/* ==========================================================================
+   十三、输入 / Search / Select
+   ========================================================================== */
+
+body[data-page="match"] input[type="text"],
+body[data-page="match"] input[type="search"],
+body[data-page="match"] .rp-search input,
+body[data-page="match"] select.mini-select,
+body[data-page="match"] textarea {
+  background: #FCF9F3 !important;
+  border: 1px solid #DCD2C3 !important;
+  border-radius: 6px !important;
+  color: #29261F !important;
+  font-family: "Noto Sans SC", sans-serif !important;
+  font-size: 13px !important;
+  padding: 7px 12px !important;
+  box-shadow: none !important;
+  outline: none !important;
+  transition: border-color 180ms ease, box-shadow 180ms ease;
+}
+body[data-page="match"] input:focus,
+body[data-page="match"] textarea:focus,
+body[data-page="match"] select:focus {
+  border-color: #C84738 !important;
+  box-shadow: 0 0 0 2px rgba(200, 71, 56, 0.08) !important;
+}
+
+/* ==========================================================================
+   十四、JD Tabs 内部 · Tag 等
+   ========================================================================== */
+
+body[data-page="match"] .jd-summary-line {
+  color: #665F55;
+  font-size: 13px;
+  line-height: 1.7;
+  padding-bottom: 14px;
+  border-bottom: 1px dashed #DDD4C5;
+  margin-bottom: 14px;
+}
+body[data-page="match"] .jd-iv-q {
+  background: #F8F3EA;
+  border: 1px solid #DDD4C5;
+  border-radius: 8px;
+  padding: 14px 16px;
+}
+body[data-page="match"] .jd-iv-q .qt {
+  color: #C84738;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+}
+body[data-page="match"] .jd-iv-q .qx {
+  font-size: 13.5px;
+  color: #29261F;
+  line-height: 1.65;
+  margin-top: 6px;
+}
+body[data-page="match"] .jd-iv-tip {
+  font-size: 12.5px;
+  color: #665F55;
+  line-height: 1.7;
+}
+body[data-page="match"] .jd-iv-hint { color: #91887B; font-size: 11.5px; }
+
+/* ==========================================================================
+   十五、SVG 渐变 · 圆环主色压低饱和
+   ========================================================================== */
+
+#view-jobs .match-grad-stop-1 { stop-color: #C7A86B; }
+#view-jobs .match-grad-stop-2 { stop-color: #C84738; }
+
+.match-grad-ring-track { stroke: #E5DDD0; }
+.match-grad-ring-fg { stroke: #C7A86B; }
+
+/* ==========================================================================
+   十六、Rec Profile 卡片
+   ========================================================================== */
+
+body[data-page="match"] .rec-profile {
+  padding: 16px 18px !important;
+}
+body[data-page="match"] .rec-profile-head,
+body[data-page="match"] .rec-row {
+  border-bottom: 1px dashed #DDD4C5;
+}
+body[data-page="match"] .rec-row:last-child { border-bottom: 0; }
+body[data-page="match"] .rec-name {
+  font-family: "Noto Serif SC", serif;
+  color: #29261F;
+  font-size: 14px;
+}
+
+/* ==========================================================================
+   十七、状态色 / 弱化青绿
+   ========================================================================== */
+
+body[data-page="match"] .status-ok {
+  color: #5F765D;
+  background: #E8EEE7;
+  border-color: #CBD8C9;
+}
+body[data-page="match"] .status-warn {
+  color: #A97845;
+  background: #F3EBDD;
+  border-color: #E0D2B7;
+}
+
+/* ===== 关闭 SaaS 高亮 ===== */
+body[data-page="match"] .ring-bg,
+body[data-page="match"] .ring-track {
+  stroke: #E5DDD0 !important;
+}
+body[data-page="match"] .ring-fg,
+body[data-page="match"] .ring-bar {
+  stroke: #C7A86B !important;
+  filter: none !important;
+}
+
+/* ==========================================================================
+   十八、过渡 · Hover · 极弱
+   ========================================================================== */
+
+body[data-page="match"] * {
+  transition: background-color 180ms ease, border-color 180ms ease, color 180ms ease, transform 180ms ease, box-shadow 180ms ease;
+}
+body[data-page="match"] button:active,
+body[data-page="match"] .btn-sm:active,
+body[data-page="match"] .job-row:active {
+  transform: scale(0.995);
+}
+
+/* ===== 对齐新闻页浅色纸感 ===== */
+body[data-page="match"] {
+  background: transparent !important;
+  color: #1A1A1A !important;
+}
+body[data-page="match"] .page-main,
+body[data-page="match"] #match-hall,
+body[data-page="match"] .match-hall {
+  background: transparent !important;
+}
+body[data-page="match"] .rw-toolbar,
+body[data-page="match"] .wks-steps,
+body[data-page="match"] .match-page-head,
+body[data-page="match"] .rw-col--nav,
+body[data-page="match"] .rw-col--editor,
+body[data-page="match"] .mod-upload,
+body[data-page="match"] .rw-col,
+body[data-page="match"] .mod,
+body[data-page="match"] .wks-view {
+  background: #FFFFFF !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+  color: #1A1A1A !important;
+}
+body[data-page="match"] .rw-preview {
+  background: #FBF8F1 !important;
+  color: #29261F !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+}
+body[data-page="match"] .mod-label,
+body[data-page="match"] .rw-toolbar,
+body[data-page="match"] h1,
+body[data-page="match"] h2,
+body[data-page="match"] h3 {
+  color: #1A1A1A !important;
+}
+body[data-page="match"] .btn-sm,
+body[data-page="match"] .rw-nav button,
+body[data-page="match"] .rw-nav .rw-nav-item {
+  color: #4B5563 !important;
+  border-color: rgba(0, 0, 0, 0.1) !important;
+  background: #FAF8F5 !important;
+}
+body[data-page="match"] .rw-nav-item.is-on,
+body[data-page="match"] .rw-nav button.is-on {
+  background: rgba(168, 139, 78, 0.12) !important;
+  border-color: rgba(168, 139, 78, 0.4) !important;
+  color: #8B7340 !important;
+}
+body[data-page="match"] .rw-start-match,
+body[data-page="match"] .btn-sm--solid {
+  background: linear-gradient(135deg, #C4A86B, #A88B4E) !important;
+  color: #1a1208 !important;
+  border-color: transparent !important;
+}
+body[data-page="match"] .ring-bg,
+body[data-page="match"] .ring-track {
+  stroke: #E5DDD0 !important;
+}
+body[data-page="match"] .ring-fg,
+body[data-page="match"] .ring-bar {
+  stroke: #C7A86B !important;
+}
+body[data-page="match"] .match-art-layer { opacity: 0.35; }
+body[data-page="match"] .match-art-illustration { filter: saturate(0.7) opacity(0.55); }
+

@@ -1,0 +1,147 @@
+- generic [ref=f2e2]:
+  - complementary [ref=f2e3]:
+    - generic [ref=f2e13]:
+      - generic [ref=f2e14]: 执图破局
+      - generic [ref=f2e15]: Tuzhupoju · Demo
+    - navigation [ref=f2e16]:
+      - generic [ref=f2e17]:
+        - generic [ref=f2e18]: 核心功能
+        - generic [ref=f2e19] [cursor=pointer]: 总览看板
+        - generic [ref=f2e26] [cursor=pointer]:
+          - generic [ref=f2e34]: 图谱可视化
+          - generic [ref=f2e35]: HOT
+        - generic [ref=f2e36] [cursor=pointer]: 新岗位发现
+        - generic [ref=f2e42] [cursor=pointer]: 能力动态演化
+      - generic [ref=f2e47]:
+        - generic [ref=f2e48]: 智能服务
+        - generic [ref=f2e49] [cursor=pointer]:
+          - generic [ref=f2e53]: 人岗匹配诊断
+          - generic [ref=f2e54]: P0
+        - generic [ref=f2e55] [cursor=pointer]: 智能问答
+      - generic [ref=f2e59]:
+        - generic [ref=f2e60]: 数据管理
+        - generic [ref=f2e61] [cursor=pointer]: 数据采集
+        - generic [ref=f2e67] [cursor=pointer]: 趋势分析
+        - generic [ref=f2e70] [cursor=pointer]: 质量监控
+      - generic [ref=f2e75]:
+        - generic [ref=f2e76]: 系统
+        - generic [ref=f2e77] [cursor=pointer]: 系统设置
+    - generic [ref=f2e82]:
+      - generic [ref=f2e83]: YL
+      - generic [ref=f2e84]:
+        - generic [ref=f2e85]: 御龙 · Tech Lead
+        - generic [ref=f2e86]: administrator
+  - main [ref=f2e87]:
+    - generic [ref=f2e88]:
+      - generic [ref=f2e89]:
+        - generic [ref=f2e90]: 执图破局
+        - generic [ref=f2e93]: 总览看板
+      - textbox "搜索岗位、技能、简历..." [ref=f2e98]
+      - generic [ref=f2e99]:
+        - button [ref=f2e100] [cursor=pointer]
+        - button [ref=f2e105] [cursor=pointer]
+    - generic [ref=f2e110]:
+      - generic [ref=f2e111]:
+        - generic [ref=f2e112]:
+          - generic [ref=f2e113]:
+            - generic [ref=f2e114]:
+              - generic [ref=f2e115]: Knowledge Graph · Demo
+              - text: 执图破局
+            - paragraph [ref=f2e116]:
+              - text: 用
+              - emphasis [ref=f2e117]: 多源异构数据
+              - text: 与
+              - emphasis [ref=f2e118]: 大模型推理
+              - text: ，把岗位、能力与行业织成一张会呼吸的图谱——让技术演化可感知，让人岗匹配可决策。
+            - generic [ref=f2e119]:
+              - button "进入图谱" [ref=f2e120] [cursor=pointer]
+              - button "开始匹配诊断" [ref=f2e128] [cursor=pointer]
+          - generic [ref=f2e132]:
+            - generic:
+              - generic: LIVE GRAPH
+              - generic: 41 节点 · 80 关系
+        - generic [ref=f2e134]:
+          - generic [ref=f2e135]:
+            - generic [ref=f2e136]: "0"
+            - generic [ref=f2e137]: 岗位节点
+          - generic [ref=f2e138]:
+            - generic [ref=f2e139]: "0"
+            - generic [ref=f2e140]: 技能节点
+          - generic [ref=f2e141]:
+            - generic [ref=f2e142]: "0"
+            - generic [ref=f2e143]: 关系边
+          - generic [ref=f2e144]:
+            - generic [ref=f2e145]: 93.7%
+            - generic [ref=f2e146]: 匹配准确率
+      - generic [ref=f2e147]:
+        - generic [ref=f2e148]:
+          - generic [ref=f2e149]: 岗位库总量
+          - generic [ref=f2e155]: 0个
+          - generic [ref=f2e156]:
+            - text: 较上周
+            - generic [ref=f2e157]: 8.2%
+        - generic [ref=f2e160]:
+          - generic [ref=f2e161]: 本月新发现岗位
+          - generic [ref=f2e166]: 0个
+          - generic [ref=f2e167]:
+            - text: 较上月
+            - generic [ref=f2e168]: 23.3%
+        - generic [ref=f2e171]:
+          - generic [ref=f2e172]: 简历匹配累计
+          - generic [ref=f2e178]: 0份
+          - generic [ref=f2e179]:
+            - text: 今日新增
+            - generic [ref=f2e180]: 12.6%
+        - generic [ref=f2e183]:
+          - generic [ref=f2e184]: 匹配准确率
+          - generic [ref=f2e189]: 0%
+          - generic [ref=f2e190]:
+            - text: 超过指标
+            - generic [ref=f2e191]: 3.7%
+      - generic [ref=f2e194]:
+        - generic [ref=f2e195]:
+          - generic [ref=f2e196]: 图谱节点
+          - generic [ref=f2e197]: "0"
+          - generic [ref=f2e198]: ↑ 实时增长
+        - generic [ref=f2e199]:
+          - generic [ref=f2e200]: 关系边
+          - generic [ref=f2e201]: "0"
+          - generic [ref=f2e202]: ↑ 12.4%
+        - generic [ref=f2e203]:
+          - generic [ref=f2e204]: 本月匹配
+          - generic [ref=f2e205]: 3,254
+          - generic [ref=f2e206]: ↑ 18.6%
+        - generic [ref=f2e207]:
+          - generic [ref=f2e208]: 数据采集
+          - generic [ref=f2e209]: 12,847
+          - generic [ref=f2e210]: ↑ 23.1%
+        - generic [ref=f2e211]:
+          - generic [ref=f2e212]: JD解析
+          - generic [ref=f2e213]: 93.2%
+          - generic [ref=f2e214]: 达标 ↑3.2%
+        - generic [ref=f2e215]:
+          - generic [ref=f2e216]: 简历提取
+          - generic [ref=f2e217]: 91.7%
+          - generic [ref=f2e218]: 达标 ↑1.7%
+      - generic [ref=f2e219]:
+        - generic [ref=f2e221]:
+          - generic [ref=f2e222]: 📈 岗位趋势
+          - generic [ref=f2e223]:
+            - generic [ref=f2e224]: 近30天
+            - generic [ref=f2e225]: 实时
+        - generic [ref=f2e230]:
+          - generic [ref=f2e231]: ⚡ 实时动态
+          - generic [ref=f2e232]: LIVE
+      - generic [ref=f2e236]:
+        - generic [ref=f2e238]:
+          - generic [ref=f2e239]: 🔥 热门技能TOP10
+          - generic [ref=f2e240]: 高频
+        - generic [ref=f2e244]:
+          - generic [ref=f2e245]: 🏢 行业分布
+          - generic [ref=f2e246]: 实时
+        - generic [ref=f2e251]:
+          - generic [ref=f2e252]: 📊 数据源贡献
+          - generic [ref=f2e253]: 本周
+      - generic [ref=f2e257]:
+        - generic [ref=f2e258]: 🚀 热门岗位
+        - button "查看更多 →" [ref=f2e260] [cursor=pointer]

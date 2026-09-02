@@ -1,0 +1,16 @@
+{
+  "name": "devtools",
+  "version": "1.0.0",
+  "description": "One-off diagnostic / acceptance scripts and their log outputs formerly living at the repo root. Not part of the runtime app. Prefer `backend/` tests or documented check scripts for new work.",
+  "main": "qa_ia_browser.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "playwright": "^1.62.1"
+  }
+}

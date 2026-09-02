@@ -42,8 +42,15 @@ def chat_completions(
     *,
     temperature: float = 0.4,
     timeout: float = 60.0,
-) -> tuple[str, dict]:
-    """Call DeepSeek chat/completions. Returns (content, meta). Never raises."""
+    stream: bool = False,
+) -> tuple[str, dict] | tuple[Any, dict]:
+    """Call DeepSeek chat/completions. Returns (content, meta). Never raises.
+
+    stream=False（默认，原行为）：返回 (content_str, meta)。
+    stream=True：返回 (generator, meta)，generator 逐段 yield 文本增量；
+        调用方迭代结束后检查 meta["error"] 判断是否发生异常。
+    旧调用（不传 stream）完全保持兼容。
+    """
     meta: dict[str, Any] = {"llm": "none", "error": None}
     if not is_configured() or not messages:
         meta["error"] = "DEEPSEEK_API_KEY not configured" if not is_configured() else "empty messages"
@@ -51,17 +58,49 @@ def chat_completions(
     key = os.getenv("DEEPSEEK_API_KEY", "").strip()
     base = os.getenv("DEEPSEEK_BASE_URL", DEFAULT_BASE).rstrip("/")
     model = os.getenv("DEEPSEEK_MODEL", DEFAULT_MODEL)
+    headers = {"Authorization": f"Bearer {key}", "Content-Type": "application/json"}
+    body: dict[str, Any] = {
+        "model": model,
+        "messages": messages,
+        "temperature": temperature,
+    }
+
+    if stream:
+        meta["stream"] = True
+        body["stream"] = True
+
+        def _stream() -> Any:
+            try:
+                # timeout=None：流式输出期间不做整体超时，由客户端控制
+                with httpx.Client(timeout=None, trust_env=False) as client:
+                    with client.stream("POST", f"{base}/v1/chat/completions", headers=headers, json=body) as resp:
+                        resp.raise_for_status()
+                        for line in resp.iter_lines():
+                            if not line or line.startswith(":"):
+                                continue
+                            if line.startswith("data:"):
+                                data = line[5:].strip()
+                                if data == "[DONE]":
+                                    break
+                                try:
+                                    chunk = json.loads(data)
+                                    delta = (chunk.get("choices") or [{}])[0].get("delta", {}).get("content")
+                                except (json.JSONDecodeError, KeyError, IndexError, TypeError):
+                                    delta = None
+                                if delta:
+                                    yield str(delta)
+            except Exception as e:
+                meta["error"] = str(e)
+
+        return _stream(), meta
+
     try:
         # trust_env=False 跳过系统代理，避免 Windows 代理干扰 TLS 连接
         with httpx.Client(timeout=timeout, trust_env=False) as client:
             resp = client.post(
                 f"{base}/v1/chat/completions",
-                headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
-                json={
-                    "model": model,
-                    "messages": messages,
-                    "temperature": temperature,
-                },
+                headers=headers,
+                json=body,
             )
             resp.raise_for_status()
             content = resp.json()["choices"][0]["message"]["content"]

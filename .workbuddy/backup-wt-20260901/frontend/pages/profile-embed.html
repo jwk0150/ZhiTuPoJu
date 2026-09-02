@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>我的档案</title>
+  <link rel="stylesheet" href="../css/profile.css?v=48" />
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js" defer></script>
+  <style>html,body{margin:0;background:#080c14;min-height:100%}</style>
+</head>
+<body class="profile-page">
+<div class="app">
+
+<div class="hero">
+<div class="hero-avatar" id="avatar">--</div>
+<div class="hero-info">
+<div class="hero-name" id="display-name">加载中...</div>
+<div class="hero-detail" id="display-sub"></div>
+<div class="hero-meta">
+<span class="hero-tag muted" id="tag-school"></span>
+<span class="hero-tag muted" id="tag-major"></span>
+<span class="hero-tag" id="tag-target"></span>
+</div>
+<div class="completion">
+<div class="completion-header"><span class="completion-label">资料完整度</span><span class="completion-pct" id="pct">--</span></div>
+<div class="completion-bar"><div class="completion-fill" id="bar" style="width:0%"></div></div>
+<div class="completion-hint" id="hint"></div>
+</div>
+</div>
+<div class="hero-actions">
+<button class="btn btn-primary" id="edit-btn" onclick="toggleEdit()">编辑资料</button>
+<button class="btn btn-primary" id="save-btn" style="display:none" onclick="saveProfile()">保存</button>
+</div>
+</div>
+
+<div class="kpi-row">
+<div class="kpi"><div class="kpi-value accent" id="kpi-skills">--</div><div class="kpi-label">已识别技能</div></div>
+<div class="kpi"><div class="kpi-value accent" id="kpi-resumes">--</div><div class="kpi-label">上传简历</div></div>
+<div class="kpi"><div class="kpi-value accent" id="kpi-matches">--</div><div class="kpi-label">匹配岗位</div></div>
+<div class="kpi"><div class="kpi-value warm" id="kpi-score">--</div><div class="kpi-label">竞争力评分</div></div>
+</div>
+
+<div class="tabs">
+<button class="tab active" data-tab="info">个人资料</button>
+<button class="tab" data-tab="resume">我的简历</button>
+<button class="tab" data-tab="interview">AI 职业访谈</button>
+<button class="tab" data-tab="analysis">职业画像</button>
+</div>
+
+<div class="panel active" id="panel-info">
+<div class="card"><div class="card-header">基本信息</div><div class="card-body">
+<div class="form-grid">
+<div class="form-group"><label>姓名</label><input type="text" id="pf-name" placeholder="请输入姓名" disabled></div>
+<div class="form-group"><label>学校</label><input type="text" id="pf-school" placeholder="请输入学校" disabled></div>
+<div class="form-group"><label>专业</label><input type="text" id="pf-major" placeholder="请输入专业" disabled></div>
+<div class="form-group"><label>学历</label><select id="pf-education" disabled><option value="">请选择</option><option>博士</option><option>硕士</option><option>本科</option><option>大专</option></select></div>
+<div class="form-group"><label>年级</label><select id="pf-grade" disabled><option value="">请选择</option><option>应届</option><option>2024级</option><option>2023级</option><option>2022级</option><option>已毕业</option></select></div>
+<div class="form-group"><label>目标岗位</label><input type="text" id="pf-target-job" placeholder="例如：数据分析师" disabled></div>
+</div>
+<div class="form-group" style="margin-top:8px"><label>个人简介</label><textarea id="pf-bio" rows="3" placeholder="简单介绍一下自己..." disabled></textarea></div>
+</div></div>
+</div>
+
+<div class="panel" id="panel-resume">
+<div class="dual-entry">
+<div class="entry-card" onclick="document.getElementById('file-input').click()"><div class="entry-icon">📄</div><div class="entry-title">我有简历</div><div class="entry-desc">上传简历文件，AI 自动解析技能与项目经历</div></div>
+<div class="entry-card" onclick="document.querySelector('.tab[data-tab=interview]').click()"><div class="entry-icon">✦</div><div class="entry-title">我没有简历</div><div class="entry-desc">通过 AI 职业访谈，自动生成职业档案</div></div>
+</div>
+<div class="card"><div class="card-header">上传简历</div><div class="card-body">
+<div class="upload-zone" onclick="document.getElementById('file-input').click()" ondragover="event.preventDefault();this.style.borderColor='var(--accent)'" ondragleave="event.preventDefault();this.style.borderColor=''" ondrop="event.preventDefault();this.style.borderColor='';var f=event.dataTransfer.files[0];if(f)uploadResume(f)">
+<div class="upload-icon">↑</div><div class="upload-title">上传你的简历</div><div class="upload-hint">拖拽文件到这里 · PDF/DOC/DOCX/TXT · ≤8MB</div>
+</div>
+<input type="file" id="file-input" accept=".pdf,.doc,.docx,.txt" style="display:none" onchange="uploadResume(this.files[0])">
+<div id="resume-list"></div>
+</div></div>
+<div class="card" id="analysis-card" style="display:none"><div class="card-header"><span>✦ AI 简历分析报告</span><span style="margin-left:auto;font-size:10px;color:var(--text-muted)">AI RESUME ANALYSIS</span></div><div class="card-body" id="analysis-body"></div></div>
+</div>
+
+<div class="panel" id="panel-interview">
+<div class="interview-layout">
+<div class="interview-sidebar">
+<div class="sidebar-title"><span class="dot"></span>职业档案构建</div>
+<div class="stage-item done" id="stg-1"><span class="stage-num">01</span>基础信息</div>
+<div class="stage-item" id="stg-2"><span class="stage-num">02</span>教育经历</div>
+<div class="stage-item" id="stg-3"><span class="stage-num">03</span>技能能力</div>
+<div class="stage-item" id="stg-4"><span class="stage-num">04</span>项目经历</div>
+<div class="stage-item" id="stg-5"><span class="stage-num">05</span>职业目标</div>
+<div class="stage-item" id="stg-6"><span class="stage-num">06</span>个人优势</div>
+<div class="interview-pct-label" style="margin-top:16px">当前完成度</div>
+<div class="interview-pct" id="interview-pct">0%</div>
+</div>
+<div>
+<div class="card" style="margin-bottom:0"><div class="card-header"><span>AI 职业顾问</span><span style="margin-left:auto;font-size:11px;color:var(--accent);font-weight:600" id="interview-status">就绪</span></div>
+<div class="card-body">
+<div class="chat-box" id="chat-box"><div class="chat-msg ai">你好！我是你的 AI 职业顾问 ✦<br>我会通过几个问题帮你梳理职业经历。点击「开始」启动访谈。</div></div>
+<div class="chat-input-row">
+<input type="text" class="chat-input" id="chat-input" placeholder="输入你的回答..." onkeydown="if(event.key==='Enter')sendMsg()" disabled>
+<button class="btn btn-primary" onclick="sendMsg()">发送</button>
+<button class="btn" onclick="startInterview()">开始</button>
+</div>
+<div style="text-align:center;padding:12px 0 0;margin-top:12px;border-top:1px solid var(--border-subtle)"><button class="btn btn-primary btn-sm" onclick="analyzeInterview()">✦ 生成访谈分析报告</button></div><div id="interview-report"></div>
+</div></div>
+</div>
+</div>
+</div>
+
+<div class="panel" id="panel-analysis">
+<div class="card"><div class="card-header"><span>我的职业画像</span><span style="margin-left:auto;font-size:11px;color:var(--text-muted)">AI 基于资料、简历和访谈生成</span></div><div class="card-body">
+<div class="analysis-grid">
+<div class="card" style="margin:0"><div class="card-header">能力雷达图</div><div class="card-body"><div class="chart-wrap" id="chart-radar"></div></div></div>
+<div class="card" style="margin:0"><div class="card-header">职业竞争力</div><div class="card-body" style="display:flex;justify-content:center"><div class="gauge-wrap" id="chart-gauge"></div></div></div>
+</div>
+<div style="margin-top:16px"><button class="btn btn-primary" onclick="runAnalysis()">重新分析</button></div>
+</div></div>
+<div class="analysis-grid" style="margin-top:16px">
+<div class="card"><div class="card-header">技能标签云</div><div class="card-body"><div class="tag-cloud" id="tag-cloud"><div class="empty-state"><div class="empty-icon">📊</div><div class="empty-desc">请先运行分析</div></div></div></div></div>
+<div class="card"><div class="card-header">岗位推荐 TOP 10</div><div class="card-body" id="job-list" style="max-height:400px;overflow-y:auto"><div class="empty-state"><div class="empty-icon">💼</div><div class="empty-desc">请先运行分析</div></div></div></div>
+</div>
+</div>
+
+</div>
+<div class="toast" id="toast"></div>
+  <script src="../js/api.js"></script>
+  <script src="../js/pages/profile.js"></script>
+</body>
+</html>

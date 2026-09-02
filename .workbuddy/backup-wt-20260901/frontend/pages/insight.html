@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <title>执图破局 · 岗位洞察</title>
+  <script>
+    // 版本锁定：旧缓存页面自动重定向到最新版本，确保不会再回到未拆分的旧页面
+    (function () {
+      var q = location.search || '';
+      if (q.indexOf('v=2') === -1) {
+        var sep = q ? '&' : '?';
+        location.replace(location.pathname + q + sep + 'v=2' + location.hash);
+      }
+    })();
+  </script>
+  <link rel="stylesheet" href="../css/tokens.css?v=20260825soft" />
+  <link rel="stylesheet" href="../css/shell.css?v=20260825soft" />
+  <link rel="stylesheet" href="../css/components.css" />
+  <link rel="stylesheet" href="../css/legacy-views.css?v=20260825soft" />
+  <link rel="stylesheet" href="../css/page-polish.css" />
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@antv/g6@4.8.24/dist/g6.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script src="../trends-mock.js"></script>
+</head>
+<body class="standalone-view" data-page="insight">
+  <div id="app-shell"></div>
+  <main class="page-main" id="page-main">
+    <div class="hub-panel active" data-hub-panel="evolution">
+<section class="view active" id="view-evolution">
+<div class="page-header">
+<div class="page-title-block">
+<h1>既有岗位能力动态演化</h1>
+<div class="subtitle">基于时序图谱，识别技能新增、删除与修改，追踪岗位能力结构变化</div>
+</div>
+<div class="page-actions">
+  <span class="evo-job-name" id="evo-current-job">Java 开发工程师</span>
+  <span class="evo-job-badge">· 能力动态更新</span>
+</div>
+</div>
+<div class="evo-new-layout">
+  <!-- 左主区 -->
+  <div class="evo-new-main">
+    <!-- 能力变化时间轴（双线图） -->
+    <div class="card evo-timeline-card">
+      <div class="card-header">
+        <div class="card-title">能力变化时间轴</div>
+        <div class="evo-timeline-range" id="evo-timeline-range">
+          <span class="range-pill active" data-range="6">近 6 个月</span>
+          <span class="range-pill" data-range="3">近 3 个月</span>
+          <span class="range-pill" data-range="12">近 1 年</span>
+          <span class="range-pill" data-range="all">全部</span>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="evo-timeline-legend">
+          <span class="legend-item"><i class="dot dot-cyan"></i>能力总数</span>
+          <span class="legend-item"><i class="dot dot-amber"></i>新生变化的能力</span>
+        </div>
+        <div class="chart evo-timeline-chart" id="chart-evo-timeline"></div>
+      </div>
+    </div>
+    <!-- 本期重要变化 -->
+    <div class="card evo-important-card">
+      <div class="card-header">
+        <div class="card-title"><span id="evo-important-period">2026-08</span> 本期重点变化</div>
+        <div class="card-head-right">
+          <span class="evo-vs-text">与</span>
+          <select id="evo-compare-select" class="evo-compare-select" aria-label="选择对比月份"></select>
+          <span class="evo-vs-text">相比</span>
+        </div>
+      </div>
+      <div class="card-body">
+        <!-- 状态层 -->
+        <div class="evo-important-loading" id="evo-important-loading" style="display:none;">
+          <div class="evo-spinner"></div><span>正在分析岗位能力演化趋势…</span>
+        </div>
+        <div class="evo-important-empty" id="evo-important-empty" style="display:none;">
+          <div class="evo-empty-ico">○</div>
+          <div>当前时间范围暂无重点能力变化</div>
+        </div>
+        <div class="evo-important-error" id="evo-important-error" style="display:none;">
+          <div class="evo-error-ico">!</div>
+          <div>数据加载失败，请稍后重试</div>
+          <button class="evo-error-retry" id="evo-important-retry">重新加载</button>
+        </div>
+        <!-- 三组：新增/修改/删除 -->
+        <div class="evo-groups" id="evo-groups" style="display:none;">
+          <div class="evo-group evo-group-add">
+            <div class="evo-group-side">
+              <div class="evo-group-icon ico-add">+</div>
+              <div class="evo-group-name">新增能力<br><span class="evo-group-name-en" id="evo-group-add-count">0 项</span></div>
+            </div>
+            <div class="evo-group-table" id="evo-group-add">
+              <div class="evo-table-header">
+                <div class="evo-table-cell col-name">能力</div>
+                <div class="evo-table-cell col-type">类型</div>
+                <div class="evo-table-cell col-imp">重要性</div>
+                <div class="evo-table-cell col-reason">变化原因</div>
+              </div>
+            </div>
+          </div>
+          <div class="evo-group evo-group-mod">
+            <div class="evo-group-side">
+              <div class="evo-group-icon ico-edit">✓</div>
+              <div class="evo-group-name">修改能力<br><span class="evo-group-name-en" id="evo-group-mod-count">0 项</span></div>
+            </div>
+            <div class="evo-group-table" id="evo-group-mod">
+              <div class="evo-table-header">
+                <div class="evo-table-cell col-name">能力</div>
+                <div class="evo-table-cell col-type">类型</div>
+                <div class="evo-table-cell col-imp">重要性</div>
+                <div class="evo-table-cell col-reason">变化原因</div>
+              </div>
+            </div>
+          </div>
+          <div class="evo-group evo-group-del">
+            <div class="evo-group-side">
+              <div class="evo-group-icon ico-del">−</div>
+              <div class="evo-group-name">删除能力<br><span class="evo-group-name-en" id="evo-group-del-count">0 项</span></div>
+            </div>
+            <div class="evo-group-table" id="evo-group-del">
+              <div class="evo-table-header">
+                <div class="evo-table-cell col-name">能力</div>
+                <div class="evo-table-cell col-type">类型</div>
+                <div class="evo-table-cell col-imp">重要性</div>
+                <div class="evo-table-cell col-reason">变化原因</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- 重要性图例 -->
+      </div>
+    </div>
+  </div>
+  <!-- 右侧栏 -->
+  <div class="evo-new-side">
+    <div class="card evo-insight-card">
+      <div class="card-header"><div class="card-title"><i class="ico-spark"></i>核心洞察</div></div>
+      <div class="card-body">
+        <div class="evo-insight-list" id="evo-insight-list">
+          <!-- 由 JS 渲染：现象 → 原因 → 趋势/结论 -->
+        </div>
+      </div>
+    </div>
+    <div class="card evo-source-card">
+      <div class="card-header">
+        <div class="card-title"><i class="ico-db"></i>数据来源</div>
+        <a class="evo-view-all" id="evo-source-expand" href="javascript:void(0)">展开全部 ▸</a>
+      </div>
+      <div class="card-body">
+        <div class="evo-source-sub" id="evo-source-sub">多源数据综合分析</div>
+        <div class="evo-source-list" id="evo-source-list">
+          <!-- 由 JS 渲染 -->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+    </div>
+  </main>
+  <script src="../js/api.js"></script>
+  <script src="../js/runtime-core.js"></script>
+  <script src="../js/cinema-bg.js?v=20260831bright"></script>
+  <script src="../js/cinema-music.js"></script>
+  <script src="../js/shell.js?v=20260825rx4"></script>
+  <script src="../js/pages/evolution.js?v=2026082313"></script>
+  <script>
+    window.Shell && window.Shell.mount({ pageId: 'insight', title: '岗位洞察', subtitle: '能力动态演化' });
+    // 页面加载后预渲染演化视图内容
+    (function () {
+      var _ready = function () {
+        try { window.initEvolution && window.initEvolution(); } catch (e) { console.error('[initEvolution]', e); }
+        // 演化页 → 独立页面的跳转入口（与 shell 统一路径）
+        try {
+          var hrefs = window.PAGE_HREF || {};
+          var lp = document.getElementById('evo-jump-learning');
+          var ns = document.getElementById('evo-jump-newskill');
+          if (lp && hrefs.learningPath) lp.href = hrefs.learningPath;
+          if (ns && hrefs.newSkill) ns.href = hrefs.newSkill;
+        } catch (e) {}
+      };
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', _ready);
+      } else {
+        _ready();
+      }
+    })();
+  </script>
+</body>
+</html>

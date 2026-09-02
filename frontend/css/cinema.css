@@ -72,7 +72,7 @@ button { font: inherit; }
 .video-stage {
   z-index: -3;
   overflow: hidden;
-  background: #06070a;
+  background: #0e1218;
   contain: strict;
   transform: translateZ(0);
 }
@@ -96,7 +96,8 @@ button { font: inherit; }
   opacity: 1;
   visibility: visible;
   z-index: 10;
-  filter: contrast(1.07) saturate(1.04);
+  /* 整体提亮，避免视频被压得太闷 */
+  filter: brightness(1.38) contrast(1.01) saturate(1.08);
   transition: opacity var(--fade-ms) linear, visibility 0s linear 0s, filter 400ms ease;
 }
 
@@ -117,17 +118,17 @@ body[data-phase="scene1"] #scene1Video {
   z-index: 2;
   pointer-events: none;
   background:
-    radial-gradient(circle at 50% 40%, transparent 46%, rgba(0, 0, 0, 0.1) 80%, rgba(0, 0, 0, 0.38) 100%),
-    linear-gradient(90deg, rgba(0, 0, 0, 0.22), transparent 20%, transparent 78%, rgba(0, 0, 0, 0.3)),
-    linear-gradient(180deg, rgba(0, 0, 0, 0.2), transparent 24%, transparent 82%, rgba(0, 0, 0, 0.16));
+    radial-gradient(circle at 50% 40%, transparent 52%, rgba(0, 0, 0, 0.04) 84%, rgba(0, 0, 0, 0.16) 100%),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.1), transparent 22%, transparent 78%, rgba(0, 0, 0, 0.12)),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.08), transparent 26%, transparent 84%, rgba(0, 0, 0, 0.06));
 }
 
-/* 首页：几乎不压中心，小猫完整可见 */
+/* 首页：几乎不压中心，小猫完整可见、画面更通透 */
 body[data-phase="scene1"] .cinema-vignette {
   background:
-    radial-gradient(circle at 54% 46%, transparent 52%, rgba(0, 0, 0, 0.04) 82%, rgba(0, 0, 0, 0.22) 100%),
-    linear-gradient(90deg, rgba(0, 0, 0, 0.18), transparent 22%, transparent 78%, rgba(0, 0, 0, 0.14)),
-    linear-gradient(180deg, rgba(0, 0, 0, 0.14), transparent 26%, transparent 72%, rgba(0, 0, 0, 0.28));
+    radial-gradient(circle at 54% 46%, transparent 58%, rgba(0, 0, 0, 0.02) 86%, rgba(0, 0, 0, 0.1) 100%),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.08), transparent 24%, transparent 78%, rgba(0, 0, 0, 0.06)),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.06), transparent 28%, transparent 74%, rgba(0, 0, 0, 0.12));
 }
 
 .grain {
@@ -1758,8 +1759,8 @@ body.project-detail-open .content-track { pointer-events: none; }
   z-index: -1;
   pointer-events: none;
   background:
-    radial-gradient(ellipse 86% 78% at 18% 30%, rgba(5, 9, 11, 0.72), transparent 74%),
-    linear-gradient(180deg, rgba(5, 9, 11, 0.28), rgba(5, 9, 11, 0.12) 58%, transparent);
+    radial-gradient(ellipse 86% 78% at 18% 30%, rgba(5, 9, 11, 0.42), transparent 74%),
+    linear-gradient(180deg, rgba(5, 9, 11, 0.16), rgba(5, 9, 11, 0.06) 58%, transparent);
 }
 
 .login-card h2 {
@@ -1881,19 +1882,37 @@ body.project-detail-open .content-track { pointer-events: none; }
 
 .login-dev {
   margin-top: 22px;
-  padding: 0;
+  padding: 0 0 4px;
   border: 0;
+  border-bottom: 1px solid rgba(236, 201, 132, 0.28);
   background: none;
-  color: rgba(236, 201, 132, 0.42);
+  color: rgba(236, 201, 132, 0.72);
   font-family: var(--font-chart);
   font-size: 13px;
   letter-spacing: 0.16em;
   cursor: pointer;
+  transition: color 280ms ease, border-color 280ms ease;
 }
 
 .login-dev:hover,
 .login-dev:focus-visible {
   color: #ecc984;
+  border-bottom-color: #ecc984;
+}
+
+.login-dev:disabled {
+  opacity: 0.55;
+  cursor: wait;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .login-dev {
+    animation: login-dev-breathe 3.6s ease-in-out infinite;
+  }
+  @keyframes login-dev-breathe {
+    0%, 100% { opacity: 0.78; }
+    50% { opacity: 1; }
+  }
 }
 
 /* ===== Progress UI ===== */
@@ -2221,7 +2240,7 @@ body.project-detail-open .content-track { pointer-events: none; }
   .grain { display: none; }
   .bg-video {
     object-position: center 72%;
-    filter: none;
+    filter: brightness(1.28) contrast(1.01) saturate(1.06);
   }
   .glass-panel,
   .topbar nav,

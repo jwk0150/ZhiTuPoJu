@@ -1,0 +1,40 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@500;600;700&family=Sora:wght@600;700&family=IBM+Plex+Mono:wght@500;600&display=swap');
+
+/* Brand palette — Soft Ink Gold
+ * 目标：保留黑金，但降低「洞穴黑 + 高亮白字」带来的视觉疲劳
+ * - 底色抬升到墨青灰，避免纯黑/近纯黑
+ * - 正文用暖灰白，避免 #fff 光晕
+ * - 金色降饱和，作点缀而非大面积高饱和
+ */
+:root {
+  --signal: #4db8c4;
+  --signal-deep: #6ecbd4;
+  --signal-dim: rgba(77, 184, 196, 0.14);
+  --primary: #3aa8b4;
+  --primary-light: #6ecbd4;
+  --primary-navy: #243a48;
+  --accent-gold: #c9a86a;
+  --brand-gold: #d2b57a;
+  --brand-gold-bright: #e4cfa0;
+  --bg-page: #101c19;
+  --bg-page-soft: #152420;
+  --bg-elevated: #1a2c27;
+  --bg-sidebar: rgba(16, 28, 25, 0.82);
+  --bg-card: rgba(255, 255, 255, 0.07);
+  --bg-topbar: rgba(16, 28, 25, 0.55);
+  --text-dark: #d5e0db;
+  --text-secondary: #9aada5;
+  --text-muted: #6f837b;
+  --text-on-dark: #e2ebe7;
+  --border: rgba(255, 255, 255, 0.11);
+  --shadow-md: 0 10px 28px rgba(0, 0, 0, 0.28);
+  --radius: 14px;
+  --font-display: 'Sora', 'Noto Sans SC', sans-serif;
+  --font-body: 'DM Sans', 'Noto Sans SC', "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+  --sidebar-w: 248px;
+  --topbar-h: 64px;
+  --brand-logo: url('../assets/brand/logo.png');
+  --brand-logo-gold: url('../assets/brand/logo-gold.png');
+  --brand-hero: url('../assets/brand/hero-bg.png');
+}

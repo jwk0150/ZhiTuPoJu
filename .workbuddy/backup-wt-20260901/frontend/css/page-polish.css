@@ -1,0 +1,2998 @@
+/* Insight + Discovery polish — match home glass / cyan brand. Keep all IDs & data-* intact. */
+
+body[data-page="insight"] .page-main,
+body[data-page="discovery"] .page-main {
+  --glass-card: rgba(255, 255, 255, 0.9);
+  --glass-border: rgba(255, 255, 255, 0.75);
+  --glass-shadow: 0 12px 32px rgba(20, 80, 110, 0.07);
+  --r-card: 18px;
+  /* 居中演示 + 四周留白 */
+  width: 100%;
+  box-sizing: border-box;
+  padding: 28px 24px 48px;
+}
+
+/* —— Shared cards / page chrome —— */
+body[data-page="insight"] .card,
+body[data-page="discovery"] .card {
+  background: var(--glass-card) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--r-card) !important;
+  box-shadow: var(--glass-shadow) !important;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+body[data-page="insight"] .page-header,
+body[data-page="discovery"] .page-header {
+  margin-bottom: 18px;
+  gap: 14px;
+}
+
+body[data-page="insight"] .page-title-block h1,
+body[data-page="discovery"] .page-title-block h1 {
+  font-family: var(--font-display);
+  font-size: clamp(22px, 2vw, 28px);
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: var(--text-dark);
+}
+
+body[data-page="insight"] .page-title-block .subtitle,
+body[data-page="discovery"] .page-title-block .subtitle {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.55;
+  margin-top: 4px;
+}
+
+body[data-page="insight"] .hub-tabs {
+  margin-bottom: 18px;
+  padding: 5px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid var(--border);
+  box-shadow: 0 8px 22px rgba(20, 80, 110, 0.05);
+  backdrop-filter: blur(12px);
+}
+
+body[data-page="insight"] .hub-tab {
+  border-radius: 10px;
+  font-weight: 600;
+  padding: 9px 16px;
+}
+
+body[data-page="insight"] .hub-tab.active {
+  background: linear-gradient(135deg, #1FC8D9, #1EA8E8);
+  color: #fff;
+  box-shadow: 0 8px 18px rgba(30, 168, 232, 0.28);
+}
+
+/* —— Evolution —— */
+body[data-page="insight"] .evo-list {
+  background: var(--glass-card) !important;
+  border: 1px solid var(--glass-border) !important;
+  border-radius: var(--r-card) !important;
+  box-shadow: var(--glass-shadow) !important;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  padding: 8px !important;
+}
+
+body[data-page="insight"] .evo-item {
+  border-radius: 12px !important;
+  margin: 3px 0 !important;
+  padding: 12px 14px !important;
+}
+
+body[data-page="insight"] .evo-item:hover {
+  background: rgba(31, 200, 217, 0.08) !important;
+}
+
+body[data-page="insight"] .evo-item.active {
+  background: linear-gradient(135deg, rgba(31, 200, 217, 0.16), rgba(30, 168, 232, 0.08)) !important;
+  box-shadow: inset 3px 0 0 var(--signal);
+}
+
+body[data-page="insight"] .evo-item.active .evo-title {
+  color: var(--signal-deep) !important;
+}
+
+body[data-page="insight"] .evo-stat {
+  background: var(--glass-card) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 16px !important;
+  box-shadow: var(--glass-shadow) !important;
+}
+
+body[data-page="insight"] .timeline-slider {
+  background: var(--glass-card);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+  box-shadow: var(--glass-shadow);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+body[data-page="insight"] .timeline-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  gap: 12px;
+}
+
+body[data-page="insight"] .timeline-head-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+body[data-page="insight"] .timeline-head-now {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+body[data-page="insight"] .timeline-head-now strong {
+  color: var(--signal-deep);
+  font-weight: 700;
+}
+
+body[data-page="insight"] .filter-pill {
+  border-radius: 999px !important;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.8);
+  transition: all 0.2s ease;
+}
+
+body[data-page="insight"] .filter-pill.active {
+  background: linear-gradient(135deg, #1FC8D9, #1EA8E8) !important;
+  color: #fff !important;
+  border-color: transparent !important;
+  box-shadow: 0 6px 14px rgba(30, 168, 232, 0.25);
+}
+
+body[data-page="insight"] .change-item {
+  background: rgba(234, 246, 251, 0.65) !important;
+  border-radius: 12px !important;
+}
+
+/* === Frosted glass 强化（覆盖 cinema-theme 默认 .card 覆盖）===
+   使用 #view-evolution ID 选择器提升特异性，胜出 cinema-bg.js 注入的 .card !important 规则。
+   目标：岗位清单 / 时间轴 / 技能需求演化 / 技能热度变化 / 详细变更清单，全部一致。 */
+body[data-page="insight"] #view-evolution .evo-list,
+body[data-page="insight"] #view-evolution .timeline-slider,
+body[data-page="insight"] #view-evolution .card {
+  background: linear-gradient(160deg, rgba(20, 32, 46, 0.78) 0%, rgba(14, 22, 34, 0.82) 100%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  border-radius: var(--r-card) !important;
+  box-shadow:
+    0 12px 32px rgba(0, 0, 0, 0.36),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.18) !important;
+  backdrop-filter: blur(20px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(160%) !important;
+}
+
+body[data-page="insight"] #view-evolution .evo-list .evo-item {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 12px !important;
+}
+
+body[data-page="insight"] #view-evolution .evo-list .evo-item:hover {
+  background: rgba(31, 200, 217, 0.14) !important;
+  border-color: rgba(31, 200, 217, 0.4) !important;
+}
+
+body[data-page="insight"] #view-evolution .change-item {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-radius: 10px !important;
+}
+
+/* 技能需求演化 / 技能热度变化 图表卡片统一磨砂效果 */
+body[data-page="insight"] .row.cols-12 > .card {
+  background: var(--glass-card) !important;
+  border: 1px solid var(--glass-border) !important;
+  border-radius: var(--r-card) !important;
+  box-shadow: var(--glass-shadow) !important;
+  backdrop-filter: blur(14px) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
+}
+
+/* —— Trends —— */
+body[data-page="insight"] .trend-hero {
+  background:
+    radial-gradient(ellipse 50% 80% at 90% 30%, rgba(120, 210, 240, 0.28), transparent 55%),
+    linear-gradient(115deg, #E8F6FC 0%, #F5FBFD 50%, #EAF4FB 100%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.75) !important;
+  border-radius: 22px !important;
+  box-shadow: var(--glass-shadow) !important;
+}
+
+body[data-page="insight"] .trend-hero-tag {
+  text-transform: none !important;
+  letter-spacing: 0.04em !important;
+  font-family: var(--font-body) !important;
+  font-size: 12px !important;
+  color: var(--signal-deep) !important;
+}
+
+body[data-page="insight"] .trend-kpi-card {
+  background: var(--glass-card) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 18px !important;
+  box-shadow: var(--glass-shadow) !important;
+  backdrop-filter: blur(12px);
+}
+
+body[data-page="insight"] .trend-kpi-label {
+  text-transform: none !important;
+  letter-spacing: 0.02em !important;
+  font-family: var(--font-body) !important;
+  font-size: 12px !important;
+  color: var(--text-muted) !important;
+}
+
+body[data-page="insight"] .trend-kpi-card.kpi-confidence .trend-kpi-icon {
+  background: linear-gradient(135deg, #1FC8D9, #1EA8E8) !important;
+  box-shadow: 0 0 14px rgba(31, 200, 217, 0.3) !important;
+}
+
+body[data-page="insight"] .trend-kpi-change.high {
+  background: rgba(31, 200, 217, 0.12) !important;
+  color: var(--signal-deep) !important;
+}
+
+body[data-page="insight"] .trend-section,
+body[data-page="insight"] .trend-module,
+body[data-page="insight"] .trend-panel {
+  background: var(--glass-card);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  box-shadow: var(--glass-shadow);
+}
+
+body[data-page="insight"] [class*="trend-"] .section-title,
+body[data-page="insight"] .trend-section-title,
+body[data-page="insight"] .trend-block-title {
+  font-family: var(--font-display);
+  letter-spacing: 0.01em;
+}
+
+/* —— Discovery brand retint —— */
+#view-discovery {
+  --proto-blue: #0AA8BC !important;
+  --proto-blue-deep: #088a9c !important;
+  --proto-blue-soft: rgba(31, 200, 217, 0.12) !important;
+  --proto-border: #D5E8F0 !important;
+  --proto-muted: #5B7388 !important;
+  --proto-text: #14324A !important;
+  --proto-bg: transparent !important;
+}
+
+#view-discovery .proto-title {
+  font-family: var(--font-display) !important;
+  font-size: clamp(22px, 2vw, 28px) !important;
+  color: var(--text-dark) !important;
+}
+
+#view-discovery .proto-subtitle {
+  color: var(--text-secondary) !important;
+  font-size: 13.5px !important;
+}
+
+#view-discovery .proto-hero {
+  background:
+    radial-gradient(ellipse 55% 90% at 88% 20%, rgba(160, 230, 245, 0.45), transparent 55%),
+    linear-gradient(125deg, #1FC8D9 0%, #1EA8E8 48%, #0E8FA8 100%) !important;
+  border-radius: 22px !important;
+  box-shadow: 0 16px 36px rgba(16, 168, 188, 0.22) !important;
+  min-height: 160px !important;
+}
+
+#view-discovery .proto-hero-btn {
+  background: rgba(255, 255, 255, 0.95) !important;
+  color: var(--signal-deep) !important;
+  border-radius: 999px !important;
+  padding: 10px 18px !important;
+  box-shadow: 0 8px 18px rgba(10, 60, 90, 0.12);
+}
+
+#view-discovery .proto-hero-btn:hover {
+  background: #fff !important;
+}
+
+#view-discovery .proto-stat {
+  background: var(--glass-card) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 16px !important;
+  box-shadow: var(--glass-shadow) !important;
+  backdrop-filter: blur(12px);
+}
+
+#view-discovery .proto-stat:hover,
+#view-discovery .proto-stat.active {
+  border-color: rgba(31, 200, 217, 0.45) !important;
+  box-shadow: 0 12px 28px rgba(20, 80, 110, 0.1) !important;
+}
+
+#view-discovery .proto-stat-val {
+  font-family: var(--font-display) !important;
+  color: var(--text-dark) !important;
+}
+
+#view-discovery .proto-search input,
+#view-discovery .proto-select {
+  border-radius: 12px !important;
+  border-color: var(--border) !important;
+  background: rgba(255, 255, 255, 0.92) !important;
+}
+
+#view-discovery .proto-search input:focus {
+  border-color: var(--signal) !important;
+  box-shadow: 0 0 0 3px rgba(31, 200, 217, 0.18) !important;
+}
+
+#view-discovery .proto-rescan {
+  background: linear-gradient(135deg, #1FC8D9, #1EA8E8) !important;
+  border-radius: 999px !important;
+  box-shadow: 0 8px 20px rgba(30, 168, 232, 0.28) !important;
+}
+
+#view-discovery .proto-rescan:hover {
+  filter: brightness(1.05);
+  background: linear-gradient(135deg, #1FC8D9, #1EA8E8) !important;
+}
+
+#view-discovery .proto-sec-head {
+  border-bottom-color: rgba(213, 232, 240, 0.9) !important;
+}
+
+#view-discovery .proto-sec-head h3 {
+  font-family: var(--font-display) !important;
+  color: var(--text-dark) !important;
+}
+
+#view-discovery .job-card.disc-proto,
+#view-discovery .disc-proto {
+  background: var(--glass-card) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 18px !important;
+  box-shadow: var(--glass-shadow) !important;
+  backdrop-filter: blur(10px);
+  transition: transform 0.25s cubic-bezier(.22,1,.36,1), box-shadow 0.25s, border-color 0.25s;
+}
+
+#view-discovery .job-card.disc-proto:hover,
+#view-discovery .disc-proto:hover {
+  transform: translateY(-2px);
+  border-color: rgba(31, 200, 217, 0.4) !important;
+  box-shadow: 0 14px 32px rgba(20, 80, 110, 0.1) !important;
+}
+
+#view-discovery .job-card.disc-proto.is-forecast,
+#view-discovery .disc-proto.is-forecast {
+  border-color: rgba(240, 180, 41, 0.45) !important;
+  background: linear-gradient(180deg, rgba(255, 252, 245, 0.95), rgba(255, 255, 255, 0.9)) !important;
+}
+
+#view-discovery .btn-audit,
+#view-discovery .btn-buy,
+#view-discovery .btn-track {
+  border-radius: 999px !important;
+}
+
+#view-discovery .btn-buy,
+#view-discovery .proto-banner-ico {
+  background: var(--proto-blue-soft) !important;
+  color: var(--proto-blue) !important;
+}
+
+/* Enter motion */
+body[data-page="insight"] .hub-tabs,
+body[data-page="insight"] .hub-panel.active > .view.active > .page-header,
+body[data-page="insight"] .hub-panel.active > .view.active > .evo-layout,
+body[data-page="insight"] .trend-hero,
+body[data-page="insight"] .trend-kpi-grid,
+body[data-page="discovery"] .proto-page-head,
+body[data-page="discovery"] .proto-summary,
+body[data-page="discovery"] .proto-toolbar,
+body[data-page="discovery"] #discovery-results {
+  animation: pageSoftEnter 0.75s cubic-bezier(.22,1,.36,1) both;
+}
+
+body[data-page="insight"] .hub-panel.active > .view.active > .evo-layout { animation-delay: 0.08s; }
+body[data-page="insight"] .trend-kpi-grid { animation-delay: 0.1s; }
+body[data-page="discovery"] .proto-summary { animation-delay: 0.06s; }
+body[data-page="discovery"] .proto-toolbar { animation-delay: 0.12s; }
+body[data-page="discovery"] #discovery-results { animation-delay: 0.18s; }
+
+@keyframes pageSoftEnter {
+  from { opacity: 0; transform: translateY(12px); filter: blur(4px); }
+  to { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body[data-page="insight"] .hub-tabs,
+  body[data-page="insight"] .hub-panel.active > .view.active > .page-header,
+  body[data-page="insight"] .hub-panel.active > .view.active > .evo-layout,
+  body[data-page="insight"] .trend-hero,
+  body[data-page="insight"] .trend-kpi-grid,
+  body[data-page="discovery"] .proto-page-head,
+  body[data-page="discovery"] .proto-summary,
+  body[data-page="discovery"] .proto-toolbar,
+  body[data-page="discovery"] #discovery-results {
+    animation: none !important;
+  }
+}
+
+@media (max-width: 900px) {
+  body[data-page="insight"] .evo-layout {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* =========================================================
+ * New-Skill Detail Page — 玻璃态 + 渐变色带（基于 cinema-bg 视频背景）
+ * ========================================================= */
+body[data-page="newSkill"] .page-main {
+  --glass-card: rgba(255, 255, 255, 0.78);
+  --glass-border: rgba(31, 200, 217, 0.18);
+  --glass-shadow: 0 14px 36px rgba(20, 80, 110, 0.08);
+  --r-card: 18px;
+  --ns-cyan: #0AA8BC;
+  --ns-cyan-deep: #088a9c;
+  --ns-cyan-soft: rgba(31, 200, 217, 0.14);
+  --ns-amber: #F0B429;
+  --ns-amber-deep: #C68A0C;
+  --ns-amber-soft: rgba(240, 180, 41, 0.14);
+  --ns-text-strong: #0F2A3A;
+  --ns-text-soft: #5B7388;
+  position: relative;
+  min-height: 100vh;
+  background: transparent;
+  z-index: 0;
+}
+
+body[data-page="newSkill"] #page-main {
+  position: relative;
+  z-index: 1;
+}
+
+/* 顶部色带：青蓝→琥珀，呼应参考图标题区 */
+body[data-page="newSkill"] .page-header {
+  position: relative;
+  margin: 0 0 18px;
+  padding: 18px 22px;
+  border-radius: var(--r-card);
+  background: linear-gradient(120deg, rgba(10, 168, 188, 0.28) 0%, rgba(31, 200, 217, 0.14) 45%, rgba(240, 180, 41, 0.22) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 16px 40px rgba(8, 60, 80, 0.25);
+  overflow: hidden;
+}
+
+body[data-page="newSkill"] .page-header::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.08) 50%, transparent 100%);
+  pointer-events: none;
+}
+
+body[data-page="newSkill"] .page-header .btn {
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  color: #F2FBFD;
+  backdrop-filter: blur(8px);
+}
+
+body[data-page="newSkill"] .page-header .btn:hover {
+  background: rgba(255, 255, 255, 0.28);
+  color: #fff;
+}
+
+body[data-page="newSkill"] .page-title-block h1 {
+  font-family: var(--font-display);
+  font-size: clamp(24px, 2.2vw, 30px);
+  font-weight: 700;
+  background: linear-gradient(95deg, #6FE6F2 0%, #0AA8BC 38%, #F0B429 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  letter-spacing: 0.02em;
+  text-shadow: 0 2px 18px rgba(10, 168, 188, 0.18);
+}
+
+body[data-page="newSkill"] .page-title-block .subtitle {
+  color: rgba(232, 245, 248, 0.78);
+  font-size: 13px;
+  margin-top: 6px;
+}
+
+/* 卡片：玻璃态半透明，透出底层视频背景 */
+body[data-page="newSkill"] .card {
+  background: var(--glass-card) !important;
+  border: 1px solid var(--glass-border) !important;
+  border-radius: var(--r-card) !important;
+  box-shadow: var(--glass-shadow) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  position: relative;
+  overflow: hidden;
+}
+
+body[data-page="newSkill"] .card-header {
+  border-bottom: 1px solid rgba(31, 200, 217, 0.12);
+  padding: 14px 18px;
+}
+
+body[data-page="newSkill"] .card-title {
+  font-family: var(--font-display);
+  color: var(--ns-text-strong);
+  font-weight: 600;
+  font-size: 14px;
+  position: relative;
+  padding-left: 12px;
+}
+
+body[data-page="newSkill"] .card-title::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 4px;
+  bottom: 4px;
+  width: 3px;
+  border-radius: 3px;
+  background: linear-gradient(180deg, var(--ns-cyan) 0%, var(--ns-amber) 100%);
+}
+
+/* 头部主信息卡：突出展示技能名 */
+body[data-page="newSkill"] .ns-header-card {
+  background: linear-gradient(120deg, rgba(10, 168, 188, 0.20) 0%, rgba(31, 200, 217, 0.10) 60%, rgba(240, 180, 41, 0.18) 100%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.20) !important;
+  box-shadow: 0 18px 44px rgba(8, 60, 80, 0.20) !important;
+}
+
+body[data-page="newSkill"] .ns-skill-name {
+  background: linear-gradient(95deg, #0F2A3A 0%, #0AA8BC 55%, #C68A0C 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-size: 32px;
+  letter-spacing: 0.01em;
+}
+
+body[data-page="newSkill"] .ns-skill-meta {
+  color: var(--ns-text-soft);
+  font-family: var(--font-mono, ui-monospace);
+}
+
+body[data-page="newSkill"] .new-badge {
+  background: linear-gradient(95deg, #0AA8BC, #F0B429);
+  color: #fff;
+  border: none;
+  box-shadow: 0 4px 12px rgba(10, 168, 188, 0.35);
+  letter-spacing: 0.08em;
+}
+
+/* 统计卡：玻璃态，左侧渐变竖线 */
+body[data-page="newSkill"] .ns-stat-card .card-body {
+  position: relative;
+}
+
+body[data-page="newSkill"] .ns-stat-card .card-body::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 18px;
+  bottom: 18px;
+  width: 3px;
+  border-radius: 0 4px 4px 0;
+  background: linear-gradient(180deg, var(--ns-cyan) 0%, var(--ns-amber) 100%);
+  opacity: 0.85;
+}
+
+body[data-page="newSkill"] .ns-stat-label {
+  color: var(--ns-text-soft);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+}
+
+body[data-page="newSkill"] .ns-stat-val {
+  color: var(--ns-text-strong);
+  font-family: var(--font-mono, ui-monospace);
+  font-weight: 700;
+  font-size: 26px;
+  margin: 4px 0 2px;
+}
+
+body[data-page="newSkill"] .ns-stat-val.ns-stat-up {
+  background: linear-gradient(95deg, #0AA8BC, #10b981);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+body[data-page="newSkill"] .ns-stat-val.ns-stars {
+  background: linear-gradient(95deg, #F0B429, #C68A0C);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+body[data-page="newSkill"] .ns-stat-sub {
+  color: var(--ns-text-soft);
+}
+
+/* 侧边栏：玻璃态 */
+body[data-page="newSkill"] .ns-sidebar {
+  position: sticky;
+  top: 16px;
+}
+
+body[data-page="newSkill"] .ns-sidebar .input {
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(31, 200, 217, 0.22);
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-size: 12px;
+  color: var(--ns-text-strong);
+}
+
+body[data-page="newSkill"] .ns-sidebar .input:focus {
+  outline: none;
+  border-color: var(--ns-cyan);
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 0 0 3px rgba(10, 168, 188, 0.15);
+}
+
+body[data-page="newSkill"] .lp-job-list .lp-job-item {
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid rgba(31, 200, 217, 0.12);
+  color: var(--ns-text-strong);
+  transition: all 0.2s;
+}
+
+body[data-page="newSkill"] .lp-job-list .lp-job-item:hover {
+  background: rgba(255, 255, 255, 0.85);
+  border-color: var(--ns-cyan);
+  transform: translateX(2px);
+}
+
+body[data-page="newSkill"] .lp-job-list .lp-job-item.active {
+  background: linear-gradient(95deg, rgba(10, 168, 188, 0.16), rgba(240, 180, 41, 0.14));
+  border-color: var(--ns-cyan);
+  box-shadow: 0 4px 14px rgba(10, 168, 188, 0.15);
+}
+
+/* 关联技能标签 */
+body[data-page="newSkill"] .ns-related-tag {
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(31, 200, 217, 0.18);
+  color: var(--ns-text-strong);
+  font-weight: 500;
+}
+
+body[data-page="newSkill"] .ns-related-tag:hover {
+  background: linear-gradient(95deg, var(--ns-cyan-soft), var(--ns-amber-soft));
+  border-color: var(--ns-cyan);
+  color: var(--ns-cyan-deep);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(10, 168, 188, 0.15);
+}
+
+/* JD 示例列表 */
+body[data-page="newSkill"] .ns-jd-list li {
+  background: rgba(255, 255, 255, 0.65) !important;
+  border: 1px solid rgba(31, 200, 217, 0.12);
+  border-left: 3px solid var(--ns-cyan) !important;
+  color: var(--ns-text-strong);
+  border-radius: 10px;
+}
+
+/* AI 分析解读卡 */
+body[data-page="newSkill"] .ns-ai-body {
+  color: var(--ns-text-strong);
+  line-height: 1.75;
+  font-size: 13px;
+}
+
+body[data-page="newSkill"] .ns-ai-body,
+body[data-page="newSkill"] .card:has(.ns-ai-body) {
+  background: linear-gradient(120deg, rgba(10, 168, 188, 0.10) 0%, rgba(240, 180, 41, 0.08) 100%) !important;
+}
+
+/* 响应式 */
+@media (max-width: 1100px) {
+  body[data-page="newSkill"] .ns-stats-row {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  body[data-page="newSkill"] .ns-charts-row {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 800px) {
+  body[data-page="newSkill"] .ns-layout {
+    grid-template-columns: 1fr !important;
+  }
+  body[data-page="newSkill"] .ns-skill-name {
+    font-size: 24px;
+  }
+}
+
+/* =========================================================
+ * Learning-Path Page — 玻璃态 + 渐变色带（基于 cinema-bg 视频背景）
+ * ========================================================= */
+body[data-page="learningPath"] .page-main {
+  --glass-card: rgba(255, 255, 255, 0.78);
+  --glass-border: rgba(31, 200, 217, 0.18);
+  --glass-shadow: 0 14px 36px rgba(20, 80, 110, 0.08);
+  --r-card: 18px;
+  --ns-cyan: #0AA8BC;
+  --ns-cyan-deep: #088a9c;
+  --ns-cyan-soft: rgba(31, 200, 217, 0.14);
+  --ns-amber: #F0B429;
+  --ns-amber-deep: #C68A0C;
+  --ns-amber-soft: rgba(240, 180, 41, 0.14);
+  --ns-text-strong: #0F2A3A;
+  --ns-text-soft: #5B7388;
+  position: relative;
+  min-height: 100vh;
+  background: transparent;
+  z-index: 0;
+}
+
+body[data-page="learningPath"] #page-main {
+  position: relative;
+  z-index: 1;
+}
+
+/* 顶部色带：青蓝→琥珀 */
+body[data-page="learningPath"] .page-header {
+  position: relative;
+  margin: 0 0 18px;
+  padding: 18px 22px;
+  border-radius: var(--r-card);
+  background: linear-gradient(120deg, rgba(10, 168, 188, 0.28) 0%, rgba(31, 200, 217, 0.14) 45%, rgba(240, 180, 41, 0.22) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 16px 40px rgba(8, 60, 80, 0.25);
+  overflow: hidden;
+}
+
+body[data-page="learningPath"] .page-header::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.08) 50%, transparent 100%);
+  pointer-events: none;
+}
+
+body[data-page="learningPath"] .page-header .btn {
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  color: #F2FBFD;
+  backdrop-filter: blur(8px);
+}
+
+body[data-page="learningPath"] .page-header .btn:hover {
+  background: rgba(255, 255, 255, 0.28);
+  color: #fff;
+}
+
+body[data-page="learningPath"] .page-title-block h1 {
+  font-family: var(--font-display);
+  font-size: clamp(24px, 2.2vw, 30px);
+  font-weight: 700;
+  background: linear-gradient(95deg, #6FE6F2 0%, #0AA8BC 38%, #F0B429 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  letter-spacing: 0.02em;
+  text-shadow: 0 2px 18px rgba(10, 168, 188, 0.18);
+}
+
+body[data-page="learningPath"] .page-title-block .subtitle {
+  color: rgba(232, 245, 248, 0.78);
+  font-size: 13px;
+  margin-top: 6px;
+}
+
+/* 卡片：玻璃态半透明，透出底层视频背景 */
+body[data-page="learningPath"] .card {
+  background: var(--glass-card) !important;
+  border: 1px solid var(--glass-border) !important;
+  border-radius: var(--r-card) !important;
+  box-shadow: var(--glass-shadow) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  position: relative;
+  overflow: hidden;
+}
+
+body[data-page="learningPath"] .card-header {
+  border-bottom: 1px solid rgba(31, 200, 217, 0.12);
+  padding: 14px 18px;
+}
+
+body[data-page="learningPath"] .card-title {
+  font-family: var(--font-display);
+  color: var(--ns-text-strong);
+  font-weight: 600;
+  font-size: 14px;
+  position: relative;
+  padding-left: 12px;
+}
+
+body[data-page="learningPath"] .card-title::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 4px;
+  bottom: 4px;
+  width: 3px;
+  border-radius: 3px;
+  background: linear-gradient(180deg, var(--ns-cyan) 0%, var(--ns-amber) 100%);
+}
+
+/* 侧边栏：玻璃态 */
+body[data-page="learningPath"] .lp-sidebar {
+  position: sticky;
+  top: 16px;
+}
+
+body[data-page="learningPath"] .lp-sidebar .input {
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(31, 200, 217, 0.22);
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-size: 12px;
+  color: var(--ns-text-strong);
+}
+
+body[data-page="learningPath"] .lp-sidebar .input:focus {
+  outline: none;
+  border-color: var(--ns-cyan);
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 0 0 3px rgba(10, 168, 188, 0.15);
+}
+
+body[data-page="learningPath"] .lp-job-list .lp-job-item {
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid rgba(31, 200, 217, 0.12);
+  color: var(--ns-text-strong);
+  transition: all 0.2s;
+}
+
+body[data-page="learningPath"] .lp-job-list .lp-job-item:hover {
+  background: rgba(255, 255, 255, 0.85);
+  border-color: var(--ns-cyan);
+  transform: translateX(2px);
+}
+
+body[data-page="learningPath"] .lp-job-list .lp-job-item.active {
+  background: linear-gradient(95deg, rgba(10, 168, 188, 0.16), rgba(240, 180, 41, 0.14));
+  border-color: var(--ns-cyan);
+  box-shadow: 0 4px 14px rgba(10, 168, 188, 0.15);
+}
+
+/* 步骤卡：3 个玻璃卡横排 */
+body[data-page="learningPath"] .lp-steps-card .card-body {
+  padding: 18px 14px;
+}
+
+body[data-page="learningPath"] .lp-steps {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr auto 1fr;
+  gap: 12px;
+  align-items: stretch;
+}
+
+body[data-page="learningPath"] .lp-step {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.85) 0%, rgba(31, 200, 217, 0.08) 100%);
+  border: 1px solid rgba(31, 200, 217, 0.22);
+  border-radius: 14px;
+  padding: 14px 16px;
+  position: relative;
+  color: var(--ns-text-strong);
+  transition: all 0.25s;
+}
+
+body[data-page="learningPath"] .lp-step:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(10, 168, 188, 0.20);
+  border-color: var(--ns-cyan);
+}
+
+body[data-page="learningPath"] .lp-step-index {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: linear-gradient(95deg, var(--ns-cyan) 0%, var(--ns-amber) 100%);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  box-shadow: 0 4px 10px rgba(10, 168, 188, 0.3);
+}
+
+body[data-page="learningPath"] .lp-step-name {
+  font-weight: 700;
+  font-size: 15px;
+  margin-bottom: 4px;
+  background: linear-gradient(95deg, #0F2A3A 0%, #0AA8BC 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+body[data-page="learningPath"] .lp-step-priority {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 999px;
+  margin-bottom: 6px;
+}
+
+body[data-page="learningPath"] .lp-step-priority.is-high {
+  background: linear-gradient(95deg, rgba(240, 180, 41, 0.22), rgba(198, 138, 12, 0.18));
+  color: #C68A0C;
+  border: 1px solid rgba(240, 180, 41, 0.4);
+}
+
+body[data-page="learningPath"] .lp-step-priority.is-mid {
+  background: rgba(31, 200, 217, 0.18);
+  color: var(--ns-cyan-deep);
+  border: 1px solid rgba(31, 200, 217, 0.4);
+}
+
+body[data-page="learningPath"] .lp-step-priority.is-low {
+  background: rgba(91, 115, 136, 0.12);
+  color: var(--ns-text-soft);
+  border: 1px solid rgba(91, 115, 136, 0.3);
+}
+
+body[data-page="learningPath"] .lp-step-time {
+  color: var(--ns-text-soft);
+  font-size: 12px;
+}
+
+/* 步骤之间的箭头连接器 */
+body[data-page="learningPath"] .lp-step-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ns-cyan);
+  font-size: 18px;
+  font-weight: 700;
+  text-shadow: 0 2px 8px rgba(10, 168, 188, 0.4);
+}
+
+/* 效果预估卡：渐变数值 + 渐变星 */
+body[data-page="learningPath"] .lp-effect-card {
+  background: linear-gradient(120deg, rgba(10, 168, 188, 0.18) 0%, rgba(240, 180, 41, 0.14) 100%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+}
+
+body[data-page="learningPath"] .lp-effect {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 8px 4px;
+}
+
+body[data-page="learningPath"] .lp-effect-pct {
+  font-family: var(--font-mono, ui-monospace);
+  font-size: 42px;
+  font-weight: 800;
+  background: linear-gradient(95deg, #0AA8BC 0%, #10b981 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  line-height: 1.1;
+}
+
+body[data-page="learningPath"] .lp-effect-pct span {
+  font-size: 22px;
+  margin-left: 2px;
+  color: var(--ns-cyan);
+  -webkit-text-fill-color: var(--ns-cyan);
+}
+
+body[data-page="learningPath"] .lp-effect-label {
+  color: var(--ns-text-soft);
+  font-size: 12px;
+  margin: 4px 0 8px;
+}
+
+body[data-page="learningPath"] .lp-chart {
+  width: 100%;
+  height: 70px;
+}
+
+body[data-page="learningPath"] .lp-stars {
+  background: linear-gradient(95deg, #F0B429 0%, #C68A0C 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-size: 20px;
+  letter-spacing: 4px;
+  margin: 6px 0 2px;
+}
+
+body[data-page="learningPath"] .lp-effect-sub {
+  color: var(--ns-text-soft);
+  font-size: 12px;
+}
+
+/* 路径详情卡 */
+body[data-page="learningPath"] .lp-detail {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+body[data-page="learningPath"] .lp-detail .lp-detail-section {
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(31, 200, 217, 0.12);
+  border-radius: 12px;
+  padding: 14px 16px;
+  transition: all 0.2s;
+}
+
+body[data-page="learningPath"] .lp-detail .lp-detail-section:hover {
+  background: rgba(255, 255, 255, 0.75);
+  border-color: var(--ns-cyan);
+}
+
+body[data-page="learningPath"] .lp-detail-section-title {
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--ns-text-strong);
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(31, 200, 217, 0.14);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+body[data-page="learningPath"] .lp-detail-section-title::before {
+  content: "";
+  display: inline-block;
+  width: 4px;
+  height: 14px;
+  border-radius: 2px;
+  background: linear-gradient(180deg, var(--ns-cyan) 0%, var(--ns-amber) 100%);
+}
+
+body[data-page="learningPath"] .lp-detail ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+body[data-page="learningPath"] .lp-detail li {
+  color: var(--ns-text-strong);
+  font-size: 13px;
+  padding-left: 18px;
+  position: relative;
+  line-height: 1.65;
+}
+
+body[data-page="learningPath"] .lp-detail li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 8px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--ns-cyan) 0%, var(--ns-amber) 100%);
+  box-shadow: 0 0 0 2px rgba(10, 168, 188, 0.15);
+}
+
+/* 响应式 */
+@media (max-width: 1100px) {
+  body[data-page="learningPath"] .lp-layout {
+    grid-template-columns: 1fr !important;
+  }
+  body[data-page="learningPath"] .lp-top-row {
+    grid-template-columns: 1fr !important;
+  }
+  body[data-page="learningPath"] .lp-steps {
+    grid-template-columns: 1fr !important;
+  }
+  body[data-page="learningPath"] .lp-step-arrow {
+    transform: rotate(90deg);
+    padding: 4px 0;
+  }
+}
+
+@media (max-width: 800px) {
+  body[data-page="learningPath"] .lp-effect-pct {
+    font-size: 32px;
+  }
+}
+
+/* =============================================================
+   能力动态演化 · 新布局（参考页风格：左主区 + 右侧栏）
+   沿用 #view-evolution ID 高特异性规则，覆盖 cinema-theme 默认 .card
+   ============================================================= */
+
+body[data-page="insight"] #view-evolution .evo-job-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 6px 4px 14px;
+  flex-wrap: wrap;
+}
+body[data-page="insight"] #view-evolution .evo-job-title {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+/* 顶部右侧：当前岗位名 + 能力动态更新（与 h1 同行） */
+body[data-page="insight"] #view-evolution .page-actions {
+  align-items: baseline;
+  gap: 8px;
+  padding-top: 8px;
+}
+body[data-page="insight"] #view-evolution .evo-job-name {
+  font-size: 17px;
+  font-weight: 700;
+  color: #1fc8d9;
+  letter-spacing: 0.4px;
+}
+body[data-page="insight"] #view-evolution .evo-job-badge {
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(220, 232, 240, 0.6);
+}
+body[data-page="insight"] #view-evolution .evo-job-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: rgba(220, 232, 240, 0.7);
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  backdrop-filter: blur(8px);
+}
+body[data-page="insight"] #view-evolution .evo-job-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #1fc8d9; box-shadow: 0 0 0 4px rgba(31, 200, 217, 0.18);
+}
+body[data-page="insight"] #view-evolution .evo-job-meta strong { color: #eaf6fb; font-weight: 600; }
+body[data-page="insight"] #view-evolution .evo-job-tag {
+  background: linear-gradient(120deg, rgba(31,200,217,0.22), rgba(240,180,41,0.22));
+  border: 1px solid rgba(31, 200, 217, 0.4);
+  color: #cdf3f7;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* 主体两栏布局 */
+body[data-page="insight"] #view-evolution .evo-new-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  gap: 16px;
+  margin-top: 6px;
+}
+body[data-page="insight"] #view-evolution .evo-new-main,
+body[data-page="insight"] #view-evolution .evo-new-side {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+/* 时间轴卡片 */
+body[data-page="insight"] #view-evolution .evo-timeline-card .card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+body[data-page="insight"] #view-evolution .evo-timeline-range {
+  display: flex;
+  gap: 4px;
+  padding: 3px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+}
+body[data-page="insight"] #view-evolution .range-pill {
+  font-size: 12px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  color: rgba(220, 232, 240, 0.7);
+  cursor: pointer;
+  transition: all 0.2s;
+  user-select: none;
+}
+body[data-page="insight"] #view-evolution .range-pill:hover {
+  color: #eaf6fb;
+  background: rgba(255, 255, 255, 0.08);
+}
+body[data-page="insight"] #view-evolution .range-pill.active {
+  background: linear-gradient(120deg, #1fc8d9, #0AA8BC);
+  color: #fff;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(31, 200, 217, 0.3);
+}
+body[data-page="insight"] #view-evolution .evo-timeline-legend {
+  display: flex;
+  gap: 18px;
+  font-size: 12px;
+  color: rgba(220, 232, 240, 0.75);
+  margin-bottom: 6px;
+}
+body[data-page="insight"] #view-evolution .legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+body[data-page="insight"] #view-evolution .dot {
+  width: 8px; height: 8px; border-radius: 50%;
+}
+body[data-page="insight"] #view-evolution .dot-cyan { background: #1fc8d9; box-shadow: 0 0 6px #1fc8d9; }
+body[data-page="insight"] #view-evolution .dot-amber { background: #F0B429; box-shadow: 0 0 6px #F0B429; }
+body[data-page="insight"] #view-evolution .evo-timeline-chart {
+  height: 280px;
+  position: relative;
+}
+
+/* 时间轴悬停浮层卡片（替代 markPoint.label 常驻显示） */
+body[data-page="insight"] #view-evolution .evo-timeline-floating-card {
+  position: absolute;
+  z-index: 5;
+  pointer-events: none;
+  min-width: 160px;
+  max-width: 240px;
+  background: #fff;
+  border: 1px solid rgba(31, 200, 217, 0.4);
+  border-radius: 6px;
+  padding: 8px 10px;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18);
+  text-align: left;
+  white-space: normal;
+  line-height: 1.4;
+}
+body[data-page="insight"] #view-evolution .evo-timeline-floating-card .evo-fc-count {
+  color: #1fc8d9;
+  font-weight: 700;
+  font-size: 12px;
+  margin-bottom: 2px;
+}
+body[data-page="insight"] #view-evolution .evo-timeline-floating-card .evo-fc-title {
+  color: #1a3a4a;
+  font-weight: 700;
+  font-size: 12px;
+  margin-bottom: 2px;
+}
+body[data-page="insight"] #view-evolution .evo-timeline-floating-card .evo-fc-desc {
+  color: #5a6c78;
+  font-size: 11px;
+}
+
+/* 本期重要变化 */
+body[data-page="insight"] #view-evolution .evo-important-card .card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+body[data-page="insight"] #view-evolution .card-head-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 12px;
+  color: rgba(220, 232, 240, 0.7);
+}
+body[data-page="insight"] #view-evolution .evo-view-all {
+  color: #1fc8d9;
+  text-decoration: none;
+  font-size: 12px;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+body[data-page="insight"] #view-evolution .evo-view-all:hover {
+  color: #88e6f0;
+  text-decoration: underline;
+}
+body[data-page="insight"] #view-evolution .evo-section-title {
+  font-size: 13px;
+  color: rgba(220, 232, 240, 0.78);
+  margin-bottom: 12px;
+}
+body[data-page="insight"] #view-evolution .evo-section-title strong {
+  color: #1fc8d9;
+  font-size: 15px;
+  font-weight: 700;
+}
+body[data-page="insight"] #view-evolution .evo-changes-table {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+body[data-page="insight"] #view-evolution .evo-change-row {
+  display: grid;
+  grid-template-columns: 96px 1fr;
+  gap: 14px;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  transition: all 0.2s;
+}
+body[data-page="insight"] #view-evolution .evo-change-row:hover {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(31, 200, 217, 0.3);
+  transform: translateX(2px);
+}
+body[data-page="insight"] #view-evolution .evo-change-side {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding-right: 12px;
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+body[data-page="insight"] #view-evolution .evo-change-icon {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+}
+body[data-page="insight"] #view-evolution .evo-row-add .evo-change-icon {
+  background: linear-gradient(135deg, #1fc8d9, #0AA8BC);
+  box-shadow: 0 4px 12px rgba(31, 200, 217, 0.4);
+}
+body[data-page="insight"] #view-evolution .evo-row-mod .evo-change-icon {
+  background: linear-gradient(135deg, #F0B429, #C68A0C);
+  box-shadow: 0 4px 12px rgba(240, 180, 41, 0.4);
+}
+body[data-page="insight"] #view-evolution .evo-row-del .evo-change-icon {
+  background: linear-gradient(135deg, #E05656, #B83C3C);
+  box-shadow: 0 4px 12px rgba(224, 86, 86, 0.4);
+}
+body[data-page="insight"] #view-evolution .evo-change-cat {
+  font-size: 12px;
+  color: rgba(220, 232, 240, 0.78);
+  text-align: center;
+  line-height: 1.3;
+}
+body[data-page="insight"] #view-evolution .evo-change-cat-en {
+  color: rgba(220, 232, 240, 0.5);
+  font-size: 11px;
+}
+body[data-page="insight"] #view-evolution .evo-change-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+body[data-page="insight"] #view-evolution .evo-change-line {
+  display: grid;
+  grid-template-columns: 1.4fr 0.9fr 1fr 2fr;
+  gap: 12px;
+  align-items: center;
+  font-size: 13px;
+  padding: 4px 0;
+}
+body[data-page="insight"] #view-evolution .evo-change-line:not(:last-child) {
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.06);
+  padding-bottom: 8px;
+}
+body[data-page="insight"] #view-evolution .evo-change-name {
+  font-weight: 600;
+  color: #eaf6fb;
+}
+body[data-page="insight"] #view-evolution .evo-change-type {
+  font-size: 12px;
+  color: rgba(220, 232, 240, 0.7);
+  padding: 2px 8px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 4px;
+  display: inline-block;
+  width: fit-content;
+}
+body[data-page="insight"] #view-evolution .evo-stars {
+  color: #F0B429;
+  letter-spacing: 1px;
+  font-size: 14px;
+}
+body[data-page="insight"] #view-evolution .evo-stars-empty {
+  color: rgba(255, 255, 255, 0.15);
+}
+body[data-page="insight"] #view-evolution .evo-change-reason {
+  font-size: 12px;
+  color: rgba(220, 232, 240, 0.7);
+  line-height: 1.4;
+}
+body[data-page="insight"] #view-evolution .evo-importance-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  font-size: 11px;
+  color: rgba(220, 232, 240, 0.55);
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+body[data-page="insight"] #view-evolution .star-line { display: inline-flex; align-items: center; gap: 4px; }
+body[data-page="insight"] #view-evolution .star-line:not(:last-child)::after { content: '|'; margin-left: 14px; color: rgba(255,255,255,0.15); }
+body[data-page="insight"] #view-evolution .star-line:first-of-type { color: #F0B429; }
+
+/* 右侧栏 */
+body[data-page="insight"] #view-evolution .evo-insight-list,
+body[data-page="insight"] #view-evolution .evo-source-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+body[data-page="insight"] #view-evolution .evo-insight-list {
+  gap: 10px;
+}
+body[data-page="insight"] #view-evolution .evo-insight-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 13px;
+  color: rgba(234, 246, 251, 0.85);
+  line-height: 1.55;
+}
+body[data-page="insight"] #view-evolution .evo-bullet {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: linear-gradient(120deg, #1fc8d9, #F0B429);
+  margin-top: 8px;
+  flex-shrink: 0;
+}
+
+/* ===== 核心洞察卡片（现象 → 原因 → 趋势/结论） ===== */
+body[data-page="insight"] #view-evolution .evo-insight-item {
+  position: relative;
+  padding: 12px 14px 13px;
+  border-radius: 12px;
+  background: linear-gradient(160deg, rgba(20, 32, 46, 0.55), rgba(12, 20, 32, 0.62));
+  border: 1px solid rgba(31, 200, 217, 0.18);
+  border-left: 3px solid rgba(31, 200, 217, 0.6);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22);
+}
+body[data-page="insight"] #view-evolution .evo-insight-item-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 9px;
+}
+body[data-page="insight"] #view-evolution .evo-insight-tag {
+  flex-shrink: 0;
+  padding: 2px 9px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #0c1422;
+  background: linear-gradient(120deg, #1fc8d9, #38e0c0);
+  letter-spacing: 0.3px;
+}
+body[data-page="insight"] #view-evolution .evo-insight-title {
+  font-size: 13.5px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: rgba(236, 248, 253, 0.96);
+}
+body[data-page="insight"] #view-evolution .evo-insight-flow {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+body[data-page="insight"] #view-evolution .evo-insight-step {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+body[data-page="insight"] #view-evolution .evo-insight-step-label {
+  flex-shrink: 0;
+  width: 64px;
+  text-align: center;
+  margin-top: 1px;
+  padding: 2px 0;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(186, 214, 230, 0.9);
+  background: rgba(31, 200, 217, 0.12);
+  border: 1px solid rgba(31, 200, 217, 0.22);
+}
+body[data-page="insight"] #view-evolution .evo-insight-step-conclusion .evo-insight-step-label {
+  color: #0c1422;
+  background: linear-gradient(120deg, #F0B429, #ffd76a);
+  border-color: transparent;
+}
+body[data-page="insight"] #view-evolution .evo-insight-step-text {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: rgba(214, 232, 242, 0.88);
+}
+body[data-page="insight"] #view-evolution .evo-insight-evidence {
+  margin-top: 10px;
+  padding-top: 9px;
+  border-top: 1px dashed rgba(31, 200, 217, 0.18);
+}
+body[data-page="insight"] #view-evolution .evo-insight-evidence-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(186, 214, 230, 0.7);
+  letter-spacing: 0.4px;
+}
+body[data-page="insight"] #view-evolution .evo-insight-evidence-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 7px;
+}
+body[data-page="insight"] #view-evolution .evo-insight-chip {
+  font-size: 11px;
+  padding: 3px 9px;
+  border-radius: 6px;
+  color: rgba(236, 248, 253, 0.9);
+  background: rgba(240, 180, 41, 0.12);
+  border: 1px solid rgba(240, 180, 41, 0.28);
+}
+body[data-page="insight"] #view-evolution .evo-insight-scope {
+  margin-top: 11px;
+  font-size: 11px;
+  color: rgba(150, 176, 192, 0.7);
+  text-align: right;
+  letter-spacing: 0.3px;
+}
+body[data-page="insight"] #view-evolution .evo-insight-empty {
+  font-size: 13px;
+  color: rgba(186, 214, 230, 0.6);
+  padding: 16px 4px;
+  text-align: center;
+}
+body[data-page="insight"] #view-evolution .ico-spark,
+body[data-page="insight"] #view-evolution .ico-db,
+body[data-page="insight"] #view-evolution .ico-history {
+  display: inline-block;
+  width: 16px; height: 16px;
+  margin-right: 6px;
+  vertical-align: -3px;
+  border-radius: 4px;
+}
+body[data-page="insight"] #view-evolution .ico-spark { background: linear-gradient(135deg, #1fc8d9, #F0B429); }
+body[data-page="insight"] #view-evolution .ico-db { background: linear-gradient(135deg, #0AA8BC, #088a9c); }
+body[data-page="insight"] #view-evolution .ico-history { background: linear-gradient(135deg, #F0B429, #C68A0C); }
+
+body[data-page="insight"] #view-evolution .evo-source-sub {
+  font-size: 12px;
+  color: rgba(220, 232, 240, 0.6);
+  margin-bottom: 10px;
+}
+body[data-page="insight"] #view-evolution .evo-source-list {
+  gap: 10px;
+}
+body[data-page="insight"] #view-evolution .evo-source-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+body[data-page="insight"] #view-evolution .evo-source-item:hover {
+  background: rgba(31, 200, 217, 0.08);
+  border-color: rgba(31, 200, 217, 0.3);
+}
+body[data-page="insight"] #view-evolution .evo-source-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: #1fc8d9;
+  box-shadow: 0 0 6px rgba(31, 200, 217, 0.6);
+  flex-shrink: 0;
+}
+body[data-page="insight"] #view-evolution .evo-source-info {
+  flex: 1;
+  min-width: 0;
+}
+body[data-page="insight"] #view-evolution .evo-source-name {
+  font-size: 13px;
+  color: #eaf6fb;
+  font-weight: 500;
+}
+body[data-page="insight"] #view-evolution .evo-source-range {
+  font-size: 11px;
+  color: rgba(220, 232, 240, 0.5);
+  margin-top: 2px;
+}
+body[data-page="insight"] #view-evolution .evo-source-weight {
+  font-size: 11px;
+  font-weight: 600;
+  color: #F0B429;
+  padding: 2px 8px;
+  background: rgba(240, 180, 41, 0.12);
+  border-radius: 4px;
+  white-space: nowrap;
+}
+/* 数据来源卡片（重构） */
+body[data-page="insight"] #view-evolution .evo-source-item {
+  cursor: pointer;
+}
+body[data-page="insight"] #view-evolution .evo-source-name-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+body[data-page="insight"] #view-evolution .evo-source-type {
+  flex-shrink: 0;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 1px 7px;
+  border-radius: 10px;
+  color: rgba(186, 214, 230, 0.9);
+  background: rgba(31, 200, 217, 0.12);
+  border: 1px solid rgba(31, 200, 217, 0.22);
+}
+body[data-page="insight"] #view-evolution .evo-source-meta {
+  font-size: 11px;
+  color: rgba(220, 232, 240, 0.55);
+  margin-top: 3px;
+  line-height: 1.4;
+}
+body[data-page="insight"] #view-evolution .evo-source-status {
+  flex-shrink: 0;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 10px;
+  white-space: nowrap;
+}
+body[data-page="insight"] #view-evolution .evo-source-status-ok {
+  color: #4ade80;
+  background: rgba(74, 222, 128, 0.12);
+  border: 1px solid rgba(74, 222, 128, 0.3);
+}
+body[data-page="insight"] #view-evolution .evo-source-status-exp {
+  color: #F0B429;
+  background: rgba(240, 180, 41, 0.12);
+  border: 1px solid rgba(240, 180, 41, 0.3);
+}
+body[data-page="insight"] #view-evolution .evo-source-status-err {
+  color: #f87171;
+  background: rgba(248, 113, 113, 0.12);
+  border: 1px solid rgba(248, 113, 113, 0.3);
+}
+body[data-page="insight"] #view-evolution .evo-source-more {
+  font-size: 11px;
+  color: rgba(150, 176, 192, 0.7);
+  text-align: center;
+  padding: 6px 0 2px;
+  letter-spacing: 0.3px;
+}
+/* 数据来源详情弹窗 */
+body[data-page="insight"] #view-evolution .evo-source-modal-box {
+  max-width: 520px;
+  max-height: 82vh;
+  overflow-y: auto;
+}
+body[data-page="insight"] #view-evolution .evo-source-modal-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+body[data-page="insight"] #view-evolution .evo-source-modal-name {
+  font-size: 17px;
+  font-weight: 700;
+  color: #eaf6fb;
+}
+body[data-page="insight"] #view-evolution .evo-source-modal-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+body[data-page="insight"] #view-evolution .evo-source-modal-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 9px 11px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+body[data-page="insight"] #view-evolution .evo-source-modal-cell .k {
+  font-size: 11px;
+  color: rgba(186, 214, 230, 0.65);
+}
+body[data-page="insight"] #view-evolution .evo-source-modal-cell .v {
+  font-size: 12.5px;
+  color: rgba(236, 248, 253, 0.92);
+  line-height: 1.45;
+}
+body[data-page="insight"] #view-evolution .evo-source-modal-section {
+  margin-bottom: 14px;
+}
+body[data-page="insight"] #view-evolution .evo-source-modal-section-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(31, 200, 217, 0.95);
+  margin-bottom: 8px;
+  padding-left: 9px;
+  border-left: 3px solid rgba(31, 200, 217, 0.6);
+}
+body[data-page="insight"] #view-evolution .evo-source-modal-detail {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: rgba(214, 232, 242, 0.86);
+}
+body[data-page="insight"] #view-evolution .evo-source-modal-links {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+body[data-page="insight"] #view-evolution .evo-source-link-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 11px;
+  border-radius: 8px;
+  background: linear-gradient(160deg, rgba(20, 32, 46, 0.5), rgba(12, 20, 32, 0.58));
+  border: 1px solid rgba(31, 200, 217, 0.18);
+  border-left: 3px solid rgba(240, 180, 41, 0.6);
+}
+body[data-page="insight"] #view-evolution .evo-source-link-tag {
+  flex-shrink: 0;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 1px 7px;
+  border-radius: 10px;
+  color: #0c1422;
+  background: linear-gradient(120deg, #1fc8d9, #38e0c0);
+}
+body[data-page="insight"] #view-evolution .evo-source-link-title {
+  font-size: 12.5px;
+  color: rgba(236, 248, 253, 0.92);
+  line-height: 1.4;
+}
+body[data-page="insight"] #view-evolution .evo-source-link-empty {
+  font-size: 12px;
+  color: rgba(186, 214, 230, 0.6);
+}
+
+/* ===== 历史版本对比（重构：能力结构演化） ===== */
+body[data-page="insight"] #view-evolution .evo-history-selectors {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+body[data-page="insight"] #view-evolution .evo-history-select {
+  flex: 1;
+  appearance: none;
+  -webkit-appearance: none;
+  padding: 8px 10px;
+  border-radius: 9px;
+  font-size: 12.5px;
+  color: #eaf6fb;
+  background: rgba(20, 32, 46, 0.7);
+  border: 1px solid rgba(31, 200, 217, 0.3);
+  cursor: pointer;
+  outline: none;
+}
+body[data-page="insight"] #view-evolution .evo-history-vs {
+  font-size: 18px;
+  color: #1fc8d9;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+body[data-page="insight"] #view-evolution .evo-history-head {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 12px;
+  align-items: stretch;
+  margin-bottom: 16px;
+}
+body[data-page="insight"] #view-evolution .evo-history-ver {
+  padding: 12px 13px;
+  border-radius: 11px;
+  background: linear-gradient(160deg, rgba(20, 32, 46, 0.55), rgba(12, 20, 32, 0.62));
+  border: 1px solid rgba(31, 200, 217, 0.18);
+}
+body[data-page="insight"] #view-evolution .evo-history-ver-b {
+  border-left: 3px solid rgba(31, 200, 217, 0.6);
+}
+body[data-page="insight"] #view-evolution .evo-history-ver-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: #eaf6fb;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+body[data-page="insight"] #view-evolution .evo-history-ver-tag {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 1px 7px;
+  border-radius: 10px;
+  color: #0c1422;
+  background: linear-gradient(120deg, #1fc8d9, #38e0c0);
+}
+body[data-page="insight"] #view-evolution .evo-history-ver-date {
+  font-size: 11px;
+  color: rgba(220, 232, 240, 0.55);
+  margin-top: 4px;
+}
+body[data-page="insight"] #view-evolution .evo-history-ver-count {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(240, 180, 41, 0.92);
+  margin-top: 7px;
+}
+body[data-page="insight"] #view-evolution .evo-history-ver-desc {
+  font-size: 11.5px;
+  color: rgba(214, 232, 242, 0.78);
+  margin-top: 5px;
+  line-height: 1.5;
+}
+body[data-page="insight"] #view-evolution .evo-history-direction {
+  align-self: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+body[data-page="insight"] #view-evolution .evo-history-dir-arrow {
+  font-size: 22px;
+  color: #1fc8d9;
+}
+body[data-page="insight"] #view-evolution .evo-history-dir-text {
+  font-size: 10px;
+  color: rgba(186, 214, 230, 0.7);
+  writing-mode: vertical-lr;
+  letter-spacing: 1px;
+}
+body[data-page="insight"] #view-evolution .evo-history-evo-title {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: rgba(31, 200, 217, 0.95);
+  margin-bottom: 10px;
+  padding-left: 9px;
+  border-left: 3px solid rgba(31, 200, 217, 0.6);
+}
+body[data-page="insight"] #view-evolution .evo-history-evo-sub {
+  font-size: 11px;
+  font-weight: 400;
+  color: rgba(150, 176, 192, 0.7);
+}
+body[data-page="insight"] #view-evolution .evo-history-evo-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+body[data-page="insight"] #view-evolution .evo-evo-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  cursor: pointer;
+  transition: all 0.18s;
+}
+body[data-page="insight"] #view-evolution .evo-evo-item:hover {
+  background: rgba(31, 200, 217, 0.1);
+  border-color: rgba(31, 200, 217, 0.35);
+  transform: translateY(-1px);
+}
+body[data-page="insight"] #view-evolution .evo-evo-tag {
+  flex-shrink: 0;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 10px;
+  white-space: nowrap;
+}
+body[data-page="insight"] #view-evolution .evo-evo-upgrade    { color: #1fc8d9; background: rgba(31,200,217,0.14); border: 1px solid rgba(31,200,217,0.35); }
+body[data-page="insight"] #view-evolution .evo-evo-strengthen { color: #4ade80; background: rgba(74,222,128,0.14); border: 1px solid rgba(74,222,128,0.35); }
+body[data-page="insight"] #view-evolution .evo-evo-weaken     { color: #f87171; background: rgba(248,113,113,0.14); border: 1px solid rgba(248,113,113,0.35); }
+body[data-page="insight"] #view-evolution .evo-evo-replace    { color: #F0B429; background: rgba(240,180,41,0.14); border: 1px solid rgba(240,180,41,0.35); }
+body[data-page="insight"] #view-evolution .evo-evo-new        { color: #38e0c0; background: rgba(56,224,192,0.14); border: 1px solid rgba(56,224,192,0.35); }
+body[data-page="insight"] #view-evolution .evo-evo-flow {
+  flex: 1;
+  min-width: 0;
+}
+body[data-page="insight"] #view-evolution .evo-evo-arrow-text {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: rgba(236, 248, 253, 0.94);
+  line-height: 1.35;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+body[data-page="insight"] #view-evolution .evo-evo-note {
+  font-size: 11px;
+  color: rgba(214, 232, 242, 0.7);
+  margin-top: 2px;
+  line-height: 1.4;
+}
+body[data-page="insight"] #view-evolution .evo-evo-right {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
+}
+body[data-page="insight"] #view-evolution .evo-evo-imp {
+  font-size: 11px;
+  color: rgba(240, 180, 41, 0.9);
+  letter-spacing: 1px;
+}
+body[data-page="insight"] #view-evolution .evo-evo-arrow.up   { color: #4ade80; }
+body[data-page="insight"] #view-evolution .evo-evo-arrow.down { color: #f87171; }
+body[data-page="insight"] #view-evolution .evo-evo-level {
+  font-size: 10px;
+  color: rgba(186, 214, 230, 0.75);
+}
+
+body[data-page="insight"] #view-evolution .evo-history-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+body[data-page="insight"] #view-evolution .evo-history-item {
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+body[data-page="insight"] #view-evolution .evo-history-period {
+  font-size: 12px;
+  color: #1fc8d9;
+  font-weight: 600;
+}
+body[data-page="insight"] #view-evolution .evo-history-text {
+  font-size: 12px;
+  color: rgba(220, 232, 240, 0.78);
+}
+body[data-page="insight"] #view-evolution .evo-history-btn {
+  align-self: flex-start;
+  font-size: 11px;
+  padding: 3px 10px;
+  background: linear-gradient(120deg, rgba(31,200,217,0.18), rgba(10,168,188,0.18));
+  border: 1px solid rgba(31, 200, 217, 0.4);
+  color: #cdf3f7;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+body[data-page="insight"] #view-evolution .evo-history-btn:hover {
+  background: linear-gradient(120deg, rgba(31,200,217,0.32), rgba(10,168,188,0.32));
+  transform: translateY(-1px);
+}
+
+/* 响应式 */
+@media (max-width: 1100px) {
+  body[data-page="insight"] #view-evolution .evo-new-layout {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 700px) {
+  body[data-page="insight"] #view-evolution .evo-change-row {
+    grid-template-columns: 1fr;
+  }
+  body[data-page="insight"] #view-evolution .evo-change-side {
+    flex-direction: row;
+    border-right: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-right: 0;
+    padding-bottom: 8px;
+  }
+  body[data-page="insight"] #view-evolution .evo-change-line {
+    grid-template-columns: 1fr 1fr;
+  }
+  body[data-page="insight"] #view-evolution .evo-change-reason {
+    grid-column: 1 / -1;
+  }
+}
+
+/* =============================================================
+   时间节点详情弹窗（点击 markPoint 触发）
+   ============================================================= */
+.evo-modal-mask {
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 14, 22, 0.55);
+  backdrop-filter: blur(6px);
+  z-index: 9999;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  animation: evoModalFade 0.2s ease;
+}
+@keyframes evoModalFade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.evo-modal-mask.open {
+  display: flex;
+}
+.evo-modal-box {
+  position: relative;
+  max-width: 560px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  background: linear-gradient(160deg, rgba(20, 32, 46, 0.96) 0%, rgba(14, 22, 34, 0.98) 100%);
+  border: 1px solid rgba(31, 200, 217, 0.3);
+  border-radius: 16px;
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  padding: 24px 26px 20px;
+  color: #eaf6fb;
+  font-family: inherit;
+  animation: evoModalSlide 0.25s cubic-bezier(.2,.8,.2,1);
+}
+@keyframes evoModalSlide {
+  from { transform: translateY(12px) scale(0.98); opacity: 0; }
+  to   { transform: translateY(0) scale(1); opacity: 1; }
+}
+.evo-modal-close {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: rgba(220, 232, 240, 0.85);
+  font-size: 18px;
+  line-height: 26px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.evo-modal-close:hover {
+  background: rgba(224, 86, 86, 0.25);
+  color: #fff;
+  transform: rotate(90deg);
+}
+.evo-modal-head {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 14px;
+  margin-bottom: 14px;
+}
+.evo-modal-time {
+  font-size: 12px;
+  color: rgba(220, 232, 240, 0.55);
+  letter-spacing: 1px;
+  font-weight: 600;
+}
+.evo-modal-title {
+  font-size: 20px;
+  font-weight: 700;
+  background: linear-gradient(120deg, #1fc8d9 0%, #88e6f0 50%, #F0B429 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  margin: 6px 0 10px;
+  line-height: 1.3;
+}
+.evo-modal-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.evo-modal-badge {
+  font-size: 12px;
+  padding: 3px 10px;
+  background: rgba(31, 200, 217, 0.18);
+  border: 1px solid rgba(31, 200, 217, 0.4);
+  color: #cdf3f7;
+  border-radius: 999px;
+  font-weight: 600;
+}
+.evo-modal-impact {
+  font-size: 12px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-weight: 600;
+}
+.evo-modal-impact.impact-high {
+  background: rgba(224, 86, 86, 0.18);
+  border: 1px solid rgba(224, 86, 86, 0.4);
+  color: #ffb8b8;
+}
+.evo-modal-impact.impact-mid {
+  background: rgba(240, 180, 41, 0.18);
+  border: 1px solid rgba(240, 180, 41, 0.4);
+  color: #f7dba0;
+}
+.evo-modal-impact.impact-low {
+  background: rgba(108, 117, 125, 0.18);
+  border: 1px solid rgba(108, 117, 125, 0.4);
+  color: #d0d4d8;
+}
+.evo-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.evo-modal-section {
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+}
+.evo-modal-h {
+  font-size: 12px;
+  font-weight: 700;
+  color: #1fc8d9;
+  margin-bottom: 6px;
+  letter-spacing: 0.5px;
+}
+.evo-modal-p {
+  font-size: 13px;
+  color: rgba(234, 246, 251, 0.85);
+  line-height: 1.6;
+}
+.evo-modal-skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.evo-modal-skill {
+  font-size: 12px;
+  padding: 3px 9px;
+  background: rgba(31, 200, 217, 0.12);
+  border: 1px solid rgba(31, 200, 217, 0.3);
+  color: #cdf3f7;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+/* 修改明细：原本要求 → 修改后要求 */
+.evo-modal-modify-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.evo-modal-modify-item {
+  background: rgba(15, 35, 50, 0.55);
+  border: 1px solid rgba(31, 200, 217, 0.2);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+.evo-modal-modify-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: #cdf3f7;
+  margin-bottom: 8px;
+  display: inline-block;
+  padding: 2px 8px;
+  background: rgba(31, 200, 217, 0.12);
+  border: 1px solid rgba(31, 200, 217, 0.3);
+  border-radius: 4px;
+}
+.evo-modal-modify-compare {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 10px;
+  align-items: stretch;
+}
+.evo-modal-modify-before,
+.evo-modal-modify-after {
+  background: rgba(20, 45, 60, 0.6);
+  border: 1px solid rgba(120, 140, 160, 0.18);
+  border-radius: 6px;
+  padding: 8px 10px;
+}
+.evo-modal-modify-after {
+  border-color: rgba(31, 200, 217, 0.4);
+  background: rgba(31, 200, 217, 0.08);
+}
+.evo-modal-modify-tag {
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(180, 200, 215, 0.6);
+  margin-bottom: 4px;
+  letter-spacing: 0.4px;
+}
+.evo-modal-modify-tag.tag-after {
+  color: #1fc8d9;
+}
+.evo-modal-modify-text {
+  font-size: 12px;
+  color: #d6e3ec;
+  line-height: 1.6;
+}
+.evo-modal-modify-arrow {
+  align-self: center;
+  color: #1fc8d9;
+  font-size: 16px;
+  font-weight: 700;
+}
+@media (max-width: 560px) {
+  .evo-modal-modify-compare { grid-template-columns: 1fr; }
+  .evo-modal-modify-arrow { transform: rotate(90deg); justify-self: center; }
+}
+
+/* =============================================================
+   本期重点变化（聚合能力趋势卡片）
+   ============================================================= */
+body[data-page="insight"] #view-evolution .evo-important-card .evo-vs-text {
+  color: rgba(220, 232, 240, 0.65);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* 对比月份下拉 */
+body[data-page="insight"] #view-evolution .evo-compare-select {
+  appearance: none;
+  -webkit-appearance: none;
+  background: rgba(31, 200, 217, 0.18);
+  border: 1px solid rgba(31, 200, 217, 0.55);
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  text-shadow: 0 0 6px rgba(31, 200, 217, 0.55);
+  padding: 2px 22px 2px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  outline: none;
+  margin: 0 4px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%231fc8d9' stroke-width='1.6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 7px center;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+body[data-page="insight"] #view-evolution .evo-compare-select:hover {
+  background-color: rgba(31, 200, 217, 0.2);
+  border-color: rgba(31, 200, 217, 0.6);
+}
+body[data-page="insight"] #view-evolution .evo-compare-select:focus {
+  border-color: #1fc8d9;
+  box-shadow: 0 0 0 2px rgba(31, 200, 217, 0.18);
+}
+
+/* 状态层 */
+body[data-page="insight"] #view-evolution .evo-important-loading,
+body[data-page="insight"] #view-evolution .evo-important-empty,
+body[data-page="insight"] #view-evolution .evo-important-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 180px;
+  color: rgba(220, 232, 240, 0.7);
+  font-size: 13px;
+}
+body[data-page="insight"] #view-evolution .evo-spinner {
+  width: 30px; height: 30px;
+  border: 3px solid rgba(31, 200, 217, 0.2);
+  border-top-color: #1fc8d9;
+  border-radius: 50%;
+  animation: evoSpin 0.8s linear infinite;
+}
+@keyframes evoSpin { to { transform: rotate(360deg); } }
+body[data-page="insight"] #view-evolution .evo-empty-ico,
+body[data-page="insight"] #view-evolution .evo-error-ico {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; font-weight: 700;
+}
+body[data-page="insight"] #view-evolution .evo-empty-ico {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: rgba(220, 232, 240, 0.5);
+}
+body[data-page="insight"] #view-evolution .evo-error-ico {
+  background: rgba(224, 86, 86, 0.15);
+  border: 1px solid rgba(224, 86, 86, 0.4);
+  color: #ffb8b8;
+}
+body[data-page="insight"] #view-evolution .evo-error-retry {
+  margin-top: 4px;
+  font-size: 12px;
+  padding: 5px 14px;
+  background: linear-gradient(120deg, rgba(31,200,217,0.2), rgba(10,168,188,0.2));
+  border: 1px solid rgba(31, 200, 217, 0.4);
+  color: #cdf3f7;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+body[data-page="insight"] #view-evolution .evo-error-retry:hover { background: rgba(31,200,217,0.32); }
+
+/* 趋势卡片列表 */
+body[data-page="insight"] #view-evolution .evo-trend-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+body[data-page="insight"] #view-evolution .evo-trend-card {
+  position: relative;
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-left: 3px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+body[data-page="insight"] #view-evolution .evo-trend-card:hover {
+  background: rgba(255, 255, 255, 0.07);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+}
+body[data-page="insight"] #view-evolution .evo-trend-card.dir-up {
+  border-left-color: #1fc8d9;
+}
+body[data-page="insight"] #view-evolution .evo-trend-card.dir-down {
+  border-left-color: #E05656;
+}
+body[data-page="insight"] #view-evolution .evo-trend-card.dir-stable {
+  border-left-color: #8a9aa8;
+}
+body[data-page="insight"] #view-evolution .evo-trend-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+body[data-page="insight"] #view-evolution .evo-trend-dir {
+  width: 26px; height: 26px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 800;
+  flex-shrink: 0;
+}
+body[data-page="insight"] #view-evolution .evo-trend-dir.dir-up {
+  background: rgba(31, 200, 217, 0.16);
+  color: #1fc8d9;
+}
+body[data-page="insight"] #view-evolution .evo-trend-dir.dir-down {
+  background: rgba(224, 86, 86, 0.16);
+  color: #ff7a7a;
+}
+body[data-page="insight"] #view-evolution .evo-trend-dir.dir-stable {
+  background: rgba(138, 154, 168, 0.16);
+  color: #b8c4cc;
+}
+body[data-page="insight"] #view-evolution .evo-trend-name {
+  flex: 1;
+  font-size: 15px;
+  font-weight: 700;
+  color: #eaf6fb;
+}
+body[data-page="insight"] #view-evolution .evo-trend-imp {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+body[data-page="insight"] #view-evolution .evo-trend-imp.imp-high {
+  background: rgba(31, 200, 217, 0.18);
+  border: 1px solid rgba(31, 200, 217, 0.4);
+  color: #cdf3f7;
+}
+body[data-page="insight"] #view-evolution .evo-trend-imp.imp-mid {
+  background: rgba(240, 180, 41, 0.16);
+  border: 1px solid rgba(240, 180, 41, 0.4);
+  color: #f7dba0;
+}
+body[data-page="insight"] #view-evolution .evo-trend-imp.imp-low {
+  background: rgba(138, 154, 168, 0.16);
+  border: 1px solid rgba(138, 154, 168, 0.4);
+  color: #c3cdd3;
+}
+body[data-page="insight"] #view-evolution .evo-trend-desc {
+  font-size: 13px;
+  color: rgba(220, 232, 240, 0.82);
+  line-height: 1.5;
+  margin: 8px 0 10px;
+}
+body[data-page="insight"] #view-evolution .evo-trend-metrics {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 10px;
+}
+body[data-page="insight"] #view-evolution .evo-trend-metric {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+body[data-page="insight"] #view-evolution .evo-trend-metric.evo-metric-mini {
+  flex: 0 0 auto;
+}
+body[data-page="insight"] #view-evolution .evo-metric-label {
+  font-size: 10px;
+  color: rgba(220, 232, 240, 0.5);
+  letter-spacing: 0.5px;
+}
+body[data-page="insight"] #view-evolution .evo-meter {
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+body[data-page="insight"] #view-evolution .evo-meter-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.4s ease;
+}
+body[data-page="insight"] #view-evolution .evo-meter-fill.dir-up {
+  background: linear-gradient(90deg, #0AA8BC, #1fc8d9);
+}
+body[data-page="insight"] #view-evolution .evo-meter-fill.dir-down {
+  background: linear-gradient(90deg, #B83C3C, #E05656);
+}
+body[data-page="insight"] #view-evolution .evo-meter-fill.dir-stable {
+  background: linear-gradient(90deg, #5a6c78, #8a9aa8);
+}
+body[data-page="insight"] #view-evolution .evo-confidence {
+  font-size: 14px;
+  font-weight: 700;
+  color: #F0B429;
+}
+body[data-page="insight"] #view-evolution .evo-trend-skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+body[data-page="insight"] #view-evolution .evo-trend-skill {
+  font-size: 11px;
+  padding: 2px 8px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(220, 232, 240, 0.85);
+  border-radius: 4px;
+}
+body[data-page="insight"] #view-evolution .evo-trend-skill-more {
+  font-size: 11px;
+  padding: 2px 8px;
+  color: rgba(220, 232, 240, 0.55);
+}
+body[data-page="insight"] #view-evolution .evo-trend-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 10px;
+  border-top: 1px dashed rgba(255, 255, 255, 0.1);
+}
+body[data-page="insight"] #view-evolution .evo-trend-reason {
+  flex: 1;
+  font-size: 12px;
+  color: rgba(220, 232, 240, 0.6);
+  line-height: 1.4;
+}
+body[data-page="insight"] #view-evolution .evo-trend-detail {
+  font-size: 12px;
+  font-weight: 600;
+  color: #1fc8d9;
+  white-space: nowrap;
+  cursor: pointer;
+}
+body[data-page="insight"] #view-evolution .evo-trend-detail:hover { color: #88e6f0; }
+
+@media (max-width: 700px) {
+  body[data-page="insight"] #view-evolution .evo-trend-metrics {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+  body[data-page="insight"] #view-evolution .evo-trend-metric.evo-metric-mini {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+/* =============================================================
+   紧凑布局：尽量在一屏内展示全部卡片（缩小卡片与间距）
+   ============================================================= */
+body[data-page="insight"] #view-evolution .page-main {
+  padding: 8px 40px 12px;
+}
+body[data-page="insight"] #view-evolution .evo-new-layout {
+  gap: 12px;
+  margin-top: 4px;
+}
+body[data-page="insight"] #view-evolution .card > .card-header {
+  padding: 11px 16px;
+  font-size: 13px;
+}
+body[data-page="insight"] #view-evolution .card > .card-body {
+  padding: 12px 16px;
+}
+body[data-page="insight"] #view-evolution .evo-timeline-chart {
+  height: 190px;
+}
+/* 顶部标题缩小 */
+body[data-page="insight"] #view-evolution .page-title-block h1 {
+  font-size: 18px;
+  line-height: 1.2;
+  margin: 0;
+}
+body[data-page="insight"] #view-evolution .subtitle {
+  font-size: 11px;
+  margin-top: 1px;
+  line-height: 1.3;
+}
+body[data-page="insight"] #view-evolution .page-actions {
+  padding-top: 0;
+  font-size: 12px;
+}
+body[data-page="insight"] #view-evolution .page-header {
+  margin-bottom: 8px;
+  min-height: 0;
+}
+/* 让左右两栏总高度受限，一屏内展示所有卡片 */
+body[data-page="insight"] #view-evolution .evo-new-layout {
+  height: calc(100vh - 60px);
+  align-items: stretch;
+}
+body[data-page="insight"] #view-evolution .evo-new-main {
+  min-height: 0;
+}
+body[data-page="insight"] #view-evolution .evo-timeline-card {
+  flex-shrink: 0;
+}
+body[data-page="insight"] #view-evolution .evo-important-card {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+/* 右侧栏：压缩标题与列表，必要时内部滚动避免撑高页面 */
+body[data-page="insight"] #view-evolution .evo-new-side {
+  gap: 0;
+  max-height: calc(100vh - 60px);
+}
+body[data-page="insight"] #view-evolution .evo-new-side .evo-insight-card {
+  margin-bottom: 12px;
+}
+body[data-page="insight"] #view-evolution .evo-insight-card,
+body[data-page="insight"] #view-evolution .evo-source-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+body[data-page="insight"] #view-evolution .evo-insight-card .card-body,
+body[data-page="insight"] #view-evolution .evo-source-card .card-body {
+  overflow: auto;
+  min-height: 0;
+  flex: 1 1 auto;
+}
+/* 重要性图例：作为 evo-important-card 的底部 footer，flex-shrink:0 不影响卡高 */
+body[data-page="insight"] #view-evolution .evo-importance-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: center;
+  padding: 8px 16px 10px;
+  border-top: 1px dashed rgba(255, 255, 255, 0.08);
+  font-size: 11px;
+  color: rgba(220, 232, 240, 0.7);
+  flex-shrink: 0;
+}
+body[data-page="insight"] #view-evolution .evo-importance-legend .star-line {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+body[data-page="insight"] #view-evolution .evo-importance-legend .evo-stars-mini {
+  color: #f5b34a;
+  letter-spacing: 1px;
+  font-style: normal;
+}
+
+/* 核心洞察 7 : 数据来源 3 */
+body[data-page="insight"] #view-evolution .evo-insight-card {
+  flex: 7 1 0;
+}
+body[data-page="insight"] #view-evolution .evo-source-card {
+  flex: 3 1 0;
+}
+body[data-page="insight"] #view-evolution .evo-insight-step {
+  gap: 6px;
+  margin-bottom: 8px;
+}
+body[data-page="insight"] #view-evolution .evo-insight-step-text {
+  font-size: 12px;
+  line-height: 1.45;
+}
+body[data-page="insight"] #view-evolution .evo-insight-evidence {
+  margin-top: 6px;
+  gap: 6px;
+}
+body[data-page="insight"] #view-evolution .evo-evidence-chip {
+  padding: 3px 8px;
+  font-size: 11px;
+}
+body[data-page="insight"] #view-evolution .evo-insight-step-tags {
+  margin-top: 6px;
+  gap: 6px;
+}
+body[data-page="insight"] #view-evolution .evo-source-list {
+  gap: 8px;
+}
+body[data-page="insight"] #view-evolution .evo-source-item {
+  padding: 8px 10px;
+}
+body[data-page="insight"] #view-evolution .evo-source-sub {
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+body[data-page="insight"] #view-evolution .evo-insight-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+/* 本期重点变化：整体内部滚动，避免撑高一屏 */
+body[data-page="insight"] #view-evolution .evo-important-card .card-body {
+  overflow-y: auto;
+  min-height: 0;
+  flex: 1 1 auto;
+}
+body[data-page="insight"] #view-evolution .evo-important-card .card-body::-webkit-scrollbar {
+  width: 6px;
+}
+body[data-page="insight"] #view-evolution .evo-important-card .card-body::-webkit-scrollbar-thumb {
+  background: rgba(31, 200, 217, 0.35);
+  border-radius: 4px;
+}
+body[data-page="insight"] #view-evolution .evo-important-card .card-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+/* 本期重点变化：三组更紧凑 */
+body[data-page="insight"] #view-evolution .evo-group {
+  margin-bottom: 10px;
+}
+body[data-page="insight"] #view-evolution .evo-table-header,
+body[data-page="insight"] #view-evolution .evo-table-row {
+  font-size: 12px;
+}
+body[data-page="insight"] #view-evolution .evo-group-name {
+  font-size: 13px;
+}
+body[data-page="insight"] #view-evolution .evo-group-name-en {
+  font-size: 11px;
+}
+
+/* =============================================================
+   本期重点变化 · 参考图排版：新增/修改/删除 三组表格
+   ============================================================= */
+body[data-page="insight"] #view-evolution .evo-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+body[data-page="insight"] #view-evolution .evo-group {
+  display: grid;
+  grid-template-columns: 96px 1fr;
+  gap: 14px;
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  transition: all 0.2s;
+}
+body[data-page="insight"] #view-evolution .evo-group:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(31, 200, 217, 0.18);
+}
+body[data-page="insight"] #view-evolution .evo-group-side {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding-right: 12px;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+body[data-page="insight"] #view-evolution .evo-group-icon {
+  width: 40px; height: 40px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; font-weight: 800;
+  color: #fff;
+}
+body[data-page="insight"] #view-evolution .evo-group-add .evo-group-icon {
+  background: linear-gradient(135deg, #1fc8d9, #0AA8BC);
+  box-shadow: 0 4px 14px rgba(31, 200, 217, 0.4);
+}
+body[data-page="insight"] #view-evolution .evo-group-mod .evo-group-icon {
+  background: linear-gradient(135deg, #F0B429, #C68A0C);
+  box-shadow: 0 4px 14px rgba(240, 180, 41, 0.4);
+}
+body[data-page="insight"] #view-evolution .evo-group-del .evo-group-icon {
+  background: linear-gradient(135deg, #E05656, #B83C3C);
+  box-shadow: 0 4px 14px rgba(224, 86, 86, 0.4);
+}
+body[data-page="insight"] #view-evolution .evo-group-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: #eaf6fb;
+  text-align: center;
+  line-height: 1.3;
+}
+body[data-page="insight"] #view-evolution .evo-group-name-en {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(220, 232, 240, 0.6);
+  margin-top: 2px;
+}
+
+body[data-page="insight"] #view-evolution .evo-group-table {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+body[data-page="insight"] #view-evolution .evo-group-empty {
+  font-size: 12px;
+  color: rgba(220, 232, 240, 0.4);
+  padding: 8px 4px;
+  text-align: center;
+}
+body[data-page="insight"] #view-evolution .evo-table-row {
+  display: grid;
+  grid-template-columns: 1.6fr 0.9fr 0.9fr 2.2fr;
+  gap: 12px;
+  align-items: center;
+  padding: 8px 4px;
+  font-size: 13px;
+  color: rgba(234, 246, 251, 0.88);
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background 0.15s;
+}
+body[data-page="insight"] #view-evolution .evo-table-header {
+  display: grid;
+  grid-template-columns: 1.6fr 0.9fr 0.9fr 2.2fr;
+  gap: 12px;
+  align-items: center;
+  padding: 6px 4px 8px;
+  margin-bottom: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  color: rgba(186, 214, 230, 0.72);
+  background: linear-gradient(180deg, rgba(31, 200, 217, 0.07), rgba(31, 200, 217, 0));
+  border-bottom: 1px solid rgba(31, 200, 217, 0.18);
+  border-radius: 4px;
+  pointer-events: none;
+}
+body[data-page="insight"] #view-evolution .evo-table-header .evo-table-cell {
+  overflow: visible;
+  white-space: normal;
+  text-overflow: clip;
+}
+body[data-page="insight"] #view-evolution .evo-table-row:hover {
+  background: rgba(31, 200, 217, 0.08);
+}
+body[data-page="insight"] #view-evolution .evo-table-row:not(:last-child) {
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.06);
+  padding-bottom: 8px;
+}
+body[data-page="insight"] #view-evolution .evo-table-cell {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+body[data-page="insight"] #view-evolution .evo-table-cell.col-reason {
+  white-space: normal;
+  color: rgba(220, 232, 240, 0.7);
+  font-size: 12px;
+  line-height: 1.4;
+}
+body[data-page="insight"] #view-evolution .evo-table-cell.col-name {
+  font-weight: 600;
+  color: #eaf6fb;
+}
+body[data-page="insight"] #view-evolution .evo-type-pill {
+  display: inline-block;
+  font-size: 11px;
+  padding: 2px 8px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(220, 232, 240, 0.78);
+  border-radius: 4px;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+body[data-page="insight"] #view-evolution .evo-stars-row {
+  color: #F0B429;
+  letter-spacing: 1px;
+  font-size: 13px;
+}
+body[data-page="insight"] #view-evolution .evo-stars-empty {
+  color: rgba(255, 255, 255, 0.18);
+}
+body[data-page="insight"] #view-evolution .evo-table-toggle {
+  margin-top: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #1fc8d9;
+  cursor: pointer;
+  padding: 4px 0;
+  user-select: none;
+  width: fit-content;
+}
+body[data-page="insight"] #view-evolution .evo-table-toggle:hover { color: #88e6f0; }
+
+body[data-page="insight"] #view-evolution .evo-importance-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  font-size: 11px;
+  color: rgba(220, 232, 240, 0.6);
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  align-items: center;
+}
+body[data-page="insight"] #view-evolution .evo-importance-legend .star-line {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+body[data-page="insight"] #view-evolution .evo-stars-mini {
+  color: #F0B429;
+  letter-spacing: 1px;
+  font-size: 11px;
+}
+
+@media (max-width: 800px) {
+  body[data-page="insight"] #view-evolution .evo-group {
+    grid-template-columns: 72px 1fr;
+    gap: 10px;
+    padding: 12px;
+  }
+  body[data-page="insight"] #view-evolution .evo-group-side {
+    padding-right: 8px;
+  }
+  body[data-page="insight"] #view-evolution .evo-group-icon {
+    width: 32px; height: 32px;
+    font-size: 16px;
+  }
+  body[data-page="insight"] #view-evolution .evo-table-row {
+    grid-template-columns: 1.4fr 0.8fr 0.7fr 1.8fr;
+    gap: 8px;
+    font-size: 12px;
+  }
+  body[data-page="insight"] #view-evolution .evo-table-cell.col-reason {
+    font-size: 11px;
+  }
+}
+@media (max-width: 600px) {
+  body[data-page="insight"] #view-evolution .evo-table-row {
+    grid-template-columns: 1fr 1fr;
+    gap: 4px 10px;
+  }
+  body[data-page="insight"] #view-evolution .evo-table-cell.col-reason {
+    grid-column: 1 / -1;
+  }
+}
+
+/* =============================================================
+   本期重点变化 · 查看更多下拉浮层
+   ============================================================= */
+body[data-page="insight"] #view-evolution .evo-table-toggle-wrap {
+  position: relative;
+  margin-top: 6px;
+}
+body[data-page="insight"] #view-evolution .evo-table-toggle {
+  font-size: 12px;
+  font-weight: 600;
+  color: #1fc8d9;
+  cursor: pointer;
+  padding: 4px 0;
+  user-select: none;
+  width: fit-content;
+  transition: color 0.15s;
+}
+body[data-page="insight"] #view-evolution .evo-table-toggle:hover { color: #88e6f0; }
+body[data-page="insight"] #view-evolution .evo-table-dropdown {
+  display: none;
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  z-index: 50;
+  background: linear-gradient(160deg, rgba(20, 32, 46, 0.97) 0%, rgba(14, 22, 34, 0.98) 100%);
+  border: 1px solid rgba(31, 200, 217, 0.3);
+  border-radius: 12px;
+  box-shadow:
+    0 16px 40px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  max-height: 360px;
+  min-width: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  animation: evoDropdownIn 0.18s cubic-bezier(.2,.8,.2,1);
+}
+body[data-page="insight"] #view-evolution .evo-table-dropdown::-webkit-scrollbar {
+  width: 6px;
+}
+body[data-page="insight"] #view-evolution .evo-table-dropdown::-webkit-scrollbar-thumb {
+  background: rgba(31, 200, 217, 0.35);
+  border-radius: 4px;
+}
+body[data-page="insight"] #view-evolution .evo-table-dropdown.open {
+  display: block;
+}
+@keyframes evoDropdownIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+body[data-page="insight"] #view-evolution .evo-table-dropdown-inner {
+  padding: 6px 10px;
+}
+body[data-page="insight"] #view-evolution .evo-table-dropdown .evo-table-row {
+  padding: 8px 6px;
+  border-radius: 6px;
+}
+body[data-page="insight"] #view-evolution .evo-table-dropdown .evo-table-row:not(:last-child) {
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.06);
+  padding-bottom: 8px;
+  margin-bottom: 2px;
+}

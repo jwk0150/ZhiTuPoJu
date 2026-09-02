@@ -559,7 +559,7 @@ window.buildMockScanPayload = function() {
         trend: [], quality: {evidence_count: 3+i, source_count: 2+i, city_count: 1+i, freshness_score: 70+i},
         source: 'Mock数据源', city, salary: '20-40K', requiredSkills: skills,
         description: '基于本地招聘库聚类启发式生成。', discoveredAt: now,
-        reasoning: 'Mock 路径：标题新颖度+技能组合熵+跨行业溢出 = 综合置信度 ' + conf + '%'
+        reasoning: '信号路径：标题新颖度 + 技能组合熵 + 跨行业溢出 = 综合置信度 ' + conf + '%'
     });
     const discoveries = [
         mkDisc(1,'AI Agent 架构师','人工智能',88,['LangChain','Function Calling','RAG','Python'],'北京'),
@@ -927,9 +927,9 @@ window.renderDiscoveryList = function(opts) {
         const firstSeen = j.freshness || (j.discoveredAt || j.discovered_at
             ? new Date(j.discoveredAt || j.discovered_at).toISOString().slice(0, 7)
             : '近周期');
-        const insight = (j.reasoning || j.insight || '').trim();
+        const insight = (j.reasoning || j.insight || '').trim().replace(/^信号路径[：:]\s*/, '').replace(/^Mock 路径[：:]\s*/, '');
         const insightShort = insight
-            ? (insight.length > 36 ? insight.slice(0, 36) + '…' : insight)
+            ? (insight.length > 32 ? insight.slice(0, 32) + '…' : insight)
             : (isForecast
                 ? '预计未来 ' + eta + ' 个月进入增长阶段'
                 : '近周期首次持续出现于真实招聘数据');
@@ -1379,7 +1379,7 @@ window.selectDiscoveryJob = function(id) {
       sessionStorage.setItem('zhitu_disc_job', JSON.stringify(job));
       sessionStorage.setItem('zhitu_disc_lane', isForecast ? 'forecast' : 'found');
     } catch (e) {}
-    location.href = 'discovery-detail.html?id=' + encodeURIComponent(job.id);
+    location.href = 'discovery-detail.html?id=' + encodeURIComponent(job.id) + '&v=fix25';
 };
 
 window.showDiscoveryDetail = function(id) {
