@@ -1,0 +1,119 @@
+<ns0:p ns2:paraId="3E8C36EC" ns2:textId="025C6A93" ns0:rsidR="006E73B6" ns0:rsidRDefault="006E73B6" ns0:rsidP="006E73B6">
+      
+      
+      <ns0:pPr>
+        
+        
+        <ns0:ind ns0:firstLineChars="200" ns0:firstLine="420"/>
+        
+        
+        <ns0:jc ns0:val="both"/>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:rFonts ns0:hint="eastAsia"/>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+      
+      </ns0:pPr>
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t>Les données principales des postes sont réparties entre une table principale de consultation et une table de détail, reliées l&#x2019;une à l&#x2019;autre par une clé étrangère en relation 1:1, comme le montre la figure 2. La table principale porte les champs de filtrage à forte fréquence (source, titre, entreprise, ville, salaire, expérience, niveau d&#x2019;études, date de publication, empreinte, complétude, etc.), tandis que la table de détail porte les champs de type texte long et tableau (description, exigences, tableau de compétences, avantages, catégories hiérarchiques, etc.) ; les champs spécifiques aux plateformes sont stockés en JSONB afin d&#x2019;éviter des modifications fréquentes de schéma [1]. En notant $P$ le tuple de la table principale et $D$ celui de la table de détail, ils satisfont la contrainte de clé étrangère $D.job_id=P.id$.</ns0:t>
+        
+      
+      </ns0:r>
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:rFonts ns0:hint="eastAsia"/>
+          
+          
+          <ns0:vertAlign ns0:val="superscript"/>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t/>
+        
+      
+      </ns0:r>
+      
+      
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t/>
+        
+      
+      </ns0:r>
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+    
+    </ns0:p>

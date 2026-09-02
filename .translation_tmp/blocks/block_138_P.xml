@@ -1,0 +1,117 @@
+<ns0:p ns2:paraId="1AEC323A" ns2:textId="24E639C3" ns0:rsidR="00D47C95" ns0:rsidRDefault="00D47C95" ns0:rsidP="00D47C95">
+      
+      
+      <ns0:pPr>
+        
+        
+        <ns0:ind ns0:firstLineChars="200" ns0:firstLine="420"/>
+        
+        
+        <ns0:jc ns0:val="both"/>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:rFonts ns0:hint="eastAsia"/>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+      
+      </ns0:pPr>
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:rFonts ns0:hint="eastAsia"/>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t>Relaxation différentiable : le processus de filtrage Coherent Factuality, auparavant non différentiable, est réécrit sous une forme différentiable, permettant au scoreur d&#x2019;apprendre directement à partir des données ; au moment du déploiement, le scoreur appris est « réinséré » dans le flux algorithmique d&#x2019;origine, en conservant les garanties de correction mathématique de l&#x2019;algorithme initial. Les expériences montrent que DCF, tout en maintenant ses garanties de fiabilité, augmente le taux de rétention des affirmations jusqu&#x2019;à 141 % [10].</ns0:t>
+        
+      
+      </ns0:r>
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:rFonts ns0:hint="eastAsia"/>
+          
+          
+          <ns0:vertAlign ns0:val="superscript"/>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t/>
+        
+      
+      </ns0:r>
+      
+      
+      
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:rFonts ns0:hint="eastAsia"/>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t/>
+        
+      
+      </ns0:r>
+      
+    
+    </ns0:p>

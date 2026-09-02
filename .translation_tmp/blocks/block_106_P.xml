@@ -1,0 +1,205 @@
+<ns0:p ns2:paraId="19A062C8" ns2:textId="77777777" ns0:rsidR="00DD52EF" ns0:rsidRDefault="00000000">
+      
+      
+      <ns0:pPr>
+        
+        
+        <ns0:ind ns0:firstLine="420"/>
+        
+        
+        <ns0:jc ns0:val="both"/>
+        
+      
+      </ns0:pPr>
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:t>Lorsque </ns0:t>
+        
+      
+      </ns0:r>
+      
+      
+      <ns9:oMath>
+        
+        
+        <ns9:r>
+          
+          
+          <ns0:rPr>
+            
+            
+            <ns0:rFonts ns0:ascii="Cambria Math" ns0:hAnsi="Cambria Math"/>
+            
+          
+          </ns0:rPr>
+          
+          
+          <ns9:t>n</ns9:t>
+          
+        
+        </ns9:r>
+        
+        
+        <ns9:r>
+          
+          
+          <ns9:rPr>
+            
+            
+            <ns9:sty ns9:val="p"/>
+            
+          
+          </ns9:rPr>
+          
+          
+          <ns0:rPr>
+            
+            
+            <ns0:rFonts ns0:ascii="Cambria Math" ns0:hAnsi="Cambria Math"/>
+            
+          
+          </ns0:rPr>
+          
+          
+          <ns9:t>_</ns9:t>
+          
+        
+        </ns9:r>
+        
+        
+        <ns9:r>
+          
+          
+          <ns0:rPr>
+            
+            
+            <ns0:rFonts ns0:ascii="Cambria Math" ns0:hAnsi="Cambria Math"/>
+            
+          
+          </ns0:rPr>
+          
+          
+          <ns9:t>A,n</ns9:t>
+          
+        
+        </ns9:r>
+        
+        
+        <ns9:r>
+          
+          
+          <ns9:rPr>
+            
+            
+            <ns9:sty ns9:val="p"/>
+            
+          
+          </ns9:rPr>
+          
+          
+          <ns0:rPr>
+            
+            
+            <ns0:rFonts ns0:ascii="Cambria Math" ns0:hAnsi="Cambria Math"/>
+            
+          
+          </ns0:rPr>
+          
+          
+          <ns9:t>_</ns9:t>
+          
+        
+        </ns9:r>
+        
+        
+        <ns9:r>
+          
+          
+          <ns0:rPr>
+            
+            
+            <ns0:rFonts ns0:ascii="Cambria Math" ns0:hAnsi="Cambria Math"/>
+            
+          
+          </ns0:rPr>
+          
+          
+          <ns9:t>B≥5</ns9:t>
+          
+        
+        </ns9:r>
+        
+      
+      </ns9:oMath>
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:t>, la décision, alignée sur _diff_skills dans evolution_agent.py, est la suivante :</ns0:t>
+        
+      
+      </ns0:r>
+      
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:rFonts ns0:ascii="Consolas" ns0:hAnsi="Consolas"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t/>
+        
+      
+      </ns0:r>
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:t/>
+        
+      
+      </ns0:r>
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:rFonts ns0:ascii="Consolas" ns0:hAnsi="Consolas"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t/>
+        
+      
+      </ns0:r>
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:t/>
+        
+      
+      </ns0:r>
+      
+      
+      
+    
+    </ns0:p>

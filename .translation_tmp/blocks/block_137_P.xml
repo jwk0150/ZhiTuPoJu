@@ -1,0 +1,53 @@
+<ns0:p ns2:paraId="1B542DA9" ns2:textId="77777777" ns0:rsidR="00D47C95" ns0:rsidRDefault="00D47C95" ns0:rsidP="00D47C95">
+      
+      
+      <ns0:pPr>
+        
+        
+        <ns0:ind ns0:firstLineChars="200" ns0:firstLine="420"/>
+        
+        
+        <ns0:jc ns0:val="both"/>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:rFonts ns0:hint="eastAsia"/>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+      
+      </ns0:pPr>
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:rFonts ns0:hint="eastAsia"/>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t>Modélisation par graphe de dépendance : la sortie est représentée comme un graphe de dépendance, validant conjointement les affirmations et leurs ancêtres logiques, afin d&#x2019;éviter que des « conclusions ultérieures ne reposent sur des prémisses non établies » ;</ns0:t>
+        
+      
+      </ns0:r>
+      
+      
+      
+      
+      
+    
+    </ns0:p>

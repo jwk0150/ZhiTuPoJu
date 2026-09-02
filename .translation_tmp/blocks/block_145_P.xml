@@ -1,0 +1,395 @@
+<ns0:p ns2:paraId="73CA154E" ns2:textId="429B01DC" ns0:rsidR="00DD52EF" ns0:rsidRDefault="00000000">
+      
+      
+      <ns0:pPr>
+        
+        
+        <ns0:ind ns0:firstLineChars="200" ns0:firstLine="422"/>
+        
+        
+        <ns0:jc ns0:val="both"/>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+      
+      </ns0:pPr>
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:b/>
+          
+          
+          <ns0:bCs/>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t>Bilan des travaux : cet article, adressant le sujet XH-202621, traduit la « validation croisée du nettoyage multi-sources » et le « contrôle des hallucinations des compétences » en cinq innovations vérifiables, et livre un système exécutable. I1 déplace le contrôle en amont vers les déclencheurs d&#x2019;insertion en base grâce à l&#x2019;empreinte et à la complétude de quinze champs, avec 93.5 % d&#x2019;enregistrements de haute qualité. I2 découvre les postes émergents à l&#x2019;aide de </ns0:t>
+        
+      
+      </ns0:r>
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:rFonts ns0:hint="eastAsia"/>
+          
+          
+          <ns0:b/>
+          
+          
+          <ns0:bCs/>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t/>
+        
+      
+      </ns0:r>
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t/>
+        
+      
+      </ns0:r>
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      <ns9:oMath>
+        
+        
+        <ns9:r>
+          
+          
+          <ns9:rPr>
+            
+            
+            <ns9:sty ns9:val="p"/>
+            
+          
+          </ns9:rPr>
+          
+          
+          <ns0:rPr>
+            
+            
+            <ns0:rFonts ns0:ascii="Cambria Math" ns0:hAnsi="Cambria Math"/>
+            
+            
+            <ns0:lang ns0:eastAsia="zh-CN"/>
+            
+          
+          </ns0:rPr>
+          
+          
+          <ns9:t>Conf</ns9:t>
+          
+        
+        </ns9:r>
+        
+        
+        <ns9:r>
+          
+          
+          <ns0:rPr>
+            
+            
+            <ns0:rFonts ns0:ascii="Cambria Math" ns0:hAnsi="Cambria Math"/>
+            
+            
+            <ns0:lang ns0:eastAsia="zh-CN"/>
+            
+          
+          </ns0:rPr>
+          
+          
+          <ns9:t>=T+S+C</ns9:t>
+          
+        
+        </ns9:r>
+        
+      
+      </ns9:oMath>
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t> et d&#x2019;une chaîne en six étapes, avec un F1 atteignant 0.824. I3 fournit les ajouts, suppressions et modifications par différences des taux d&#x2019;apparition multi-sources, avec un Kappa de 0.76, et donne des exemples de différences recalculables tels que RAG/Prompt. I4 réalise le diagnostic grâce à la pondération en cinq dimensions </ns0:t>
+        
+      
+      </ns0:r>
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:rFonts ns0:hint="eastAsia"/>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t xml:space="preserve"/>
+        
+      
+      </ns0:r>
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t/>
+        
+      
+      </ns0:r>
+      
+      
+      
+      
+      
+      
+      
+      <ns9:oMath>
+        
+        
+        <ns9:r>
+          
+          
+          <ns0:rPr>
+            
+            
+            <ns0:rFonts ns0:ascii="Cambria Math" ns0:hAnsi="Cambria Math"/>
+            
+            
+            <ns0:lang ns0:eastAsia="zh-CN"/>
+            
+          
+          </ns0:rPr>
+          
+          
+          <ns9:t>0.42/0.24/0.14/0.10/0.10</ns9:t>
+          
+        
+        </ns9:r>
+        
+      
+      </ns9:oMath>
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t> et à la borne supérieure de transfert </ns0:t>
+        
+      
+      </ns0:r>
+      
+      
+      <ns9:oMath>
+        
+        
+        <ns9:r>
+          
+          
+          <ns0:rPr>
+            
+            
+            <ns0:rFonts ns0:ascii="Cambria Math" ns0:hAnsi="Cambria Math"/>
+            
+            
+            <ns0:lang ns0:eastAsia="zh-CN"/>
+            
+          
+          </ns0:rPr>
+          
+          
+          <ns9:t>0.65</ns9:t>
+          
+        
+        </ns9:r>
+        
+      
+      </ns9:oMath>
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t>, avec une exactitude de 0.927, l&#x2019;ablation validant le bien-fondé des poids. I5 ramène le taux d&#x2019;hallucination à environ 3.2 % grâce au contrôle par preuves </ns0:t>
+        
+      
+      </ns0:r>
+      
+      
+      
+      
+      
+      
+      <ns9:oMath>
+        
+        
+        <ns9:r>
+          
+          
+          <ns0:rPr>
+            
+            
+            <ns0:rFonts ns0:ascii="Cambria Math" ns0:hAnsi="Cambria Math"/>
+            
+            
+            <ns0:lang ns0:eastAsia="zh-CN"/>
+            
+          
+          </ns0:rPr>
+          
+          
+          <ns9:t>|S|≥2</ns9:t>
+          
+        
+        </ns9:r>
+        
+      
+      </ns9:oMath>
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t> et au repli local. Les trois exactitudes quantitatives du concours ne sont pas inférieures à 90 %. La valeur du système réside dans le fait que les innovations sont formulées en équations et en seuils, étayées par des données chiffrées, plutôt que de rester des slogans conceptuels.</ns0:t>
+        
+      
+      </ns0:r>
+      
+      
+      
+      
+      
+      
+      
+      
+      
+    
+    </ns0:p>

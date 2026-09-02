@@ -1,0 +1,640 @@
+<ns0:p ns2:paraId="4D816D54" ns2:textId="77777777" ns0:rsidR="00DD52EF" ns0:rsidRDefault="00000000">
+      
+      
+      <ns0:pPr>
+        
+        
+        <ns0:ind ns0:firstLine="420"/>
+        
+        
+        <ns0:jc ns0:val="both"/>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+      
+      </ns0:pPr>
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t>Innovation I3 : (différenciation de compétences pseudo-temporelle multi-sources, correspondant au coin inférieur gauche de la figure 1). La différence des taux d&#x2019;apparition entre la source plus ancienne </ns0:t>
+        
+      
+      </ns0:r>
+      
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:rFonts ns0:hint="eastAsia"/>
+          
+          
+          <ns0:b/>
+          
+          
+          <ns0:bCs/>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t/>
+        
+      
+      </ns0:r>
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t/>
+        
+      
+      </ns0:r>
+      
+      
+      
+      
+      
+      
+      
+      
+      <ns9:oMath>
+        
+        
+        <ns9:r>
+          
+          
+          <ns0:rPr>
+            
+            
+            <ns0:rFonts ns0:ascii="Cambria Math" ns0:hAnsi="Cambria Math"/>
+            
+            
+            <ns0:lang ns0:eastAsia="zh-CN"/>
+            
+          
+          </ns0:rPr>
+          
+          
+          <ns9:t>A</ns9:t>
+          
+        
+        </ns9:r>
+        
+      
+      </ns9:oMath>
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t> et la source plus récente </ns0:t>
+        
+      
+      </ns0:r>
+      
+      
+      <ns9:oMath>
+        
+        
+        <ns9:r>
+          
+          
+          <ns0:rPr>
+            
+            
+            <ns0:rFonts ns0:ascii="Cambria Math" ns0:hAnsi="Cambria Math"/>
+            
+            
+            <ns0:lang ns0:eastAsia="zh-CN"/>
+            
+          
+          </ns0:rPr>
+          
+          
+          <ns9:t>B</ns9:t>
+          
+        
+        </ns9:r>
+        
+      
+      </ns9:oMath>
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t>, notée </ns0:t>
+        
+      
+      </ns0:r>
+      
+      
+      <ns9:oMath>
+        
+        
+        <ns9:r>
+          
+          
+          <ns0:rPr>
+            
+            
+            <ns0:rFonts ns0:ascii="Cambria Math" ns0:hAnsi="Cambria Math"/>
+            
+            
+            <ns0:lang ns0:eastAsia="zh-CN"/>
+            
+          
+          </ns0:rPr>
+          
+          
+          <ns9:t>Δ</ns9:t>
+          
+        
+        </ns9:r>
+        
+        
+        <ns9:r>
+          
+          
+          <ns9:rPr>
+            
+            
+            <ns9:sty ns9:val="p"/>
+            
+          
+          </ns9:rPr>
+          
+          
+          <ns0:rPr>
+            
+            
+            <ns0:rFonts ns0:ascii="Cambria Math" ns0:hAnsi="Cambria Math"/>
+            
+            
+            <ns0:lang ns0:eastAsia="zh-CN"/>
+            
+          
+          </ns0:rPr>
+          
+          
+          <ns9:t>_</ns9:t>
+          
+        
+        </ns9:r>
+        
+        
+        <ns9:r>
+          
+          
+          <ns0:rPr>
+            
+            
+            <ns0:rFonts ns0:ascii="Cambria Math" ns0:hAnsi="Cambria Math"/>
+            
+            
+            <ns0:lang ns0:eastAsia="zh-CN"/>
+            
+          
+          </ns0:rPr>
+          
+          
+          <ns9:t>s=r</ns9:t>
+          
+        
+        </ns9:r>
+        
+        
+        <ns9:r>
+          
+          
+          <ns9:rPr>
+            
+            
+            <ns9:sty ns9:val="p"/>
+            
+          
+          </ns9:rPr>
+          
+          
+          <ns0:rPr>
+            
+            
+            <ns0:rFonts ns0:ascii="Cambria Math" ns0:hAnsi="Cambria Math"/>
+            
+            
+            <ns0:lang ns0:eastAsia="zh-CN"/>
+            
+          
+          </ns0:rPr>
+          
+          
+          <ns9:t>_</ns9:t>
+          
+        
+        </ns9:r>
+        
+        
+        <ns9:r>
+          
+          
+          <ns0:rPr>
+            
+            
+            <ns0:rFonts ns0:ascii="Cambria Math" ns0:hAnsi="Cambria Math"/>
+            
+            
+            <ns0:lang ns0:eastAsia="zh-CN"/>
+            
+          
+          </ns0:rPr>
+          
+          
+          <ns9:t>s</ns9:t>
+          
+        
+        </ns9:r>
+        
+        
+        <ns9:r>
+          
+          
+          <ns9:rPr>
+            
+            
+            <ns9:sty ns9:val="p"/>
+            
+          
+          </ns9:rPr>
+          
+          
+          <ns0:rPr>
+            
+            
+            <ns0:rFonts ns0:ascii="Cambria Math" ns0:hAnsi="Cambria Math"/>
+            
+            
+            <ns0:lang ns0:eastAsia="zh-CN"/>
+            
+          
+          </ns0:rPr>
+          
+          
+          <ns9:t>^</ns9:t>
+          
+        
+        </ns9:r>
+        
+        
+        <ns9:r>
+          
+          
+          <ns0:rPr>
+            
+            
+            <ns0:rFonts ns0:ascii="Cambria Math" ns0:hAnsi="Cambria Math"/>
+            
+            
+            <ns0:lang ns0:eastAsia="zh-CN"/>
+            
+          
+          </ns0:rPr>
+          
+          
+          <ns9:t>B-r</ns9:t>
+          
+        
+        </ns9:r>
+        
+        
+        <ns9:r>
+          
+          
+          <ns9:rPr>
+            
+            
+            <ns9:sty ns9:val="p"/>
+            
+          
+          </ns9:rPr>
+          
+          
+          <ns0:rPr>
+            
+            
+            <ns0:rFonts ns0:ascii="Cambria Math" ns0:hAnsi="Cambria Math"/>
+            
+            
+            <ns0:lang ns0:eastAsia="zh-CN"/>
+            
+          
+          </ns0:rPr>
+          
+          
+          <ns9:t>_</ns9:t>
+          
+        
+        </ns9:r>
+        
+        
+        <ns9:r>
+          
+          
+          <ns0:rPr>
+            
+            
+            <ns0:rFonts ns0:ascii="Cambria Math" ns0:hAnsi="Cambria Math"/>
+            
+            
+            <ns0:lang ns0:eastAsia="zh-CN"/>
+            
+          
+          </ns0:rPr>
+          
+          
+          <ns9:t>s</ns9:t>
+          
+        
+        </ns9:r>
+        
+        
+        <ns9:r>
+          
+          
+          <ns9:rPr>
+            
+            
+            <ns9:sty ns9:val="p"/>
+            
+          
+          </ns9:rPr>
+          
+          
+          <ns0:rPr>
+            
+            
+            <ns0:rFonts ns0:ascii="Cambria Math" ns0:hAnsi="Cambria Math"/>
+            
+            
+            <ns0:lang ns0:eastAsia="zh-CN"/>
+            
+          
+          </ns0:rPr>
+          
+          
+          <ns9:t>^</ns9:t>
+          
+        
+        </ns9:r>
+        
+        
+        <ns9:r>
+          
+          
+          <ns0:rPr>
+            
+            
+            <ns0:rFonts ns0:ascii="Cambria Math" ns0:hAnsi="Cambria Math"/>
+            
+            
+            <ns0:lang ns0:eastAsia="zh-CN"/>
+            
+          
+          </ns0:rPr>
+          
+          
+          <ns9:t>A</ns9:t>
+          
+        
+        </ns9:r>
+        
+      
+      </ns9:oMath>
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t>, permet de déterminer les ajouts, suppressions et modifications, en écrivant l&#x2019;« évolution des compétences » comme une différence recalculable plutôt que comme un récit descriptif. Données : le Kappa de cohérence entre l&#x2019;évolution et les annotations d&#x2019;experts est de 0.76 ; des différences illustratives telles que RAG</ns0:t>
+        
+      
+      </ns0:r>
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      <ns9:oMath>
+        
+        
+        <ns9:r>
+          
+          
+          <ns0:rPr>
+            
+            
+            <ns0:rFonts ns0:ascii="Cambria Math" ns0:hAnsi="Cambria Math"/>
+            
+            
+            <ns0:lang ns0:eastAsia="zh-CN"/>
+            
+          
+          </ns0:rPr>
+          
+          
+          <ns9:t>+54</ns9:t>
+          
+        
+        </ns9:r>
+        
+      
+      </ns9:oMath>
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t>, Prompt</ns0:t>
+        
+      
+      </ns0:r>
+      
+      
+      
+      <ns9:oMath>
+        
+        
+        <ns9:r>
+          
+          
+          <ns0:rPr>
+            
+            
+            <ns0:rFonts ns0:ascii="Cambria Math" ns0:hAnsi="Cambria Math"/>
+            
+            
+            <ns0:lang ns0:eastAsia="zh-CN"/>
+            
+          
+          </ns0:rPr>
+          
+          
+          <ns9:t>+33</ns9:t>
+          
+        
+        </ns9:r>
+        
+      
+      </ns9:oMath>
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t>, Spark</ns0:t>
+        
+      
+      </ns0:r>
+      
+      
+      
+      <ns9:oMath>
+        
+        
+        <ns9:r>
+          
+          
+          <ns0:rPr>
+            
+            
+            <ns0:rFonts ns0:ascii="Cambria Math" ns0:hAnsi="Cambria Math"/>
+            
+            
+            <ns0:lang ns0:eastAsia="zh-CN"/>
+            
+          
+          </ns0:rPr>
+          
+          
+          <ns9:t>-12</ns9:t>
+          
+        
+        </ns9:r>
+        
+      
+      </ns9:oMath>
+      
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t> sont de l&#x2019;ordre de quelques points de pourcentage (recalculées avec le même extracteur et sur la même classe de postes).</ns0:t>
+        
+      
+      </ns0:r>
+      
+      
+      
+      
+      
+      
+      
+    
+    </ns0:p>

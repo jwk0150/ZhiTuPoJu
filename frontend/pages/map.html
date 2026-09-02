@@ -10,7 +10,7 @@
   <link rel="stylesheet" href="../css/tokens.css?v=20260823d" />
   <link rel="stylesheet" href="../css/shell.css?v=20260824a" />
   <link rel="stylesheet" href="../css/components.css?v=20260824a" />
-  <link rel="stylesheet" href="../css/legacy-views.css?v=20260824a" />
+  <link rel="stylesheet" href="../css/legacy-views.css?v=20260828b" />
   <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@antv/g6@4.8.24/dist/g6.min.js"></script>
 </head>
@@ -24,6 +24,8 @@
 <div class="subtitle">全国人才分布 · 省份岗位洞察 · 岗位-能力知识图谱 · <span id="talent-stats-text">--</span></div>
 </div>
 <div class="page-actions">
+<button class="btn btn-primary" id="talent-update-graph-btn" title="重新统计后台数据并更新当前岗位技术图谱" onclick="window.talentUpdateTechGraph()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><polyline points="21 3 21 9 15 9"/></svg>更新图谱</button>
+<button class="btn btn-primary" id="talent-rollback-graph-btn" title="回退到更新前的技术图谱" onclick="window.talentRollbackTechGraph()" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 3-6.7"/><polyline points="3 4 3 10 9 10"/></svg>回退</button>
 <button class="btn btn-primary" id="talent-ability-btn" onclick="window.talentOpenAbility()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M5.5 20c.8-3.5 3.5-5.5 6.5-5.5s5.7 2 6.5 5.5"/></svg>我的能力</button>
 </div>
 </div>
@@ -107,13 +109,69 @@ onmouseleave="window.gangaZoomHover('澳门',false)">
 <path id="ganga-path-mo" d=""/>
 <circle class="ganga-dot" id="ganga-dot-mo" cx="0" cy="0" r="3"/>
 </svg>
-<!-- Layer 2: 省份岗位列表 -->
-<div class="talent-map-layer" id="talent-layer-province" style="display:none;width:100%;height:100%;overflow-y:auto;padding:68px 0 20px">
+<!-- Layer 2: 省份/市级岗位分析（市级=左侧筛选 + 中间岗位列表，右侧数据分析面板为公共 graph-detail） -->
+<div class="talent-map-layer" id="talent-layer-province" style="display:none;width:100%;height:100%;overflow:hidden;padding:0">
+<div class="city-analysis-wrap">
+<!-- 左侧固定筛选面板（仅市级岗位分析显示） -->
+<aside class="analysis-filter-panel" id="talent-city-filter-panel">
+<div class="analysis-filter-inner">
+<div class="filter-panel-title"><span>筛选条件</span></div>
+<div class="filter-group-vert">
+<label>省份</label>
+<select id="talent-city-filter-province" onchange="window.talentOnProvinceChange()"><option value="">全部省份</option></select>
+</div>
+<div class="filter-group-vert">
+<label>地区</label>
+<select id="talent-city-filter-city" onchange="window.talentOnCityChange()"><option value="">全部地区</option></select>
+</div>
+<div class="filter-group-vert">
+<label>岗位</label>
+<select id="talent-city-filter-job"><option value="">全部岗位</option></select>
+</div>
+<div class="filter-group-vert">
+<label>学历要求</label>
+<select id="talent-city-filter-edu"><option value="">不限学历</option><option>本科</option><option>硕士</option><option>博士</option><option>大专</option></select>
+</div>
+<div class="filter-group-vert">
+<label>经验要求</label>
+<select id="talent-city-filter-exp"><option value="">不限经验</option><option>应届生</option><option>1-3年</option><option>3-5年</option><option>5-10年</option><option>10年以上</option></select>
+</div>
+<div class="filter-group-vert">
+<label>薪资范围（元 / 月）</label>
+<div class="salary-range-wrap">
+<input id="talent-city-filter-salary-min" type="number" min="0" step="1000" placeholder="最低" />
+<span class="salary-range-sep">—</span>
+<input id="talent-city-filter-salary-max" type="number" min="0" step="1000" placeholder="最高" />
+</div>
+</div>
+<div class="filter-panel-actions">
+<button class="btn" onclick="window.talentCityResetFilter()">重置筛选</button>
+<button class="btn btn-primary" onclick="window.talentCityApplyFilter()">应用筛选</button>
+</div>
+<div class="filter-hint">应用筛选后仍停留本页 · 不跳转地图</div>
+</div>
+</aside>
+<!-- 中间岗位列表 -->
+<section class="analysis-job-list">
 <div class="talent-province-header" style="display:flex;align-items:center;gap:12px">
 <h2 id="talent-province-title" style="margin:0"></h2>
 </div>
+<div class="job-list-toolbar">
+<span class="job-found-label" id="talent-job-found-label">共找到 <b>--</b> 个岗位</span>
+<div class="job-sort-wrap">
+<span class="job-sort-label">排序</span>
+<select id="talent-job-sort" onchange="window.talentCityChangeSort(this.value)">
+<option value="default">默认排序</option>
+<option value="salary">薪资从高到低</option>
+<option value="hot">热度从高到低</option>
+<option value="count">岗位数从高到低</option>
+</select>
+</div>
+</div>
 <div class="talent-province-stats" id="talent-province-stats"></div>
 <div id="talent-province-jobs"></div>
+</section>
+</div>
 </div>
 <!-- Layer 3: 岗位能力知识图谱（脑图） -->
 <div class="talent-map-layer" id="talent-layer-graph" style="display:none">
@@ -132,12 +190,17 @@ onmouseleave="window.gangaZoomHover('澳门',false)">
 </div>
 </div>
 <div id="talent-graph-container" style="flex:1;overflow:hidden;position:relative"></div>
+<!-- 更新图谱加载遮罩（覆盖整个图谱画布） -->
+<div id="talent-graph-loading" style="display:none;position:absolute;inset:0;z-index:40;align-items:center;justify-content:center;flex-direction:column;gap:16px;background:rgba(10,14,32,.6);backdrop-filter:blur(3px)">
+<div class="talent-update-spinner"></div>
+<div class="talent-update-loading-text">正在重新统计后台数据…</div>
+</div>
 <div class="graph-legend">
-<div class="legend-item"><span class="legend-dot" style="background:#2563EB"></span>编程语言</div>
-<div class="legend-item"><span class="legend-dot" style="background:#7C3AED"></span>框架与开发</div>
-<div class="legend-item"><span class="legend-dot" style="background:#F59E0B"></span>数据存储</div>
-<div class="legend-item"><span class="legend-dot" style="background:#10B981"></span>工程化运维</div>
-<div class="legend-item"><span class="legend-dot" style="background:#EC4899"></span>AI与算法</div>
+<div class="legend-item"><span class="legend-dot" style="background:#D9A92E"></span>编程语言</div>
+<div class="legend-item"><span class="legend-dot" style="background:#C9A24B"></span>框架与开发</div>
+<div class="legend-item"><span class="legend-dot" style="background:#E8C868"></span>数据存储</div>
+<div class="legend-item"><span class="legend-dot" style="background:#B8965F"></span>工程化运维</div>
+<div class="legend-item"><span class="legend-dot" style="background:#F0D89A"></span>AI与算法</div>
 </div>
 </div>
 </div>
@@ -206,7 +269,7 @@ onmouseleave="window.gangaZoomHover('澳门',false)">
   <script src="../js/cinema-bg.js?v=20260823c"></script>
   <script src="../js/cinema-music.js?v=20260823c"></script>
   <script src="../js/shell.js?v=20260823c"></script>
-  <script src="../js/pages/map.js?v=20260823c"></script>
+  <script src="../js/pages/map.js?v=20260828e"></script>
   <script>
     window.Shell && window.Shell.mount({ pageId: 'map', title: '数字人才地图', subtitle: '区域人才与岗位能力空间洞察' });
     if (typeof window.initTalentMap === 'function') window.initTalentMap();

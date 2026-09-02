@@ -1,0 +1,364 @@
+<ns0:p ns2:paraId="03612142" ns2:textId="01B3A188" ns0:rsidR="00DD52EF" ns0:rsidRPr="00D71A9F" ns0:rsidRDefault="00000000" ns0:rsidP="00D71A9F">
+      
+      
+      <ns0:pPr>
+        
+        
+        <ns0:ind ns0:firstLine="420"/>
+        
+        
+        <ns0:jc ns0:val="both"/>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+      
+      </ns0:pPr>
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:t>REQUIRES est établi directement par la co-occurrence poste-compétence ; BELONGS_TO est mappé à partir du champ secteur ; RECRUITS relie les entités à partir du champ entreprise ; RELATED_TO combine le comptage de co-occurrence et la confiance de la table de transfert. Soit </ns0:t>
+        
+      
+      </ns0:r>
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t/>
+        
+      
+      </ns0:r>
+      
+      
+      <ns9:oMath>
+        
+        
+        <ns9:r>
+          
+          
+          <ns0:rPr>
+            
+            
+            <ns0:rFonts ns0:ascii="Cambria Math" ns0:hAnsi="Cambria Math"/>
+            
+            
+            <ns0:lang ns0:eastAsia="zh-CN"/>
+            
+          
+          </ns0:rPr>
+          
+          
+          <ns9:t>j</ns9:t>
+          
+        
+        </ns9:r>
+        
+      
+      </ns9:oMath>
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t> la taille de l&#x2019;échantillon du poste </ns0:t>
+        
+      
+      </ns0:r>
+      
+      
+      <ns9:oMath>
+        
+        
+        <ns9:r>
+          
+          
+          <ns0:rPr>
+            
+            
+            <ns0:rFonts ns0:ascii="Cambria Math" ns0:hAnsi="Cambria Math"/>
+            
+            
+            <ns0:lang ns0:eastAsia="zh-CN"/>
+            
+          
+          </ns0:rPr>
+          
+          
+          <ns9:t>n</ns9:t>
+          
+        
+        </ns9:r>
+        
+        
+        <ns9:r>
+          
+          
+          <ns9:rPr>
+            
+            
+            <ns9:sty ns9:val="p"/>
+            
+          
+          </ns9:rPr>
+          
+          
+          <ns0:rPr>
+            
+            
+            <ns0:rFonts ns0:ascii="Cambria Math" ns0:hAnsi="Cambria Math"/>
+            
+          
+          </ns0:rPr>
+          
+          
+          <ns9:t>_</ns9:t>
+          
+        
+        </ns9:r>
+        
+        
+        <ns9:r>
+          
+          
+          <ns0:rPr>
+            
+            
+            <ns0:rFonts ns0:ascii="Cambria Math" ns0:hAnsi="Cambria Math"/>
+            
+            
+            <ns0:lang ns0:eastAsia="zh-CN"/>
+            
+          
+          </ns0:rPr>
+          
+          
+          <ns9:t>j</ns9:t>
+          
+        
+        </ns9:r>
+        
+      
+      </ns9:oMath>
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t> et </ns0:t>
+        
+      
+      </ns0:r>
+      
+      
+      <ns9:oMath>
+        
+        
+        <ns9:r>
+          
+          
+          <ns0:rPr>
+            
+            
+            <ns0:rFonts ns0:ascii="Cambria Math" ns0:hAnsi="Cambria Math"/>
+            
+            
+            <ns0:lang ns0:eastAsia="zh-CN"/>
+            
+          
+          </ns0:rPr>
+          
+          
+          <ns9:t>s</ns9:t>
+          
+        
+        </ns9:r>
+        
+      
+      </ns9:oMath>
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t> le nombre d&#x2019;apparitions de la compétence </ns0:t>
+        
+      
+      </ns0:r>
+      
+      
+      <ns9:oMath>
+        
+        
+        <ns9:r>
+          
+          
+          <ns0:rPr>
+            
+            
+            <ns0:rFonts ns0:ascii="Cambria Math" ns0:hAnsi="Cambria Math"/>
+            
+            
+            <ns0:lang ns0:eastAsia="zh-CN"/>
+            
+          
+          </ns0:rPr>
+          
+          
+          <ns9:t>c</ns9:t>
+          
+        
+        </ns9:r>
+        
+        
+        <ns9:r>
+          
+          
+          <ns9:rPr>
+            
+            
+            <ns9:sty ns9:val="p"/>
+            
+          
+          </ns9:rPr>
+          
+          
+          <ns0:rPr>
+            
+            
+            <ns0:rFonts ns0:ascii="Cambria Math" ns0:hAnsi="Cambria Math"/>
+            
+          
+          </ns0:rPr>
+          
+          
+          <ns9:t>_(</ns9:t>
+          
+        
+        </ns9:r>
+        
+        
+        <ns9:r>
+          
+          
+          <ns0:rPr>
+            
+            
+            <ns0:rFonts ns0:ascii="Cambria Math" ns0:hAnsi="Cambria Math"/>
+            
+            
+            <ns0:lang ns0:eastAsia="zh-CN"/>
+            
+          
+          </ns0:rPr>
+          
+          
+          <ns9:t>j,s</ns9:t>
+          
+        
+        </ns9:r>
+        
+        
+        <ns9:r>
+          
+          
+          <ns9:rPr>
+            
+            
+            <ns9:sty ns9:val="p"/>
+            
+          
+          </ns9:rPr>
+          
+          
+          <ns0:rPr>
+            
+            
+            <ns0:rFonts ns0:ascii="Cambria Math" ns0:hAnsi="Cambria Math"/>
+            
+          
+          </ns0:rPr>
+          
+          
+          <ns9:t>)</ns9:t>
+          
+        
+        </ns9:r>
+        
+      
+      </ns9:oMath>
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t> ; alors</ns0:t>
+        
+      
+      </ns0:r>
+      
+    
+    </ns0:p>

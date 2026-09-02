@@ -1,0 +1,358 @@
+<ns0:p ns2:paraId="0652D465" ns2:textId="7FDA5DE0" ns0:rsidR="00C66236" ns0:rsidRDefault="00C66236" ns0:rsidP="00C66236">
+      
+      
+      <ns0:pPr>
+        
+        
+        <ns0:ind ns0:firstLineChars="200" ns0:firstLine="420"/>
+        
+        
+        <ns0:jc ns0:val="both"/>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+      
+      </ns0:pPr>
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:noProof/>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:drawing>
+          
+          
+          <ns3:anchor distT="0" distB="0" distL="114300" distR="114300" simplePos="0" relativeHeight="251666432" behindDoc="0" locked="0" layoutInCell="1" allowOverlap="1" ns4:anchorId="61406028" ns4:editId="1254FCE5">
+            
+            
+            <ns3:simplePos x="0" y="0"/>
+            
+            
+            <ns3:positionH relativeFrom="column">
+              
+              
+              <ns3:posOffset>-19271</ns3:posOffset>
+              
+            
+            </ns3:positionH>
+            
+            
+            <ns3:positionV relativeFrom="paragraph">
+              
+              
+              <ns3:posOffset>1613237</ns3:posOffset>
+              
+            
+            </ns3:positionV>
+            
+            
+            <ns3:extent cx="2945765" cy="2360930"/>
+            
+            
+            <ns3:effectExtent l="0" t="0" r="6985" b="1270"/>
+            
+            
+            <ns3:wrapTopAndBottom/>
+            
+            
+            <ns3:docPr id="304346003" name="图片 1"/>
+            
+            
+            <ns3:cNvGraphicFramePr>
+              
+              
+              <ns5:graphicFrameLocks noChangeAspect="1"/>
+              
+            
+            </ns3:cNvGraphicFramePr>
+            
+            
+            <ns5:graphic>
+              
+              
+              <ns5:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">
+                
+                
+                <ns6:pic>
+                  
+                  
+                  <ns6:nvPicPr>
+                    
+                    
+                    <ns6:cNvPr id="304346003" name="图片 1"/>
+                    
+                    
+                    <ns6:cNvPicPr>
+                      
+                      
+                      <ns5:picLocks noChangeAspect="1"/>
+                      
+                    
+                    </ns6:cNvPicPr>
+                    
+                  
+                  </ns6:nvPicPr>
+                  
+                  
+                  <ns6:blipFill>
+                    
+                    
+                    <ns5:blip ns7:embed="rId15"/>
+                    
+                    
+                    <ns5:stretch>
+                      
+                      
+                      <ns5:fillRect/>
+                      
+                    
+                    </ns5:stretch>
+                    
+                  
+                  </ns6:blipFill>
+                  
+                  
+                  <ns6:spPr>
+                    
+                    
+                    <ns5:xfrm>
+                      
+                      
+                      <ns5:off x="0" y="0"/>
+                      
+                      
+                      <ns5:ext cx="2945765" cy="2360930"/>
+                      
+                    
+                    </ns5:xfrm>
+                    
+                    
+                    <ns5:prstGeom prst="rect">
+                      
+                      
+                      <ns5:avLst/>
+                      
+                    
+                    </ns5:prstGeom>
+                    
+                  
+                  </ns6:spPr>
+                  
+                
+                </ns6:pic>
+                
+              
+              </ns5:graphicData>
+              
+            
+            </ns5:graphic>
+            
+            
+            <ns4:sizeRelH relativeFrom="margin">
+              
+              
+              <ns4:pctWidth>0</ns4:pctWidth>
+              
+            
+            </ns4:sizeRelH>
+            
+            
+            <ns4:sizeRelV relativeFrom="margin">
+              
+              
+              <ns4:pctHeight>0</ns4:pctHeight>
+              
+            
+            </ns4:sizeRelV>
+            
+          
+          </ns3:anchor>
+          
+        
+        </ns0:drawing>
+        
+      
+      </ns0:r>
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t>Contraintes de génération et dégradation : il est interdit d&#x2019;inventer des noms et des identifiants de postes absents du contexte ; la sortie structurée doit respecter les champs JSON convenus. En cas de clé manquante, de dépassement de délai ou d&#x2019;échec d&#x2019;analyse, le système bascule vers des réponses à partir de modèles locaux, garantissant la reproductibilité du parcours de démonstration. Pour les conclusions centrales de découverte et d&#x2019;évolution, le système conserve toujours une implémentation heuristique sans LLM ; le grand modèle de langage ne se charge que du polissage rédactionnel et de l&#x2019;examen sémantique, réduisant ainsi le risque qu&#x2019;« une indisponibilité du modèle rende la fonctionnalité indisponible » [8], comme le montre la figure 8</ns0:t>
+        
+      
+      </ns0:r>
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:rFonts ns0:hint="eastAsia"/>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t/>
+        
+      
+      </ns0:r>
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t/>
+        
+      
+      </ns0:r>
+      
+      
+      
+      
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:rFonts ns0:hint="eastAsia"/>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t/>
+        
+      
+      </ns0:r>
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t/>
+        
+      
+      </ns0:r>
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:rFonts ns0:hint="eastAsia"/>
+          
+          
+          <ns0:vertAlign ns0:val="superscript"/>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t/>
+        
+      
+      </ns0:r>
+      
+      
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:rFonts ns0:hint="eastAsia"/>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t/>
+        
+      
+      </ns0:r>
+      
+      
+    
+    </ns0:p>

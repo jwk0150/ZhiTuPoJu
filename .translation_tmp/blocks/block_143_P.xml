@@ -1,0 +1,201 @@
+<ns0:p ns2:paraId="29BBFD8D" ns2:textId="307316CA" ns0:rsidR="00DD52EF" ns0:rsidRDefault="00B770F3" ns0:rsidP="00C94E3A">
+      
+      
+      <ns0:pPr>
+        
+        
+        <ns0:jc ns0:val="center"/>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+      
+      </ns0:pPr>
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:noProof/>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:drawing>
+          
+          
+          <ns3:anchor distT="0" distB="0" distL="114300" distR="114300" simplePos="0" relativeHeight="251668480" behindDoc="0" locked="0" layoutInCell="1" allowOverlap="1" ns4:anchorId="43FD483C" ns4:editId="7161964E">
+            
+            
+            <ns3:simplePos x="0" y="0"/>
+            
+            
+            <ns3:positionH relativeFrom="column">
+              
+              
+              <ns3:posOffset>3175</ns3:posOffset>
+              
+            
+            </ns3:positionH>
+            
+            
+            <ns3:positionV relativeFrom="paragraph">
+              
+              
+              <ns3:posOffset>68424</ns3:posOffset>
+              
+            
+            </ns3:positionV>
+            
+            
+            <ns3:extent cx="2945765" cy="2038350"/>
+            
+            
+            <ns3:effectExtent l="0" t="0" r="6985" b="0"/>
+            
+            
+            <ns3:wrapTopAndBottom/>
+            
+            
+            <ns3:docPr id="1163624978" name="图片 1"/>
+            
+            
+            <ns3:cNvGraphicFramePr>
+              
+              
+              <ns5:graphicFrameLocks noChangeAspect="1"/>
+              
+            
+            </ns3:cNvGraphicFramePr>
+            
+            
+            <ns5:graphic>
+              
+              
+              <ns5:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">
+                
+                
+                <ns6:pic>
+                  
+                  
+                  <ns6:nvPicPr>
+                    
+                    
+                    <ns6:cNvPr id="1163624978" name=""/>
+                    
+                    
+                    <ns6:cNvPicPr/>
+                    
+                  
+                  </ns6:nvPicPr>
+                  
+                  
+                  <ns6:blipFill>
+                    
+                    
+                    <ns5:blip ns7:embed="rId16"/>
+                    
+                    
+                    <ns5:stretch>
+                      
+                      
+                      <ns5:fillRect/>
+                      
+                    
+                    </ns5:stretch>
+                    
+                  
+                  </ns6:blipFill>
+                  
+                  
+                  <ns6:spPr>
+                    
+                    
+                    <ns5:xfrm>
+                      
+                      
+                      <ns5:off x="0" y="0"/>
+                      
+                      
+                      <ns5:ext cx="2945765" cy="2038350"/>
+                      
+                    
+                    </ns5:xfrm>
+                    
+                    
+                    <ns5:prstGeom prst="rect">
+                      
+                      
+                      <ns5:avLst/>
+                      
+                    
+                    </ns5:prstGeom>
+                    
+                  
+                  </ns6:spPr>
+                  
+                
+                </ns6:pic>
+                
+              
+              </ns5:graphicData>
+              
+            
+            </ns5:graphic>
+            
+            
+            <ns4:sizeRelV relativeFrom="margin">
+              
+              
+              <ns4:pctHeight>0</ns4:pctHeight>
+              
+            
+            </ns4:sizeRelV>
+            
+          
+          </ns3:anchor>
+          
+        
+        </ns0:drawing>
+        
+      
+      </ns0:r>
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:rFonts ns0:hint="eastAsia"/>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t>Figure 9. Exemple de données réelles de postes</ns0:t>
+        
+      
+      </ns0:r>
+      
+      
+      
+    
+    </ns0:p>

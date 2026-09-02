@@ -1,0 +1,62 @@
+<ns0:p ns2:paraId="1E3EEF87" ns2:textId="0D8E182A" ns0:rsidR="006F394F" ns0:rsidRPr="006F394F" ns0:rsidRDefault="006F394F" ns0:rsidP="006F394F">
+      
+      
+      <ns0:pPr>
+        
+        
+        <ns0:ind ns0:firstLine="420"/>
+        
+        
+        <ns0:jc ns0:val="both"/>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+      
+      </ns0:pPr>
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:rFonts ns0:hint="eastAsia"/>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t>où Ebesoins désigne la relation de besoin entre poste et compétence, correspondant à REQUIRES dans le graphe ; Eappartenance la relation d&#x2019;appartenance entre poste et secteur, correspondant à BELONGS_TO ; Erecrutement la relation de recrutement entre entreprise et poste, correspondant à RECRUITS ; Eassociation la relation d&#x2019;association entre différentes compétences, correspondant à RELATED_TO.</ns0:t>
+        
+      
+      </ns0:r>
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+    
+    </ns0:p>

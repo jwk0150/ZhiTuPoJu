@@ -1,0 +1,33 @@
+# -*- coding: utf-8 -*-
+# 残留法语碎片 → 英文翻译（第二批）
+# 键为解码后文本（normalized: curly quotes -> straight, nbsp -> space）
+FRAG_TRANS = {
+    "*Auteur correspondant": "*Corresponding Author",
+    "Ici,": "Here,",
+    "entre en candidature.": "enters the candidate pool.",
+    "La contribution de transfert": "The transfer contribution",
+    "dans l\u2019ensemble des JD correspondant au poste": "in the set of JDs corresponding to the job",
+    "Figure 3. Visualisation du graphe technologique des postes": "Figure 3. Visualization of the Job Technology Graph",
+    "Par exemple :": "For example:",
+    "Des mappages d\u2019alias sont par exemple": "Alias mappings are, for example,",
+    "; alors": "; then",
+    ", la confiance globale": ", the overall confidence",
+    "ne sert que d\u2019aide au classement et ne remplace pas directement": "only serves as a ranking aid and does not directly replace",
+    "L\u2019ensemble des orientations futures": "The set of future directions",
+    ", on enregistre sur les sources": ", we record on the sources",
+    ", en enregistrant l\u2019augmentation relative": ", recording the relative increase",
+    "3.9 Appariement poste-candidat et parcours d\u2019apprentissage": "3.9 Job\u2013Candidate Matching and Learning Path",
+    "et un profil de candidat": "and a candidate profile",
+    ", on cherche une fonction de mappage": ", we look for a mapping function",
+    "telle que": "such that",
+    "Figure 7. Appariement poste-candidat et parcours d\u2019apprentissage": "Figure 7. Job\u2013Candidate Matching and Learning Path",
+    ") est": ") is",
+    "l\u2019ensemble des correspondances directes et": "the set of direct matches and",
+    ", s\u2019il existe une preuve de transfert avec une confiance de": ", if there exists transfer evidence with a confidence of",
+    ", la contribution de transfert": ", the transfer contribution",
+    "et le score de projet": "and the project score",
+    "En cas de correspondance directe sans transfert,": "In the case of a direct match without a transfer,",
+    "I4 Appariement en cinq dimensions": "I4 Five-Dimensional Matching",
+    "3.12 Conclusion et perspectives": "3.12 Conclusion and Perspectives",
+    " et ": " and ",
+}

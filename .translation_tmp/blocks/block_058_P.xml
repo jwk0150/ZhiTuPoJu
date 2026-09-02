@@ -1,0 +1,57 @@
+<ns0:p ns2:paraId="01B8A5D6" ns2:textId="7D362DEC" ns0:rsidR="006F394F" ns0:rsidRDefault="006F394F" ns0:rsidP="006F394F">
+      
+      
+      <ns0:pPr>
+        
+        
+        <ns0:ind ns0:firstLine="420"/>
+        
+        
+        <ns0:jc ns0:val="both"/>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:rFonts ns0:hint="eastAsia"/>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+      
+      </ns0:pPr>
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:rFonts ns0:hint="eastAsia"/>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t>En ce qui concerne la conception des relations, cet article ne relie pas simplement toutes les entités entre elles, mais les organise selon les relations sémantiques réellement présentes dans les données de recrutement. Les relations du graphe comprennent principalement la relation de besoin poste-compétence, la relation d&#x2019;appartenance poste-secteur, la relation de recrutement entreprise-poste et la relation d&#x2019;association compétence-compétence ; l&#x2019;ensemble des relations peut s&#x2019;écrire :</ns0:t>
+        
+      
+      </ns0:r>
+      
+      
+      
+      
+      
+      
+      
+      
+      
+    
+    </ns0:p>

@@ -1,0 +1,86 @@
+<ns0:p ns2:paraId="705C09D6" ns2:textId="63E3B01D" ns0:rsidR="006E73B6" ns0:rsidRPr="006E73B6" ns0:rsidRDefault="006E73B6" ns0:rsidP="00072740">
+      
+      
+      <ns0:pPr>
+        
+        
+        <ns0:ind ns0:firstLine="420"/>
+        
+        
+        <ns0:jc ns0:val="both"/>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+      
+      </ns0:pPr>
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t>L&#x2019;environnement expérimental est Windows 11, Python 3.12, PostgreSQL et FastAPI ; lorsque DeepSeek est indisponible, une dégradation automatique s&#x2019;opère. Après déduplication, on compte environ 12500 postes valides, dont environ 93.5 % de haute qualité ; le graphe comprend environ 5747 nœuds et 13081 arêtes. Les exactitudes de l&#x2019;analyse des JD, de l&#x2019;extraction de CV et de l&#x2019;appariement poste-candidat sont respectivement de 93.9 %, 91.0 % et 92.7 % ; le F1 de la découverte des postes émergents est de 0.824 et le Kappa de cohérence entre l&#x2019;évolution et les experts est de 0.76. Les limites tiennent principalement à une fenêtre d&#x2019;observation trop courte, à la possible invalidité de l&#x2019;hypothèse pseudo-temporelle dans les scénarios de mise à jour synchrone multi-sources, et au fait que les compétences peu fréquentes hors dictionnaire exigent encore une intervention manuelle. Dans l&#x2019;ensemble, il est possible d&#x2019;enchaîner gouvernance, construction du graphe, découverte, évolution et diagnostic d&#x2019;appariement en une chaîne vérifiable sur des corpus de recrutement réels.</ns0:t>
+        
+      
+      </ns0:r>
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+    
+    </ns0:p>

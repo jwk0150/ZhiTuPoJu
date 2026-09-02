@@ -1,0 +1,62 @@
+<ns0:p ns2:paraId="25F0A0C3" ns2:textId="2CBD53B4" ns0:rsidR="00D47C95" ns0:rsidRDefault="00D47C95" ns0:rsidP="00D47C95">
+      
+      
+      <ns0:pPr>
+        
+        
+        <ns0:ind ns0:firstLineChars="200" ns0:firstLine="420"/>
+        
+        
+        <ns0:jc ns0:val="both"/>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:rFonts ns0:hint="eastAsia"/>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+      
+      </ns0:pPr>
+      
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:rFonts ns0:hint="eastAsia"/>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t>Cadre conforme : la sortie du LLM est décomposée en plusieurs sous-affirmations (subclaims), chacune recevant un score de risque ; un seuil calibré filtre les affirmations à haut risque, garantissant statistiquement que le taux d&#x2019;hallucination reste inférieur au niveau fixé par l&#x2019;utilisateur (par exemple 10 %) ;</ns0:t>
+        
+      
+      </ns0:r>
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+    
+    </ns0:p>

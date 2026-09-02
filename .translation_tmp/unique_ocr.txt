@@ -1,0 +1,818 @@
+$70	| $70 | image5.png
+% (6 derniers mois)	| % (6 derniers mois) | image5.png
+% match	| % MATCH | image9.png
+(-40%),5m+ appels/jour:haute concurrence et	| (-40%),5M+ appels/jour:haute concurrence et | image8.png
+(ctrl+espace)	| (Ctrl+Espace) | image4.png
+(e.g., fastq / mzml / txt / csv)	| (e.g., fastq / mzML / txt / csv) | image1.png
+(editable	| (editable | image8.png
+(f)	| (F) | image2.png
+(famiiarise) <br>docker, microservices : pas de pratique	| (famiiarise) <br>Docker, microservices : pas de pratique | image7.png
+(n dol)	| (N dol) | image1.png
+(prioritaire)	| (prioritaire) | image9.png
+(samples × features)	| (Samples × Features) | image1.png
+(w)	| (W) | image2.png
+(×3)	| (×3) | image8.png
++ modification	| + Modification | image7.png
++0.04	| +0.04 | image1.png
++0.05	| +0.05 | image1.png
++0.06	| +0.06 | image1.png
++0.07	| +0.07 | image1.png
++0.08	| +0.08 | image1.png
++125 %	| +125 % | image5.png
++24	| +24 | image5.png
++26	| +26 | image5.png
++plein	| +plein | image9.png
+,optimiser en continu la performance et la qualite, capitaliser sur des	| ,Optimiser en continu la performance et la qualite, capitaliser sur des | image9.png
+- annuler	| - Annuler | image2.png
+- source,de donnees	| - Source,de donnees | image5.png
+-tempshou - 22-	| -Tempshou - 22- | image9.png
+.cv	| .CV | image9.png
+/ finance	| / Finance | image5.png
+/ senior	| / Senior | image5.png
+0-3 ans	| 0-3 ans | image9.png
+0.5	| 0.5 | image1.png
+000	| 000 | image2.png
+01	| 01 | image5.png
+03	| 03 | image5.png
+04	| 04 | image5.png
+05	| 05 | image5.png
+06	| 06 | image5.png,image9.png
+06 techniques et la documentation	| 06 techniques et la documentation | image5.png
+08	| 08 | image5.png
+09	| 09 | image5.png
+1 an	| 1 an | image6.png
+1 ecart de	| 1 ecart de | image9.png
+1. data acquisition	| 1. Data acquisition | image1.png
+1. librairie en ligne  pilote i	| 1. Librairie en ligne  pilote I | image8.png
+1. pile technique tres alignee sur	| 1. Pile technique tres alignee sur | image7.png
+1. systeme de commandes java haute concurrence : flux de transaction	| 1. Systeme de commandes Java haute concurrence : flux de transaction | image8.png
+1. systeme de commandes java haute concurrence : flux de transaction central, temps de	| 1. Systeme de commandes Java haute concurrence : flux de transaction central, temps de | image7.png
+1.0	| 1.0 | image1.png
+10	| 10 | image5.png,image6.png
+100	| 100 | image4.png
+12 580 jd valides -maj :2026-08-01	| 12 580 JD valides -MAJ :2026-08-01 | image6.png
+12,542	| 12,542 | image1.png
+120.6s	| 120.6s | image8.png
+123 completeness	| 123 completeness | image2.png
+123 detail id	| 123 detail id | image2.png
+123 id	| 123 id | image2.png
+123 job_id	| 123 job_id | image2.png
+123 salary_max	| 123 salary_max | image2.png
+123 salary_min	| 123 salary_min | image2.png
+123 salary_months	| 123 salary_months | image2.png
+123 status	| 123 status | image2.png
+123 work_years_max	| 123 work_years_max | image2.png
+123 work_years_min	| 123 work_years_min | image2.png
+17m	| 17M | image2.png
+19m	| 19M | image2.png
+2 ecarts de	| 2 ecarts de | image9.png
+2. donnees quantifiees et α tangibles >	| 2. Donnees quantifiees et α tangibles > | image7.png
+2. plateforme marketing springboot : services de configuration et	| 2. Plateforme marketing SpringBoot : services de configuration et | image8.png
+2. preprocessing	| 2. Preprocessing | image1.png
+2. systeme de commandes java  pilote i	| 2. Systeme de commandes Java  pilote I | image8.png
+2.78	| 2.78 | image5.png
+20	| 20 | image6.png
+20-35k	| 20-35K | image9.png
+20-40k	| 20-40K | image5.png
+2024.03-2024.08	| 2024.03-2024.08 | image8.png
+2024.09-2025.01	| 2024.09-2025.01 | image8.png
+2026-02	| 2026-02 | image6.png
+2026-03	| 2026-03 | image6.png
+2026-04	| 2026-04 | image6.png
+2026-05	| 2026-05 | image6.png
+2026-06	| 2026-06 | image6.png
+2026-07	| 2026-07 | image6.png
+2026-08	| 2026-08 | image6.png
+2026-08 : changements	| 2026-08 : changements | image6.png
+25-45k:femps	| 25-45K:femps | image9.png
+3 derniers	| 3 derniers | image6.png
+3,214	| 3,214 | image1.png
+3.	| 3. | image8.png
+3. feature extraction	| 3. Feature extraction | image1.png
+3. optimisation mysql : requetes lentes, index composites,	| 3. Optimisation MysQL : requetes lentes, index composites, | image8.png
+3. optimisation mysql— pilote |2025.02-2025.04	| 3. Optimisation MySQL— pilote |2025.02-2025.04 | image8.png
+3. role clairement	| 3. Role clairement | image7.png
+30	| 30 | image6.png,image9.png
+312	| 312 | image4.png
+313	| 313 | image4.png
+315	| 315 | image4.png
+316	| 316 | image4.png
+317	| 317 | image4.png
+318	| 318 | image4.png
+319	| 319 | image4.png
+320	| 320 | image4.png
+321	| 321 | image4.png
+322	| 322 | image4.png
+323	| 323 | image4.png
+324	| 324 | image4.png
+325	| 325 | image4.png
+326	| 326 | image4.png
+327	| 327 | image4.png
+328	| 328 | image4.png
+329	| 329 | image4.png
+330	| 330 | image4.png
+331	| 331 | image4.png
+332	| 332 | image4.png
+356	| 356 | image5.png
+4,985	| 4,985 | image1.png
+4. feature selection	| 4. Feature selection | image1.png
+40	| 40 | image6.png,image9.png
+40k.	| 40K. | image9.png
+5 m+ appels/jour. 2. plateforme marketing'springboot : services de configuration	| 5 M+ appels/jour. 2. Plateforme marketing'SpringBoot : services de configuration | image7.png
+5. model building	| 5. Model building | image1.png
+50	| 50 | image6.png,image9.png
+6 derniers	| 6 derniers | image6.png
+6 postes sur 10 ont deja inscrit des outils	| 6 postes sur 10 ont deja inscrit des outils | image6.png
+6.evaluation	| 6.Evaluation | image1.png
+60	| 60 | image6.png
+60+requeteslentes,12 indexcomposites,	| 60+requeteslentes,12 indexcomposites, | image8.png
+64	| 64 | image5.png
+65	| 65 | image5.png,image9.png
+67m	| 67M | image2.png
+68	| 68 | image5.png
+69	| 69 | image9.png
+7,126	| 7,126 | image1.png
+70	| 70 | image6.png,image9.png
+72	| 72 | image5.png,image9.png
+72%	| 72% | image5.png
+76%	| 76% | image5.png
+78	| 78 | image5.png,image9.png
+80%	| 80% | image5.png
+82	| 82 | image5.png,image9.png
+84	| 84 | image9.png
+85	| 85 | image5.png,image9.png
+87	| 87 | image9.png
+88	| 88 | image5.png,image9.png
+9,683	| 9,683 | image1.png
+92	| 92 | image5.png,image9.png
+96	| 96 | image9.png
+: 2 356	| : 2 356 | image5.png
+<retour	| <Retour | image3.png
+>  diagrams	| >  Diagrams | image2.png
+> 70 %, ci tout vert.	| > 70 %, CI tout vert. | image8.png
+> fonctions	| > Fonctions | image2.png
+> function	| > function | image2.png
+> scripts	| > Scripts | image2.png
+>) convainquent plus que i'autosatisfaction.	| >) convainquent plus que I'autosatisfaction. | image7.png
+>sequences	| >Séquences | image2.png
+?dbeaver26.1.5-job_posting_details	| ?DBeaver26.1.5-job_posting_details | image2.png
+_ce qui montre au recruteur que	| _ce qui montre au recruteur que | image7.png
+a partir du graphe temporel, detecter les ajouts, suppressions et modifications	| A partir du graphe temporel, detecter les ajouts, suppressions et modifications | image6.png
+a rentretien	| a rentretien | image9.png
+a-z certificate_required	| A-z certificate_required | image2.png
+a-z city	| A-Z city | image2.png
+a-z company_address	| A-Z company_address | image2.png
+a-z company_industry	| A-Z company_industry | image2.png
+a-z company_intro	| A-Z company_intro | image2.png
+a-z company_logo	| A-Z company_logo | image2.png
+a-z company_name	| A-z company_name | image2.png
+a-z company_nature	| A-z company_nature | image2.png
+a-z company_size	| A-Z company_size | image2.png
+a-z district	| A-Z district | image2.png
+a-z education	| A-Z education | image2.png
+a-z education_required	| A-Z education_required | image2.png
+a-z experience	| A-z experience | image2.png
+a-z fingerprint	| A-z fingerprint | image2.png
+a-z job_description	| A-Z job_description | image2.png,image4.png
+a-z job_highlights	| A-Z job_highlights | image2.png
+a-z job_title	| A-Z job_title | image2.png
+a-z job_type	| A-Z job_type | image2.png
+a-z language_required	| A-z language_required | image2.png
+a-z major_required	| A-Z major_required | image2.png
+a-z salary_currency	| A-Z salary_currency | image2.png
+a-z salary_description	| A-Z salary_description | image2.png
+a-z salary_unit	| A-Z salary_unit | image2.png
+a-z source_id	| A-Z source_id | image2.png
+a-z source_id_hash	| A-Z source_id_hash | image2.png
+a-z source_name	| A-z source_name | image2.png
+a-zz job_requirement	| A-zZ job_requirement | image2.png
+a. data acquisition & preprocessing	| A. Data acquisition & preprocessing | image1.png
+acc	| ACC | image1.png
+acquisition	| Acquisition | image3.png
+acquisition de donnees, logistique, mes, wms, sql, automatisation - ingenieur securite	| Acquisition de donnees, logistique, MEs, WMS, SQL, automatisation - Ingenieur securite | image4.png
+actualites des	| Actualites des | image3.png,image5.png,image7.png
+actuel du cv	| actuel du CV | image8.png
+actuellement	| Actuellement | image9.png
+adapte	| adapte | image9.png
+adoption accrue du cloud natif et des	| Adoption accrue du cloud natif et des | image6.png
+ai	| AI | image6.png
+ai_ seed	| ai_ seed | image4.png
+ai_seed	| ai_seed | image4.png
+aide (h)	| Aide (H) | image2.png
+ajn"gees	| ajn"gees | image6.png
+ajouts	| ajouts | image6.png
+al	| Al | image6.png
+algorithmes	| algorithmes | image3.png
+algorithmique.	| algorithmique. | image7.png
+aligne sur iobjectif backend java : recherche, commande et paiement	| Aligne sur Iobjectif backend Java : recherche, commande et paiement | image8.png
+ameliorer	| ameliorer | image7.png
+analyse	| Analyse | image3.png,image5.png,image6.png,image7.png
+analyse croisee multi-sources (6	| Analyse croisee multi-sources (6 | image6.png
+analyse des besoins, conception et implementation des	| Analyse des besoins, conception et implementation des | image9.png
+analyse&edition	| ANALYSE&EDITION | image7.png
+android	| Android | image3.png
+ao	| AO | image1.png
+ap	| ap | image5.png
+apercu des	| Apercu des | image3.png
+appariement	| Appariement | image3.png,image5.png,image6.png,image7.png,image9.png
+appariement poste-candidat	| Appariement poste-candidat | image7.png
+appariement poste-candidat -	| Appariement poste-candidat - | image9.png
+apparues	| apparues | image6.png
+appel d'outils	| Appel d'outils | image5.png
+appels/jour.	| appels/jour. | image8.png
+applications llm	| Applications LLM | image5.png
+apres	| Apres | image8.png
+apsce	| apsce | image5.png
+architecte d'agents	| Architecte d'agents | image5.png
+arm	| ARM | image3.png
+assess	| Assess | image1.png
+assistee par ia	| assistee par IA | image6.png
+asuivre	| Asuivre | image5.png
+atout differenciateur precieux pour un recrutement junior.	| atout differenciateur precieux pour un recrutement junior. | image7.png
+auc	| AUC | image1.png
+aucun favori, ils apparaitront ici apres avoir clique sur	| Aucun favori, Ils apparaitront ici apres avoir clique sur | image5.png
+aucune experience professionnelle formelle<br>(cv d'exemple - ajouter un stage ou un poste a	| Aucune experience professionnelle formelle<br>(CV d'exemple - ajouter un stage ou un poste a | image7.png
+auto	| Auto | image2.png
+auto-evaluation	| Auto-évaluation | image7.png
+automatis es	| automatis es | image3.png
+automatisation	| Automatisation | image3.png
+automatisation bureautique, acquisition de donnees, excel, wms, logiciel industriel, mes - ingenieur vision industrielle	| Automatisation bureautique, acquisition de donnees, Excel, wMS, logiciel industriel, MES - Ingenieur vision industrielle | image4.png
+automatises	| automatises | image9.png
+avance	| Avance | image5.png
+avantage differenciateur.	| avantage differenciateur. | image6.png
+az data_source	| AZ data_source | image4.png
+az industry_tags	| AZ industry_tags | image4.png
+az skills	| AZ skills | image4.png
+b. feature statistics	| B. Feature statistics | image1.png
+backend java	| Backend Java | image7.png,image9.png
+base de	| Base de | image2.png,image3.png,image5.png,image7.png
+base du poste	| base du poste | image5.png,image9.png
+basede	| Basede | image6.png
+bejjing	| Bejjing | image9.png
+benefits	| benefits | image2.png
+biological	| Biological | image1.png
+bookmarks	| Bookmarks | image2.png
+c#	| C# | image3.png
+c. results & visualization	| C. Results & visualization | image1.png
+ca fonction	| ca fonction | image7.png
+cad/cam	| CAD/CAM | image3.png
+candidature	| candidature | image7.png
+carte des talents	| Carte des talents | image3.png,image5.png,image6.png
+carte technique	| Carte technique | image3.png
+cartedes talents	| Cartedes talents | image7.png
+categorie	| Categorie | image5.png
+cause	| Cause | image6.png
+ce poste apparait de facon stable dans les recrutements reels, demande en hausse	| Ce poste apparait de facon stable dans les recrutements reels, demande en hausse | image5.png
+ce poste vs le	| Ce poste vs le | image5.png
+central,	| central, | image8.png
+centrale w.	| centrale w. | image6.png
+chaine	| Chaine | image3.png
+changement	| changement | image6.png
+changements	| changements | image6.png
+chronologie des	| Chronologie des | image6.png
+cimeristomes	| Cimeristomes | image5.png
+cjk >田 job_posting_details	| CJK >田 job_posting_details | image2.png
+cjk >田 job_postings	| CJK >田 job_postings | image2.png
+cjk >由 map_data_table	| CJK >由 map_data_table | image2.png
+cjk の甲zhitu_crawl_db 目public@zhitu_crawl_db 品α	| CJK の甲zhitu_crawl_db 目public@zhitu_crawl_db 品α | image2.png
+cjk 国 public	| CJK 国 public | image2.png
+cjk 田 *job_posting_details x	| CJK 田 *job_posting_details X | image2.png
+cjk 田 the_t	| CJK 田 the_t | image2.png
+cjk 田job_postings	| CJK 田job_postings | image2.png
+cjk 电 postgres localhost:5432	| CJK 电 postgres localhost:5432 | image2.png
+cjk 自 zhitu _crawl db	| CJK 自 zhitu _crawl db | image2.png
+cles	| cles | image7.png
+cles de la periode	| cles de la periode | image6.png
+cliquez sur < + modification ia > pour ouvrir le panneau : modifiez le cv a droite, cliquez sur le texte	| Cliquez sur < + Modification IA > pour ouvrir le panneau : modifiez le CV a droite, cliquez sur le texte | image7.png
+cliquez sur le texte surigne pour	| Cliquez sur le texte surigne pour | image8.png
+cliquez sur un poste pour afficher les	| Cliquez sur un poste pour afficher les | image9.png
+cloud	| Cloud | image6.png
+cloud natifetconteneurisation	| cloud natifetconteneurisation | image6.png
+collaboratif une attente rigide.	| collaboratif une attente rigide. | image6.png
+collaboration	| Collaboration | image5.png
+collaboratior le developpement assiste par ia passe d'un × plus  a	| Collaboratior Le developpement assiste par IA passe d'un × plus  a | image6.png
+collaborer avec produit, tests et frontend pour la livraison iterative ;	| Collaborer avec produit, tests et frontend pour la livraison iterative ; | image9.png
+comparaison	| Comparaison | image5.png
+comparaison des	| Comparaison des | image8.png
+comparer les	| Comparer les | image5.png
+competence	| Competence | image6.png
+competences	| Competences | image6.png,image7.png,image9.png
+competences apprentissage	| Competences Apprentissage | image7.png
+competences cles	| Competences cles | image5.png
+competences en ingenierie et	| competences en ingenierie et | image9.png
+competencesappfentissage	| CompetencesAppfentissage | image9.png
+composants reutilisables et les bonnes pratiques.	| composants reutilisables et les bonnes pratiques. | image9.png
+conception	| Conception | image5.png
+conception de farchitecture serveur et developpement metier central	| Conception de Farchitecture serveur et developpement metier central | image9.png
+conception des tables,	| conception des tables, | image8.png
+conception et	| Conception et | image5.png
+conclusion	| Conclusion | image6.png
+configuration	| configuration | image3.png
+connexion × projets	| Connexion × Projets | image2.png
+connexions par nom	| connexions par nom | image2.png
+construction	| Construction | image5.png
+construction de	| Construction de | image5.png
+contenu	| Contenu | image8.png
+contenu des communautes	| Contenu des communautes | image6.png
+copilot	| Copilot | image6.png
+correspondance	| correspondance | image9.png
+correspondances	| correspondances | image9.png
+cross-validation	| Cross-validation | image1.png
+csv	| CSV | image1.png
+cursor	| Cursor | image6.png
+cv	| CV | image7.png
+cv < 0.5	| CV < 0.5 | image1.png
+cybersecurite	| Cybersécurité | image4.png
+d'activite	| d'activite | image5.png
+d'agents	| d'agents | image5.png
+d'agregation	| d'agregation | image2.png
+d'api	| d'API | image5.png
+d'applications	| d'applications | image5.png
+d'approfondir.	| d'approfondir. | image5.png
+d'architecture	| d'architecture | image5.png
+d'evenements	| d'évenements | image2.png
+d. interpretation & validation	| D. Interpretation & validation | image1.png
+dans 1 a 2 ans, le developpement collaboratif ia (prompts, revue de code,	| Dans 1 a 2 ans, le developpement collaboratif IA (prompts, revue de code, | image6.png
+dans les recrutements : +18 pp	| dans les recrutements : +18 pp | image6.png
+dashboards	| Dashboards | image2.png
+date de	| Date de | image9.png
+de	| de | image3.png,image5.png,image6.png
+de competences, suivre fevolution de la structure du poste	| de competences, suivre Fevolution de la structure du poste | image6.png
+de connaissances et execution	| de connaissances et execution | image5.png
+de distribution,	| de distribution, | image8.png
+de donnees	| de donnees | image3.png
+de la	| de la | image5.png
+de pilotes	| de pilotes | image3.png
+de postes	| de postes | image9.png
+de projet	| de projet | image7.png
+de systemes	| de systemes | image5.png
+de talents	| de talents | image5.png
+decidez de le metfre% sur 6 mois. verifiez d'abord vos competences cles, puis	| decidez de le metfre% sur 6 mois. Verifiez d'abord vos competences cles, puis | image5.png
+declencheurs	| Declencheurs | image2.png
+decouverte de	| Decouverte de | image3.png,image5.png,image6.png,image7.png
+defini	| defini | image7.png
+degents	| degents | image5.png
+demande	| Demande | image5.png
+demande :	| Demande : | image5.png
+depend de vos	| depend de vos | image7.png
+deplier	| deplier | image6.png
+depuis quels postes	| Depuis quels postes | image5.png
+des	| des | image5.png
+des agents dans les scenarios metier	| des agents dans les scenarios metier | image5.png
+des objets	| des objets | image3.png,image4.png
+des postes	| des postes | image3.png,image5.png,image7.png,image9.png
+despostes	| despostes | image6.png
+details a droite	| details a droite | image9.png
+detected	| Detected | image1.png
+developer	| developer | image5.png,image6.png,image7.png
+developpement	| Developpement | image3.png,image4.png,image5.png,image9.png
+developpement logiciel,	| Developpement logiciel, | image4.png
+developpement logiciel, internet, fabrication inteligente - c#, logistique, java, genie logiciel, wms, sql, acquisition de donnees - ingenieur logiciel	| Developpement logiciel, Internet, fabrication inteligente - C#, logistique, Java, genie logiciel, WMS, SQL, acquisition de donnees - Ingenieur logiciel | image4.png
+developpementjava	| developpementJava | image6.png
+deveoppement	| Deveoppement | image5.png
+diagnostic	| Diagnostic | image9.png
+differenciation	| Differenciation | image5.png
+diplome	| Diplome | image9.png
+directement)	| directement) | image8.png
+disponible	| Disponible | image9.png
+docker	| Docker | image3.png
+domaines	| domaines | image9.png
+donnees	| donnees | image2.png,image3.png,image5.png,image6.png,image7.png
+donnees (d)	| donnees (D) | image2.png
+donnees a	| Donnees a | image6.png
+donnees de	| Donnees de | image6.png
+donnees de postes	| Donnees de postes | image6.png
+donnees et ia	| Donnees et IA | image4.png
+donnees industrielles, acquisition de donnees, logistique, analyse qualite, mes · analyste de donnees industrielles	| Donnees industrielles, acquisition de donnees, logistique, analyse qualite, MES · Analyste de donnees industrielles | image4.png
+doopen	| doopen | image3.png
+du cv	| du CV | image9.png
+du poste	| du poste | image3.png,image5.png,image9.png
+dynamique	| dynamique | image6.png
+e-commerce	| E-commerce | image3.png
+eafficher sql	| EAfficher SQL | image4.png
+ecart	| Ecart | image5.png
+echantillon:	| Echantillon: | image5.png
+editeur sql	| Editeur SQL | image2.png
+edition (e)	| Edition (E) | image2.png
+embarque	| Embarque | image3.png
+en	| en | image5.png
+en competences - profils	| en competences - Profils | image3.png
+en entretien, presentez d'abord le projet librairie, ou reordonnez les deux projets sur le cv (optimisation structurelle ; i'ajustement	| En entretien, presentez d'abord le projet librairie, ou reordonnez les deux projets sur le cv (optimisation structurelle ; I'ajustement | image7.png
+en favori ou	| en favori ou | image5.png
+en projet	| en projet | image7.png
+engineering	| Engineering | image5.png
+entrees du	| Entrees du | image7.png
+entreprise	| Entreprise | image9.png
+entreprise technologique -	| Entreprise technologique - | image9.png
+entreprisededonnees	| Entreprisededonnees | image9.png
+entreprises	| Entreprises | image7.png
+entretien	| Entretien | image7.png,image9.png
+equipe de 5 personnes, 12 documents techniques, 30+ fusions de	| Equipe de 5 personnes, 12 documents techniques, 30+ fusions de | image8.png
+equipe de 5 personnes, 12 documents techniques, couverture de	| Equipe de 5 personnes, 12 documents techniques, couverture de | image8.png
+est 2,8 fois superieure a	| est 2,8 fois superieure a | image5.png
+et dense	| et dense | image8.png
+et ingenierie	| et ingenierie | image5.png
+et la securite des agents	| et la securite des agents | image5.png
+et passent de  avance  a  exigence	| et passent de  avance  a  exigence | image6.png
+etroitement lie aux microservices.	| etroitement lie aux microservices. | image6.png
+evaluer et optimiser la performance, pefficacite	| Evaluer et optimiser la performance, Pefficacite | image5.png
+evidence	| evidence | image1.png
+evolution des	| Evolution des | image6.png
+evolution dynamique des	| Evolution dynamique des | image6.png
+excel	| Excel | image3.png
+excel, wms, sql, logistique, acquisition de donnees, mes, automatisation - ingenieur robotique industrielle	| Excel, WMS, SQL, logistique, acquisition de donnees, MES, automatisation - Ingenieur robotique industrielle | image4.png
+executer sql	| Exécuter SQL | image2.png
+exigences du	| Exigences du | image9.png
+experience	| Experience | image7.png,image9.png
+experience en haute concurrence.	| experience en haute concurrence. | image9.png
+experiences	| Experiences | image7.png
+experiences de projet	| experiences de projet | image8.png
+experiences de projet -	| Experiences de projet - | image7.png
+experimental	| Experimental | image1.png
+exploitation	| exploitation | image3.png
+ext@4	| ext@4 | image4.png
+externes	| externes | image2.png
+f1	| F1 | image1.png
+fabrication	| Fabrication | image4.png
+fabrication intelligente	| fabrication intelligente | image4.png
+fastq	| FASTQ | image1.png
+favori	| Favori | image5.png
+favori × dans la page de detail d'un poste.	| Favori × dans la page de detail d'un poste. | image5.png
+favoris?	| Favoris? | image5.png
+favoriser fapplication concrete de la technologie	| Favoriser Fapplication concrete de la technologie | image5.png
+feature matrix	| feature matrix | image1.png
+features	| features | image1.png
+femnde popularite	| femnde Popularite | image5.png
+fenetre	| Fenetre | image2.png
+fichier	| Fichier | image2.png
+fichier ×	| Fichier × | image2.png
+filter informative	| Filter informative | image1.png
+filtrer les	| Filtrer les | image2.png
+flink	| Flink | image3.png
+fluxdetransaction'central:tempsdereponsede200	| Fluxdetransaction'central:tempsdereponsede200 | image8.png
+foffre	| Foffre | image5.png
+fonctionnel	| fonctionnel | image4.png
+fonctions	| Fonctions | image2.png
+formation	| Formation | image7.png
+forte	| forte | image9.png
+fortes	| fortes | image9.png
+forts	| forts | image7.png
+fourchette	| Fourchette | image5.png
+frameworks et	| Frameworks et | image3.png
+g-analysedespostes	| g-Analysedespostes | image3.png
+gauche	| gauche | image8.png
+geeneral	| Geéneral | image4.png
+general	| Général | image4.png
+generate	| Generate | image1.png
+gestion d'entrepot, production, acquisition de donnees, wms, transport - ingenieur systemes mes	| Gestion d'entrepot, production, acquisition de donnees, WMs, transport - Ingenieur systemes MEs | image4.png
+gin, logistique, grpc, mysql, acquisition de donnees, kubernetes - developpement backend go	| Gin, logistique, gRPC, MySQL, acquisition de donnees, Kubernetes - Developpement backend Go | image4.png
+grande entreprise internet	| Grande entreprise Internet | image9.png
+grands	| Grands | image3.png,image5.png
+guantifiee	| guantifiee | image8.png
+hadoop	| Hadoop | image9.png
+haut	| Haut | image9.png
+haute concurrence ethaute disponibilite	| haute concurrence ethaute disponibilite | image9.png
+high	| High | image1.png
+high quality	| High quality | image1.png
+hive	| Hive | image3.png
+i'original	| I'original | image7.png
+ia	| IA | image5.png,image6.png,image7.png
+ia dans leur jd	| IA dans leur JD | image6.png
+ia et	| IA et | image3.png
+ication	| ication | image3.png
+importance	| importance | image1.png,image6.png
+indice de	| Indice de | image5.png
+industriel	| industriel | image3.png
+informations	| Informations | image7.png,image9.png
+informations de	| Informations de | image5.png,image9.png
+ingenierie	| Ingenierie | image3.png
+ingenierie des	| Ingenierie des | image5.png
+ingenierie des grands	| Ingenierie des grands | image5.png
+ingenierie et	| Ingenierie et | image3.png
+ingenieur	| Ingenieur | image3.png,image6.png
+ingenieur developpement	| Ingenieur developpement | image7.png
+ingenieur logiciel - carte technique	| Ingenieur logiciel - Carte technique | image3.png
+input: raw data	| Input: raw data | image1.png
+integration	| integration | image5.png
+intelliaente	| intelliaente | image4.png
+intelligente	| intelligente | image4.png
+intemet	| Intemet | image3.png
+interhet'fechnologies	| Interhet'fechnologies | image5.png
+intermediaire	| Intermediaire | image5.png
+internes	| internes | image6.png
+internet	| Internet | image4.png
+interpretation workflow	| Interpretation workflow | image1.png
+inux	| inux | image3.png
+ixi	| IXI | image1.png
+java	| Java | image3.png,image9.png
+java (expert), springboot (maitrise), mysql (maitrise), redis (notions), conception	| Java (expert), SpringBoot (maitrise), MySQL (maitrise), Redis (notions), conception | image7.png
+jd	| JD | image9.png
+jd de	| JD de | image6.png
+jinzhong	| Jinzhong | image3.png
+jmeter	| JMeter | image3.png
+job_labels	| job_labels | image2.png
+job_posting_details	| job_posting_details | image2.png
+job_postings	| job_postings | image2.png
+key features	| Key features | image1.png
+keywords	| keywords | image2.png
+kubernetes	| Kubernetes | image3.png
+l'adoption du cloud natif et des microservices s'approfondit ;	| L'adoption du cloud natif et des microservices s'approfondit ; | image6.png
+l'essor des grands modeles pousse les entreprises a integrer pia dans les	| L'essor des grands modeles pousse les entreprises a integrer PIA dans les | image6.png
+l'ordre des projets (α implementation -→ responsabilites -→+ resultats >) est logique, mais le second (librairie en ligne) colle mieux a votre	| L'ordre des projets (α implementation -→ responsabilites -→+ resultats >) est logique, mais le second (librairie en ligne) colle mieux a votre | image7.png
+la migration vers le cloud renforce les competences	| La migration vers le cloud renforce les competences | image6.png
+la valeur metier	| la valeur metier | image8.png
+la zone & experiences de projet  selectionnee constitu la partie la plus convaincante et la plus dense du cv. ses points forts sont les suivants :	| La zone & Experiences de projet  selectionnee constitu la partie la plus convaincante et la plus dense du CV. Ses points forts sont les suivants : | image7.png
+lancer	| Lancer | image7.png
+langages	| Langages | image3.png
+latence p99 < 200 ms.	| latence P99 < 200 ms. | image8.png
+lava	| lava | image9.png
+le cloud natif (orchestration de conteneurs + mallage de services + exploitation declarative)	| Le cloud natif (orchestration de conteneurs + mallage de services + exploitation declarative) | image6.png
+le pilier du backend java,	| le pilier du backend Java, | image6.png
+le poste	| le poste | image7.png
+le premier projet indique  temps de reponse moyen < 1 s 》, un indicateur dur de	| Le premier projet indique  temps de reponse moyen < 1 s 》, un indicateur dur de | image7.png
+le second indique  1oo+ acces concurrents  et  couverture de tests 7o % , deux atouts pour un poste backend : performance et qualite.	| Le second indique  1oo+ acces concurrents  et  couverture de tests 7o % , deux atouts pour un poste backend : performance et qualite. | image7.png
+le synchroniser avec le cv de	| le synchroniser avec le CV de | image8.png
+les competences cloud natif, kubernetes, docker, servicemesh pesent davantage dans les	| Les competences cloud natif, Kubernetes, Docker, ServiceMesh pesent davantage dans les | image6.png
+les details	| les details | image5.png
+les outils de codage a grands modeles s'implantent plus vite dans la r&d ; la	| Les outils de codage a grands modeles s'implantent plus vite dans la R&D ; la | image6.png
+les priorites sont marquees  (prioritaire)  ; preparez	| Les priorites sont marquees  (prioritaire)  ; preparez | image9.png
+les questions de scenario avant 'entretien.	| les questions de scenario avant 'entretien. | image9.png
+les solutions transactionnelles convergent.	| les solutions transactionnelles convergent. | image6.png
+les validations externes (α excellente evaluation en soutenance w,  3e prix universitaire	| Les validations externes (α excellente evaluation en soutenance w,  3e prix universitaire | image7.png
+licence ou	| Licence ou | image9.png
+lieu de	| Lieu de | image5.png
+listedespostes	| listedespostes | image5.png
+loaiciel, internet	| loaiciel, Internet | image4.png
+logiciel	| logiciel | image3.png
+logiciel de	| Logiciel de | image3.png
+logiciel industriel, prototypage, wms, acquisition de donnees, redaction de documents - analyste	| Logiciel industriel, prototypage, WMS, acquisition de donnees, redaction de documents - Analyste | image4.png
+logiciel, internet	| logiciel, Internet | image4.png
+logicielle	| logicielle | image3.png
+logistique	| logistique | image3.png
+logistique, prd, acquisition de donnees, wms, etude utilisateur - chef de produit	| Logistique, PRD, acquisition de donnees, WMS, etude utilisateur - Chef de produit | image4.png
+logistique, sql, automatisation bureautique, wms, acquisition de donnees - agent des douanes	| Logistique, SQL, automatisation bureautique, WMS, acquisition de donnees - Agent des douanes | image4.png
+lot	| loT | image3.png
+low	| Low | image1.png
+main pipeline	| Main Pipeline | image1.png
+map_data_table	| map_data_table | image2.png
+materiel	| Materiel | image3.png
+meilleure	| Meilleure | image9.png
+mes, evaluation des risques, audit de securite, logiciel industriel - ingenieur securite de i'information	| MES, evaluation des risques, audit de securite, logiciel industriel - Ingenieur securite de I'information | image4.png
+mes, logiciel industriel, acquisition de donnees, excel, automatisation bureautique, wms - ingenieur mes	| MES, logiciel industriel, acquisition de donnees, Excel, automatisation bureautique, WMS - Ingenieur MES | image4.png
+mes, wms, cmake, stl, linux, logistique, multithreading - developpeur c++	| MES, WMS, CMake, STL, Linux, logistique, multithreading - Développeur C++ | image4.png
+mettre en avant les resultats chiffres et	| Mettre en avant les resultats chiffres et | image8.png
+microservices	| Microservices | image3.png
+migration complete des clients publics et internet vers le cloud : livraison	| Migration complete des clients publics et Internet vers le cloud : livraison | image6.png
+mise a jour	| Mise a jour | image6.png
+missing rate < 20%	| Missing rate < 20% | image1.png
+model performance overview	| Model performance overview | image1.png
+modeles	| modeles | image3.png
+modeles +26	| modeles +26 | image5.png
+models	| models | image1.png
+moins de mots	| moins de mots | image8.png
+mois	| mois | image6.png
+mots-cles cliquables	| mots-cles cliquables | image7.png
+mqtt	| MQTT | image3.png
+msnne	| msnne | image5.png
+multi-agents	| multi-agents | image5.png
+mysql	| MySQL | image3.png,image9.png
+mzml	| mzML | image1.png
+natif	| natif | image6.png
+nature	| Nature | image9.png
+navigation (n)	| Navigation (N) | image2.png
+ndex	| ndex | image2.png
+niveau	| Niveau | image3.png
+niveau du	| Niveau du | image5.png
+nmnetenresd'unnnste.evistant.	| nmnetenresd'unnnste.evistant. | image6.png
+nom	| Nom | image2.png
+nombre de	| Nombre de | image6.png
+nombre total	| Nombre total | image6.png
+normalization	| normalization | image1.png
+nouveaux	| nouveaux | image3.png
+nouveaux postes	| nouveaux postes | image5.png,image6.png,image7.png
+nouvellement	| nouvellement | image6.png
+nouvelles premieres lignes	| nouvelles premieres lignes | image5.png
+numerique	| numerique | image4.png
+numeriques	| numeriques | image3.png,image5.png,image6.png,image7.png
+o crawl_time	| O crawl_time | image2.png
+objectif de	| Objectif de | image7.png
+objectif,or il est place en	| objectif,or il est place en | image7.png
+offre : 45 %	| Offre : 45 % | image5.png
+offre et demande	| Offre et demande | image5.png
+offre/demande	| offre/demande | image5.png
+ok	| OK | image6.png
+ontimisation mysql : requetes lentes, index composites,	| Ontimisation MysQL : requetes lentes, index composites, | image7.png
+opencv	| OpenCV | image3.png
+openstack	| OpenStack | image3.png
+oposte	| oPoste | image7.png
+optimisation des requetes lentes.	| optimisation des requetes lentes. | image8.png
+optimisationdelaperformance	| optimisationdelaperformance | image8.png
+output: clean data matrix	| Output: clean data matrix | image1.png
+output: feature statistics report	| Output: feature statistics report | image1.png
+output: performance summary & plots	| Output: performance summary & plots | image1.png
+output:interpretable results &validation	| Output:interpretable results &validation | image1.png
+pack	| PACK | image3.png
+pappui	| Pappui | image6.png
+par	| Par | image6.png
+parmi les ajouts de la periode : programmation assistee par ia, copilot,	| Parmi les ajouts de la periode : programmation assistee par IA, Copilot, | image6.png
+participer aux revues de code ;	| participer aux revues de code ; | image9.png
+participera la mise en ceuvre etaevoiution des architectures	| Participera la mise en ceuvre etaevoiution des architectures | image9.png
+pas du simple x	| pas du simple x | image7.png
+penetration des mots-cles  ia 》	| Penetration des mots-cles  IA 》 | image6.png
+percytante	| Percytante | image8.png
+performance	| performance | image1.png,image3.png
+performance :	| performance : | image7.png
+permutation	| Permutation | image1.png
+personnelles	| personnelles | image7.png
+phenomene	| Phenomene | image6.png
+pile	| Pile | image3.png
+plc	| PLC | image3.png
+plein	| plein | image9.png
+plus	| plus | image9.png
+plus concis, densite accrue, plus de sens en	| Plus concis, densite accrue, plus de sens en | image8.png
+points a	| Points a | image7.png
+points cles	| Points cles | image6.png
+popularite	| popularite | image5.png
+poste	| poste | image5.png,image9.png
+poste de decision	| Poste de decision | image7.png,image9.png
+poste reellement	| Poste reellement | image5.png
+poste stable dans les textes de recrutement reels, et non un	| Poste stable dans les textes de recrutement reels, et non un | image5.png
+poste-candidat	| poste-candidat | image3.png,image5.png,image6.png,image7.png
+postea	| Postea | image9.png
+postes	| postes | image3.png,image5.png,image6.png,image7.png
+potentiel	| potentiel | image9.png
+pour impressionner le recruteur	| pour impressionner le recruteur | image8.png
+prec	| PREC | image1.png
+preferences).	| preferences). | image7.png
+premiere apparition : 2026-08 - echantilons tendance de croissance : +125	| Premiere apparition : 2026-08 - Echantilons Tendance de croissance : +125 | image5.png
+preparation	| Preparation | image9.png
+prise de	| prise de | image9.png
+privees	| privees | image6.png
+processus de r&d.	| processus de R&D. | image6.png
+produit et	| Produit et | image4.png
+produit et numerique,	| Produit et numerique, | image4.png
+professionnelle	| professionnelle | image7.png
+profondeur technique	| profondeur technique | image8.png
+programmation	| programmation | image3.png,image6.png
+prompt	| Prompt | image5.png
+proprietdonneeaphique	| ProprietDonneeaphique | image4.png
+proprietedonneesraphique	| ProprieteDonneesraphique | image2.png
+public	| public | image2.png
+publications recherche	| publications recherche | image5.png
+publish_time	| publish_time | image2.png
+pystemet	| Pystemet | image5.png
+python	| Python | image5.png,image9.png
+python, machine learning, wms, ingenierie des caracteristiques, sql - ingenieur data mining	| Python, machine learning, WMs, ingenierie des caracteristiques, SQL - Ingenieur data mining | image4.png
+pytorch	| PyTorch | image3.png
+q&r	| Q&R | image5.png,image6.png,image7.png
+qc & cleaning	| QC & Cleaning | image1.png
+qc, cleaning,	| QC, cleaning, | image1.png
+qps multiplie par	| QPS multiplie par | image8.png
+qps multiplie par 3.	| QPS multiplie par 3. | image7.png
+qps800a2400	| QPS800a2400 | image8.png
+quitter	| Quitter | image5.png,image6.png,image7.png
+rag	| RAG | image5.png
+raison du	| Raison du | image6.png
+rapport	| rapport | image5.png,image6.png
+rapportsdecv	| rapportsdeCv | image5.png
+rastera durablement	| rastera durablement | image6.png
+ratio	| Ratio | image5.png
+raw data	| Raw data | image1.png
+rec	| REC | image1.png
+recherche (a)	| Recherche (A) | image2.png
+recherche et	| Recherche et | image5.png
+recommandation	| Recommandation | image9.png
+recommandation de postes*	| RECOMMANDATION DE POSTES* | image9.png
+recrutement	| recrutement | image6.png
+recrutements.	| recrutements. | image6.png
+rediger les solutions	| Rediger les solutions | image5.png
+redis	| Redis | image9.png
+reecrire la structure et pordre des projets	| Reecrire la structure et Pordre des projets | image8.png
+reecritur	| reecritur | image8.png
+reecriture ciblee	| Reecriture ciblee | image7.png,image8.png
+reecriture en cours :	| Reecriture en cours : | image8.png
+reecritures ia	| reecritures IA | image8.png
+region	| Region | image9.png
+reimporter	| Reimporter | image7.png
+renforcer les resultats et la	| Renforcer les resultats et la | image8.png
+repartition des postes - besoins	| Repartition des postes - Besoins | image3.png
+reponse reduit de 40 %	| reponse reduit de 40 % | image7.png
+responsabilites	| Responsabilites | image9.png
+resultats	| Resultats | image9.png
+resume du	| Resume du | image9.png
+retourala	| Retourala | image5.png
+roc / pr curve	| ROC / PR curve | image1.png
+role dapel de modeles :plaicalfion, apel doutis, recherche	| role dapel de modeles :plaicalfion, apel doutis, recherche | image5.png
+rtos	| RTOS | image3.png
+saisir une expression sql pour filtrer les resultats	| Saisir une expression SQL pour filtrer les resultats | image4.png
+salaire	| salaire | image9.png
+salaire 15-25k	| Salaire 15-25K | image9.png
+salariale	| salariale | image5.png
+san	| San | image7.png
+scada	| SCADA | image3.png
+schemas	| Schemas | image2.png
+score	| Score | image1.png
+seata	| Seata | image6.png
+seconde position : un recruteur qui parcourt rapidement verra d'abord le projet	| seconde position : un recruteur qui parcourt rapidement verra d'abord le projet | image7.png
+secteur	| Secteur | image5.png
+selenium	| Selenium | image3.png
+selon les points d'amelioration de fla	| selon les points d'amelioration de FlA | image8.png
+semaine	| semaine | image9.png
+shanghai	| Shanghai | image9.png
+shap value	| SHAP value | image1.png
+siem, detection d'intrusion, wms, surveillance de securite - ingenieur exploitation securite	| SiEM, detection d'intrusion, WMs, surveillance de securite - Ingenieur exploitation securite | image4.png
+simulee - a titre indicatif	| simulee - A titre indicatif | image5.png
+skills	| skills | image2.png
+solides bases java,	| solides bases Java, | image9.png
+source de	| Source de | image2.png
+sources au total)	| sources au total) | image6.png
+sources de	| Sources de | image6.png
+sous 1	| sous 1 | image9.png
+spark	| Spark | image3.png
+spark, logistique, mes, hive, kafka, wms, logiciel industriel - ingenieur big data	| Spark, logistique, MES, Hive, Kafka, WMS, logiciel industriel - Ingenieur big data | image4.png
+spring boot	| Spring Boot | image3.png,image9.png
+sql	| SQL | image3.png,image9.png
+stability analysis	| Stability analysis | image1.png
+stockage	| Stockage | image3.png
+stratfcation responsabilites	| Stratfcation Responsabilites | image5.png
+sts1rleviendra	| sts1rleviendra | image6.png
+summary of feature metrics	| Summary of feature metrics | image1.png
+surles faiblesses	| surles faiblesses | image8.png
+surligne pour le synchroniser a gauche.	| surligne pour le synchroniser a gauche. | image7.png
+survolez un secteur ou	| Survolez un secteur ou | image5.png
+systeme	| systeme | image7.png
+systemes rag	| systemes RAG | image5.png
+tables	| Tables | image2.png
+talents	| talents | image3.png
+tappariement -	| Tappariement - | image7.png
+taux de	| Taux de | image9.png
+tcc	| TCC | image6.png
+techniques	| techniques | image7.png
+techniques : +85 % sur un an	| techniques : +85 % sur un an | image6.png
+technologique	| technologique | image3.png,image9.png
+tel. : 138-0000-0000 - e-mail : zhangsan@example.com	| Tel. : 138-0000-0000 - E-mail : zhangsan@example.com | image7.png
+telecharger le	| Telecharger le | image5.png
+temps	| Temps | image9.png
+temps de reponse reduit de 40 %, 5 m+	| temps de reponse reduit de 40 %, 5 M+ | image8.png
+temps plein)	| temps plein) | image7.png
+tendance de la	| Tendance de la | image5.png
+tendance!	| Tendance! | image6.png
+tendance/	| Tendance/ | image6.png
+tensorflow	| TensorFlow | image3.png
+tests	| Tests | image3.png,image8.png,image9.png
+tests de	| Tests de | image3.png
+testset	| Testset | image1.png
+top10	| TOP10 | image5.png
+total features	| Total features | image1.png
+tous les	| Tous les | image9.png
+tout	| Tout | image6.png
+train & validate	| Train & validate | image1.png
+training set	| Training set | image1.png
+transactions distribuees	| transactions distribuees | image6.png
+travail.	| travail. | image5.png
+trois niveaux :	| trois niveaux : | image7.png
+type	| Type | image6.png
+types	| types | image5.png
+types de	| Types de | image2.png
+typescript	| TypeScript | image3.png
+uml	| UML | image3.png
+un element pour afficher	| un element pour afficher | image5.png
+un point reste toutefois a ameliorer :	| Un point reste toutefois a ameliorer : | image7.png
+une  competence de base w	| une  competence de base w | image6.png
+universite - informatique ·licence<br>2019.09-2023.06	| Universite - Informatique ·Licence<br>2019.09-2023.06 | image7.png
+user_center	| user_center | image2.png
+v adapter trimming / filtering	| V Adapter trimming / filtering | image1.png
+v normalization	| V Normalization | image1.png
+v quality control	| V Quality control | image1.png
+valeur	| valeur | image8.png
+validation	| Validation | image1.png
+vectorielle	| vectorielle | image5.png
+verbesplusforts,resultats mis en valeur	| Verbesplusforts,resultats mis en valeur | image8.png
+verilog	| Verilog | image3.png
+vers les piles cloud natif.	| vers les piles cloud natif. | image6.png
+version	| Version | image8.png
+version concise	| Version concise | image8.png
+via springboot ; mysql + redis : 500 k+ requetes/jour,	| via SpringBoot ; MySQL + Redis : 500 K+ requetes/jour, | image8.png
+ville :	| Ville : | image9.png
+villes de premiere ligne et	| Villes de premiere ligne et | image5.png
+voir	| Voir | image7.png
+voir fanalyse du *	| Voir fanalyse du * | image9.png
+voir plus (6)-	| Voir plus (6)- | image6.png
+voir ranalyse du	| Voir ranalyse du | image9.png
+voir ranalyse du +	| Voir ranalyse du + | image9.png
+voir tanalyse du,	| Voir Tanalyse du, | image9.png
+voir tout	| Voir tout | image5.png
+vous	| vous | image7.png
+vous mentionnez α chef d'equipe " et α developpeur principal w, et dans le premier projet α organisation du travail.	| Vous mentionnez α chef d'equipe " et α developpeur principal w, et dans le premier projet α organisation du travail. | image7.png
+vue	| Vue | image3.png
+vues	| Vues | image2.png
+wms, logiciel industriel, acquisition de donnees, objective-c, logistique - developpeur ios	| WMs, logiciel industriel, acquisition de donnees, Objective-C, logistique - Developpeur ios | image4.png
+wms, logiciel industriel, normes de donnees, metadonnees, logistique - ingenieur gouvernance des donnees	| WMs, logiciel industriel, normes de donnees, metadonnees, logistique - Ingenieur gouvernance des donnees | image4.png
+wms, mes, microservices, logiciel industriel, acquisition de donnees, lot · ingenieur plateforme lot	| WMS, MES, microservices, logiciel industriel, acquisition de donnees, loT · Ingenieur plateforme loT | image4.png
+y arrive-t-on ?	| y arrive-t-on ? | image5.png
+zhang	| Zhang | image7.png
+zhangsan_backend_java.txt -0.0 mo	| zhangsan_backend_java.txt -0.0 Mo | image7.png
+zhitu_crawl_dblocalhost:5433	| zhitu_crawl_dblocalhost:5433 | image2.png
+zhitupoju	| ZhiTuPoJu | image3.png,image5.png,image6.png,image7.png
+• points	| • Points | image7.png
+★★★★★	| ★★★★★ | image6.png

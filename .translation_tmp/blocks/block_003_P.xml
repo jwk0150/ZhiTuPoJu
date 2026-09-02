@@ -1,0 +1,73 @@
+<ns0:p ns2:paraId="22B47D3B" ns2:textId="77777777" ns0:rsidR="00DD52EF" ns0:rsidRDefault="00000000">
+      
+      
+      <ns0:pPr>
+        
+        
+        <ns0:spacing ns0:after="0" ns0:line="360" ns0:lineRule="auto"/>
+        
+        
+        <ns0:jc ns0:val="center"/>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:rFonts ns0:ascii="宋体" ns0:hAnsi="宋体" ns0:hint="eastAsia"/>
+          
+          
+          <ns0:i/>
+          
+          
+          <ns0:iCs/>
+          
+          
+          <ns0:sz ns0:val="18"/>
+          
+          
+          <ns0:szCs ns0:val="16"/>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+      
+      </ns0:pPr>
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:rFonts ns0:ascii="宋体" ns0:hAnsi="宋体" ns0:hint="eastAsia"/>
+          
+          
+          <ns0:i/>
+          
+          
+          <ns0:iCs/>
+          
+          
+          <ns0:sz ns0:val="18"/>
+          
+          
+          <ns0:szCs ns0:val="16"/>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t>*Auteur correspondant</ns0:t>
+        
+      
+      </ns0:r>
+      
+    
+    </ns0:p>

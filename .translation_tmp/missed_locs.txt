@@ -1,0 +1,148 @@
+FRAG: Auteur correspondant
+  -> *Auteur correspondant
+  CTX: [ata, Henan University of Technology, Zhengzhou, Henan, China] << *Auteur correspondant >> [Abstract: The rapid expansion of the digital economy has mad]
+
+FRAG: Ici,
+  -> Ici,
+  CTX: [(2)] << Ici, >> [denotes the central string obtained by concatenating the tit]
+
+FRAG: entre en candidature.
+  -> entre en candidature.
+  CTX: [is 0.750, the recall 0.913, and the F1 0.824; the case study] << entre en candidature. >> [Innovation I3: (multi-source pseudo-temporal skill differenc]
+
+FRAG: La contribution de transfert
+  -> La contribution de transfert
+  CTX: [(4)] << La contribution de transfert >> [prevents weakly correlated skills from being artificially ov]
+
+FRAG:  et 
+  -> et
+  CTX: [,] << et >> [, linking respectively job-skill, job-industry, enterprise-j]
+
+FRAG: dans l’ensemble des JD correspondant au poste
+  -> dans l’ensemble des JD correspondant au poste
+  CTX: [, takes the occurrence frequency of the skill] << dans l’ensemble des JD correspondant au poste >> [.]
+
+FRAG: Visualisation du graphe technologique des postes
+  -> Figure 3. Visualisation du graphe technologique des postes
+  CTX: [iding a prior for _relation_transfer of the matching module.] << Figure 3. Visualisation du graphe technologique des postes >> [Building on the preceding analysis of jobs, skills, industri]
+
+FRAG: Par exemple :
+  -> Par exemple :
+  CTX: [(job,REQUIRES,skill)] << Par exemple : >> [(Java Developer,REQUIRES,Spring Boot)]
+
+FRAG:  et 
+  -> In recent years, knowledge graphs have gradually moved from static knowledge organization to dynamic knowledge represent
+  CTX: [ght update, job-skill evolution, and job–candidate matching.] << In recent years, knowledge graphs have gradually moved from static knowledge organization to dynamic knowledge represent >> [3.5 Entity Extraction and Normalization]
+
+FRAG: Des mappages d’alias sont par exemple
+  -> Des mappages d’alias sont par exemple
+  CTX: [(10)] << Des mappages d’alias sont par exemple >> [. This method offers a stable and reproducible recall, with]
+
+FRAG:  et 
+  -> et
+  CTX: [be the sample size of the job] << et >> [the number of occurrences of the skill]
+
+FRAG: alors
+  -> ; alors
+  CTX: [the number of occurrences of the skill] << ; alors >> [(11)]
+
+FRAG: la confiance globale
+  -> , la confiance globale
+  CTX: [Three-dimensional emergence scoring: for a cluster] << , la confiance globale >> [is the sum of the three components (in accordance with _scor]
+
+FRAG: ne sert que d’aide au classement et ne remplace pa
+  -> ne sert que d’aide au classement et ne remplace pas directement
+  CTX: [samples published within the cluster over the last 30 days;] << ne sert que d’aide au classement et ne remplace pas directement >> [.]
+
+FRAG: L’ensemble des orientations futures
+  -> L’ensemble des orientations futures
+  CTX: [lure, the heuristic result is retained. As shown in Figure 5] << L’ensemble des orientations futures >> [has a base confidence]
+
+FRAG: on enregistre sur les sources
+  -> , on enregistre sur les sources
+  CTX: [Skill extraction and occurrence rate: for the job category] << , on enregistre sur les sources >> [et]
+
+FRAG:  et 
+  -> et
+  CTX: [, on enregistre sur les sources] << et >> [the sample size]
+
+FRAG:  et 
+  -> et
+  CTX: [Ajout :] << et >> [, en enregistrant l’augmentation relative]
+
+FRAG: en enregistrant l’augmentation relative
+  -> , en enregistrant l’augmentation relative
+  CTX: [et] << , en enregistrant l’augmentation relative >> [.]
+
+FRAG:  et 
+  -> et
+  CTX: [Suppression :] << et >> [et]
+
+FRAG:  et 
+  -> et
+  CTX: [et] << et >> [, recording the percentage of decrease.]
+
+FRAG: Appariement poste-candidat et parcours d’apprentis
+  -> 3.9 Appariement poste-candidat et parcours d’apprentissage
+  CTX: [Figure 6. Dynamic Evolution Interface of Skills] << 3.9 Appariement poste-candidat et parcours d’apprentissage >> [Problem formulation: given a set of jobs]
+
+FRAG: et un profil de candidat
+  -> et un profil de candidat
+  CTX: [Problem formulation: given a set of jobs] << et un profil de candidat >> [, on cherche une fonction de mappage]
+
+FRAG: on cherche une fonction de mappage
+  -> , on cherche une fonction de mappage
+  CTX: [et un profil de candidat] << , on cherche une fonction de mappage >> [telle que]
+
+FRAG: telle que
+  -> telle que
+  CTX: [, on cherche une fonction de mappage] << telle que >> [quantifies the degree of matching, and an executable learnin]
+
+FRAG: Appariement poste-candidat et parcours d’apprentis
+  -> Figure 7. Appariement poste-candidat et parcours d’apprentissage
+  CTX: [to close the gaps. See Figure 7] << Figure 7. Appariement poste-candidat et parcours d’apprentissage >> [Five-dimensional weighting model and notations: the total sc]
+
+FRAG: ) est
+  -> ) est
+  CTX: [l score (implemented on a 100-point scale, then truncated to] << ) est >> [(]
+
+FRAG: l’ensemble des correspondances directes et
+  -> l’ensemble des correspondances directes et
+  CTX: [the candidate’s skill set. Let] << l’ensemble des correspondances directes et >> [be the set of missing skills. For each missing skill]
+
+FRAG: s’il existe une preuve de transfert avec une confi
+  -> , s’il existe une preuve de transfert avec une confiance de
+  CTX: [be the set of missing skills. For each missing skill] << , s’il existe une preuve de transfert avec une confiance de >> [, la contribution de transfert]
+
+FRAG: la contribution de transfert
+  -> , la contribution de transfert
+  CTX: [, s’il existe une preuve de transfert avec une confiance de] << , la contribution de transfert >> []
+
+FRAG: et le score de projet
+  -> et le score de projet
+  CTX: [, truncated to 100 at most. The semantic score] << et le score de projet >> [prioritizes the results of the large-language-model review a]
+
+FRAG: En cas de correspondance directe sans transfert
+  -> En cas de correspondance directe sans transfert,
+  CTX: [)] << En cas de correspondance directe sans transfert, >> [; otherwise, 35 is retained. If there is neither a match nor]
+
+FRAG:  et 
+  -> DCF: differentiable conformal training for the factuality of LLM reasoning [10]. ttesdorf et al. (2026) propose the Diff
+  CTX: [eredge context can balance and suppress pointwise noise [9].] << DCF: differentiable conformal training for the factuality of LLM reasoning [10]. ttesdorf et al. (2026) propose the Diff >> [Conformal framework: the LLM output is decomposed into sever]
+
+FRAG: Appariement en cinq dimensions
+  -> I4 Appariement en cinq dimensions
+  CTX: [=0.76; recomputable differentials such as RAG+54 of Table 3a] << I4 Appariement en cinq dimensions >> [Weighted M and transfer≤0.65]
+
+FRAG: Conclusion et perspectives
+  -> 3.12 Conclusion et perspectives
+  CTX: [Figure 9. Example of Real Job Data] << 3.12 Conclusion et perspectives >> [Summary of the work: this paper, addressing topic XH-202621,]
+
+FRAG:  et 
+  -> [6] Zhang Qi, Gui Tao, Zheng Rui, et al. A review of research on named entity recognition[J]. Journal of Software, 2018,
+  CTX: [18th ACM Conference on Recommender Systems.Bari,Italy,2024.] << [6] Zhang Qi, Gui Tao, Zheng Rui, et al. A review of research on named entity recognition[J]. Journal of Software, 2018, >> [[7]]
+
+FRAG:  et 
+  -> [11] Hu Xiaoyong, Huang Jie, Lin Zirou, et al. AI ethics in education: conceptual framework, cognitive state, and risk p
+  CTX: [Conference on Machine Learning(ICML 2026),Poster #2501,2026.] << [11] Hu Xiaoyong, Huang Jie, Lin Zirou, et al. AI ethics in education: conceptual framework, cognitive state, and risk p >> []
+

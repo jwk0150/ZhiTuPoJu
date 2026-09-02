@@ -1,0 +1,43 @@
+<ns0:p ns2:paraId="404597AD" ns2:textId="014B22AF" ns0:rsidR="00DD52EF" ns0:rsidRDefault="00000000">
+      
+      
+      <ns0:pPr>
+        
+        
+        <ns0:ind ns0:firstLine="420"/>
+        
+        
+        <ns0:jc ns0:val="both"/>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+      
+      </ns0:pPr>
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t>Lorsqu&#x2019;un nouveau lot est inséré, il suffit de recalculer les poids des arêtes des postes affectés, sans reconstruire l&#x2019;intégralité du graphe. Pour les requêtes à forte fréquence (postes adjacents d&#x2019;une compétence donnée, plus court chemin de pontage entre deux compétences), des vues matérialisées ou des caches peuvent être créés.</ns0:t>
+        
+      
+      </ns0:r>
+      
+    
+    </ns0:p>

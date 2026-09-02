@@ -1,0 +1,58 @@
+<ns0:p ns2:paraId="0D395D2B" ns2:textId="3638C802" ns0:rsidR="006F394F" ns0:rsidRDefault="006F394F" ns0:rsidP="006F394F">
+      
+      
+      <ns0:pPr>
+        
+        
+        <ns0:ind ns0:firstLine="420"/>
+        
+        
+        <ns0:jc ns0:val="both"/>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:rFonts ns0:hint="eastAsia"/>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+      
+      </ns0:pPr>
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:rFonts ns0:hint="eastAsia"/>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t>indique que, dans les données de recrutement, le poste d&#x2019;ingénieur de développement Java présente un besoin pour la compétence Spring Boot. De cette manière, les informations dispersées dans la description du poste, les exigences de poste et les champs de compétences des offres de recrutement peuvent être converties de manière uniforme en structure de graphe, fournissant ainsi la base de données pour la visualisation ultérieure du graphe technologique des postes et pour l&#x2019;appariement poste-candidat.</ns0:t>
+        
+      
+      </ns0:r>
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+    
+    </ns0:p>

@@ -418,14 +418,31 @@ window.talentFillDropdown = function(id, list, placeholder) {
     sel.value = currentVal;
 };
 
-window.talentGetFilters = function() {
-    const getVal = id => { const el = document.getElementById(id); return el ? el.value : ''; };
+// 返回当前激活的筛选面板元素集合：
+// 市级岗位分析（province 层 + city 级）使用新固定筛选面板，其余页面仍使用原悬浮筛选面板
+window.talentActiveFilterEls = function() {
+    const cityMode = talentMapState.currentLayer === 'province' && talentMapState.mapLevel === 'city';
+    const base = cityMode ? 'talent-city-filter-' : 'talent-filter-';
+    const get = function(role) { return document.getElementById(base + role); };
     return {
-        province: getVal('talent-filter-province'),
-        city: getVal('talent-filter-city'),
-        job: getVal('talent-filter-job'),
-        education: getVal('talent-filter-edu'),
-        experience: getVal('talent-filter-exp')
+        province: get('province'),
+        city: get('city'),
+        job: get('job'),
+        edu: get('edu'),
+        exp: get('exp'),
+        salaryMin: get('salary-min'),
+        salaryMax: get('salary-max')
+    };
+};
+window.talentGetFilters = function() {
+    const els = window.talentActiveFilterEls();
+    const getVal = el => { return el ? el.value : ''; };
+    return {
+        province: getVal(els.province),
+        city: getVal(els.city),
+        job: getVal(els.job),
+        education: getVal(els.edu),
+        experience: getVal(els.exp)
     };
 };
 
@@ -458,18 +475,21 @@ window.talentCityDisplay = function(raw) {
     if (/市$|区$|县$/.test(part)) return part;
     return part + '市';
 };
-// 省份下拉框初始化：全国省级行政区列表，仅执行一次（避免被筛选结果过滤）
+// 省份下拉框初始化：全国省级行政区列表，仅执行一次（避免被筛选结果过滤）。
+// 同时填充原悬浮面板与新固定筛选面板，仅市级岗位分析使用后者
 window.talentInitProvinceOptions = function(regions) {
-    const sel = document.getElementById('talent-filter-province');
-    if (!sel || !regions || !regions.length) return;
-    if (sel.dataset.inited) return;
-    sel.dataset.inited = '1';
+    if (!regions || !regions.length) return;
     let html = '<option value="">全部省份</option>';
     regions.forEach(function(r) {
         const short = String(r).replace(/省|市|壮族自治区|回族自治区|维吾尔自治区|自治区|特别行政区/g, '');
         html += '<option value="' + short + '">' + window.talentProvinceDisplay(r) + '</option>';
     });
-    sel.innerHTML = html;
+    ['talent-filter-province', 'talent-city-filter-province'].forEach(function(id) {
+        const sel = document.getElementById(id);
+        if (!sel || sel.dataset.inited) return;
+        sel.dataset.inited = '1';
+        sel.innerHTML = html;
+    });
 };
 // 请求省份下城市列表（/map/cities/{province}）
 window.talentFetchCities = async function(provinceShort) {
@@ -516,31 +536,29 @@ window.talentNormalizeCityList = function(cities, provinceShort) {
     return out;
 };
 // 省份变化：加载该省城市，并清空之前的城市与岗位（防止"河南省 + 太原市"错位组合）
+// 该函数同时服务于原悬浮筛选面板与市级固定筛选面板（按当前激活面板操作）
 window.talentOnProvinceChange = async function() {
-    const provSel = document.getElementById('talent-filter-province');
-    const citySel = document.getElementById('talent-filter-city');
-    const jobSel = document.getElementById('talent-filter-job');
-    if (!provSel || !citySel || !jobSel) return;
-    citySel.innerHTML = '<option value="">全部地区</option>';
-    jobSel.innerHTML = '<option value="">全部岗位</option>';
-    if (!provSel.value) return;
-    const cities = window.talentNormalizeCityList(await window.talentFetchCities(provSel.value), provSel.value);
+    const els = window.talentActiveFilterEls();
+    if (!els.province || !els.city || !els.job) return;
+    els.city.innerHTML = '<option value="">全部地区</option>';
+    els.job.innerHTML = '<option value="">全部岗位</option>';
+    if (!els.province.value) return;
+    const cities = window.talentNormalizeCityList(await window.talentFetchCities(els.province.value), els.province.value);
     let html = '<option value="">全部地区</option>';
     cities.forEach(function(c) { html += '<option value="' + c + '">' + window.talentCityDisplay(c) + '</option>'; });
-    citySel.innerHTML = html;
+    els.city.innerHTML = html;
 };
 // 城市变化：加载该城市岗位，并清空之前的岗位
 window.talentOnCityChange = async function() {
-    const citySel = document.getElementById('talent-filter-city');
-    const jobSel = document.getElementById('talent-filter-job');
-    if (!citySel || !jobSel) return;
-    jobSel.innerHTML = '<option value="">全部岗位</option>';
-    if (!citySel.value) return;
-    const cityShort = window.talentNormalizeCityName(String(citySel.value).split('·').pop());
+    const els = window.talentActiveFilterEls();
+    if (!els.city || !els.job) return;
+    els.job.innerHTML = '<option value="">全部岗位</option>';
+    if (!els.city.value) return;
+    const cityShort = window.talentNormalizeCityName(String(els.city.value).split('·').pop());
     const jobs = await window.talentFetchCityJobs(cityShort);
     let html = '<option value="">全部岗位</option>';
     jobs.forEach(function(j) { html += '<option value="' + j + '">' + j + '</option>'; });
-    jobSel.innerHTML = html;
+    els.job.innerHTML = html;
 };
 // 在岗位分析页中自动高亮并优先展示指定岗位（岗位筛选生效）
 window.talentApplyJobHighlight = function(jobName) {
@@ -622,6 +640,181 @@ window.talentResetFilterSelects = function() {
     });
 };
 
+// ============== 市级岗位分析 · 固定筛选面板 ==============
+// 从地图点击进入城市时：按当前省份/城市上下文填充左侧固定筛选面板。
+// 省份选项已由 talentInitProvinceOptions 初始化；此处重建 地区/岗位 下拉并恢复默认（全部岗位/不限学历/不限经验/薪资不限）
+window.talentPopulateCityFilterPanel = async function() {
+    var provShort = talentMapState.selectedProvince && talentMapState.selectedProvince.name;
+    var city = talentMapState.selectedCity;
+    if (!provShort || !city) return;
+    var provSel = document.getElementById('talent-city-filter-province');
+    var citySel = document.getElementById('talent-city-filter-city');
+    var jobSel = document.getElementById('talent-city-filter-job');
+    var eduSel = document.getElementById('talent-city-filter-edu');
+    var expSel = document.getElementById('talent-city-filter-exp');
+    var salMin = document.getElementById('talent-city-filter-salary-min');
+    var salMax = document.getElementById('talent-city-filter-salary-max');
+    if (!provSel || !citySel || !jobSel) return;
+
+    provSel.value = provShort;
+    // 地区列表
+    var cities = window.talentNormalizeCityList(await window.talentFetchCities(provShort), provShort);
+    var html = '<option value="">全部地区</option>';
+    cities.forEach(function(c) { html += '<option value="' + c + '">' + window.talentCityDisplay(c) + '</option>'; });
+    citySel.innerHTML = html;
+    // 当前城市选中值：普通城市为短名（南昌），直辖市区级条目保留"省·区"（北京·朝阳区）
+    var curVal = city.name || '';
+    if (curVal && curVal.indexOf('·') < 0) {
+        var short = window.talentNormalizeCityName(curVal);
+        var optOk = Array.prototype.some.call(citySel.options, function(o) { return o.value === short; });
+        if (optOk) curVal = short;
+    }
+    // 若当前分析城市不在地区下拉中（如未收录入 CITY_TO_PROVINCE 的城市），追加选项，
+    // 保证筛选面板始终反映当前正在分析的城市，且用户可重新选择回该城市
+    var hasCurVal = curVal && Array.prototype.some.call(citySel.options, function(o) { return o.value === curVal; });
+    if (curVal && !hasCurVal) {
+        var opt = document.createElement('option');
+        opt.value = curVal;
+        opt.textContent = window.talentCityDisplay(curVal);
+        citySel.appendChild(opt);
+    }
+    citySel.value = curVal;
+    // 岗位列表
+    var cityShort = window.talentNormalizeCityName(String(curVal || city.displayName || '').split('·').pop());
+    var jobs = await window.talentFetchCityJobs(cityShort);
+    var jh = '<option value="">全部岗位</option>';
+    jobs.forEach(function(j) { jh += '<option value="' + j + '">' + j + '</option>'; });
+    jobSel.innerHTML = jh;
+    // 默认清空学历/经验/薪资（进入城市即恢复全量数据）
+    if (eduSel) eduSel.value = '';
+    if (expSel) expSel.value = '';
+    if (salMin) salMin.value = '';
+    if (salMax) salMax.value = '';
+};
+
+// 应用筛选：真正按 省份/地区/岗位/学历/经验/薪资范围 过滤当前岗位列表，
+// 关键点：始终停留在当前岗位分析页面，绝不跳转回省市地图。
+window.talentCityApplyFilter = async function() {
+    var provSel = document.getElementById('talent-city-filter-province');
+    var citySel = document.getElementById('talent-city-filter-city');
+    var jobSel = document.getElementById('talent-city-filter-job');
+    if (!provSel || !citySel || !jobSel) return;
+    var provShort = provSel.value;
+    var cityRaw = citySel.value;
+    var jobName = jobSel.value;
+
+    // 更新 URL（刷新/直达链接可恢复当前 省份/地区/岗位 上下文）
+    window.talentUpdateUrlParams(provShort, cityRaw, jobName);
+
+    if (cityRaw) {
+        // 地区已选择：切换城市岗位分析上下文（原地切换，不跳地图）
+        if (provShort) {
+            talentMapState.selectedProvince = { name: provShort };
+            talentMapState.currentProvinceName = provShort;
+        }
+        var displayName = window.talentCityDisplay(cityRaw);
+        var cityObj = { name: cityRaw, displayName: displayName };
+        // skipSync=true：保留用户已在筛选面板设置的 岗位/学历/经验/薪资 值
+        await window.talentMapEnterCity(cityObj, { skipSync: true });
+    } else {
+        // 地区未选择：停留在当前城市，仅应用 岗位/学历/经验/薪资 筛选
+        if (!talentMapState.selectedCity) {
+            window.Utils.showToast('请选择省份与地区', 'amber');
+            return;
+        }
+        var curProv = talentMapState.selectedProvince && talentMapState.selectedProvince.name;
+        if (provShort && curProv && provShort !== curProv) {
+            window.Utils.showToast('请选择具体地区后再应用筛选', 'amber');
+            return;
+        }
+        if (provShort) {
+            talentMapState.selectedProvince = { name: provShort };
+            talentMapState.currentProvinceName = provShort;
+        }
+        await window.renderProvinceJobList({ name: '' }, talentMapState.selectedCity);
+    }
+    window.Utils.showToast('筛选已应用', 'gold');
+};
+
+// 重置筛选：恢复 当前省份/当前城市 + 全部岗位/不限学历/不限经验/不限薪资，并刷新当前城市全部岗位数据（不跳转地图）
+window.talentCityResetFilter = async function() {
+    var provSel = document.getElementById('talent-city-filter-province');
+    var citySel = document.getElementById('talent-city-filter-city');
+    var jobSel = document.getElementById('talent-city-filter-job');
+    var eduSel = document.getElementById('talent-city-filter-edu');
+    var expSel = document.getElementById('talent-city-filter-exp');
+    var salMin = document.getElementById('talent-city-filter-salary-min');
+    var salMax = document.getElementById('talent-city-filter-salary-max');
+    if (!provSel || !citySel || !jobSel) return;
+
+    var provShort = talentMapState.selectedProvince && talentMapState.selectedProvince.name;
+    var city = talentMapState.selectedCity;
+    // 省份恢复为当前省份
+    if (provShort) provSel.value = provShort;
+    // 重建地区选项并选中当前城市
+    if (provShort) {
+        var cities = window.talentNormalizeCityList(await window.talentFetchCities(provShort), provShort);
+        var html = '<option value="">全部地区</option>';
+        cities.forEach(function(c) { html += '<option value="' + c + '">' + window.talentCityDisplay(c) + '</option>'; });
+        citySel.innerHTML = html;
+        if (city) {
+            var curVal = city.name || '';
+            if (curVal && curVal.indexOf('·') < 0) {
+                var short = window.talentNormalizeCityName(curVal);
+                var optOk = Array.prototype.some.call(citySel.options, function(o) { return o.value === short; });
+                if (optOk) curVal = short;
+            }
+            // 当前分析城市不在下拉中时追加选项（与 talentPopulateCityFilterPanel 保持一致）
+            var hasCurVal = curVal && Array.prototype.some.call(citySel.options, function(o) { return o.value === curVal; });
+            if (curVal && !hasCurVal) {
+                var opt = document.createElement('option');
+                opt.value = curVal;
+                opt.textContent = window.talentCityDisplay(curVal);
+                citySel.appendChild(opt);
+            }
+            citySel.value = curVal;
+        } else {
+            citySel.value = '';
+        }
+    }
+    // 岗位/学历/经验/薪资 全部恢复默认
+    jobSel.innerHTML = '<option value="">全部岗位</option>';
+    if (eduSel) eduSel.value = '';
+    if (expSel) expSel.value = '';
+    if (salMin) salMin.value = '';
+    if (salMax) salMax.value = '';
+
+    // 恢复当前城市全部岗位数据（保持停留在岗位分析页面）
+    if (city) {
+        await window.talentMapEnterCity(city, { skipSync: true });
+    } else if (talentMapState.selectedCity) {
+        await window.renderProvinceJobList({ name: '' }, talentMapState.selectedCity);
+    }
+    window.Utils.showToast('已重置筛选', 'gold');
+};
+
+// 岗位列表排序：默认 / 薪资降序 / 热度降序 / 岗位数降序（仅重排当前列表，不重新请求数据）
+window.talentCityChangeSort = function(mode) {
+    var jobs = talentMapState.provinceJobs || [];
+    if (!jobs.length) return;
+    var sorted;
+    if (mode === 'salary') sorted = jobs.slice().sort(function(a, b) { return (b.avgSalary || 0) - (a.avgSalary || 0); });
+    else if (mode === 'hot') sorted = jobs.slice().sort(function(a, b) { return (b.hot || 0) - (a.hot || 0); });
+    else if (mode === 'count') sorted = jobs.slice().sort(function(a, b) { return (b.count || 0) - (a.count || 0); });
+    else sorted = jobs.slice();
+    talentMapState.provinceJobs = sorted;
+    window.talentRenderJobCards();
+    // 保持当前选中岗位（按名称查找新位置）
+    var sel = talentMapState.selectedJob;
+    if (sel) {
+        var idx = -1;
+        for (var k = 0; k < sorted.length; k++) { if (sorted[k].name === sel.name) { idx = k; break; } }
+        if (idx >= 0) window.talentSelectJob(idx);
+    } else if (sorted.length > 0) {
+        window.talentSelectJob(0);
+    }
+};
+
 window.updateTalentStats = function() {
     const p = talentMapState.allProvinces;
     const total = p.reduce((s, x) => s + (x.jobCount || 0), 0);
@@ -650,6 +843,14 @@ window.talentShowLayer = function(layer) {
     // 背板切换：地图层直接融入页面背景（无透明背板），岗位分析/技术脑图层保留透明背板
     var canvasEl = document.getElementById('talent-map-canvas');
     if (canvasEl) canvasEl.classList.toggle('canvas-panel', layer !== 'map');
+    // 市级岗位分析：三栏布局（筛选 | 岗位列表 | 数据分析），并隐藏旧的覆盖式悬浮筛选
+    var cityMode = layer === 'province' && talentMapState.mapLevel === 'city';
+    var provinceLayerEl = document.getElementById('talent-layer-province');
+    if (provinceLayerEl) provinceLayerEl.classList.toggle('city-mode', cityMode);
+    var mapViewEl = document.getElementById('view-map');
+    if (mapViewEl) mapViewEl.classList.toggle('city-analysis-active', cityMode);
+    var layoutEl = mapViewEl ? mapViewEl.querySelector('.graph-layout') : null;
+    if (layoutEl) layoutEl.classList.toggle('city-analysis-mode', cityMode);
     // 离开图谱层时清除技能详情状态并恢复右侧面板，防止状态残留
     if (layer !== 'graph') {
         window.talentClearTechDetail();
@@ -1307,7 +1508,10 @@ window.talentMapCityBack = function() {
 };
 
 // ============== 进入城市岗位分析（复用省份岗位分析页面） ==============
-window.talentMapEnterCity = function(cityNameObj) {
+// opts.skipSync: 为 true 时保留用户已设置的新筛选面板值（应用/重置筛选调用），
+// 否则按当前选中的省份/城市重新填充筛选面板（从地图点击进入城市时调用）
+window.talentMapEnterCity = function(cityNameObj, opts) {
+    opts = opts || {};
     var cityName = typeof cityNameObj === 'string' ? cityNameObj : (cityNameObj ? cityNameObj.name : null);
     if (!cityName) { window.Utils.showToast('城市名称无效', 'amber'); return; }
     
@@ -1347,7 +1551,12 @@ window.talentMapEnterCity = function(cityNameObj) {
     if (backBtn) backBtn.style.display = '';
     // 加载城市岗位数据到右侧面板（返回 Promise，便于调用方等待渲染完成后再做岗位高亮）
     var suffix = talentMapState.currentProvinceName ? ' ' + talentMapState.currentProvinceName : '';
-    return window.renderProvinceJobList({ name: displayName + suffix, stCode: '', admCode: '' }, selectedCity);
+    var p = window.renderProvinceJobList({ name: displayName + suffix, stCode: '', admCode: '' }, selectedCity);
+    // 从地图点击进入城市时，同步填充左侧固定筛选面板（应用/重置筛选时保留用户已设置的值）
+    if (opts.skipSync !== true) {
+        window.talentPopulateCityFilterPanel();
+    }
+    return p;
 };
 
 // ============== 港澳局部放大框 ==============
@@ -1696,12 +1905,18 @@ window.talentFetchProvinceDetail = async function(provinceName) {
     }
 };
 
-// 城市详情API：城市岗位分析永远全量查询，不继承省级筛选条件（industry/job/education/experience 置空），
-// 避免省级筛选状态残留导致城市查询结果为空、误报"暂无岗位数据"。
+// 城市详情API：默认全量查询该城市岗位；
+// 若市级岗位分析面板设置了 岗位/学历/经验 筛选，则携带筛选参数向后端查询真实过滤结果。
+// 薪资范围筛选在前端按岗位平均薪资执行（后端不参与）。
 window.talentFetchCityDetail = async function(provinceName, cityName) {
     if (!provinceName || !cityName) return null;
     try {
-        var res = await fetch(API_BASE + '/map/city/' + encodeURIComponent(provinceName) + '/' + encodeURIComponent(cityName));
+        var filt = window.talentGetFilters();
+        var qs = '?';
+        if (filt.job) qs += 'job=' + encodeURIComponent(filt.job) + '&';
+        if (filt.education) qs += 'education=' + encodeURIComponent(filt.education) + '&';
+        if (filt.experience) qs += 'experience=' + encodeURIComponent(filt.experience) + '&';
+        var res = await fetch(API_BASE + '/map/city/' + encodeURIComponent(provinceName) + '/' + encodeURIComponent(cityName) + (qs.length > 1 ? qs : ''));
         var json = await res.json();
         var d = json.data || json;
         return d;
@@ -1789,23 +2004,43 @@ window.renderProvinceDetail = async function(province) {
 };
 
 // ============== 省份/城市岗位分析（全屏层） ==============
+// 市级岗位分析：读取左侧固定筛选面板的 岗位/学历/经验/薪资范围，后端过滤 + 前端薪资过滤，
+// 渲染统一高度的横向岗位卡片（不展示技术标签），并自动选中第一条结果。
 window.renderProvinceJobList = async function(province, selectedCity) {
     if (!province) return;
-    
+
     var isCity = talentMapState.mapLevel === 'city' && selectedCity;
     var displayName = isCity ? (selectedCity.displayName || selectedCity.name) : province.name;
     var fetchProvName = isCity ? talentMapState.currentProvinceName : province.name;
     // 查询 API 使用规范化短名（"南昌"），显示使用全称（"南昌市"）
     var fetchCityName = isCity ? (selectedCity.shortName || selectedCity.name) : null;
 
+    // 捕获当前筛选条件（岗位/学历/经验 走后端，薪资范围前端过滤）
+    var filt = window.talentGetFilters();
+    var salaryMin = parseFloat(talentFilterEl('salaryMin')) || 0;
+    var salaryMax = parseFloat(talentFilterEl('salaryMax')) || 0;
+    var filterKey = [filt.job, filt.education, filt.experience].join('|');
+    var hasFilters = !!(filterKey !== '||' || salaryMin || salaryMax);
+    talentMapState.activeFilterKey = filterKey;
+    talentMapState.salaryFilter = { min: salaryMin, max: salaryMax };
+
     var titleEl = document.getElementById('talent-province-title');
-    if (titleEl) titleEl.textContent = displayName + ' · 数字人才洞察';
+    if (titleEl) titleEl.textContent = displayName + ' · 岗位分析 · ' + (isCity ? (talentMapState.currentProvinceName || '') : '数字人才洞察');
 
     var statsEl = document.getElementById('talent-province-stats');
     if (statsEl) statsEl.innerHTML = '<span>岗位数 --</span> | <span>热门指数 --</span> | <span>平均薪资 --</span>';
+    var foundEl = document.getElementById('talent-job-found-label');
+    if (foundEl) foundEl.innerHTML = '共找到 <b>--</b> 个岗位';
+    var sortEl = document.getElementById('talent-job-sort');
+    if (sortEl) sortEl.value = 'default';
 
-    // 优先使用已缓存的detailData，否则请求API
+    // 缓存仅对相同筛选条件下有效：筛选条件变化时强制重新请求
     var detail = isCity ? talentMapState.cityDetailData : talentMapState.provinceDetailData;
+    if (isCity && talentMapState.cityDetailFilterKey !== filterKey) {
+        talentMapState.cityDetailData = null;
+        talentMapState.cityDetailFilterKey = filterKey;
+        detail = null;
+    }
     if (!detail || !detail.topJobs || !detail.topJobs.length) {
         if (isCity && fetchCityName) {
             detail = await window.talentFetchCityDetail(fetchProvName, fetchCityName);
@@ -1816,7 +2051,8 @@ window.renderProvinceJobList = async function(province, selectedCity) {
         }
     }
     // 城市岗位仍为空时的兜底：调用全量接口（后端不足 20 时自动 AI 生成并【写入数据库】后返回 ≥20 条）
-    if (isCity && fetchCityName && (!detail || !detail.topJobs || !detail.topJobs.length)) {
+    // 注意：存在筛选条件时不兜底，避免"筛选无结果"被全量数据错误覆盖
+    if (isCity && fetchCityName && !hasFilters && (!detail || !detail.topJobs || !detail.topJobs.length)) {
         var fb = await window.talentFetchCityJobsFull(fetchCityName);
         if (fb && fb.jobs && fb.jobs.length) {
             detail = {
@@ -1827,7 +2063,8 @@ window.renderProvinceJobList = async function(province, selectedCity) {
                         id: i + 1, name: j.name, count: j.count || 20,
                         avgSalary: j.avgSalary || 0, hot: j.hot || 0,
                         category: j.category || '',
-                        skills: (j.skills && j.skills.length) ? j.skills : []
+                        skills: (j.skills && j.skills.length) ? j.skills : [],
+                        education: j.education || '不限', experience: j.experience || '不限'
                     };
                 })
             };
@@ -1836,40 +2073,38 @@ window.renderProvinceJobList = async function(province, selectedCity) {
     }
 
     var topJobs = (detail && detail.topJobs && detail.topJobs.length > 0) ? detail.topJobs : [];
+    // 薪资范围前端过滤（按岗位平均薪资，使用真实薪资数据）
+    if (salaryMin > 0 || salaryMax > 0) {
+        topJobs = topJobs.filter(function(j) {
+            var s = j.avgSalary || 0;
+            if (salaryMin > 0 && s < salaryMin) return false;
+            if (salaryMax > 0 && s > salaryMax) return false;
+            return true;
+        });
+    }
+
     talentMapState.provinceJobs = topJobs;
     talentMapState.selectedJob = null;
 
-    if (topJobs.length === 0) {
-        var jobsEl = document.getElementById('talent-province-jobs');
-        if (jobsEl) jobsEl.innerHTML = '<div style="color:rgba(255,255,255,.35);padding:40px;text-align:center">' + displayName + '暂无岗位数据，请检查数据库或筛选条件</div>';
-        return;
+    // 岗位总量：无筛选时使用后端真实记录总数（detail.totalJobs），筛选后使用展示岗位记录数之和
+    var totalCount = topJobs.reduce(function(s, j) { return s + (j.count || 0); }, 0);
+    var shownTotal = (!hasFilters && detail && detail.totalJobs) ? (detail.totalJobs || 0) : totalCount;
+    talentMapState.shownTotal = shownTotal;
+
+    // 更新统计条（平均薪资 = 按岗位数量加权；热门指数 = 展示岗位最高热度）
+    if (topJobs.length > 0 && statsEl) {
+        var salSum = 0, salN = 0, maxHot = 0;
+        topJobs.forEach(function(j) {
+            if (j.avgSalary && j.avgSalary > 0) { salSum += j.avgSalary * (j.count || 1); salN += (j.count || 1); }
+            if ((j.hot || 0) > maxHot) maxHot = j.hot;
+        });
+        var avgSal = salN ? Math.round(salSum / salN) : (detail.avgSalary || 0);
+        var hotIndex = maxHot || (detail.hotIndex || '--');
+        statsEl.innerHTML = '<span>岗位数 ' + shownTotal.toLocaleString() + '</span> | <span>热门指数 ' + hotIndex + '</span> | <span>平均薪资 ' + talentFormatSalary(avgSal) + '</span>';
     }
 
-    // 更新统计条
-    if (detail && detail.avgSalary && statsEl) {
-        statsEl.innerHTML = '<span>岗位数 ' + (detail.totalJobs || 0).toLocaleString() + '</span> | <span>热门指数 ' + (province.hotIndex || '--') + '</span> | <span>平均薪资 ' + talentFormatSalary(detail.avgSalary) + '</span>';
-    }
-
-    var jobsHTML = '';
-    topJobs.forEach(function(j, i) {
-        var salaryText = j.avgSalary ? talentFormatSalary(j.avgSalary) : '--';
-        var skills = (j.skills && j.skills.length) ? j.skills : [];
-        var skillsHtml = skills.map(function(s) { return '<span class="talent-job-skill">' + s + '</span>'; }).join('');
-        var categoryHtml = (j.category || j.level) ? '<span class="talent-job-category">' + (j.category || j.level) + '</span>' : '';
-        // 横向信息流布局：岗位名称 → 薪资 → 热度 → 岗位类别 → 技术标签 → TOP排名 → 岗位数量 → 操作按钮
-        jobsHTML += '<div class="talent-job-card" data-idx="' + i + '" onclick="window.talentSelectJob(' + i + ')">'
-            + '<span class="talent-job-name">' + (j.name || '') + '</span>'
-            + '<span class="talent-job-salary">💰 ' + salaryText + '</span>'
-            + '<span class="talent-job-hot">🔥 热度 ' + (j.hot || 0) + '</span>'
-            + categoryHtml
-            + '<span class="talent-job-skills">' + skillsHtml + '</span>'
-            + '<span class="talent-job-top">TOP ' + (i+1) + '</span>'
-            + '<span class="talent-job-count">' + (j.count || 0).toLocaleString() + ' 个岗位</span>'
-            + '<button class="talent-job-btn" onclick="event.stopPropagation();window.talentSelectJob(' + i + ');window.talentMapEnterGraph()">进入知识图谱 →</button>'
-            + '</div>';
-    });
-    var jobsEl = document.getElementById('talent-province-jobs');
-    if (jobsEl) jobsEl.innerHTML = jobsHTML;
+    // 渲染岗位卡片（统一高度横向布局，卡片不展示技术标签）
+    window.talentRenderJobCards();
 
     // 岗位卡片 Hover 联动（事件委托，只绑定一次）：
     // 鼠标悬停某张岗位卡片 → 右侧立即显示该岗位详情；移出后保持最后一个岗位信息，避免频繁闪烁
@@ -1885,6 +2120,97 @@ window.renderProvinceJobList = async function(province, selectedCity) {
             if (job) window.talentShowJobDetail(job);
         });
     }
+};
+
+// 读取当前激活筛选面板中指定角色的输入值（薪资范围为 number 输入框）
+function talentFilterEl(role) {
+    var els = window.talentActiveFilterEls();
+    var el = role === 'salaryMin' ? els.salaryMin : (role === 'salaryMax' ? els.salaryMax : null);
+    if (el) return el.value;
+    return '';
+}
+
+// 渲染岗位卡片列表：岗位名称 + 基本信息（城市·经验·学历·岗位数） | 薪资 + 热度 | 操作按钮
+// 不展示技术标签（技术数据仍保留在右侧岗位详情面板）
+window.talentRenderJobCards = function() {
+    var jobs = talentMapState.provinceJobs || [];
+    var jobsEl = document.getElementById('talent-province-jobs');
+    if (!jobsEl) return;
+    var statsEl = document.getElementById('talent-province-stats');
+    var foundEl = document.getElementById('talent-job-found-label');
+
+    if (!jobs.length) {
+        // 无结果：友好空状态 + 右侧面板显示空状态（不保留已被筛掉的岗位信息）
+        jobsEl.innerHTML = ''
+            + '<div class="jobs-empty-state">'
+            + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>'
+            + '<h4>暂无符合条件的岗位</h4>'
+            + '<p>当前筛选条件下没有匹配的岗位<br/>请调整筛选条件，或点击「重置筛选」查看全部岗位</p>'
+            + '<button class="btn" onclick="window.talentCityResetFilter()">重置筛选</button>'
+            + '</div>';
+        if (foundEl) foundEl.innerHTML = '共找到 <b>0</b> 个岗位';
+        if (statsEl) statsEl.innerHTML = '<span>岗位数 0</span> | <span>热门指数 --</span> | <span>平均薪资 --</span>';
+        talentMapState.shownTotal = 0;
+        // 右侧面板：清空岗位详情，显示合理空状态
+        var panel = document.getElementById('talent-detail-job');
+        var emptyPanel = document.getElementById('talent-detail-empty');
+        var provPanel = document.getElementById('talent-detail-province');
+        if (panel) panel.style.display = 'none';
+        if (provPanel) provPanel.style.display = 'none';
+        if (emptyPanel) {
+            var t = emptyPanel.querySelector('h4'), p = emptyPanel.querySelector('p');
+            if (t) t.textContent = '暂无符合条件的岗位';
+            if (p) p.innerHTML = '请调整左侧筛选条件<br/>或点击「重置筛选」恢复全部岗位';
+            emptyPanel.style.display = 'flex';
+        }
+        talentMapState.selectedJob = null;
+        return;
+    }
+
+    var cityName = (talentMapState.selectedCity && (talentMapState.selectedCity.displayName || talentMapState.selectedCity.name))
+        || (talentMapState.currentProvinceName || '');
+    var jobsHTML = '';
+    jobs.forEach(function(j, i) {
+        var salaryText = j.avgSalary ? talentFormatSalary(j.avgSalary) : '--';
+        var edu = j.education || '不限';
+        var exp = j.experience || '不限';
+        var countText = (j.count || 0).toLocaleString() + ' 个岗位';
+        // 横向紧凑卡片：左侧 名称+基本信息 / 中间 薪资+热度 / 右侧 操作按钮（无技术标签）
+        jobsHTML += '<div class="talent-job-card" data-idx="' + i + '" onclick="window.talentSelectJob(' + i + ')">'
+            + '<div class="talent-job-main">'
+            + '<div class="talent-job-name">' + (j.name || '') + '</div>'
+            + '<div class="talent-job-meta">'
+            + '<span class="meta-item">' + cityName + '</span>'
+            + '<span class="meta-sep">·</span>'
+            + '<span class="meta-item">' + exp + '</span>'
+            + '<span class="meta-sep">·</span>'
+            + '<span class="meta-item">' + edu + '</span>'
+            + '<span class="meta-sep">·</span>'
+            + '<span class="meta-item">' + countText + '</span>'
+            + '</div>'
+            + '</div>'
+            + '<div class="talent-job-salary-block">'
+            + '<div class="talent-job-salary">' + salaryText + '</div>'
+            + '<div class="talent-job-hot">🔥 热度 ' + (j.hot || 0) + '</div>'
+            + '</div>'
+            + '<div class="talent-job-actions">'
+            + '<button class="talent-job-btn" onclick="event.stopPropagation();window.talentSelectJob(' + i + ')">查看详情</button>'
+            + '<button class="talent-job-btn secondary" onclick="event.stopPropagation();window.talentSelectJob(' + i + ');window.talentMapEnterGraph()">进入知识图谱 →</button>'
+            + '</div>'
+            + '</div>';
+    });
+    jobsEl.innerHTML = jobsHTML;
+    if (foundEl) foundEl.innerHTML = '共找到 <b>' + (talentMapState.shownTotal || 0).toLocaleString() + '</b> 个岗位';
+
+    // 自动选中：优先保留仍存在于结果中的原选中岗位，否则选中第一条
+    var keepIdx = -1;
+    if (talentMapState.selectedJob) {
+        for (var k = 0; k < jobs.length; k++) {
+            if (jobs[k].name === talentMapState.selectedJob.name) { keepIdx = k; break; }
+        }
+    }
+    if (keepIdx >= 0) window.talentSelectJob(keepIdx);
+    else if (jobs.length > 0) window.talentSelectJob(0);
 };
 
 // 渲染岗位详情到右侧面板（仅使用现有数据字段：name/count/avgSalary/hot/category/skills）
@@ -2006,10 +2332,13 @@ window.talentSelectJob = function(idx) {
             avgSalary: job.avgSalary || 0,
             skills: job.skills || []
         };
+        // 同步右侧数据分析面板为当前岗位（保留原点击交互）
+        window.talentShowJobDetail(job);
     }
-    // 高亮选中的卡片
+    // 高亮选中的卡片（金色高亮，未选中恢复默认边框）
     document.querySelectorAll('#talent-province-jobs .talent-job-card').forEach((card, i) => {
-        card.style.borderColor = i === idx ? '#F0C75C' : 'rgba(255,255,255,.1)';
+        card.classList.toggle('active', i === idx);
+        if (i !== idx) card.style.borderColor = '';
     });
 };
 
@@ -2475,7 +2804,7 @@ window.renderCityTechGraph = async function(cityName, jobName, keepMode, viewMod
                 var catColor = TECH_CATEGORY_COLORS_MAP[cat.name] || '#6366F1';
                 allTechNodes.push({
                     name: tech.name,
-                    size: tech.size || 24,
+                    size: Math.max(14, Math.min(42, tech.size || 24)),
                     frequency: tech.frequency || 1,
                     ratio: tech.ratio || 0.5,
                     catColor: catColor,
@@ -2505,7 +2834,7 @@ window.renderCityTechGraph = async function(cityName, jobName, keepMode, viewMod
             var techs = cat.technologies.map(function(tech) {
                 var catColor = TECH_CATEGORY_COLORS_MAP[cat.name] || '#6366F1';
                 allTechNodes.push({
-                    name: tech.name, size: tech.size || 24, frequency: tech.frequency || 1,
+                    name: tech.name, size: Math.max(14, Math.min(42, tech.size || 24)), frequency: tech.frequency || 1,
                     ratio: tech.ratio || 0.5, catColor: catColor, catName: cat.name, parentId: gId
                 });
                 return allTechNodes[allTechNodes.length - 1];
@@ -2523,7 +2852,7 @@ window.renderCityTechGraph = async function(cityName, jobName, keepMode, viewMod
             var lvColor = ({ '初级': '#4ADE80', '中级': '#FBBF24', '高级': '#F472B6' })[lv.name] || '#60A5FA';
             var techs = lv.technologies.map(function(tech) {
                 allTechNodes.push({
-                    name: tech.name, size: tech.size || 24, frequency: tech.frequency || 1,
+                    name: tech.name, size: Math.max(14, Math.min(42, tech.size || 24)), frequency: tech.frequency || 1,
                     ratio: tech.ratio || 0.5, catColor: lvColor, catName: lv.name, parentId: gId
                 });
                 return allTechNodes[allTechNodes.length - 1];
@@ -2552,18 +2881,26 @@ window.renderCityTechGraph = async function(cityName, jobName, keepMode, viewMod
         } else if (totalTechs <= 20) {
             var inner = Math.ceil(totalTechs * 0.4);
             rings = [inner, totalTechs - inner];
-        } else {
+        } else if (totalTechs <= 34) {
             var r1 = Math.ceil(totalTechs * 0.33);
             var r2 = Math.ceil(totalTechs * 0.33);
             rings = [r1, r2, totalTechs - r1 - r2];
+        } else {
+            // 35+ 节点：四环分布，扩大分布范围，容纳更多节点而不拥挤
+            var q1 = Math.ceil(totalTechs * 0.25);
+            var q2 = Math.ceil(totalTechs * 0.25);
+            var q3 = Math.ceil(totalTechs * 0.25);
+            rings = [q1, q2, q3, totalTechs - q1 - q2 - q3];
         }
         var ringRadii = [];
         if (rings.length === 1) {
             ringRadii = [maxRadius * 0.55];
         } else if (rings.length === 2) {
             ringRadii = [maxRadius * 0.42, maxRadius * 0.78];
-        } else {
+        } else if (rings.length === 3) {
             ringRadii = [maxRadius * 0.3, maxRadius * 0.58, maxRadius * 0.82];
+        } else {
+            ringRadii = [maxRadius * 0.22, maxRadius * 0.44, maxRadius * 0.66, maxRadius * 0.9];
         }
         var idx = 0;
         for (var ringIdx = 0; ringIdx < rings.length; ringIdx++) {
@@ -2696,12 +3033,13 @@ window.renderCityTechGraph = async function(cityName, jobName, keepMode, viewMod
             shadowBlur: 18
         }
     });
+    // 中心岗位节点：浅暖金/米白填充 + 金色描边 + 柔和金色光晕（深棕色文字保证清晰可读）
     var centerStyle = {
-        fill: 'l(0) 0:#D9A92E 1:#F0C75C',
-        stroke: '#A87B1E',
+        fill: 'l(0) 0:#F9F0DC 1:#F0D398',
+        stroke: '#D99A22',
         lineWidth: 4,
-        shadowColor: 'rgba(212,175,55,.8)',
-        shadowBlur: 32
+        shadowColor: 'rgba(217,154,34,.55)',
+        shadowBlur: 30
     };
     nodes.push({
         id: 'center',
@@ -2715,7 +3053,7 @@ window.renderCityTechGraph = async function(cityName, jobName, keepMode, viewMod
         baseStyle: centerStyle,
         labelCfg: {
             position: 'center',
-            style: { fill: '#fff', fontSize: isStackView ? 14 : 13, fontWeight: 700, fontFamily: 'var(--font-sans),sans-serif', textAlign: 'center', lineHeight: 22 }
+            style: { fill: '#5C4935', fontSize: isStackView ? 14 : 13, fontWeight: 700, fontFamily: 'var(--font-sans),sans-serif', textAlign: 'center', lineHeight: 22 }
         }
     });
 
@@ -2734,7 +3072,7 @@ window.renderCityTechGraph = async function(cityName, jobName, keepMode, viewMod
                 size: [g.boxW, g.boxH],
                 style: {
                     fill: 'rgba(8,16,28,.42)',
-                    stroke: g.catColor,
+                    stroke: 'rgba(212,175,55,.38)',
                     lineWidth: 1.4,
                     radius: 14,
                     shadowColor: 'rgba(212,175,55,.16)',
@@ -2743,12 +3081,13 @@ window.renderCityTechGraph = async function(cityName, jobName, keepMode, viewMod
             });
         }
         var catSize = isCatCard ? [g.boxW || g.catW || 140, g.catTitleH || g.catH || 38] : g.size;
+        // 分类/级别节点统一暖金色，不再按分类使用高饱和彩色填充
         var catStyle = {
-            fill: isCatCard ? ('l(0) 0:' + g.catColor + ' 1:rgba(26,24,20,.82)') : g.catColor,
-            stroke: isCatCard ? 'rgba(255,235,180,.75)' : 'rgba(255,235,180,.6)',
+            fill: isCatCard ? 'l(0) 0:#EBD27E 1:#CFA94E' : '#D9A92E',
+            stroke: isCatCard ? 'rgba(255,235,180,.85)' : 'rgba(255,235,180,.75)',
             lineWidth: isCatCard ? 2.5 : 2.5,
             radius: isCatCard ? 12 : 0,
-            shadowColor: 'rgba(212,175,55,.5)',
+            shadowColor: 'rgba(212,175,55,.45)',
             shadowBlur: isCatCard ? 14 : 14
         };
         nodes.push({
@@ -2765,7 +3104,7 @@ window.renderCityTechGraph = async function(cityName, jobName, keepMode, viewMod
             baseStyle: catStyle,
             labelCfg: {
                 position: 'center',
-                style: { fill: '#fff', fontSize: isCatCard ? 17 : 12, fontWeight: 700, fontFamily: 'var(--font-sans),sans-serif', textShadowColor: 'rgba(0,0,0,.4)', textShadowBlur: 3 }
+                style: { fill: '#5C4935', fontSize: isCatCard ? 17 : 12, fontWeight: 700, fontFamily: 'var(--font-sans),sans-serif', textShadowColor: 'rgba(255,255,255,0)', textShadowBlur: 0 }
             }
         });
         // 中心 → 分类连线（技术栈视图稍粗、更亮，形成主骨架）
@@ -2775,15 +3114,14 @@ window.renderCityTechGraph = async function(cityName, jobName, keepMode, viewMod
             target: g.id,
             type: 'line',
             style: isCatCard
-                ? { stroke: 'rgba(240,199,92,.55)', lineWidth: 2, lineDash: [6, 4], endArrow: false }
-                : { stroke: 'rgba(212,175,55,.32)', lineWidth: 1.4, lineDash: [4, 3], endArrow: false }
+                ? { stroke: 'rgba(196,152,60,.4)', lineWidth: 1.8, lineDash: [6, 4], endArrow: false }
+                : { stroke: 'rgba(186,144,54,.26)', lineWidth: 1.2, lineDash: [4, 3], endArrow: false }
         });
     });
 
     // 技术节点（技术栈视图 = 统一尺寸圆角科技卡片，名称居中显示；其他视图 = 圆点）
     allTechNodes.forEach(function(tech, i) {
         var techId = 'tech-' + i;
-        var nodeFill = tech.catColor;
         var techSize, techBase;
         if (view === 'stack') {
             // 卡片统一高度，宽度按名称长度自动适配（长名称加宽、不影响间距防重叠）
@@ -2793,13 +3131,14 @@ window.renderCityTechGraph = async function(cityName, jobName, keepMode, viewMod
             techSize = tech.size;
             techBase = tech.size;
         }
+        // 普通技能节点：统一暖白/米白填充（#F8F3E8）+ 金色描边（#D99A22）+ 柔和暖金光晕（不再按分类着色）
         var techStyle = {
-            fill: view === 'stack' ? ('l(0) 0:' + nodeFill + ' 1:rgba(20,18,15,.85)') : nodeFill,
-            stroke: 'rgba(255,235,180,.6)',
+            fill: view === 'stack' ? 'l(0) 0:#F8F3E8 1:#F1E4CA' : '#F8F3E8',
+            stroke: '#D99A22',
             lineWidth: view === 'stack' ? 1.6 : 2,
             radius: view === 'stack' ? 11 : 0,
-            shadowColor: 'rgba(212,175,55,.3)',
-            shadowBlur: view === 'stack' ? 9 : 8
+            shadowColor: 'rgba(217,154,34,.32)',
+            shadowBlur: view === 'stack' ? 12 : 12
         };
         nodes.push({
             id: techId,
@@ -2818,7 +3157,7 @@ window.renderCityTechGraph = async function(cityName, jobName, keepMode, viewMod
             labelCfg: {
                 position: view === 'stack' ? 'center' : 'bottom',
                 offset: view === 'stack' ? 0 : 3,
-                style: { fill: '#fff', fontSize: view === 'stack' ? 15 : 10, fontWeight: view === 'stack' ? 600 : 500, fontFamily: 'var(--font-sans),sans-serif', textShadowColor: 'rgba(0,0,0,.55)', textShadowBlur: 4 }
+                style: { fill: view === 'stack' ? '#5C4935' : '#F5E9C9', fontSize: view === 'stack' ? 15 : 10, fontWeight: view === 'stack' ? 600 : 500, fontFamily: 'var(--font-sans),sans-serif', textShadowColor: view === 'stack' ? 'rgba(255,255,255,0)' : 'rgba(0,0,0,.55)', textShadowBlur: view === 'stack' ? 0 : 4 }
             }
         });
         // 边：overview 直接连中心；stack/level 连所属二级节点
@@ -2828,8 +3167,8 @@ window.renderCityTechGraph = async function(cityName, jobName, keepMode, viewMod
             target: techId,
             type: 'line',
             style: view === 'stack'
-                ? { stroke: 'rgba(212,175,55,.4)', lineWidth: 1.1, lineDash: [3, 3], endArrow: false }
-                : { stroke: 'rgba(212,175,55,.3)', lineWidth: 1, lineDash: [4, 3], endArrow: false }
+                ? { stroke: 'rgba(186,144,54,.3)', lineWidth: 1, lineDash: [3, 3], endArrow: false }
+                : { stroke: 'rgba(186,144,54,.22)', lineWidth: 0.9, lineDash: [4, 3], endArrow: false }
         });
     });
 
@@ -2860,7 +3199,7 @@ window.renderCityTechGraph = async function(cityName, jobName, keepMode, viewMod
                 source: 'tech-' + src,
                 target: 'tech-' + tgt,
                 type: 'quadratic',
-                style: { stroke: 'rgba(255,214,102,.35)', lineWidth: 1.2, curveOffset: 22 * bendDir, curvePosition: 0.5, endArrow: false }
+                style: { stroke: 'rgba(196,160,70,.24)', lineWidth: 1, curveOffset: 22 * bendDir, curvePosition: 0.5, endArrow: false }
             });
         }
     });
@@ -2880,26 +3219,26 @@ window.renderCityTechGraph = async function(cityName, jobName, keepMode, viewMod
                 labelCfg: {
                     position: 'bottom',
                     offset: 5,
-                    style: { fill: '#fff', fontSize: 10, fontWeight: 500, fontFamily: 'var(--font-sans),sans-serif' }
+                    style: { fill: '#F5E9C9', fontSize: 10, fontWeight: 500, fontFamily: 'var(--font-sans),sans-serif' }
                 }
             },
             defaultEdge: {
                 type: 'cubic',
-                style: { stroke: 'rgba(255,214,102,.25)', lineWidth: 1, endArrow: false }
+                style: { stroke: 'rgba(186,144,54,.22)', lineWidth: 1, endArrow: false }
             },
             nodeStateStyles: {
-                // active 显式指定深色半透明背景，防止 Hover 后背景变白导致文字看不清
+                // active：更亮的暖白填充 + 金色描边增强 + 柔和金光晕，文字保持深棕清晰可读
                 active: {
-                    fill: 'rgba(16,36,52,.96)',
+                    fill: '#FDF6E3',
                     lineWidth: 3,
-                    stroke: '#FFD666',
-                    shadowColor: 'rgba(255,214,102,.9)',
-                    shadowBlur: 24
+                    stroke: '#D99A22',
+                    shadowColor: 'rgba(217,154,34,.55)',
+                    shadowBlur: 28
                 },
                 linked: {
                     lineWidth: 2,
-                    stroke: 'rgba(255,214,102,.75)',
-                    shadowColor: 'rgba(255,214,102,.4)',
+                    stroke: 'rgba(217,154,34,.7)',
+                    shadowColor: 'rgba(217,154,34,.35)',
                     shadowBlur: 12
                 },
                 inactive: { opacity: 0.12 }
@@ -2956,12 +3295,12 @@ window.renderCityTechGraph = async function(cityName, jobName, keepMode, viewMod
                 graph.clearItemStates(node, ['active', 'linked', 'inactive']);
                 if (nm.id === model.id) {
                     if (nm.type !== 'center') graph.setItemState(node, 'active', true);
-                    // 当前节点放大 + Hover 样式（深色半透明背景 + 金色发光边框，杜绝纯白背景）
+                    // 当前节点放大 + Hover 样式（更亮暖白填充 + 金色描边增强 + 柔和金光晕，与统一暖金风格一致）
                     if (nm.baseSize) {
                         var bz = nm.baseSize;
                         var hoverStyle = (nm.type === 'center')
-                            ? { lineWidth: 4, shadowColor: 'rgba(212,175,55,.9)', shadowBlur: 36 }
-                            : { fill: 'rgba(16,36,52,.96)', stroke: '#FFD666', lineWidth: 3, shadowColor: 'rgba(255,214,102,.9)', shadowBlur: 24 };
+                            ? { lineWidth: 4, shadowColor: 'rgba(217,154,34,.8)', shadowBlur: 40 }
+                            : { fill: '#FDF6E3', stroke: '#D99A22', lineWidth: 3, shadowColor: 'rgba(217,154,34,.55)', shadowBlur: 28 };
                         graph.updateItem(node, { size: Array.isArray(bz) ? [bz[0] * 1.18, bz[1] * 1.18] : bz * 1.35, style: hoverStyle });
                     }
                 } else if (linkedNodeIds[nm.id]) {
@@ -3704,26 +4043,29 @@ function talentAbilityBuildGraph() {
     var nodes = [], edges = [];
     var centerId = 'ab-center';
     nodes.push({ id: 'ab-center-halo', label: '', type: 'decor', x: w / 2, y: h / 2, size: 132, baseSize: 132, style: { fill: 'rgba(255,255,255,0)', stroke: 'rgba(212,175,55,.28)', lineWidth: 1.6, lineDash: [6, 5], shadowColor: 'rgba(212,175,55,.5)', shadowBlur: 18 } });
-    var centerStyle = { fill: 'l(0) 0:#D9A92E 1:#F0C75C', stroke: '#A87B1E', lineWidth: 4, shadowColor: 'rgba(212,175,55,.8)', shadowBlur: 32 };
-    nodes.push({ id: centerId, label: '我的能力', type: 'center', x: w / 2, y: h / 2, size: 78, baseSize: 78, style: centerStyle, baseStyle: centerStyle, labelCfg: { position: 'center', style: { fill: '#fff', fontSize: 14, fontWeight: 700, fontFamily: 'var(--font-sans),sans-serif', textAlign: 'center', lineHeight: 22 } } });
+    // 中心节点：浅暖金/米白填充 + 金色描边 + 柔和金色光晕（深棕色文字清晰可读，与岗位技术图谱统一）
+    var centerStyle = { fill: 'l(0) 0:#F9F0DC 1:#F0D398', stroke: '#D99A22', lineWidth: 4, shadowColor: 'rgba(217,154,34,.55)', shadowBlur: 30 };
+    nodes.push({ id: centerId, label: '我的能力', type: 'center', x: w / 2, y: h / 2, size: 78, baseSize: 78, style: centerStyle, baseStyle: centerStyle, labelCfg: { position: 'center', style: { fill: '#5C4935', fontSize: 14, fontWeight: 700, fontFamily: 'var(--font-sans),sans-serif', textAlign: 'center', lineHeight: 22 } } });
 
     groups.forEach(function(g) {
         // 分类背景盒
         if (g.boxW && g.boxH) {
-            nodes.push({ id: g.id + '-box', label: '', type: 'rect', boxNode: true, x: g.boxX + g.boxW / 2, y: g.boxY + g.boxH / 2, size: [g.boxW, g.boxH], style: { fill: 'rgba(8,16,28,.42)', stroke: g.catColor, lineWidth: 1.4, radius: 14, shadowColor: 'rgba(212,175,55,.16)', shadowBlur: 14 } });
+            nodes.push({ id: g.id + '-box', label: '', type: 'rect', boxNode: true, x: g.boxX + g.boxW / 2, y: g.boxY + g.boxH / 2, size: [g.boxW, g.boxH], style: { fill: 'rgba(8,16,28,.42)', stroke: 'rgba(212,175,55,.38)', lineWidth: 1.4, radius: 14, shadowColor: 'rgba(212,175,55,.16)', shadowBlur: 14 } });
         }
         // 分类标题条
         var catSize = [g.boxW || 140, g.catTitleH || 38];
-        var catStyle = { fill: 'l(0) 0:' + g.catColor + ' 1:rgba(26,24,20,.82)', stroke: 'rgba(255,235,180,.75)', lineWidth: 2.5, radius: 12, shadowColor: 'rgba(212,175,55,.5)', shadowBlur: 14 };
-        nodes.push({ id: g.id, label: '◆ ' + g.name, type: 'rect', x: g.calcX, y: g.calcY, size: catSize, baseSize: catSize.slice(), catColor: g.catColor, catName: g.catName, style: catStyle, baseStyle: catStyle, labelCfg: { position: 'center', style: { fill: '#fff', fontSize: 17, fontWeight: 700, fontFamily: 'var(--font-sans),sans-serif', textShadowColor: 'rgba(0,0,0,.4)', textShadowBlur: 3 } } });
-        edges.push({ id: 'ab-e-c-' + g.id, source: centerId, target: g.id, type: 'line', style: { stroke: 'rgba(240,199,92,.55)', lineWidth: 2, lineDash: [6, 4], endArrow: false } });
+        // 分类标题条：统一暖金色（不再按分类使用高饱和彩色填充），深棕文字清晰可读
+        var catStyle = { fill: 'l(0) 0:#EBD27E 1:#CFA94E', stroke: 'rgba(255,235,180,.85)', lineWidth: 2.5, radius: 12, shadowColor: 'rgba(212,175,55,.45)', shadowBlur: 14 };
+        nodes.push({ id: g.id, label: '◆ ' + g.name, type: 'rect', x: g.calcX, y: g.calcY, size: catSize, baseSize: catSize.slice(), catColor: g.catColor, catName: g.catName, style: catStyle, baseStyle: catStyle, labelCfg: { position: 'center', style: { fill: '#5C4935', fontSize: 17, fontWeight: 700, fontFamily: 'var(--font-sans),sans-serif' } } });
+        edges.push({ id: 'ab-e-c-' + g.id, source: centerId, target: g.id, type: 'line', style: { stroke: 'rgba(196,152,60,.4)', lineWidth: 1.8, lineDash: [6, 4], endArrow: false } });
         // 技术卡片
         g.techs.forEach(function(t) {
             var tid = 'ab-t-' + t.id;
             var techSize = [t.cardW || 112, 38];
-            var techStyle = { fill: 'l(0) 0:' + g.catColor + ' 1:rgba(20,18,15,.85)', stroke: 'rgba(255,235,180,.6)', lineWidth: 1.6, radius: 11, shadowColor: 'rgba(212,175,55,.3)', shadowBlur: 9 };
-            nodes.push({ id: tid, label: t.name, type: 'rect', isTech: true, x: t.calcX, y: t.calcY, size: techSize, baseSize: techSize.slice(), frequency: t.frequency, catColor: g.catColor, catName: g.catName, style: techStyle, baseStyle: techStyle, labelCfg: { position: 'center', style: { fill: '#fff', fontSize: 15, fontWeight: 600, fontFamily: 'var(--font-sans),sans-serif', textShadowColor: 'rgba(0,0,0,.55)', textShadowBlur: 4 } } });
-            edges.push({ id: 'ab-e-t-' + t.id, source: g.id, target: tid, type: 'line', style: { stroke: 'rgba(212,175,55,.4)', lineWidth: 1.1, lineDash: [3, 3], endArrow: false } });
+            // 技术卡片：统一暖白/米白填充 + 金色描边 + 柔和暖金光晕（不再按分类着色），深棕文字清晰可读
+            var techStyle = { fill: 'l(0) 0:#F8F3E8 1:#F1E4CA', stroke: '#D99A22', lineWidth: 1.6, radius: 11, shadowColor: 'rgba(217,154,34,.32)', shadowBlur: 12 };
+            nodes.push({ id: tid, label: t.name, type: 'rect', isTech: true, x: t.calcX, y: t.calcY, size: techSize, baseSize: techSize.slice(), frequency: t.frequency, catColor: g.catColor, catName: g.catName, style: techStyle, baseStyle: techStyle, labelCfg: { position: 'center', style: { fill: '#5C4935', fontSize: 15, fontWeight: 600, fontFamily: 'var(--font-sans),sans-serif' } } });
+            edges.push({ id: 'ab-e-t-' + t.id, source: g.id, target: tid, type: 'line', style: { stroke: 'rgba(186,144,54,.3)', lineWidth: 1, lineDash: [3, 3], endArrow: false } });
         });
     });
 
@@ -3738,11 +4080,12 @@ function talentAbilityBuildGraph() {
             layout: false,
             animate: true,
             animateCfg: { duration: 600 },
-            defaultNode: { type: 'circle', labelCfg: { position: 'bottom', offset: 5, style: { fill: '#fff', fontSize: 10, fontWeight: 500, fontFamily: 'var(--font-sans),sans-serif' } } },
-            defaultEdge: { type: 'line', style: { stroke: 'rgba(255,214,102,.25)', lineWidth: 1, endArrow: false } },
+            defaultNode: { type: 'circle', labelCfg: { position: 'bottom', offset: 5, style: { fill: '#5C4935', fontSize: 10, fontWeight: 500, fontFamily: 'var(--font-sans),sans-serif' } } },
+            defaultEdge: { type: 'line', style: { stroke: 'rgba(186,144,54,.22)', lineWidth: 1, endArrow: false } },
             nodeStateStyles: {
-                active: { fill: 'rgba(16,36,52,.96)', lineWidth: 3, stroke: '#FFD666', shadowColor: 'rgba(255,214,102,.9)', shadowBlur: 24 },
-                linked: { lineWidth: 2, stroke: 'rgba(255,214,102,.75)', shadowColor: 'rgba(255,214,102,.4)', shadowBlur: 12 },
+                // active：更亮暖白填充 + 金色描边增强 + 柔和金光晕，文字保持深棕清晰可读（与岗位技术图谱统一）
+                active: { fill: '#FDF6E3', lineWidth: 3, stroke: '#D99A22', shadowColor: 'rgba(217,154,34,.55)', shadowBlur: 28 },
+                linked: { lineWidth: 2, stroke: 'rgba(217,154,34,.7)', shadowColor: 'rgba(217,154,34,.35)', shadowBlur: 12 },
                 inactive: { opacity: 0.12 }
             },
             edgeStateStyles: { active: { stroke: '#FFD666', lineWidth: 2, opacity: 1, shadowColor: 'rgba(255,214,102,.8)', shadowBlur: 10 }, linked: { stroke: 'rgba(255,214,102,.6)', lineWidth: 1.4, opacity: 0.85 }, inactive: { opacity: 0.06 } }
@@ -3778,8 +4121,8 @@ function talentAbilityBuildGraph() {
                 if (nm.baseSize) {
                     var bz = nm.baseSize;
                     var hoverStyle = (nm.type === 'center')
-                        ? { lineWidth: 4, shadowColor: 'rgba(212,175,55,.9)', shadowBlur: 36 }
-                        : { fill: 'rgba(16,36,52,.96)', stroke: '#FFD666', lineWidth: 3, shadowColor: 'rgba(255,214,102,.9)', shadowBlur: 24 };
+                        ? { lineWidth: 4, shadowColor: 'rgba(217,154,34,.8)', shadowBlur: 40 }
+                        : { fill: '#FDF6E3', stroke: '#D99A22', lineWidth: 3, shadowColor: 'rgba(217,154,34,.55)', shadowBlur: 28 };
                     graph.updateItem(node, { size: Array.isArray(bz) ? [bz[0] * 1.18, bz[1] * 1.18] : bz * 1.35, style: hoverStyle });
                 }
             } else if (linkedNodeIds[nm.id]) {
@@ -3841,8 +4184,9 @@ function talentAbilityBuildGraph() {
     if (summary) summary.textContent = '共 ' + saved.length + ' 项能力 · ' + groups.length + ' 个技术领域';
     var legend = document.getElementById('ability-graph-legend');
     if (legend) {
+        // 图例统一低调金色圆点（分类色仅作数据保留，不再控制节点/图例颜色）
         legend.innerHTML = groups.map(function(g) {
-            return '<div class="legend-item"><span class="legend-dot" style="background:' + g.catColor + '"></span>' + g.name + '</div>';
+            return '<div class="legend-item"><span class="legend-dot" style="background:#D9A92E"></span>' + g.name + '</div>';
         }).join('');
     }
 }
@@ -3858,4 +4202,374 @@ window.talentAbilityClose = function() {
     st.open = false;
     var modal = document.getElementById('ability-modal');
     if (modal) modal.style.display = 'none';
+};
+
+/* ================== 更新图谱 + 回退（挑战杯演示功能） ================== */
+
+// 更新状态：previousSnap 保存更新前三个视图的图谱数据快照
+window.talentTechUpdateState = {
+    previousSnap: null,
+    round: 0,
+    busy: false
+};
+
+// 通用技术池（含分类，动态重选时使用）
+var TALENT_TECH_POOL = [
+    // 编程语言
+    { name: 'Python', cat: '编程语言' }, { name: 'Java', cat: '编程语言' },
+    { name: 'JavaScript', cat: '编程语言' }, { name: 'TypeScript', cat: '编程语言' },
+    { name: 'Go', cat: '编程语言' }, { name: 'C', cat: '编程语言' }, { name: 'C++', cat: '编程语言' },
+    { name: 'C#', cat: '编程语言' }, { name: 'PHP', cat: '编程语言' }, { name: 'Ruby', cat: '编程语言' },
+    { name: 'Swift', cat: '编程语言' }, { name: 'Kotlin', cat: '编程语言' }, { name: 'Rust', cat: '编程语言' },
+    { name: 'SQL', cat: '编程语言' }, { name: 'Scala', cat: '编程语言' }, { name: 'R', cat: '编程语言' },
+    { name: 'Shell', cat: '工程化运维' },
+    // 框架与开发
+    { name: 'Django', cat: '框架与开发' }, { name: 'Flask', cat: '框架与开发' },
+    { name: 'Spring Boot', cat: '框架与开发' }, { name: 'Spring Cloud', cat: '框架与开发' },
+    { name: 'MyBatis', cat: '框架与开发' }, { name: 'Hibernate', cat: '框架与开发' },
+    { name: 'FastAPI', cat: '框架与开发' }, { name: 'Express', cat: '框架与开发' },
+    { name: 'Laravel', cat: '框架与开发' }, { name: 'Node.js', cat: '框架与开发' },
+    { name: 'Netty', cat: '框架与开发' }, { name: 'Dubbo', cat: '框架与开发' },
+    { name: 'gRPC', cat: '框架与开发' }, { name: 'WebSocket', cat: '框架与开发' },
+    { name: 'JWT', cat: '框架与开发' }, { name: 'Celery', cat: '框架与开发' },
+    // 数据存储
+    { name: 'MySQL', cat: '数据存储' }, { name: 'PostgreSQL', cat: '数据存储' },
+    { name: 'MongoDB', cat: '数据存储' }, { name: 'Redis', cat: '数据存储' },
+    { name: 'Oracle', cat: '数据存储' }, { name: 'SQLite', cat: '数据存储' },
+    { name: 'Elasticsearch', cat: '数据存储' }, { name: 'HBase', cat: '数据存储' },
+    { name: 'ClickHouse', cat: '数据存储' }, { name: 'Hive', cat: '数据存储' },
+    { name: 'Doris', cat: '数据存储' }, { name: 'Redis Cluster', cat: '数据存储' },
+    // 工程化运维
+    { name: 'Docker', cat: '工程化运维' }, { name: 'Kubernetes', cat: '工程化运维' },
+    { name: 'K8s', cat: '工程化运维' }, { name: 'Git', cat: '工程化运维' },
+    { name: 'GitLab CI', cat: '工程化运维' }, { name: 'Jenkins', cat: '工程化运维' },
+    { name: 'Nginx', cat: '工程化运维' }, { name: 'Linux', cat: '工程化运维' },
+    { name: 'Ansible', cat: '工程化运维' }, { name: 'Helm', cat: '工程化运维' },
+    { name: 'Prometheus', cat: '工程化运维' }, { name: 'Grafana', cat: '工程化运维' },
+    { name: 'Docker Compose', cat: '工程化运维' }, { name: 'ZooKeeper', cat: '工程化运维' },
+    { name: 'Terraform', cat: '工程化运维' },
+    // AI与算法
+    { name: 'TensorFlow', cat: 'AI与算法' }, { name: 'PyTorch', cat: 'AI与算法' },
+    { name: 'Keras', cat: 'AI与算法' }, { name: 'Scikit-learn', cat: 'AI与算法' },
+    { name: 'Pandas', cat: 'AI与算法' }, { name: 'NumPy', cat: 'AI与算法' },
+    { name: 'OpenCV', cat: 'AI与算法' }, { name: 'XGBoost', cat: 'AI与算法' },
+    { name: 'LightGBM', cat: 'AI与算法' }, { name: 'LangChain', cat: 'AI与算法' },
+    { name: 'PaddlePaddle', cat: 'AI与算法' }, { name: '机器学习', cat: 'AI与算法' },
+    { name: '深度学习', cat: 'AI与算法' }, { name: '自然语言处理', cat: 'AI与算法' },
+    // 数据处理
+    { name: 'Spark', cat: '数据处理' }, { name: 'Hadoop', cat: '数据处理' },
+    { name: 'Kafka', cat: '数据处理' }, { name: 'Flink', cat: '数据处理' },
+    { name: 'Airflow', cat: '数据处理' }, { name: 'DataX', cat: '数据处理' },
+    { name: 'Flume', cat: '数据处理' }, { name: 'ETL', cat: '数据处理' },
+    { name: 'OLAP', cat: '数据处理' }, { name: 'Presto', cat: '数据处理' },
+    // 前端技术
+    { name: 'Vue', cat: '前端技术' }, { name: 'React', cat: '前端技术' },
+    { name: 'Angular', cat: '前端技术' }, { name: 'Next.js', cat: '前端技术' },
+    { name: 'Vite', cat: '前端技术' }, { name: 'Webpack', cat: '前端技术' },
+    { name: 'HTML5', cat: '前端技术' }, { name: 'CSS3', cat: '前端技术' },
+    { name: 'ECharts', cat: '前端技术' }, { name: 'Uni-app', cat: '前端技术' },
+    // 架构设计
+    { name: '微服务', cat: '架构设计' }, { name: '分布式架构', cat: '架构设计' },
+    { name: '消息队列', cat: '架构设计' }, { name: '高并发', cat: '架构设计' },
+    { name: '负载均衡', cat: '架构设计' }, { name: '云原生', cat: '架构设计' },
+    // 核心技能
+    { name: '数据结构与算法', cat: '核心技能' }, { name: '操作系统', cat: '核心技能' },
+    { name: '计算机网络', cat: '核心技能' }, { name: '数据库原理', cat: '核心技能' },
+    { name: '设计模式', cat: '核心技能' }, { name: '并发编程', cat: '核心技能' },
+    // 测试技术
+    { name: 'Selenium', cat: '测试技术' }, { name: 'JMeter', cat: '测试技术' },
+    { name: 'Postman', cat: '测试技术' }, { name: 'Jest', cat: '测试技术' },
+    { name: 'Cypress', cat: '测试技术' }, { name: 'Playwright', cat: '测试技术' },
+    { name: 'Pytest', cat: '测试技术' }
+];
+
+// 分类别名对齐：不同岗位图分类名可能略有差异，归入已有分类
+var _CAT_ALIAS = {
+    '编程语言': ['编程语言'],
+    '框架与开发': ['框架与开发', '框架与平台', '后端技术', '开发框架'],
+    '数据存储': ['数据存储', '数据存储与处理', '数据存储与数据库', '数据库'],
+    '工程化运维': ['工程化运维', '工程化与运维', '运维与部署', '运维'],
+    'AI与算法': ['AI与算法', '人工智能', 'AI 与算法', '算法'],
+    '数据处理': ['数据处理', '大数据', '数据与大数据'],
+    '前端技术': ['前端技术', '前端开发', '前端'],
+    '架构设计': ['架构设计', '系统架构', '架构'],
+    '核心技能': ['核心技能', '基础技能', '基础能力'],
+    '测试技术': ['测试技术', '测试与质量', '质量保障']
+};
+
+function _cloneGraphData(d) {
+    if (!d) return null;
+    try { return JSON.parse(JSON.stringify(d)); } catch (e) { return null; }
+}
+
+function _countTechs(gd) {
+    var n = 0;
+    (gd && gd.categories || []).forEach(function(c) { n += (c.technologies || []).length; });
+    if (gd && gd.levels) {
+        var hasCat = (gd.categories || []).some(function(c) { return (c.technologies || []).length; });
+        if (!hasCat) (gd.levels || []).forEach(function(l) { n += (l.technologies || []).length; });
+    }
+    return n;
+}
+
+// 确定性种子洗牌（保证演示可复现、可重复点击）
+function _seededShuffle(arr, seed) {
+    var a = arr.slice();
+    var s = (seed >>> 0) || 1;
+    for (var i = a.length - 1; i > 0; i--) {
+        s = (s * 1103515245 + 12345) % 2147483648;
+        var j = s % (i + 1);
+        var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+}
+
+function _mapToExistingCat(cat, existingCats) {
+    if (!existingCats.length) return cat;
+    if (existingCats.indexOf(cat) !== -1) return cat;
+    var aliases = _CAT_ALIAS[cat];
+    if (aliases) {
+        for (var i = 0; i < aliases.length; i++) {
+            if (existingCats.indexOf(aliases[i]) !== -1) return aliases[i];
+        }
+    }
+    return existingCats[0];
+}
+
+// 前端动态数据池：按轮次确定性生成"更新后"的岗位技术图谱
+function _genUpdatedTechGraph(city, job, view, round, prevData) {
+    // 1) 收集现有技术（保持岗位相关性，作为基础池）
+    var existing = [];
+    var catOrder = [];
+    (prevData && prevData.categories || []).forEach(function(c) {
+        if (catOrder.indexOf(c.name) === -1) catOrder.push(c.name);
+        (c.technologies || []).forEach(function(t) {
+            if (!t.name) return;
+            existing.push({ name: t.name, cat: c.name, freq: t.frequency || t.size || 50 });
+        });
+    });
+    (prevData && prevData.levels || []).forEach(function(l) {
+        (l.technologies || []).forEach(function(t) {
+            if (!t.name) return;
+            existing.push({ name: t.name, cat: (l.name || '编程语言'), freq: t.frequency || t.size || 40 });
+        });
+    });
+    // 去重 + 频次排序（核心技术在前，保证每轮都有核心技能）
+    var seen = {};
+    existing = existing.filter(function(e) { if (seen[e.name]) return false; seen[e.name] = true; return true; });
+    existing.sort(function(a, b) { return (b.freq || 0) - (a.freq || 0); });
+
+    // 2) 合并通用池，分类对齐现有分类
+    var fallbackCat = catOrder.length ? catOrder[0] : '编程语言';
+    var pool = [];
+    var used = {};
+    function pushPool(item) {
+        if (used[item.name]) return;
+        used[item.name] = true;
+        var cat = _mapToExistingCat(item.cat, catOrder) || fallbackCat;
+        pool.push({ name: item.name, cat: cat });
+    }
+    existing.forEach(function(e) { pushPool({ name: e.name, cat: e.cat }); });
+    TALENT_TECH_POOL.forEach(pushPool);
+
+    // 3) 确定性选择：数量随轮次变化（18~37），保证相邻轮次明显不同
+    var count = 18 + ((round * 7) % 20);
+    count = Math.min(count, pool.length);
+    var coreCount = Math.min(8, Math.max(3, Math.floor(existing.length * 0.4)));
+    var core = [];
+    var coreUsed = {};
+    for (var ci = 0; ci < coreCount; ci++) {
+        var ce = existing[ci];
+        if (!ce) break;
+        if (!coreUsed[ce.name]) {
+            coreUsed[ce.name] = true;
+            core.push({ name: ce.name, cat: _mapToExistingCat(ce.cat, catOrder) || fallbackCat });
+        }
+    }
+    var rest = pool.filter(function(p) { return !coreUsed[p.name]; });
+    var shuffled = _seededShuffle(rest, round * 99991 + 7);
+    var restNeed = Math.max(0, count - core.length);
+    var picked = core.concat(shuffled.slice(0, restNeed));
+    var k = 0;
+    while (picked.length < count && rest.length) { picked.push(rest[k % rest.length]); k++; }
+    if (picked.length > count) picked = picked.slice(0, count);
+
+    // 4) 按原分类名分组生成 categories（分类顺序与图例一致）
+    var cats = [];
+    var catIdx = {};
+    catOrder.forEach(function(cn) {
+        if (catIdx[cn] === undefined) { catIdx[cn] = cats.length; cats.push({ name: cn, type: 'category', technologies: [] }); }
+    });
+    if (!cats.length) { catIdx['编程语言'] = 0; cats.push({ name: '编程语言', type: 'category', technologies: [] }); }
+    picked.forEach(function(p, i) {
+        var ci = catIdx[p.cat] !== undefined ? catIdx[p.cat] : 0;
+        var weight = 92 - Math.min(72, Math.floor(i * (78 / Math.max(1, picked.length))));
+        var cat = cats[ci];
+        if (!cat) cat = cats[0];
+        // size 与原图谱一致归一化到 14~42：平方映射让多数节点偏小、核心节点突出（与原图谱低频多/高频少的视觉分布一致）
+        var techSizeVal = 14 + Math.floor(28 * Math.pow(weight / 92, 2));
+        cat.technologies.push({
+            name: p.name,
+            type: 'skill',
+            frequency: weight,
+            size: Math.max(14, Math.min(42, techSizeVal)),
+            ratio: Math.min(0.98, weight / 100)
+        });
+    });
+    cats = cats.filter(function(c) { return c.technologies.length > 0; });
+
+    // 5) 级别视图数据：初级/中级/高级 均衡分配
+    var levelNames = ['初级', '中级', '高级'];
+    var levels = levelNames.map(function(n, li) {
+        var start = Math.floor(picked.length * li / levelNames.length);
+        var end = Math.floor(picked.length * (li + 1) / levelNames.length);
+        var techs = picked.slice(start, end).map(function(p, j) {
+            return {
+                name: p.name,
+                type: 'skill',
+                frequency: 60 + ((j * 13 + li * 7) % 30),
+                size: 14 + ((j * 7 + li * 5) % 29),
+                ratio: Math.min(0.95, 0.4 + ((j * 11 + li * 9) % 50) / 100)
+            };
+        });
+        return { name: n, type: 'level', technologies: techs };
+    }).filter(function(l) { return l.technologies.length > 0; });
+
+    var gd = {
+        centerJob: job || city,
+        job_name: job || city,
+        categories: cats,
+        levels: levels.length ? levels : [{ name: '初级', type: 'level', technologies: [] }]
+    };
+    return gd;
+}
+
+// 点击【更新图谱】：保存更新前状态 → 显示加载 → 重新统计 → 重绘
+window.talentUpdateTechGraph = async function() {
+    var st = window.talentTechUpdateState;
+    if (st.busy) return;
+    // 仅当当前正处于岗位技术图谱层时允许更新
+    if (!talentMapState || talentMapState.currentLayer !== 'graph') {
+        if (window.showToast) window.showToast('请先进入岗位技术图谱', 'amber');
+        return;
+    }
+    var city = techDetailState.graphCity;
+    var job = techDetailState.graphJob;
+    if (!city && !job) {
+        if (window.showToast) window.showToast('请先进入岗位技术图谱', 'amber');
+        return;
+    }
+    if (!techDetailState.graphDataCache) techDetailState.graphDataCache = {};
+    var view = techDetailState.graphView || 'overview';
+    var cacheKey = 'job|' + (job || '') + '|' + view;
+    var cur = techDetailState.graphDataCache[cacheKey];
+    if (!cur || !cur.categories || !cur.categories.length) {
+        if (window.showToast) window.showToast('暂无图谱数据，请稍后重试', 'amber');
+        return;
+    }
+
+    st.busy = true;
+
+    // 1) 保存更新前状态（三个视图快照，保证切换视图后仍可回退）
+    st.previousSnap = {};
+    ['overview', 'stack', 'level'].forEach(function(v) {
+        var k = 'job|' + (job || '') + '|' + v;
+        if (techDetailState.graphDataCache[k]) st.previousSnap[k] = _cloneGraphData(techDetailState.graphDataCache[k]);
+    });
+
+    var updateBtn = document.getElementById('talent-update-graph-btn');
+    var rollBtn = document.getElementById('talent-rollback-graph-btn');
+    var loading = document.getElementById('talent-graph-loading');
+    var container = document.getElementById('talent-graph-container');
+
+    // 2) 显示"正在重新统计后台数据…" + 加载动画 + 图谱淡出
+    if (updateBtn) { updateBtn.disabled = true; updateBtn.classList.add('is-running'); }
+    if (rollBtn) { rollBtn.disabled = true; rollBtn.style.display = ''; }
+    if (loading) loading.style.display = 'flex';
+    if (container) container.classList.add('graph-fading');
+
+    // 3) 模拟后台重新统计耗时（约 1.2 秒）
+    await new Promise(function(r) { setTimeout(r, 1200); });
+
+    // 4) 优先请求后端 new_skill_table 动态数据；失败则使用前端动态数据池
+    st.round++;
+    var newData = null;
+    try {
+        var ac = new AbortController();
+        var timer = setTimeout(function() { try { ac.abort(); } catch (e) {} }, 2500);
+        var resp = await fetch(API_BASE + '/map/update-tech-graph/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ job_title: job || city, round: st.round, view: view }),
+            signal: ac.signal
+        });
+        clearTimeout(timer);
+        var json = await resp.json();
+        if (json && json.data && json.data.categories && json.data.categories.length) newData = json.data;
+    } catch (e) {
+        console.warn('[更新图谱] 后端不可用，使用前端动态数据池', e);
+    }
+    if (!newData) newData = _genUpdatedTechGraph(city, job, view, st.round, cur);
+
+    // 5) 写入缓存（三个视图一致），重新布局渲染（G6 自动动画）
+    ['overview', 'stack', 'level'].forEach(function(v) {
+        techDetailState.graphDataCache['job|' + (job || '') + '|' + v] = _cloneGraphData(newData);
+    });
+
+    if (loading) loading.style.display = 'none';
+    if (container) container.classList.remove('graph-fading');
+    if (updateBtn) { updateBtn.disabled = false; updateBtn.classList.remove('is-running'); }
+    if (rollBtn) { rollBtn.disabled = false; rollBtn.style.display = ''; }
+
+    st.busy = false;
+    try {
+        await window.renderCityTechGraph(city, job, true, view);
+    } catch (e) { console.error('[更新图谱] 重绘失败', e); }
+
+    var total = _countTechs(newData);
+    if (window.showToast) window.showToast('更新完成：当前岗位展示 ' + total + ' 项技术', '');
+};
+
+// 点击【回退】：恢复更新前的图谱数据与布局
+window.talentRollbackTechGraph = async function() {
+    var st = window.talentTechUpdateState;
+    if (!st.previousSnap || st.busy) return;
+    if (!talentMapState || talentMapState.currentLayer !== 'graph') return;
+    var city = techDetailState.graphCity;
+    var job = techDetailState.graphJob;
+    if (!city && !job) return;
+    var view = techDetailState.graphView || 'overview';
+    if (!techDetailState.graphDataCache) techDetailState.graphDataCache = {};
+
+    st.busy = true;
+    var loading = document.getElementById('talent-graph-loading');
+    var container = document.getElementById('talent-graph-container');
+    var rollBtn = document.getElementById('talent-rollback-graph-btn');
+    var updateBtn = document.getElementById('talent-update-graph-btn');
+
+    if (loading) loading.style.display = 'flex';
+    if (container) container.classList.add('graph-fading');
+    if (rollBtn) rollBtn.disabled = true;
+    if (updateBtn) updateBtn.disabled = true;
+    await new Promise(function(r) { setTimeout(r, 350); });
+
+    // 恢复更新前快照
+    var restored = null;
+    Object.keys(st.previousSnap).forEach(function(k) {
+        techDetailState.graphDataCache[k] = st.previousSnap[k];
+        if (!restored) restored = st.previousSnap[k];
+    });
+
+    if (loading) loading.style.display = 'none';
+    if (container) container.classList.remove('graph-fading');
+    if (updateBtn) updateBtn.disabled = false;
+    if (rollBtn) rollBtn.disabled = true; // 已回退，按钮置灰
+
+    st.busy = false;
+    try {
+        await window.renderCityTechGraph(city, job, true, view);
+    } catch (e) { console.error('[回退] 重绘失败', e); }
+
+    var total = restored ? _countTechs(restored) : 0;
+    if (window.showToast) window.showToast('已回退到更新前的图谱（' + total + ' 项技术）', 'amber');
 };

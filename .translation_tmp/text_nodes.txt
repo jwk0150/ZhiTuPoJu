@@ -1,0 +1,513 @@
+NODE 0 [ns0] pos=1891
+TEXT: Conception et mise en œuvre d'un système de construction dynamique de graphe de connaissances poste-compétence et d'appariement de talents, fondé sur des données de recrutement multi-sources
+---
+NODE 1 [ns0] pos=5722
+TEXT: ¹École d'intelligence artificielle et de big data, Université de technologie du Henan, Zhengzhou, Henan, Chine
+---
+NODE 2 [ns0] pos=8104
+TEXT: Résumé : L'expansion rapide de l'économie numérique rend le cycle de mise à jour des piles technologiques nettement plus court que le cycle traditionnel de formation des talents ; le marché du travail présente simultanément deux phénomènes : les entreprises éprouvent des difficultés à recruter et les travailleurs manquent de parcours clairs. Les textes de recrutement publics constituent une source de signaux importante pour observer les besoins en compétences, mais leur décalage temporel, leur duplication homogène et le bruit d'expression contaminent directement les résultats du graphe et de l'appariement en aval. Face à la validation croisée du nettoyage des données et au contrôle des hallucinations des modèles d'IA, cet article présente, sur un système ingénierique couvrant plusieurs dizaines de milliers d'offres d'emploi réelles, cinq innovations vérifiables dont la chaîne complète a été implémentée : (1) un contrôle de qualité fondé sur l'empreinte de contenu et la complétude de quinze champs, qui déplace la fiabilité en amont vers les déclencheurs d'insertion en base de données ; (2) la découverte de postes émergents fondée sur une mesure d'émergence tridimensionnelle et une chaîne de raisonnement en six étapes, dont les conclusions portent le comptage des sources de preuves ; (3) une différenciation de compétences pseudo-temporelle multi-sources, qui étiquette les ajouts, suppressions et modifications au moyen d'un $\Delta_s$ recalculable ; (4) un appariement en cinq dimensions avec des poids de $0.42/0.24/0.14/0.10/0.10$, une borne supérieure de $0.65$ étant appliquée à la contribution de transfert de graphe ; (5) un contrôle par preuves avec $|S|\!\ge\!2$ et un repli heuristique local pour supprimer les hallucinations. Dans l'évaluation en ligne, les exactitudes moyennes de l'analyse des JD, de l'extraction de CV et de l'appariement poste-candidat ne sont pas inférieures à 90 % ; le F1 de la découverte des postes émergents est de 0.824 et le Kappa de l'évolution par rapport aux annotations d'experts est de 0.76. L'ensemble de l'article organise de manière cohérente les formules, les pseudo-codes, les expériences comparatives et les ablations, afin que les innovations proposées soient étayées à la fois par les données et par l'implémentation.
+---
+NODE 3 [ns0] pos=15980
+TEXT: Mots-clés : graphe de connaissances poste-compétence ; analyse de l'évolution dynamique ; gouvernance des données hétérogènes multi-sources ; découverte des postes émergents ; appariement poste-candidat ; génération augmentée par récupération ; contrôle des hallucinations
+---
+NODE 4 [ns0] pos=33123
+TEXT: Le marché de l'emploi actuel est confronté à une contradiction structurelle : le rythme d'itération des piles technologiques est plus rapide que le cycle de formation des talents, tandis que les entreprises peinent à recruter et que les travailleurs manquent de parcours clairs. Bien que les textes de recrutement publics constituent une source de signaux importante pour observer les besoins en compétences, ils souffrent couramment de délais de publication, de copies modélisées et de bruit d'expression, ce qui contamine directement l'extraction de connaissances et les résultats d'appariement en aval ; le recrutement traditionnel s'appuie par ailleurs largement sur la comparaison de mots-clés, ce qui rend difficile la caractérisation de l'évolution dynamique de la structure de compétences des postes, tandis que les grands modèles de langage produisent également facilement des hallucinations par manque de preuves dans la génération de définitions de postes et dans les dialogues de diagnostic. Pour répondre à ces problèmes, cet article conçoit et implémente un système de construction dynamique de graphe de connaissances poste-compétence et d'appariement intelligent destiné au marché de l'emploi, dénommé « ZhiTuPoJu » (percer la situation grâce aux graphes) : prenant le poste et la compétence comme entités centrales, il intègre la collecte et la gouvernance de données multi-sources, la construction du graphe Neo4j, le raisonnement RAG avec contrôle des hallucinations, et l'appariement poste-candidat multidimensionnel, formant une boucle fermée comprenant la découverte des postes émergents, la mise à jour dynamique des compétences, la visualisation panoramique au niveau des points de compétence et le diagnostic par analyse de CV ; les exactitudes de l'analyse des JD, de l'extraction de CV et de l'appariement dépassent toutes 90 %, soutenant ainsi le recrutement des entreprises, la planification de carrière et l'évaluation des tendances en matière de talents.
+---
+NODE 5 [ns0] pos=42397
+TEXT: À l'étranger, la recherche sur les graphes de connaissances poste-compétence est relativement mature : des classifications professionnelles, des référentiels de compétences et des normes de postes relativement complets ont été établis, et des données dynamiques telles que les informations de recrutement et les ressources de formation sont en outre intégrées pour construire des graphes de connaissances poste-compétence. Par exemple, certaines études utilisent les données de recrutement pour mettre à jour en continu les associations entre compétences et professions, et combinent les réseaux de neurones de graphes, le raisonnement sur graphes de connaissances et les grands modèles de langage pour la prédiction de compétences, l'appariement de postes et la planification de parcours professionnels. Ces dernières années, l'accent de la recherche s'est progressivement déplacé de la représentation statique des connaissances vers la modélisation temporelle et l'évolution dynamique, afin de répondre aux besoins d'un marché du travail en mutation rapide.
+---
+NODE 6 [ns0] pos=44230
+TEXT: En Chine, la recherche sur les graphes de connaissances poste-compétence a démarré plus tardivement et se concentre actuellement principalement sur l'exploration des informations de recrutement, l'analyse des compétences professionnelles et l'appariement poste-candidat. Les chercheurs exploitent progressivement des données hétérogènes multi-sources — sites de recrutement, normes professionnelles, ressources de formation — afin d'extraire, par le traitement du langage naturel et les techniques de graphes de connaissances, les postes, les compétences et leurs relations, et de parvenir ainsi à une expression structurée des besoins en postes, appliquée ensuite à la recommandation de talents et à la planification de carrière. Toutefois, les travaux existants restent principalement axés sur l'organisation statique des connaissances et des applications mono-scénario ; les études sur les changements dynamiques des besoins en postes induits par le développement industriel et sur l'évolution continue des graphes de connaissances demeurent relativement insuffisantes.
+---
+NODE 7 [ns0] pos=46104
+TEXT: Dans l'ensemble, les recherches nationales et internationales reconnaissent la valeur importante de la fusion de données multi-sources et des graphes de connaissances pour l'analyse des compétences des postes, mais des problèmes subsistent : dispersion des sources de données, difficulté de fusion des données hétérogènes et caractérisation insuffisante des variations dynamiques des relations poste-compétence. Les méthodes existantes s'intéressent le plus souvent à un maillon unique — construction du graphe de connaissances ou appariement de postes — et les études portant sur la boucle fermée complète « collecte de données — extraction de connaissances — construction du graphe — mise à jour dynamique — analyse de l'évolution » restent insuffisantes. Par conséquent, il est nécessaire de construire un graphe de connaissances poste-compétence multi-sources et hétérogène destiné au marché de l'emploi, afin de caractériser dynamiquement l'évolution des besoins en postes et celle de la structure des compétences.
+---
+NODE 8 [ns0] pos=48316
+TEXT: III. Conception et implémentation du système
+---
+NODE 9 [ns0] pos=49990
+TEXT: 3.1 Architecture du système
+---
+NODE 10 [ns0] pos=51675
+TEXT: Le système est organisé globalement en trois couches : couche d'entrée, couche de traitement et couche de sortie (figure 1). La couche d'entrée reçoit des corpus multi-sources tels que les JD des plateformes de recrutement, les champs complémentaires fournis par les entreprises et les CV des utilisateurs ; la couche de traitement assure la gouvernance des données, la construction du graphe de connaissances, la découverte des postes émergents, la différenciation de l'évolution des compétences et l'appariement poste-candidat ; la couche de sortie fournit aux entreprises et aux candidats des définitions structurées de postes, des différentiels d'évolution des compétences, des rapports de diagnostic d'appariement et des tableaux de bord régionaux des tendances en matière de talents,
+---
+NODE 11 [ns0] pos=53622
+TEXT: Figure 1. Cadre général de recherche « Input-Hidden-Output » du système
+---
+NODE 12 [ns0] pos=54377
+TEXT: ainsi que des réponses de dialogue contraintes par les preuves. Les encadrés agrandis aux quatre coins de la figure 1 correspondent aux innovations centrales décrites plus loin ; chacune d'elles est assortie d'une définition formelle, de seuils d'implémentation et de preuves quantitatives, afin d'éviter de présenter de simples schémas sans support formel.
+---
+NODE 13 [ns0] pos=55538
+TEXT: Sur le plan fonctionnel, le système forme une chaîne en quatre maillons : « collecte et gouvernance — services de graphe — analyse intelligente — interaction applicative ». Le volet collecte et gouvernance assure l'insertion multi-sources, la déduplication par empreinte, la notation de complétude et la validation croisée inter-sources ; le volet services de graphe organise les postes, les compétences, les secteurs d'activité et les entreprises, ainsi que leurs relations, en un graphe orienté pondéré interrogeable, et prend en charge des visualisations telles que la carte de chaleur régionale et la carte mentale poste-compétence ; le volet analyse intelligente assure la découverte des postes émergents, l'évolution des compétences des postes existants et l'appariement poste-candidat en cinq dimensions ; le volet interaction applicative correspond aux modules frontaux tels que la carte numérique des talents, l'analyse des postes, la découverte de nouveaux postes, l'appariement poste-candidat et l'assistant CV, réalisant une boucle fermée allant de la tendance régionale au diagnostic individuel. Sur le plan technique, FastAPI fournit une interface REST unifiée, PostgreSQL héberge les données principales des postes et le centre utilisateur, Neo4j assure les requêtes sur le graphe, et le frontal organise les différentes vues métier dans une coquille multi-pages ; les grands modèles de langage ne sont utilisés que pour le polissage rédactionnel et l'examen sémantique, tandis que les chemins centraux de découverte, d'évolution et d'appariement conservent une implémentation heuristique sans modèle, afin de garantir la dégradabilité des services et la reproductibilité des résultats.
+---
+NODE 14 [ns0] pos=58451
+TEXT: Les objectifs de conception du système peuvent se résumer ainsi : données entrantes vérifiables, relations du graphe interrogeables, différentiels d'évolution recalculables et conclusions d'appariement actionnables. La contrainte de conception correspondante est que toute conclusion telle que « définition de poste émergent » ou « compétence supprimée » doit pouvoir renvoyer à un ensemble d'échantillons précis ou à une formule de différentiel, garantissant ainsi que les conclusions sont auditables et reproductibles. Au niveau de la couche de données,
+---
+NODE 15 [ns0] pos=64260
+TEXT: Figure 2. Tables et champs de la base de données
+---
+NODE 16 [ns0] pos=65984
+TEXT: Les données principales des postes sont réparties entre une table principale de consultation et une table de détail, reliées l'une à l'autre par une clé étrangère en relation 1:1, comme le montre la figure 2. La table principale porte les champs de filtrage à forte fréquence (source, titre, entreprise, ville, salaire, expérience, niveau d'études, date de publication, empreinte, complétude, etc.), tandis que la table de détail porte les champs de type texte long et tableau (description, exigences, tableau de compétences, avantages, catégories hiérarchiques, etc.) ; les champs spécifiques aux plateformes sont stockés en JSONB afin d'éviter des modifications fréquentes de schéma [1]. En notant $P$ le tuple de la table principale et $D$ celui de la table de détail, ils satisfont la contrainte de clé étrangère $D.job_id=P.id$.
+---
+NODE 17 [ns0] pos=68403
+TEXT: La complétude calcule la proportion de champs non vides sur quinze champs clés :
+---
+NODE 18 [ns0] pos=96119
+TEXT: En pratique, les enregistrements vérifiant $c(p)<60%$ sont marqués comme de faible qualité et n'intègrent pas, par défaut, le pool d'échantillons haute confiance de la découverte et de l'évolution. Côté recherche, pg_trgm GIN et btree_gin sont déployés afin que la correspondance floue sur les titres et les filtres composés puissent utiliser des index. La validation croisée inter-sources compare les empreintes et les dates de publication d'un même poste logique selon les différentes source_name, et fournit des entrées pour le comptage de preuves du module de découverte [2].
+---
+NODE 19 [ns0] pos=98667
+TEXT: 3.2 Innovations du système
+---
+NODE 20 [ns0] pos=99436
+TEXT: Innovation I1 : (contrôle de qualité, correspondant au coin supérieur gauche de la figure 1). Pour chaque enregistrement de poste, l'empreinte de contenu et la complétude de quinze champs sont calculées ; la notation et la déduplication sont effectuées automatiquement dans les déclencheurs de la base de données, afin d'empêcher à la source les échantillons retardés, les échantillons « coquilles vides » et les copies de modèles d'entrer dans le graphe. Formellement,
+---
+NODE 21 [ns0] pos=137593
+TEXT:  désigne la chaîne centrale obtenue par concaténation du titre, de l'entreprise, de la ville, du salaire, de l'expérience et du niveau d'études. La règle de contrôle exige 
+---
+NODE 22 [ns0] pos=138481
+TEXT:  pour qu'un enregistrement puisse entrer dans le pool haute confiance de découverte/évolution. Données : après déduplication sur les trois sources, 12495 enregistrements valides, dont 11680 de haute qualité (93.5 %) ; le taux de déduplication intra-source est d'environ 15 %–20 % ; un exemple de complétude 
+---
+NODE 23 [ns0] pos=139569
+TEXT:  est considéré comme conforme et inséré en base.
+---
+NODE 24 [ns0] pos=140353
+TEXT: Innovation I2 : (mesure d'émergence tridimensionnelle et chaîne de raisonnement en six étapes, correspondant au segment de découverte de la figure 1). Pour un cluster de titres 
+---
+NODE 25 [ns0] pos=141913
+TEXT: , on définit
+---
+NODE 26 [ns0] pos=172727
+TEXT: et l'on produit une chaîne en six étapes rejouable : intégration → désambiguïsation → notation → définition → extrapolation → audit. Données : sur 23 catégories d'annotations d'experts, la précision est de 0.750, le rappel de 0.913 et le F1 de 0.824 ; le cas d'étude 
+---
+NODE 27 [ns0] pos=175668
+TEXT: Innovation I3 : (différenciation de compétences pseudo-temporelle multi-sources, correspondant au coin inférieur gauche de la figure 1). La différence des taux d'apparition entre la source plus ancienne 
+---
+NODE 28 [ns0] pos=177233
+TEXT:  et la source plus récente 
+---
+NODE 29 [ns0] pos=177948
+TEXT: , notée 
+---
+NODE 30 [ns0] pos=183188
+TEXT: , permet de déterminer les ajouts, suppressions et modifications, en écrivant l'« évolution des compétences » comme une différence recalculable plutôt que comme un récit descriptif. Données : le Kappa de cohérence entre l'évolution et les annotations d'experts est de 0.76 ; des différences illustratives telles que RAG
+---
+NODE 31 [ns0] pos=185711
+TEXT:  sont de l'ordre de quelques points de pourcentage (recalculées avec le même extracteur et sur la même classe de postes).
+---
+NODE 32 [ns0] pos=186617
+TEXT: Innovation I4 : (appariement pondéré en cinq dimensions et borne supérieure de transfert, correspondant au coin supérieur droit de la figure 1). Le score total
+---
+NODE 33 [ns0] pos=231077
+TEXT:  évite que des compétences faiblement corrélées ne soient artificiellement surévaluées. Données : l'exactitude de l'appariement est de 0.927 (seuil de 90 %) ; l'ablation supprimant la dimension compétences la fait chuter de 8.4 points de pourcentage, ce qui montre que la configuration des poids est cohérente avec l'expérience.
+---
+NODE 34 [ns0] pos=232188
+TEXT: Innovation I5 : (contrôle par preuves et prévention des hallucinations, correspondant au coin inférieur droit de la figure 1 et au chapitre VIII). Les conclusions de découverte/génération exigent un nombre de sources de preuves 
+---
+NODE 35 [ns0] pos=233698
+TEXT: , faute de quoi elles sont marquées low_evidence et soumises à une révision manuelle obligatoire ; côté dialogue, il est interdit d'inventer des identifiants de postes hors contexte, et lorsque le LLM est indisponible, on revient à l'heuristique locale. Données : le taux d'hallucination non audité est d'environ 18.7 %, et d'environ 3.2 % après contrôle ; les chemins centraux d'appariement/découverte restent reproductibles sans clé.
+---
+NODE 36 [ns0] pos=236015
+TEXT: 3.3 Implémentation du système
+---
+NODE 37 [ns0] pos=236787
+TEXT: L'implémentation du système se déploie selon « construction du graphe — découverte des postes émergents — évolution des compétences — appariement poste-candidat — prévention des hallucinations dans le dialogue — validation expérimentale », et correspond une à une aux innovations précédentes. Le graphe de connaissances des compétences est défini comme un graphe orienté pondéré : les nœuds comprennent les postes, les compétences, les secteurs d'activité et les entreprises ; les arêtes couvrent quatre types de relations — poste-compétence, poste-secteur, entreprise-poste et compétence-compétence — comme le montre la figure 3. Côté entités, les postes, entreprises et secteurs proviennent principalement des champs structurés ; les compétences proviennent des tableaux de la table de détail et de la correspondance la plus longue avec le dictionnaire appliquée au texte des descriptions, avec normalisation des alias ; les alias inconnus peuvent être extraits avec l'aide d'un grand modèle de langage, mais doivent être confirmés manuellement ou par le dictionnaire avant insertion en base. Lorsqu'un nouveau lot arrive, seuls les poids des arêtes des postes affectés sont recalculés ; la carte numérique des talents agrège ensuite la chaleur et les salaires par province et par ville, soutenant l'analyse descendante régionale et la carte mentale des compétences des postes.
+---
+NODE 38 [ns0] pos=243163
+TEXT: La découverte des postes émergents s'effectue au moyen d'une chaîne de raisonnement en six étapes : intégration multi-sources, désambiguïsation et regroupement, notation de l'émergence, génération de définitions, extrapolation des tendances et audit des preuves. Les champs de définition privilégient les statistiques issues des JD réels ; le grand modèle de langage ne fait que polir et ne peut pas ajouter de compétences absentes des preuves ; lorsque les preuves proviennent de moins de deux sources indépendantes, l'élément est marqué comme à faible preuve et transmis à l'intervention humaine. L'évolution des compétences des postes existants calcule, sur la source plus ancienne et la source plus récente, la différence des taux d'apparition avec le même extracteur, afin de déterminer les ajouts, suppressions et modifications, comme le montre la figure 5. Les résultats sont accompagnés de la taille de l'échantillon et des informations de source afin de faciliter la vérification. L'appariement poste-candidat adopte une pondération en cinq dimensions — compétences, sémantique, projet, expérience et graphe — (avec la répartition des poids suivante : $0.42/0.24/0.14/0.10/0.10$), fixe une borne supérieure à la contribution de transfert, et génère des parcours d'apprentissage selon les écarts, comme le montre la figure 7 ; l'assistant CV inscrit les expériences STAR dans le profil comme entrée de l'appariement. Côté dialogue, il est interdit d'inventer des postes hors contexte ; en cas d'échec de validation de la sortie structurée ou d'absence de clé, on revient aux modèles locaux ; les chemins centraux de découverte et d'évolution conservent toujours un parcours heuristique sans grand modèle de langage.
+---
+NODE 39 [ns0] pos=247005
+TEXT: L'environnement expérimental est Windows 11, Python 3.12, PostgreSQL et FastAPI ; lorsque DeepSeek est indisponible, une dégradation automatique s'opère. Après déduplication, on compte environ 12500 postes valides, dont environ 93.5 % de haute qualité ; le graphe comprend environ 5747 nœuds et 13081 arêtes. Les exactitudes de l'analyse des JD, de l'extraction de CV et de l'appariement poste-candidat sont respectivement de 93.9 %, 91.0 % et 92.7 % ; le F1 de la découverte des postes émergents est de 0.824 et le Kappa de cohérence entre l'évolution et les experts est de 0.76. Les limites tiennent principalement à une fenêtre d'observation trop courte, à la possible invalidité de l'hypothèse pseudo-temporelle dans les scénarios de mise à jour synchrone multi-sources, et au fait que les compétences peu fréquentes hors dictionnaire exigent encore une intervention manuelle. Dans l'ensemble, il est possible d'enchaîner gouvernance, construction du graphe, découverte, évolution et diagnostic d'appariement en une chaîne vérifiable sur des corpus de recrutement réels.
+---
+NODE 40 [ns0] pos=249621
+TEXT: 3.4 Définition formelle du graphe
+---
+NODE 41 [ns0] pos=251852
+TEXT: Le graphe de connaissances des compétences est défini comme un graphe orienté pondéré 
+---
+NODE 42 [ns0] pos=252785
+TEXT: . L'ensemble des nœuds
+---
+NODE 43 [ns0] pos=261096
+TEXT: où 
+---
+NODE 44 [ns0] pos=261940
+TEXT:  désigne les postes, 
+---
+NODE 45 [ns0] pos=262802
+TEXT:  les compétences, 
+---
+NODE 46 [ns0] pos=263661
+TEXT:  les secteurs d'activité et 
+---
+NODE 47 [ns0] pos=264537
+TEXT:  les entreprises. L'ensemble des arêtes comprend quatre types de relations : 
+---
+NODE 48 [ns0] pos=268005
+TEXT: , reliant respectivement poste-compétence, poste-secteur, entreprise-poste et compétence-compétence. Voir la figure 3
+---
+NODE 49 [ns0] pos=269198
+TEXT: Le poids de l'arête REQUIRES, noté 
+---
+NODE 50 [ns0] pos=271374
+TEXT: , prend la fréquence d'apparition de la compétence 
+---
+NODE 51 [ns0] pos=273656
+TEXT: L'arête RELATED_TO est contrainte conjointement par la co-occurrence et le dictionnaire de transfert établi manuellement, fournissant ainsi un a priori à _relation_transfer du module d'appariement.
+---
+NODE 52 [ns0] pos=276394
+TEXT: En s'appuyant sur l'analyse précédente des postes, compétences, secteurs et entreprises, cet article représente le graphe de connaissances poste-compétence comme un graphe orienté pondéré décrivant les relations entre différentes entités. Sa définition formelle de base est la suivante :
+---
+NODE 53 [ns0] pos=282811
+TEXT: où V est l'ensemble des nœuds d'entités du graphe, E l'ensemble des relations entre entités et W l'ensemble des poids associés aux relations. Selon les types de données réellement utilisés par le système, les nœuds se répartissent principalement en quatre catégories — postes, compétences, secteurs et entreprises — soit :
+---
+NODE 54 [ns0] pos=284005
+TEXT: V=Vposte∪Vcompétences∪Vsecteurs∪Ventreprises
+---
+NODE 55 [ns0] pos=284943
+TEXT: où Vposte désigne l'ensemble des entités de postes, Vcompétences l'ensemble des entités de compétences, Vsecteurs l'ensemble des entités de secteurs et Ventreprises l'ensemble des entités d'entreprises. Les postes et les compétences sont les nœuds centraux de l'ensemble du graphe ; les secteurs et les entreprises servent principalement à compléter l'environnement métier des postes et les informations relatives aux entités recruteuses.
+---
+NODE 56 [ns0] pos=286331
+TEXT: En ce qui concerne la conception des relations, cet article ne relie pas simplement toutes les entités entre elles, mais les organise selon les relations sémantiques réellement présentes dans les données de recrutement. Les relations du graphe comprennent principalement la relation de besoin poste-compétence, la relation d'appartenance poste-secteur, la relation de recrutement entreprise-poste et la relation d'association compétence-compétence ; l'ensemble des relations peut s'écrire :
+---
+NODE 57 [ns0] pos=288608
+TEXT: où Ebesoins désigne la relation de besoin entre poste et compétence, correspondant à REQUIRES dans le graphe ; Eappartenance la relation d'appartenance entre poste et secteur, correspondant à BELONGS_TO ; Erecrutement la relation de recrutement entre entreprise et poste, correspondant à RECRUITS ; Eassociation la relation d'association entre différentes compétences, correspondant à RELATED_TO.
+---
+NODE 58 [ns0] pos=289975
+TEXT: Pour le graphe technologique des postes, la relation de besoin entre poste et compétence est la plus importante. Par conséquent, cet article décrit l'association entre poste et compétence sous forme de triplet :
+---
+NODE 59 [ns0] pos=291038
+TEXT: (poste,REQUIRES,compétences)
+---
+NODE 60 [ns0] pos=292797
+TEXT: (Développeur Java,REQUIRES,Spring Boot)
+---
+NODE 61 [ns0] pos=293723
+TEXT: indique que, dans les données de recrutement, le poste d'ingénieur de développement Java présente un besoin pour la compétence Spring Boot. De cette manière, les informations dispersées dans la description du poste, les exigences de poste et les champs de compétences des offres de recrutement peuvent être converties de manière uniforme en structure de graphe, fournissant ainsi la base de données pour la visualisation ultérieure du graphe technologique des postes et pour l'appariement poste-candidat.
+---
+NODE 62 [ns0] pos=295083
+TEXT: Considérant que la fréquence d'apparition des différentes compétences dans un même poste n'est pas identique, cet article définit en outre des poids pour les relations poste-compétence. Soit Dposte l'ensemble des offres de recrutement valides correspondant à un poste donné, et n(poste,s) le nombre d'apparitions de la compétence s dans les offres de recrutement de ce poste ; le poids de besoin entre le poste et la compétence est alors défini comme :
+---
+NODE 63 [ns0] pos=301984
+TEXT: où (Dposte) représente le nombre total d'offres de recrutement valides correspondant au poste, et n(poste,s) le nombre d'apparitions de la compétence s dans ces offres. Plus cette valeur est grande, plus la compétence apparaît fréquemment dans les besoins de recrutement du poste concerné et plus son importance dans la structure technologique du poste est élevée. Le poids des arêtes permet d'éviter un jugement binaire fondé uniquement sur la présence ou l'absence de la compétence, et le graphe peut ainsi refléter plus finement les différences de niveau de besoin entre compétences.
+---
+NODE 64 [ns0] pos=303482
+TEXT: Le graphe de cet article n'est pas figé. Les plateformes de recrutement produisent en continu de nouvelles offres, et les besoins des entreprises en compétences techniques évoluent avec le développement technologique et les mutations industrielles. Par conséquent, en s'appuyant sur la structure statique précédente, on introduit une variable temporelle t et l'on représente le graphe de connaissances poste-compétence sous une fenêtre temporelle donnée comme :
+---
+NODE 65 [ns0] pos=310164
+TEXT: où Vₜ, Eₜ et Wₜ désignent respectivement les ensembles de nœuds, de relations et de poids de relations correspondant au temps t. Lorsque de nouvelles données de recrutement entrent dans le système, il n'est pas nécessaire de recalculer l'intégralité du graphe : il suffit de recalculer les poids des arêtes des postes modifiés et de leurs compétences associées, réalisant ainsi une mise à jour incrémentale du graphe.
+---
+NODE 66 [ns0] pos=313510
+TEXT: La variation du besoin d'un même poste et d'une même compétence entre différentes fenêtres temporelles peut en outre s'exprimer comme :
+---
+NODE 67 [ns0] pos=322573
+TEXT: où wₜ₁(poste,s) et wₜ₂(poste,s) désignent respectivement les poids de la relation poste-compétence dans deux fenêtres temporelles de statistiques différentes. Lorsque Δw est supérieur à 0, le besoin de recrutement de cette compétence s'est renforcé dans la fenêtre temporelle ultérieure ; lorsque Δw est inférieur à 0, le besoin a diminué ; lorsque Δw est égal à 0, la variation entre les deux fenêtres n'est pas significative. Cet indicateur fournit également une base quantitative pour l'analyse ultérieure de l'évolution dynamique des compétences des postes.
+---
+NODE 68 [ns0] pos=333213
+TEXT: Dans l'ensemble, le graphe de connaissances poste-compétence de cet article peut se résumer en quatre composantes : « entités, relations, poids et temps ». Les entités décrivent les postes, compétences, secteurs et entreprises du marché du recrutement ; les relations expriment les liens sémantiques entre les différentes entités ; les poids reflètent le degré de besoin des postes en compétences ; la dimension temporelle enregistre l'évolution de la structure de compétences des postes. Cette conception satisfait à la fois les besoins de visualisation du graphe technologique des postes et reste cohérente avec les modules ultérieurs de normalisation des entités, d'inférence de relations, de mise à jour des poids des arêtes, d'évolution des compétences des postes et d'appariement poste-candidat.
+---
+NODE 69 [ns0] pos=334922
+TEXT: Ces dernières années, les graphes de connaissances sont passés progressivement d'une organisation statique des connaissances à une représentation dynamique des connaissances. Peng et al. ont procédé à une revue systématique des travaux sur les graphes de connaissances, en soulignant qu'ils permettent de représenter structurellement des connaissances complexes de domaine au moyen d'entités et de relations, et de soutenir en outre la fusion et le raisonnement de connaissances [3]. Goyal et al. ont proposé JobXMLC pour le scénario du recrutement, organisant postes et compétences en une structure de graphe poste-compétence et utilisant cette structure pour la prédiction de compétences de postes, ce qui montre que les relations structurées poste-compétence constituent une base de données efficace pour l'analyse des compétences dans le domaine du recrutement [4]. Seif et al. ont proposé un graphe de connaissances dynamique Jobs-Skills, combinant postes, compétences et données du marché du travail et tenant compte des variations du marché du recrutement au fil du temps, apportant une nouvelle piste de recherche pour la modélisation dynamique des relations poste-compétence [5]. À partir de ces travaux, cet article ajoute une dimension temporelle au graphe poste-compétence traditionnel et met à jour les poids des relations à l'aide des fréquences d'apparition des compétences dans les données de recrutement, formant ainsi un graphe de connaissances poste-compétence dynamique adapté aux données de recrutement réelles.
+---
+NODE 70 [ns0] pos=339876
+TEXT: 3.5 Extraction et normalisation des entités
+---
+NODE 71 [ns0] pos=342073
+TEXT: Les entités de postes, d'entreprises et de secteurs proviennent principalement des champs structurés. Les entités de compétences proviennent du tableau skills de la table de détail et du balayage du texte des descriptions par le dictionnaire, comme le montre la figure 4. Le système maintient un vocabulaire de compétences regroupé par pile technologique 
+---
+NODE 72 [ns0] pos=345310
+TEXT:  (back-end, front-end, intelligence artificielle, big data, cloud computing, mobile, test, exploitation, algorithmes, outils généraux, etc.), et applique au texte une correspondance la plus longue en priorité :
+---
+NODE 73 [ns9] pos=361783
+TEXT:  出现在 
+---
+NODE 74 [ns9] pos=367075
+TEXT:  中
+---
+NODE 75 [ns0] pos=372513
+TEXT: . Cette méthode présente un rappel stable et reproductible, avec une complexité linéaire par rapport à la longueur du texte. Pour les alias inconnus, une extraction assistée par grand modèle de langage est autorisée, mais doit être confirmée par le dictionnaire ou manuellement avant l'écriture dans le graphe, afin d'éviter que des noms de compétences génératifs ne polluent l'ensemble des nœuds [6].
+---
+NODE 76 [ns0] pos=374406
+TEXT: Figure 4. Exemple de données de la table de détail
+---
+NODE 77 [ns0] pos=375474
+TEXT: 3.6 Inférence des relations et mise à jour des poids des arêtes
+---
+NODE 78 [ns0] pos=377085
+TEXT: REQUIRES est établi directement par la co-occurrence poste-compétence ; BELONGS_TO est mappé à partir du champ secteur ; RECRUITS relie les entités à partir du champ entreprise ; RELATED_TO combine le comptage de co-occurrence et la confiance de la table de transfert. Soit 
+---
+NODE 79 [ns0] pos=378344
+TEXT:  la taille de l'échantillon du poste 
+---
+NODE 80 [ns0] pos=380605
+TEXT:  le nombre d'apparitions de la compétence 
+---
+NODE 81 [ns0] pos=405881
+TEXT: Lorsqu'un nouveau lot est inséré, il suffit de recalculer les poids des arêtes des postes affectés, sans reconstruire l'intégralité du graphe. Pour les requêtes à forte fréquence (postes adjacents d'une compétence donnée, plus court chemin de pontage entre deux compétences), des vues matérialisées ou des caches peuvent être créés.
+---
+NODE 82 [ns0] pos=407377
+TEXT: 3.7 Découverte et prédiction des postes émergents
+---
+NODE 83 [ns0] pos=411467
+TEXT: Formulation du problème et chaîne de raisonnement en six étapes : la découverte des postes émergents doit identifier, en dehors des référentiels standards, les clusters de postes « en cours de formation » et fournir une définition auditable. Une passe de balayage est notée comme une chaîne de raisonnement à six composantes 
+---
+NODE 84 [ns0] pos=417359
+TEXT: , où
+---
+NODE 85 [ns0] pos=458074
+TEXT: Les six étapes sont respectivement : l'intégration de données multi-sources, la désambiguïsation sémantique et le regroupement, la notation multidimensionnelle de l'émergence, la génération de définitions de postes, l'extrapolation des tendances et l'audit des preuves. La figure 5 présente le flux de données allant de la collecte à la décision.
+---
+NODE 86 [ns0] pos=460009
+TEXT: Figure 5. Page de découverte et de prédiction des nouveaux postes
+---
+NODE 87 [ns0] pos=460937
+TEXT: Notation de l'émergence tridimensionnelle : pour un cluster 
+---
+NODE 88 [ns0] pos=463492
+TEXT:  est la somme de trois composantes (conformément à _score_group_detailed dans backend/routers/discovery.py) :
+---
+NODE 89 [ns0] pos=484757
+TEXT: où 
+---
+NODE 90 [ns0] pos=486369
+TEXT:  est la nouveauté du titre, 
+---
+NODE 91 [ns0] pos=489828
+TEXT:  le score de combinaison de compétences et 
+---
+NODE 92 [ns0] pos=493303
+TEXT:   le débordement intersectoriel. La signification des symboles est donnée dans le tableau 2. La quantité auxiliaire de croissance sur les 30 derniers jours
+---
+NODE 93 [ns0] pos=517535
+TEXT: où 
+---
+NODE 94 [ns0] pos=519145
+TEXT:  est le nombre d'échantillons publiés au sein du cluster au cours des 30 derniers jours ; 
+---
+NODE 95 [ns0] pos=544438
+TEXT: Génération de définitions de postes et correction des orientations futures : l'objet de définition 
+---
+NODE 96 [ns0] pos=546674
+TEXT:  comprend des champs tels que le nom, la catégorie, le niveau, le texte de définition, les compétences essentielles/bonus, le scénario, les responsabilités, la confiance et la liste de preuves. Les champs sont obtenus en priorité à partir des statistiques des JD réels du cluster : les phrases de responsabilités à forte fréquence alimentent definition et responsibilities ; les compétences à taux d'apparition élevé alimentent core_skills. Pour les candidats les mieux classés, un grand modèle de langage peut polir le texte, avec une consigne interdisant d'ajouter des noms de compétences absents des preuves ; en cas d'échec du modèle, le résultat heuristique est conservé. Comme le montre la figure 5
+---
+NODE 97 [ns0] pos=550390
+TEXT:  possède une confiance de base 
+---
+NODE 98 [ns0] pos=551645
+TEXT:  ; si sa compétence apparaît parmi les compétences centrales de la découverte de ce tour, alors
+---
+NODE 99 [ns0] pos=580243
+TEXT: La fenêtre de prédiction est fixée, selon les orientations, de 6 à 18 mois ; les sorties entrent dans la liste de suivi pour des comparaisons lors des rescanals ultérieurs.
+---
+NODE 100 [ns0] pos=581189
+TEXT: Audit des preuves : au moins deux sources de preuves indépendantes (entreprises différentes ou plateformes différentes) sont exigées. En cas de preuves insuffisantes, l'élément est marqué low_evidence et entre dans la file d'attente manuelle. On vérifie en outre si le texte de definition introduit des noms de compétences spécialisés hors core_skills ; en cas d'incohérence, un poids réduit est appliqué. Ce contrôle sépare la « fluidité de génération » de la « traçabilité factuelle » [7]
+---
+NODE 101 [ns0] pos=584386
+TEXT: 3.8 Évolution dynamique des compétences des postes existants
+---
+NODE 102 [ns0] pos=588064
+TEXT: Extraction de compétences et taux d'apparition : pour la catégorie de postes 
+---
+NODE 103 [ns0] pos=590782
+TEXT:  la taille de l'échantillon 
+---
+NODE 104 [ns0] pos=593323
+TEXT:  et le comptage des compétences 
+---
+NODE 105 [ns0] pos=597677
+TEXT:  ; on définit
+---
+NODE 106 [ns0] pos=648555
+TEXT: La différence est 
+---
+NODE 107 [ns0] pos=652891
+TEXT: . L'ensemble de compétences est obtenu en balayant le texte des descriptions avec le dictionnaire _SKILL_VOCAB, ce qui garantit que les deux sources utilisent le même extracteur ; la règle de décision à trois états est la suivante :
+---
+NODE 108 [ns0] pos=656643
+TEXT: , la décision, alignée sur _diff_skills dans evolution_agent.py, est la suivante :
+---
+NODE 109 [ns0] pos=674526
+TEXT: , en enregistrant le pourcentage de décroissance.
+---
+NODE 110 [ns0] pos=676885
+TEXT:  et les deux côtés sont tous deux supérieurs à 0 ; si 
+---
+NODE 111 [ns0] pos=679393
+TEXT: Lorsque l'échantillon d'une seule source est insuffisant, on revient à une sortie à étiquettes faibles des compétences fréquentes de cette source, en déclarant data_source dans la réponse afin d'éviter un affichage vide du frontal.
+---
+NODE 112 [ns0] pos=680979
+TEXT: Le taux de variation relatif peut s'écrire
+---
+NODE 113 [ns0] pos=715723
+TEXT: Sortie et révision manuelle : chaque résultat d'évolution est accompagné de la taille de l'échantillon, du nom de la source et de l'amplitude de la différence. Pour les éléments contestés (par exemple un « poste en reprise » suspecté d'être marqué comme un ajout), on peut procéder à un contrôle du pic historique en le comparant au référentiel externe des professions ; si un pic plus élevé est apparu historiquement, il convient de le marquer comme une reprise et non comme un poste émergent. Cette correction relève de la stratégie opérationnelle et n'affecte pas la formule de différence elle-même, comme le montre la figure 6
+---
+NODE 114 [ns0] pos=718184
+TEXT: Figure 6. Interface d'évolution dynamique des compétences
+---
+NODE 115 [ns0] pos=726571
+TEXT: Formulation du problème : étant donné un ensemble de postes 
+---
+NODE 116 [ns0] pos=732136
+TEXT:  quantifie le degré d'appariement, et l'on génère un parcours d'apprentissage exécutable 
+---
+NODE 117 [ns0] pos=734758
+TEXT:  pour combler les écarts. Voir la figure 7
+---
+NODE 118 [ns0] pos=736827
+TEXT: Modèle de pondération en cinq dimensions et notations : le score total (implémenté sur 100 points, puis tronqué à 
+---
+NODE 119 [ns0] pos=784478
+TEXT: Les poids sont cohérents avec score_matches, et 
+---
+NODE 120 [ns0] pos=788149
+TEXT:  la liste des compétences essentielles (ordonnée, pouvant contenir des sémantiques répétées mais normalisée dans l'implémentation), 
+---
+NODE 121 [ns0] pos=789884
+TEXT:  la liste des compétences bonus et 
+---
+NODE 122 [ns0] pos=791668
+TEXT:  l'ensemble des compétences du candidat. Soient 
+---
+NODE 123 [ns0] pos=797097
+TEXT:  l'ensemble des compétences manquantes. Pour chaque compétence manquante 
+---
+NODE 124 [ns0] pos=819924
+TEXT: Le score de la dimension compétences (sur 100) est :
+---
+NODE 125 [ns0] pos=875581
+TEXT: où 
+---
+NODE 126 [ns0] pos=886167
+TEXT: , avec troncature à 100 au maximum. Le score sémantique 
+---
+NODE 127 [ns0] pos=889457
+TEXT:  privilégient les résultats de l'examen par grand modèle de langage et, à défaut, une heuristique textuelle. Le score d'expérience
+---
+NODE 128 [ns0] pos=909856
+TEXT: Si la durée est inconnue, on retient 55. Score du graphe : en présence d'un transfert,
+---
+NODE 129 [ns0] pos=949880
+TEXT:  ; sinon, on retient 35. Si l'on n'a ni correspondance ni transfert, le score total est réduit de 8 points en guise de pénalité.
+---
+NODE 130 [ns0] pos=950767
+TEXT: Analyse des écarts et parcours d'apprentissage : pour chaque compétence manquante, on définit un degré de préparation 
+---
+NODE 131 [ns0] pos=953936
+TEXT:  (valeur par défaut faible en l'absence de transfert). 
+---
+NODE 132 [ns0] pos=955601
+TEXT:  est considéré comme un écart de priorité élevée. Le parcours d'apprentissage retient au plus les 4 premiers écarts et interroge la table de ressources pour générer les semaines, les livrables et les scores d'impact
+---
+NODE 133 [ns0] pos=956883
+TEXT: 3.10 Dialogue avec les grands modèles de langage et contrôle des hallucinations
+---
+NODE 134 [ns0] pos=965209
+TEXT: Contraintes de génération et dégradation : il est interdit d'inventer des noms et des identifiants de postes absents du contexte ; la sortie structurée doit respecter les champs JSON convenus. En cas de clé manquante, de dépassement de délai ou d'échec d'analyse, le système bascule vers des réponses à partir de modèles locaux, garantissant la reproductibilité du parcours de démonstration. Pour les conclusions centrales de découverte et d'évolution, le système conserve toujours une implémentation heuristique sans LLM ; le grand modèle de langage ne se charge que du polissage rédactionnel et de l'examen sémantique, réduisant ainsi le risque qu'« une indisponibilité du modèle rende la fonctionnalité indisponible » [8], comme le montre la figure 8
+---
+NODE 135 [ns0] pos=968861
+TEXT: Figure 8. Comparaison de diagnostics réels contre les hallucinations
+---
+NODE 136 [ns0] pos=969813
+TEXT: Limites des hallucinations des grands modèles de langage et de la génération augmentée par récupération : la génération augmentée par récupération (RAG) atténue les hallucinations en fournissant des connaissances externes au LLM, mais la recherche vectorielle du RAG traditionnel ne renvoie que des fragments de texte sémantiquement similaires, sans exploiter les associations structurelles entre les connaissances. Les RAG augmentés par graphe (tels que GraphRAG, LightRAG) représentent les connaissances sous forme de graphe, mais ne peuvent modéliser que des relations par paires ; lorsque les connaissances impliquent trois entités ou plus, les associations multi-entités sont perdues, privant le LLM de contexte et produisant des hallucinations par lacune de connaissances [9]. En outre, les erreurs se propagent et s'amplifient le long des arêtes par paires dans le graphe — les arêtes par paires d'un graphe ordinaire propagent et amplifient plus facilement les erreurs entre les nœuds, tandis que le contexte des hyperarêtes peut équilibrer et supprimer le bruit ponctuel [9].
+---
+NODE 137 [ns0] pos=973336
+TEXT: DCF : l'entraînement conforme différentiable pour la factualité du raisonnement des LLM [10]. ttesdorf et al. (2026) proposent le Differentiable Coherent Factuality (DCF) [10], dont les éléments centraux sont les suivants :
+---
+NODE 138 [ns0] pos=975939
+TEXT: Cadre conforme : la sortie du LLM est décomposée en plusieurs sous-affirmations (subclaims), chacune recevant un score de risque ; un seuil calibré filtre les affirmations à haut risque, garantissant statistiquement que le taux d'hallucination reste inférieur au niveau fixé par l'utilisateur (par exemple 10 %) ;
+---
+NODE 139 [ns0] pos=977220
+TEXT: Modélisation par graphe de dépendance : la sortie est représentée comme un graphe de dépendance, validant conjointement les affirmations et leurs ancêtres logiques, afin d'éviter que des « conclusions ultérieures ne reposent sur des prémisses non établies » ;
+---
+NODE 140 [ns0] pos=978384
+TEXT: Relaxation différentiable : le processus de filtrage Coherent Factuality, auparavant non différentiable, est réécrit sous une forme différentiable, permettant au scoreur d'apprendre directement à partir des données ; au moment du déploiement, le scoreur appris est « réinséré » dans le flux algorithmique d'origine, en conservant les garanties de correction mathématique de l'algorithme initial. Les expériences montrent que DCF, tout en maintenant ses garanties de fiabilité, augmente le taux de rétention des affirmations jusqu'à 141 % [10].
+---
+NODE 141 [ns0] pos=980798
+TEXT: 3.11 Expériences et résultats
+---
+NODE 142 [ns0] pos=983980
+TEXT: Les expériences ont été réalisées sous Windows 11, Python 3.12, PostgreSQL 15 et FastAPI 0.115 ; les grands modèles de langage sont invoqués via DeepSeek Chat, avec une dégradation automatique vers l'heuristique locale lorsque la clé est absente, afin de garantir la reproductibilité de la chaîne centrale. Les échantillons valides sont comptés sur la base d'une complétude d'au moins 60 %. La collecte initiale compte environ 15400 offres ; après déduplication, 12495 offres subsistent, dont 11680 de haute qualité (93.5 %) ; après une nouvelle déduplication inter-sources, environ 11200 offres globalement uniques demeurent, les secteurs étant principalement Internet/IT, l'intelligence artificielle, le big data et le cloud computing. Le graphe de connaissances ainsi construit comprend environ 5747 nœuds et 13081 relations, dont 8234 arêtes poste-compétence (REQUIRES).
+---
+NODE 143 [ns0] pos=987626
+TEXT: L'évaluation quantitative couvre les trois seuils du concours et deux indicateurs de processus : l'exactitude de l'analyse des JD est de 93.9 %, celle de l'extraction de CV de 91.0 % et celle de l'appariement poste-candidat de 92.7 %, toutes non inférieures à 90 % ; le F1 de la découverte des postes émergents est de 0.824 et le Kappa de cohérence entre l'évolution et les annotations d'experts est de 0.76. Afin d'éviter que les innovations ne restent des formulations vagues, le tableau 1 met en correspondance I1–I5 avec les indicateurs chiffrés ci-dessus et les modules d'implémentation ; les évaluateurs peuvent ainsi retracer, à partir du tableau, les formules et les chemins de code, l'interface réelle étant illustrée à la figure 9. Pour les deux innovations qualitatives de découverte et d'évolution, une comparaison est en outre effectuée avec une ligne de base fondée sur la fréquence et une ligne de base TF-IDF de mots nouveaux ; les résultats montrent que le gain ne relève pas d'une simple transposition de statistiques de mots-clés. Tableau 1. Innovations et preuves quantitatives correspondantes
+---
+NODE 144 [ns0] pos=992261
+TEXT: Formule / règle centrale
+---
+NODE 145 [ns0] pos=993400
+TEXT: Preuves chiffrées
+---
+NODE 146 [ns0] pos=994627
+TEXT: I1 Contrôle de qualité
+---
+NODE 147 [ns0] pos=997173
+TEXT: 12495 valides, 11680 de haute qualité (93.5 %) ; exemple 13/15≈0.87
+---
+NODE 148 [ns0] pos=998502
+TEXT: I2 Émergence tridimensionnelle
+---
+NODE 149 [ns0] pos=1000683
+TEXT: P/R/F1=0.750/0.913/0.824 ; cas d'étude 77 points retenu
+---
+NODE 150 [ns0] pos=1001981
+TEXT: I3 Différentiel pseudo-temporel
+---
+NODE 151 [ns0] pos=1003294
+TEXT: Δ=rB−rA, seuils à trois états
+---
+NODE 152 [ns0] pos=1004839
+TEXT: Kappa=0.76 ; différentiels recalculables tels que RAG+54 du tableau 3a
+---
+NODE 153 [ns0] pos=1007431
+TEXT: M pondérée et transfer≤0.65
+---
+NODE 154 [ns0] pos=1008533
+TEXT: Acc=0.927 ; suppression de la dimension compétences ΔAcc=−0.084
+---
+NODE 155 [ns0] pos=1009958
+TEXT: I5 Contrôle preuves/hallucinations
+---
+NODE 156 [ns0] pos=1012506
+TEXT: taux d'hallucination 18.7%→3.2% ; reproductible sans clé via le repli
+---
+NODE 157 [ns0] pos=1017281
+TEXT: Figure 9. Exemple de données réelles de postes
+---
+NODE 158 [ns0] pos=1020045
+TEXT: Bilan des travaux : cet article, adressant le sujet XH-202621, traduit la « validation croisée du nettoyage multi-sources » et le « contrôle des hallucinations des compétences » en cinq innovations vérifiables, et livre un système exécutable. I1 déplace le contrôle en amont vers les déclencheurs d'insertion en base grâce à l'empreinte et à la complétude de quinze champs, avec 93.5 % d'enregistrements de haute qualité. I2 découvre les postes émergents à l'aide de 
+---
+NODE 159 [ns0] pos=1022522
+TEXT:  et d'une chaîne en six étapes, avec un F1 atteignant 0.824. I3 fournit les ajouts, suppressions et modifications par différences des taux d'apparition multi-sources, avec un Kappa de 0.76, et donne des exemples de différences recalculables tels que RAG/Prompt. I4 réalise le diagnostic grâce à la pondération en cinq dimensions 
+---
+NODE 160 [ns0] pos=1024271
+TEXT:  et à la borne supérieure de transfert 
+---
+NODE 161 [ns0] pos=1025001
+TEXT: , avec une exactitude de 0.927, l'ablation validant le bien-fondé des poids. I5 ramène le taux d'hallucination à environ 3.2 % grâce au contrôle par preuves 
+---
+NODE 162 [ns0] pos=1025892
+TEXT:  et au repli local. Les trois exactitudes quantitatives du concours ne sont pas inférieures à 90 %. La valeur du système réside dans le fait que les innovations sont formulées en équations et en seuils, étayées par des données chiffrées, plutôt que de rester des slogans conceptuels.
+---
+NODE 163 [ns0] pos=1027131
+TEXT: Limites : l'horizon des données est d'environ douze mois, ce qui ne permet pas de détecter correctement les reprises professionnelles à long cycle ; le pseudo-temporel repose sur l'hypothèse de différences de pénétration entre plateformes, qui peut devenir invalide dans les domaines où les sources sont mises à jour de manière synchrone ; les compétences hors dictionnaire et les postes à très faible fréquence dépendent encore d'une intervention manuelle ; l'échantillon de l'audit éthique est limité et les conclusions sur l'équité doivent être revérifiées sur un échantillon stratifié plus large [11].
+---
+NODE 164 [ns0] pos=1029810
+TEXT: Dans l'ensemble, le système démontre qu'il est possible d'enchaîner la qualité des données, la construction du graphe, la découverte et l'évolution, et le diagnostic poste-candidat en une chaîne exécutable sur des corpus de recrutement réels ; sa valeur ne réside pas dans la proposition de nouveaux scores « boîte noire » non reproductibles, mais dans la transcription des jugements clés en formules, seuils et journaux vérifiables.
+---
+NODE 165 [ns0] pos=1032150
+TEXT: Face aux difficultés réelles du contexte de l'économie numérique — « la vitesse d'itération technologique dépasse de loin le cycle de formation des talents, les entreprises rencontrent des difficultés à recruter pour les postes émergents, et les parcours de développement professionnel des candidats sont flous » —, cet article conçoit et implémente un système d'analyse intelligente du marché de l'emploi prenant le poste et la compétence comme entités centrales, le graphe de connaissances comme support d'organisation et les grands modèles de langage comme moteur de raisonnement. Le système boucle la chaîne complète « collecte de données multi-sources — découverte de nouveaux postes — construction du graphe — évolution dynamique — appariement poste-candidat — prédiction des tendances », couvrant quatre niveaux métier : socle de données, visualisation du graphe, analyse intelligente et diagnostic poste-candidat, fournissant ainsi un soutien décisionnel fondé sur les données aux pouvoirs publics, aux entreprises et aux candidats.
+---
+NODE 166 [ns0] pos=1034196
+TEXT: Au niveau des données, la plateforme met en place un mécanisme distribué de collecte et de fusion couvrant plusieurs plateformes de recrutement (contournement anti-robots avec Playwright, échange coopératif de fichiers JSONL, déduplication idempotente), formant un ensemble de données hétérogènes multi-sources comprenant plus de 38000 enregistrements de postes réels. Au niveau fonctionnel, quatre capacités centrales sont réalisées : la découverte intelligente de nouveaux postes (chaîne de réflexion en six étapes incluant la détection d'hallucinations), la mise à jour dynamique des compétences des postes existants (analyse d'évolution pseudo-temporelle fondée sur un dictionnaire de plus de 150 termes techniques), la visualisation panoramique du graphe au niveau des points de compétence (trois vues G6 avec interactions au survol, carte numérique nationale des talents) et le diagnostic d'appariement poste-candidat (analyse de CV multi-formats, score conjoint par distance sémantique, analyse des écarts et planification des parcours d'apprentissage). Les innovations techniques se manifestent principalement par : le raisonnement fusionné du graphe et du RAG, le repli à double canal du moteur de règles et du grand modèle de langage, et le contrôle des hallucinations fondé sur la validation croisée des preuves ; un système de test a été mis en place avec, comme critères d'acceptation stricts, des exactitudes de l'analyse des JD, de l'extraction de CV et de l'appariement non inférieures à 90 %. Le système a passé avec succès les tests réels de bout en bout dans le navigateur ; le rendu du graphe, les interactions liées et la cohérence des données ont tous été vérifiés.
+---
+NODE 167 [ns0] pos=1036984
+TEXT: La plateforme présente une valeur applicative concrète dans des scénarios tels que la planification de carrière des candidats, les décisions de recrutement des entreprises et l'ajustement des orientations de la formation ; elle permet de réduire dans une certaine mesure la contradiction structurelle du déséquilibre entre l'offre et la demande de talents. À l'avenir, elle continuera d'évoluer dans les directions de l'analyse d'évolution temporelle réelle, des benchmarks d'évaluation automatique à grande échelle, de l'industrialisation du frontal et de la couverture des tests automatisés, afin de faire du système une infrastructure de gouvernance numérique du marché de l'emploi.
+---
+NODE 168 [ns0] pos=1038681
+TEXT: Références
+---
+NODE 169 [ns0] pos=1052875
+TEXT: [6] Zhang Qi, Gui Tao, Zheng Rui, et al. Revue de la recherche sur la reconnaissance des entités nommées[J]. Journal of Software, 2018, 29(3): 812-831.
+---
+NODE 170 [ns0] pos=1066642
+TEXT: [11] Hu Xiaoyong, Huang Jie, Lin Zirou, et al. Éthique de l'IA en éducation : cadre conceptuel, état cognitif et prévention des risques[J]. Modern Distance Education Research, 2022, 34(2): 21-29.
+---

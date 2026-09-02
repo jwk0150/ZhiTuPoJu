@@ -1,0 +1,55 @@
+<ns0:p ns2:paraId="5C4EB1E5" ns2:textId="1B6DF22D" ns0:rsidR="00DD52EF" ns0:rsidRDefault="00206A5C">
+      
+      
+      <ns0:pPr>
+        
+        
+        <ns0:ind ns0:firstLine="420"/>
+        
+        
+        <ns0:jc ns0:val="both"/>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+      
+      </ns0:pPr>
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t>Le système est organisé globalement en trois couches : couche d&#x2019;entrée, couche de traitement et couche de sortie (figure 1). La couche d&#x2019;entrée reçoit des corpus multi-sources tels que les JD des plateformes de recrutement, les champs complémentaires fournis par les entreprises et les CV des utilisateurs ; la couche de traitement assure la gouvernance des données, la construction du graphe de connaissances, la découverte des postes émergents, la différenciation de l&#x2019;évolution des compétences et l&#x2019;appariement poste-candidat ; la couche de sortie fournit aux entreprises et aux candidats des définitions structurées de postes, des différentiels d&#x2019;évolution des compétences, des rapports de diagnostic d&#x2019;appariement et des tableaux de bord régionaux des tendances en matière de talents,</ns0:t>
+        
+      
+      </ns0:r>
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+    
+    </ns0:p>

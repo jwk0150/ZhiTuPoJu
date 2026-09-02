@@ -1,0 +1,312 @@
+<ns0:p ns2:paraId="4E5461C8" ns2:textId="33E3C3F4" ns0:rsidR="006E73B6" ns0:rsidRPr="006E73B6" ns0:rsidRDefault="000C1944" ns0:rsidP="006E73B6">
+      
+      
+      <ns0:pPr>
+        
+        
+        <ns0:ind ns0:firstLine="420"/>
+        
+        
+        <ns0:jc ns0:val="both"/>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+      
+      </ns0:pPr>
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:noProof/>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:drawing>
+          
+          
+          <ns3:anchor distT="0" distB="0" distL="114300" distR="114300" simplePos="0" relativeHeight="251670528" behindDoc="0" locked="0" layoutInCell="1" allowOverlap="1" ns4:anchorId="75B0AA61" ns4:editId="6490A961">
+            
+            
+            <ns3:simplePos x="0" y="0"/>
+            
+            
+            <ns3:positionH relativeFrom="column">
+              
+              
+              <ns3:posOffset>3174365</ns3:posOffset>
+              
+            
+            </ns3:positionH>
+            
+            
+            <ns3:positionV relativeFrom="paragraph">
+              
+              
+              <ns3:posOffset>429843</ns3:posOffset>
+              
+            
+            </ns3:positionV>
+            
+            
+            <ns3:extent cx="2945765" cy="1821815"/>
+            
+            
+            <ns3:effectExtent l="0" t="0" r="6985" b="6985"/>
+            
+            
+            <ns3:wrapTopAndBottom/>
+            
+            
+            <ns3:docPr id="593399850" name="图片 1"/>
+            
+            
+            <ns3:cNvGraphicFramePr>
+              
+              
+              <ns5:graphicFrameLocks noChangeAspect="1"/>
+              
+            
+            </ns3:cNvGraphicFramePr>
+            
+            
+            <ns5:graphic>
+              
+              
+              <ns5:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">
+                
+                
+                <ns6:pic>
+                  
+                  
+                  <ns6:nvPicPr>
+                    
+                    
+                    <ns6:cNvPr id="593399850" name="图片 1"/>
+                    
+                    
+                    <ns6:cNvPicPr>
+                      
+                      
+                      <ns5:picLocks noChangeAspect="1"/>
+                      
+                    
+                    </ns6:cNvPicPr>
+                    
+                  
+                  </ns6:nvPicPr>
+                  
+                  
+                  <ns6:blipFill>
+                    
+                    
+                    <ns5:blip ns7:embed="rId10"/>
+                    
+                    
+                    <ns5:stretch>
+                      
+                      
+                      <ns5:fillRect/>
+                      
+                    
+                    </ns5:stretch>
+                    
+                  
+                  </ns6:blipFill>
+                  
+                  
+                  <ns6:spPr>
+                    
+                    
+                    <ns5:xfrm>
+                      
+                      
+                      <ns5:off x="0" y="0"/>
+                      
+                      
+                      <ns5:ext cx="2945765" cy="1821815"/>
+                      
+                    
+                    </ns5:xfrm>
+                    
+                    
+                    <ns5:prstGeom prst="rect">
+                      
+                      
+                      <ns5:avLst/>
+                      
+                    
+                    </ns5:prstGeom>
+                    
+                  
+                  </ns6:spPr>
+                  
+                
+                </ns6:pic>
+                
+              
+              </ns5:graphicData>
+              
+            
+            </ns5:graphic>
+            
+            
+            <ns4:sizeRelV relativeFrom="margin">
+              
+              
+              <ns4:pctHeight>0</ns4:pctHeight>
+              
+            
+            </ns4:sizeRelV>
+            
+          
+          </ns3:anchor>
+          
+        
+        </ns0:drawing>
+        
+      
+      </ns0:r>
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t>La découverte des postes émergents s&#x2019;effectue au moyen d&#x2019;une chaîne de raisonnement en six étapes : intégration multi-sources, désambiguïsation et regroupement, notation de l&#x2019;émergence, génération de définitions, extrapolation des tendances et audit des preuves. Les champs de définition privilégient les statistiques issues des JD réels ; le grand modèle de langage ne fait que polir et ne peut pas ajouter de compétences absentes des preuves ; lorsque les preuves proviennent de moins de deux sources indépendantes, l&#x2019;élément est marqué comme à faible preuve et transmis à l&#x2019;intervention humaine. L&#x2019;évolution des compétences des postes existants calcule, sur la source plus ancienne et la source plus récente, la différence des taux d&#x2019;apparition avec le même extracteur, afin de déterminer les ajouts, suppressions et modifications, comme le montre la figure 5. Les résultats sont accompagnés de la taille de l&#x2019;échantillon et des informations de source afin de faciliter la vérification. L&#x2019;appariement poste-candidat adopte une pondération en cinq dimensions — compétences, sémantique, projet, expérience et graphe — (avec la répartition des poids suivante : $0.42/0.24/0.14/0.10/0.10$), fixe une borne supérieure à la contribution de transfert, et génère des parcours d&#x2019;apprentissage selon les écarts, comme le montre la figure 7 ; l&#x2019;assistant CV inscrit les expériences STAR dans le profil comme entrée de l&#x2019;appariement. Côté dialogue, il est interdit d&#x2019;inventer des postes hors contexte ; en cas d&#x2019;échec de validation de la sortie structurée ou d&#x2019;absence de clé, on revient aux modèles locaux ; les chemins centraux de découverte et d&#x2019;évolution conservent toujours un parcours heuristique sans grand modèle de langage.</ns0:t>
+        
+      
+      </ns0:r>
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:rFonts ns0:hint="eastAsia"/>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t/>
+        
+      
+      </ns0:r>
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t/>
+        
+      
+      </ns0:r>
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:rFonts ns0:hint="eastAsia"/>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t/>
+        
+      
+      </ns0:r>
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t/>
+        
+      
+      </ns0:r>
+      
+      
+      
+      
+      
+      
+      
+    
+    </ns0:p>

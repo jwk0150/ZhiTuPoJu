@@ -1,0 +1,87 @@
+<ns0:p ns2:paraId="1C575153" ns2:textId="64C75DF3" ns0:rsidR="00B770F3" ns0:rsidRDefault="00B770F3" ns0:rsidP="00B770F3">
+      
+      
+      <ns0:pPr>
+        
+        
+        <ns0:ind ns0:firstLine="420"/>
+        
+        
+        <ns0:jc ns0:val="both"/>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:rFonts ns0:hint="eastAsia"/>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+      
+      </ns0:pPr>
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:rFonts ns0:hint="eastAsia"/>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t>Au niveau des données, la plateforme met en place un mécanisme distribué de collecte et de fusion couvrant plusieurs plateformes de recrutement (contournement anti-robots avec Playwright, échange coopératif de fichiers JSONL, déduplication idempotente), formant un ensemble de données hétérogènes multi-sources comprenant plus de 38000 enregistrements de postes réels. Au niveau fonctionnel, quatre capacités centrales sont réalisées : la découverte intelligente de nouveaux postes (chaîne de réflexion en six étapes incluant la détection d&#x2019;hallucinations), la mise à jour dynamique des compétences des postes existants (analyse d&#x2019;évolution pseudo-temporelle fondée sur un dictionnaire de plus de 150 termes techniques), la visualisation panoramique du graphe au niveau des points de compétence (trois vues G6 avec interactions au survol, carte numérique nationale des talents) et le diagnostic d&#x2019;appariement poste-candidat (analyse de CV multi-formats, score conjoint par distance sémantique, analyse des écarts et planification des parcours d&#x2019;apprentissage). Les innovations techniques se manifestent principalement par : le raisonnement fusionné du graphe et du RAG, le repli à double canal du moteur de règles et du grand modèle de langage, et le contrôle des hallucinations fondé sur la validation croisée des preuves ; un système de test a été mis en place avec, comme critères d&#x2019;acceptation stricts, des exactitudes de l&#x2019;analyse des JD, de l&#x2019;extraction de CV et de l&#x2019;appariement non inférieures à 90 %. Le système a passé avec succès les tests réels de bout en bout dans le navigateur ; le rendu du graphe, les interactions liées et la cohérence des données ont tous été vérifiés.</ns0:t>
+        
+      
+      </ns0:r>
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+    
+    </ns0:p>

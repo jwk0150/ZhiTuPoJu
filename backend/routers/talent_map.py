@@ -15,6 +15,7 @@ from backend.services import (
     fetch_city_jobs_full,
     fetch_city_preview,
     fetch_job_tech_graph,
+    update_job_tech_graph,
 )
 
 router = APIRouter()
@@ -216,4 +217,27 @@ async def get_city_preview_endpoint(province_name: str, city_name: str):
         data = await fetch_city_preview(conn, province_name, city_name)
     if not data:
         raise HTTPException(status_code=404, detail=f"城市 {city_name} 无数据")
+    return ok(data)
+
+
+@router.post("/update-tech-graph")
+async def update_tech_graph(payload: dict):
+    """更新岗位技术图谱（挑战杯演示）：
+
+    从 the_total_table_copy1 提取该岗位真实技术池 + 通用补充池，
+    按轮次确定性重新选择一批技术并写入 new_skill_table，
+    返回更新后的图谱数据（结构与 /map/job-tech-graph 一致）。
+    """
+    job_title = (payload.get("job_title") or "").strip()
+    try:
+        round_no = int(payload.get("round") or 1)
+    except (TypeError, ValueError):
+        round_no = 1
+    if not job_title:
+        raise HTTPException(status_code=400, detail="job_title 不能为空")
+    pool = await get_pool()
+    async with pool.acquire() as conn:
+        data = await update_job_tech_graph(conn, job_title, round_no)
+    if not data:
+        raise HTTPException(status_code=404, detail=f"岗位 {job_title} 无数据")
     return ok(data)

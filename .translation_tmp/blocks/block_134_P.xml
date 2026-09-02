@@ -1,0 +1,171 @@
+<ns0:p ns2:paraId="4517CCB5" ns2:textId="2F9BE40E" ns0:rsidR="002B3FFB" ns0:rsidRDefault="002B3FFB" ns0:rsidP="00D47C95">
+      
+      
+      <ns0:pPr>
+        
+        
+        <ns0:ind ns0:firstLineChars="200" ns0:firstLine="420"/>
+        
+        
+        <ns0:jc ns0:val="both"/>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:rFonts ns0:hint="eastAsia"/>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+      
+      </ns0:pPr>
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:rFonts ns0:hint="eastAsia"/>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t>Limites des hallucinations des grands modèles de langage et de la génération augmentée par récupération : la génération augmentée par récupération (RAG) atténue les hallucinations en fournissant des connaissances externes au LLM, mais la recherche vectorielle du RAG traditionnel ne renvoie que des fragments de texte sémantiquement similaires, sans exploiter les associations structurelles entre les connaissances. Les RAG augmentés par graphe (tels que GraphRAG, LightRAG) représentent les connaissances sous forme de graphe, mais ne peuvent modéliser que des relations par paires ; lorsque les connaissances impliquent trois entités ou plus, les associations multi-entités sont perdues, privant le LLM de contexte et produisant des hallucinations par lacune de connaissances [9]. En outre, les erreurs se propagent et s&#x2019;amplifient le long des arêtes par paires dans le graphe — les arêtes par paires d&#x2019;un graphe ordinaire propagent et amplifient plus facilement les erreurs entre les nœuds, tandis que le contexte des hyperarêtes peut équilibrer et supprimer le bruit ponctuel [9].</ns0:t>
+        
+      
+      </ns0:r>
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:rFonts ns0:hint="eastAsia"/>
+          
+          
+          <ns0:vertAlign ns0:val="superscript"/>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t/>
+        
+      
+      </ns0:r>
+      
+      
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:rFonts ns0:hint="eastAsia"/>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t/>
+        
+      
+      </ns0:r>
+      
+      
+      
+      
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:rFonts ns0:hint="eastAsia"/>
+          
+          
+          <ns0:vertAlign ns0:val="superscript"/>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t/>
+        
+      
+      </ns0:r>
+      
+      
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:rFonts ns0:hint="eastAsia"/>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t/>
+        
+      
+      </ns0:r>
+      
+    
+    </ns0:p>

@@ -1,0 +1,1080 @@
+===== image1.png =====
+  box=(29,21,357,26) score=0.93  A. Data acquisition & preprocessing
+  box=(1031,23,201,20) score=0.92  B. Feature statistics
+  box=(41,62,119,20) score=0.94  Input: raw data
+  box=(1036,62,215,20) score=0.91  Summary of feature metrics
+  box=(41,87,220,20) score=0.94  (e.g., fastq / mzML / txt / csv)
+  box=(1052,103,97,19) score=0.87  Total features
+  box=(1429,102,53,21) score=0.85  12,542
+  box=(123,145,39,19) score=0.79  mzML
+  box=(191,145,33,21) score=0.59  IXI
+  box=(252,145,31,20) score=0.73  CSV
+  box=(1083,145,68,20) score=0.81  Detected
+  box=(55,146,40,18) score=0.83  FASTQ
+  box=(1374,144,46,21) score=0.75  9,683
+  box=(1027,186,122,20) score=0.86  Missing rate < 20%
+  box=(40,189,117,24) score=0.91  QC & Cleaning
+  box=(1319,187,42,18) score=0.81  7,126
+  box=(42,219,127,20) score=0.83  V Quality control
+  box=(388,218,36,19) score=0.67  High
+  box=(1086,228,65,20) score=0.78  CV < 0.5 
+  box=(1269,229,42,18) score=0.78  4,985
+  box=(40,240,213,24) score=0.86  V Adapter trimming / filtering
+  box=(42,264,122,22) score=0.87  V Normalization
+  box=(1064,271,84,20) score=0.88  High quality
+  box=(1238,270,46,21) score=0.73  3,214
+  box=(392,281,29,15) score=0.75  Low
+  box=(38,302,197,20) score=0.92  Output: clean data matrix
+  box=(102,328,159,20) score=0.93  (Samples × Features)
+  box=(1032,321,239,20) score=0.92  Output: feature statistics report
+  box=(676,392,149,27) score=0.85  Main Pipeline
+  box=(424,446,121,24) score=0.91  2. Preprocessing
+  box=(595,447,152,21) score=0.87  3. Feature extraction
+  box=(790,447,143,22) score=0.88  4. Feature selection
+  box=(236,448,135,22) score=0.88  1. Data acquisition
+  box=(988,446,125,23) score=0.89  5. Model building
+  box=(1185,450,93,17) score=0.92  6.Evaluation
+  box=(1217,514,33,15) score=0.52  AO
+  box=(438,551,95,27) score=0.91  QC, cleaning,
+  box=(638,554,67,23) score=0.89  Generate
+  box=(803,554,122,22) score=0.87  Filter informative
+  box=(269,555,69,20) score=0.80  Raw data
+  box=(997,555,111,20) score=0.88  Train & validate
+  box=(1210,554,51,22) score=0.85  Assess
+  box=(621,575,103,20) score=0.85  feature matrix
+  box=(833,575,63,20) score=0.86  features
+  box=(439,576,95,17) score=0.89  normalization
+  box=(1022,575,57,19) score=0.80  models
+  box=(1187,576,94,18) score=0.86  performance
+  box=(37,678,241,20) score=0.91  C. Results & visualization
+  box=(1018,676,272,25) score=0.90  D. Interpretation & validation
+  box=(36,711,222,20) score=0.87  Model performance overview
+  box=(1027,711,176,17) score=0.89  Interpretation workflow
+  box=(36,741,39,18) score=0.83  Score
+  box=(1350,736,68,22) score=0.86  Biological
+  box=(278,754,42,16) score=0.82  +0.07
+  box=(122,756,43,17) score=0.83  +0.08
+  box=(359,752,44,21) score=0.74  +0.05
+  box=(34,760,43,22) score=0.74  1.0 
+  box=(204,760,44,21) score=0.77  +0.06
+  box=(1046,765,90,20) score=0.88  Key features
+  box=(1353,758,63,17) score=0.89  evidence
+  box=(436,768,42,18) score=0.77  +0.04
+  box=(1060,783,59,24) score=0.82  (N dol)
+  box=(1201,775,64,17) score=0.83  Validation
+  box=(1340,799,88,17) score=0.84  Experimental
+  box=(1350,814,67,20) score=0.81  validation
+  box=(35,828,33,19) score=0.75  0.5
+  box=(1184,862,70,14) score=0.86  Permutation
+  box=(1050,868,70,17) score=0.79  SHAP value
+  box=(1311,864,97,22) score=0.89  Cross-validation
+  box=(1186,877,68,14) score=0.90  importance
+  box=(287,911,25,20) score=0.67  F1
+  box=(118,912,36,19) score=0.75  AUC
+  box=(201,912,36,19) score=0.75  ACC
+  box=(361,912,42,18) score=0.80  PREC
+  box=(440,911,35,19) score=0.75  REC
+  box=(1037,918,96,17) score=0.91  Stability analysis
+  box=(1177,918,92,17) score=0.83  ROC / PR curve
+  box=(77,943,87,20) score=0.88  Training set
+  box=(192,944,90,17) score=0.76  Testset
+  box=(37,974,289,22) score=0.88  Output: performance summary & plots
+  box=(1024,977,294,17) score=0.93  Output:interpretable results &validation
+===== image2.png =====
+  box=(3,4,316,20) score=0.93  ?DBeaver26.1.5-job_posting_details
+  box=(9,24,60,21) score=0.80  Fichier
+  box=(193,26,98,20) score=0.87  Navigation (N)
+  box=(464,26,58,18) score=0.75  Base de
+  box=(78,30,75,26) score=0.90  Edition (E)
+  box=(560,27,55,18) score=0.79  Fenetre
+  box=(328,31,108,24) score=0.77  Editeur SQL
+  box=(636,30,74,29) score=0.82  Aide (H)
+  box=(192,43,100,20) score=0.86  Recherche (A)
+  box=(451,42,81,22) score=0.89  donnees (D)
+  box=(24,44,31,23) score=0.75  (F)
+  box=(571,43,31,20) score=0.60  (W)
+  box=(276,65,137,24) score=0.82  Exécuter SQL
+  box=(445,65,123,27) score=0.82  - Annuler
+  box=(666,66,49,26) score=0.77  Auto
+  box=(751,64,728,31) score=0.87 CJK の甲zhitu_crawl_db 目public@zhitu_crawl_db 品α
+  box=(408,105,15,24) score=0.65  000
+  box=(515,107,87,27) score=0.82 CJK 国 public
+  box=(644,108,87,27) score=0.85   public
+  box=(2,109,181,23) score=0.91  Connexion × Projets
+  box=(1013,110,151,23) score=0.91   job_postings
+  box=(1207,110,172,23) score=0.84   map_data_table
+  box=(771,111,245,21) score=0.90 CJK 田 *job_posting_details X 
+  box=(1418,108,73,26) score=0.74 CJK 田 the_t
+  box=(35,137,65,17) score=0.89  Filtrer les
+  box=(2,153,132,17) score=0.86  connexions par nom
+  box=(508,147,251,31) score=0.90  ProprieteDonneesraphique
+  box=(22,170,254,26) score=0.84 CJK 电 postgres localhost:5432
+  box=(28,197,299,24) score=0.89   zhitu_crawl_dblocalhost:5433
+  box=(60,216,64,24) score=0.78  Base de
+  box=(625,212,182,24) score=0.92   job_posting_details
+  box=(60,239,67,17) score=0.87  donnees
+  box=(68,252,170,21) score=0.81 CJK 自 zhitu _crawl db
+  box=(586,249,106,21) score=0.90  123 detail id
+  box=(79,276,88,26) score=0.83  Schemas
+  box=(586,285,84,22) score=0.89  123 job_id
+  box=(102,305,123,24) score=0.84  > function
+  box=(588,313,178,26) score=0.87  A-Z company_industry
+  box=(123,331,87,24) score=0.83 CJK 国 public
+  box=(1130,328,133,22) score=0.87 CJK 田job_postings
+  box=(589,345,143,24) score=0.89  A-Z company_size
+  box=(127,359,69,24) score=0.82  Tables
+  box=(1101,364,54,22) score=0.79  123 id
+  box=(588,375,167,25) score=0.89  A-z company_nature
+  box=(150,387,218,22) score=0.90 CJK >田 job_posting_details
+  box=(426,386,47,25) score=0.68  67M
+  box=(589,405,152,23) score=0.92  A-Z company_intro
+  box=(1107,402,135,20) score=0.86  A-z source_name
+  box=(153,414,159,23) score=0.89 CJK >田 job_postings
+  box=(426,414,46,22) score=0.56  19M
+  box=(589,435,174,23) score=0.89  A-Z company_address
+  box=(1105,429,107,23) score=0.85  A-Z source_id
+  box=(153,441,188,23) score=0.82 CJK >由 map_data_table
+  box=(427,441,45,22) score=0.69  17M
+  box=(165,460,50,21) score=0.85  Tables
+  box=(590,465,148,23) score=0.84  A-Z company_logo
+  box=(1105,459,151,23) score=0.85  A-Z source_id_hash
+  box=(159,478,59,14) score=0.83  externes
+  box=(147,493,63,26) score=0.79  Vues
+  box=(590,494,152,24) score=0.88  A-Z job_description
+  box=(1106,490,93,22) score=0.90  A-Z job_title
+  box=(191,516,39,18) score=0.75  Vues
+  box=(590,525,162,23) score=0.89  A-zZ job_requirement
+  box=(1104,520,162,25) score=0.88  A-z company_name
+  box=(145,549,78,24) score=0.80  ndex
+  box=(590,555,142,23) score=0.90  A-Z job_highlights
+  box=(1103,548,62,26) score=0.72  A-Z city
+  box=(128,576,116,23) score=0.82  > Fonctions
+  box=(586,581,115,30) score=0.90   job_labels
+  box=(1106,580,85,21) score=0.85  A-Z district
+  box=(128,601,123,28) score=0.86  >Séquences
+  box=(586,611,74,29) score=0.79   skills
+  box=(1103,610,117,23) score=0.90  123 salary_min
+  box=(179,624,64,17) score=0.85  Types de
+  box=(181,639,60,18) score=0.85  donnees
+  box=(585,640,100,32) score=0.81   benefits
+  box=(1104,640,119,24) score=0.87  123 salary_max
+  box=(180,653,65,17) score=0.86  Fonctions
+  box=(168,665,85,23) score=0.87  d'agregation
+  box=(586,671,111,31) score=0.89   keywords
+  box=(1106,670,116,23) score=0.83  A-Z salary_unit
+  box=(123,683,130,23) score=0.85   user_center
+  box=(586,704,160,23) score=0.89  123 work_years_min
+  box=(127,706,91,17) score=0.89  Declencheurs
+  box=(1106,702,114,20) score=0.87  A-z experience
+  box=(126,722,92,17) score=0.85  d'évenements
+  box=(587,735,163,23) score=0.89  123 work_years_max
+  box=(1106,731,110,20) score=0.88  A-Z education
+  box=(589,764,185,24) score=0.90  A-Z education_required
+  box=(7,766,94,25) score=0.87  Fichier ×
+  box=(1105,760,99,24) score=0.88  A-Z job_type
+  box=(198,795,73,20) score=0.90  Source de
+  box=(589,795,152,23) score=0.90  A-Z major_required
+  box=(0,798,49,29) score=0.75  Nom
+  box=(1106,790,133,24) score=0.89   publish_time
+  box=(202,813,64,20) score=0.87  donnees
+  box=(589,825,179,23) score=0.90  A-z language_required
+  box=(1105,820,117,24) score=0.86  O crawl_time
+  box=(18,830,136,21) score=0.90   Bookmarks
+  box=(18,856,143,21) score=0.87    Dashboards
+  box=(590,856,182,20) score=0.90  A-z certificate_required
+  box=(1103,851,80,21) score=0.86  123 status
+  box=(7,884,134,23) score=0.83  >  Diagrams
+  box=(589,885,173,23) score=0.91  A-Z salary_description
+  box=(1105,880,117,23) score=0.88  A-z fingerprint
+  box=(8,910,108,24) score=0.86  > Scripts
+  box=(588,913,147,27) score=0.90  123 salary_months
+  box=(1102,910,145,22) score=0.92  123 completeness
+  box=(585,942,157,28) score=0.88  A-Z salary_currency
+===== image3.png =====
+  box=(1019,24,72,14) score=0.86  Decouverte de
+  box=(903,26,54,17) score=0.87  Analyse
+  box=(747,27,95,14) score=0.88  Carte des talents
+  box=(73,28,99,24) score=0.88  ZhiTuPoJu
+  box=(616,28,73,14) score=0.83  Actualites des
+  box=(1150,28,66,14) score=0.89  Appariement
+  box=(1276,25,57,17) score=0.84  Base de
+  box=(633,41,38,14) score=0.86  postes
+  box=(759,41,72,14) score=0.81  numeriques
+  box=(1028,37,54,11) score=0.86  nouveaux
+  box=(894,42,70,17) score=0.81  des postes
+  box=(1145,41,76,14) score=0.90  poste-candidat
+  box=(1037,47,37,14) score=0.86  postes
+  box=(1275,42,59,14) score=0.87  donnees
+  box=(47,75,71,17) score=0.85  Jinzhong
+  box=(109,74,171,18) score=0.92  g-Analysedespostes
+  box=(287,76,93,17) score=0.83  Apercu des
+  box=(184,94,54,18) score=0.87  talents
+  box=(38,108,183,18) score=0.86  Repartition des postes - Besoins
+  box=(60,124,139,16) score=0.88  en competences - Profils
+  box=(76,184,69,27) score=0.80  <Retour
+  box=(394,223,24,19) score=0.77  Pile
+  box=(59,225,173,18) score=0.93  Ingenieur logiciel - Carte technique
+  box=(267,227,80,14) score=0.90  Carte technique
+  box=(808,219,43,17) score=0.83  MySQL
+  box=(451,230,60,20) score=0.83  Niveau
+  box=(665,230,72,19) score=0.87  Kubernetes
+  box=(123,240,45,13) score=0.87  du poste
+  box=(283,240,48,14) score=0.74  du poste
+  box=(368,241,78,14) score=0.91  technologique
+  box=(938,253,35,15) score=0.66  PACK
+  box=(552,288,68,17) score=0.90  OpenStack
+  box=(725,322,100,24) score=0.84  E-commerce
+  box=(842,330,47,20) score=0.85  JMeter
+  box=(1029,331,57,17) score=0.87  Materiel
+  box=(664,347,46,20) score=0.80  Docker
+  box=(921,369,54,21) score=0.69  doopen
+  box=(483,381,32,21) score=0.79  Hive
+  box=(597,401,35,10) score=0.85  Chaine
+  box=(591,413,49,13) score=0.85  logistique
+  box=(783,409,56,14) score=0.89  Logiciel de
+  box=(740,421,25,15) score=0.75  SQL
+  box=(778,422,66,14) score=0.92  configuration
+  box=(851,430,38,18) score=0.80  RTOS
+  box=(986,433,49,14) score=0.83  Tests de
+  box=(687,446,27,17) score=0.72  Vue
+  box=(973,448,74,14) score=0.91  performance
+  box=(1103,439,47,21) score=0.87  Verilog
+  box=(887,458,61,17) score=0.86  Ingenierie
+  box=(889,473,57,18) score=0.89  logicielle
+  box=(555,484,21,15) score=0.71  loT
+  box=(605,493,114,17) score=0.89  Automatisation
+  box=(420,506,67,17) score=0.82  TypeScript
+  box=(1030,523,26,11) score=0.83  Tests
+  box=(765,543,66,14) score=0.84  Ingenieur
+  box=(1012,534,62,14) score=0.89  automatis es
+  box=(643,563,32,11) score=0.72  ication
+  box=(775,558,48,17) score=0.88  logiciel
+  box=(523,573,54,18) score=0.87  PyTorch
+  box=(619,602,43,17) score=0.75  Intemet
+  box=(613,615,55,14) score=0.86  des objets
+  box=(1027,619,30,18) score=0.68  ARM
+  box=(436,635,33,15) score=0.83  Flink
+  box=(935,645,30,14) score=0.64  inux
+  box=(535,663,62,17) score=0.88  Selenium
+  box=(637,658,48,14) score=0.89  Logiciel
+  box=(633,673,58,14) score=0.89  industriel
+  box=(886,683,61,20) score=0.81  Acquisition
+  box=(888,700,60,14) score=0.87  de donnees
+  box=(1075,696,103,22) score=0.88  Microservices
+  box=(687,706,29,15) score=0.73  PLC
+  box=(995,706,28,14) score=0.75  UML
+  box=(731,734,45,14) score=0.78  SCADA
+  box=(831,727,79,17) score=0.83  Embarque
+  box=(595,741,38,17) score=0.67  MQTT
+  box=(783,739,60,17) score=0.87  CAD/CAM
+  box=(464,753,72,17) score=0.90  TensorFlow
+  box=(900,764,96,19) score=0.91  Developpement
+  box=(919,781,57,14) score=0.91  de pilotes
+  box=(650,797,75,17) score=0.86  Spring Boot
+  box=(1035,800,47,17) score=0.81  Grands
+  box=(858,815,17,12) score=0.60  C#
+  box=(759,823,32,14) score=0.71  Java
+  box=(1034,816,51,14) score=0.87  modeles
+  box=(570,853,32,11) score=0.80  Excel
+  box=(935,884,41,17) score=0.83  Spark
+  box=(89,910,52,14) score=0.81  Langages
+  box=(259,910,53,17) score=0.89  Stockage
+  box=(443,911,29,15) score=0.79  IA et
+  box=(340,913,64,14) score=0.88   Ingenierie et
+  box=(163,914,74,13) score=0.91  Frameworks et
+  box=(676,909,51,14) score=0.76  Android
+  box=(106,922,16,11) score=0.64  de
+  box=(162,924,76,15) score=0.89  developpement
+  box=(255,924,61,14) score=0.84  de donnees
+  box=(342,925,59,13) score=0.89  exploitation
+  box=(427,925,61,14) score=0.83  algorithmes
+  box=(804,918,52,17) score=0.80  OpenCV
+  box=(76,932,75,12) score=0.92  programmation
+===== image4.png =====
+  box=(1,13,256,29) score=0.89  ProprietDonneeaphique
+  box=(189,52,357,20) score=0.91  Saisir une expression SQL pour filtrer les resultats
+  box=(13,58,113,24) score=0.80  EAfficher SQL
+  box=(317,71,103,20) score=0.86  (Ctrl+Espace)
+  box=(166,96,126,30) score=0.84  AZ data_source
+  box=(368,96,136,30) score=0.89  AZ industry_tags
+  box=(599,95,70,29) score=0.81  AZ skills
+  box=(986,98,151,26) score=0.89  A-Z job_description
+  box=(115,138,37,24) score=0.75  100
+  box=(161,138,65,25) score=0.81  ai_seed
+  box=(51,141,37,24) score=0.67  312
+  box=(383,134,104,17) score=0.87  Developpement
+  box=(381,149,107,20) score=0.93  loaiciel, Internet
+  box=(601,141,734,20) score=0.92  Gin, logistique, gRPC, MySQL, acquisition de donnees, Kubernetes - Developpement backend Go
+  box=(115,169,38,27) score=0.75  100
+  box=(51,170,39,27) score=0.75  313
+  box=(162,170,64,25) score=0.87  ai_seed
+  box=(336,168,100,27) score=0.80  Général
+  box=(622,173,691,20) score=0.92  MES, logiciel industriel, acquisition de donnees, Excel, automatisation bureautique, WMS - Ingenieur MES
+  box=(0,191,92,37) score=0.73  ext@4
+  box=(116,200,36,24) score=0.67  100
+  box=(162,200,65,25) score=0.80  ai_ seed
+  box=(339,198,100,27) score=0.74  Général
+  box=(593,202,751,20) score=0.93  Automatisation bureautique, acquisition de donnees, Excel, wMS, logiciel industriel, MES - Ingenieur vision industrielle
+  box=(115,231,38,27) score=0.75  100
+  box=(161,232,65,25) score=0.80  ai_seed
+  box=(48,233,43,25) score=0.75  315
+  box=(339,230,94,27) score=0.74  Général
+  box=(616,234,705,20) score=0.94  Excel, WMS, SQL, logistique, acquisition de donnees, MES, automatisation - Ingenieur robotique industrielle
+  box=(115,262,38,27) score=0.75  100
+  box=(162,263,65,25) score=0.80  ai_ seed
+  box=(47,266,44,25) score=0.71  316
+  box=(334,261,106,27) score=0.70  Geéneral
+  box=(605,266,725,20) score=0.91  Logistique, SQL, automatisation bureautique, WMS, acquisition de donnees - Agent des douanes
+  box=(162,295,65,25) score=0.83  ai_seed
+  box=(116,296,36,24) score=0.67  100
+  box=(48,297,43,24) score=0.74  317
+  box=(339,293,94,27) score=0.74  Général
+  box=(612,297,711,20) score=0.90  Acquisition de donnees, logistique, MEs, WMS, SQL, automatisation - Ingenieur securite
+  box=(161,325,65,25) score=0.79  ai_seed
+  box=(49,327,41,27) score=0.75  318
+  box=(116,327,36,24) score=0.67  100
+  box=(381,320,109,20) score=0.87  Developpement
+  box=(603,327,728,23) score=0.93  WMs, logiciel industriel, acquisition de donnees, Objective-C, logistique - Developpeur ios
+  box=(383,339,106,17) score=0.91  logiciel, Internet
+  box=(49,359,41,26) score=0.72  319
+  box=(116,359,36,24) score=0.67  100
+  box=(162,359,65,24) score=0.87  ai_seed
+  box=(371,360,964,23) score=0.92  Developpement logiciel, Internet, fabrication inteligente - C#, logistique, Java, genie logiciel, WMS, SQL, acquisition de donnees - Ingenieur logiciel
+  box=(386,383,76,20) score=0.87  Produit et
+  box=(115,390,37,24) score=0.75  100
+  box=(162,390,65,25) score=0.83  ai_seed
+  box=(50,391,40,26) score=0.64  320
+  box=(618,382,698,22) score=0.92  Logiciel industriel, prototypage, WMS, acquisition de donnees, redaction de documents - Analyste
+  box=(385,403,79,17) score=0.85  numerique
+  box=(928,405,81,14) score=0.87  fonctionnel
+  box=(116,422,36,24) score=0.67  100
+  box=(162,422,65,25) score=0.83  ai_seed
+  box=(51,423,37,24) score=0.68  321
+  box=(367,422,132,23) score=0.86  Donnees et IA
+  box=(612,424,710,20) score=0.92  WMs, logiciel industriel, normes de donnees, metadonnees, logistique - Ingenieur gouvernance des donnees
+  box=(114,452,39,27) score=0.71  100
+  box=(381,448,107,17) score=0.90  Developpement
+  box=(162,453,65,25) score=0.83  ai_seed
+  box=(50,454,40,26) score=0.64  322
+  box=(603,452,727,24) score=0.93  WMS, logiciel industriel, acquisition de donnees, Objective-C, logistique - Developpeur ios
+  box=(381,464,106,20) score=0.93  logiciel, Internet
+  box=(50,485,40,27) score=0.65  323
+  box=(162,485,64,25) score=0.87  ai_seed
+  box=(115,486,37,24) score=0.75  100
+  box=(364,485,141,24) score=0.88  Donnees et IA
+  box=(610,487,716,23) score=0.94  Spark, logistique, MES, Hive, Kafka, WMS, logiciel industriel - Ingenieur big data
+  box=(114,515,39,27) score=0.71  100
+  box=(162,516,65,25) score=0.83  ai_seed
+  box=(363,508,85,23) score=0.87  Fabrication
+  box=(49,518,42,24) score=0.64  324
+  box=(599,518,739,20) score=0.94  Gestion d'entrepot, production, acquisition de donnees, WMs, transport - Ingenieur systemes MEs
+  box=(364,529,82,17) score=0.84  intelliaente
+  box=(50,548,39,27) score=0.68  325
+  box=(162,548,65,25) score=0.83  ai_seed
+  box=(115,549,37,24) score=0.75  100
+  box=(364,543,85,17) score=0.91  Fabrication
+  box=(362,559,86,20) score=0.88  intelligente
+  box=(600,550,738,20) score=0.93  Gestion d'entrepot, production, acquisition de donnees, WMS, transport - Ingenieur systemes MEs
+  box=(162,579,65,24) score=0.86  ai_seed
+  box=(381,570,145,24) score=0.92  Produit et numerique,
+  box=(50,580,40,26) score=0.62  326
+  box=(115,580,37,23) score=0.68  100
+  box=(427,591,54,17) score=0.88  Internet
+  box=(639,582,658,19) score=0.88  Logistique, PRD, acquisition de donnees, WMS, etude utilisateur - Chef de produit
+  box=(115,611,37,24) score=0.75  100
+  box=(162,611,65,24) score=0.87  ai_seed
+  box=(51,612,37,24) score=0.68  327
+  box=(329,610,155,24) score=0.87  Cybersécurité
+  box=(612,612,712,20) score=0.92  MES, evaluation des risques, audit de securite, logiciel industriel - Ingenieur securite de I'information
+  box=(162,641,65,25) score=0.80  ai_ seed
+  box=(50,642,40,26) score=0.65  328
+  box=(115,642,37,24) score=0.75  100
+  box=(338,641,136,24) score=0.87  Cybersécurite
+  box=(606,643,723,20) score=0.88  SiEM, detection d'intrusion, WMs, surveillance de securite - Ingenieur exploitation securite
+  box=(50,673,39,27) score=0.68  329
+  box=(162,673,65,25) score=0.83  ai_seed
+  box=(116,674,36,24) score=0.67  100
+  box=(364,666,160,23) score=0.92  Developpement logiciel,
+  box=(633,674,669,23) score=0.92  MES, WMS, CMake, STL, Linux, logistique, multithreading - Développeur C++
+  box=(371,686,146,17) score=0.91  fabrication intelligente
+  box=(161,704,66,25) score=0.84  ai_seed
+  box=(115,705,37,24) score=0.75  100
+  box=(363,699,85,20) score=0.88  Fabrication
+  box=(50,706,40,26) score=0.64  330
+  box=(593,705,747,21) score=0.92  Donnees industrielles, acquisition de donnees, logistique, analyse qualite, MES · Analyste de donnees industrielles
+  box=(363,716,84,20) score=0.86  intelligente
+  box=(367,732,57,18) score=0.86  Internet 
+  box=(115,737,37,24) score=0.75  100
+  box=(162,737,65,24) score=0.87  ai_seed
+  box=(51,738,37,24) score=0.68  331
+  box=(611,736,712,24) score=0.91  WMS, MES, microservices, logiciel industriel, acquisition de donnees, loT · Ingenieur plateforme loT
+  box=(359,748,72,20) score=0.89  des objets
+  box=(114,767,39,27) score=0.71  100
+  box=(161,768,66,25) score=0.85  ai_seed
+  box=(361,765,144,29) score=0.83  Données et IA
+  box=(49,769,40,26) score=0.63  332
+  box=(593,768,750,25) score=0.93  Python, machine learning, WMs, ingenierie des caracteristiques, SQL - Ingenieur data mining
+===== image5.png =====
+  box=(609,15,105,22) score=0.82  Actualites des
+  box=(74,21,100,26) score=0.88  ZhiTuPoJu
+  box=(993,21,88,14) score=0.86  Decouverte de
+  box=(902,22,54,14) score=0.81  Analyse
+  box=(751,23,87,14) score=0.90  Carte des talents
+  box=(1122,23,67,14) score=0.90  Appariement
+  box=(1238,20,58,17) score=0.84  Base de
+  box=(1717,25,65,19) score=0.81  developer
+  box=(1814,23,60,23) score=0.85  Quitter
+  box=(763,36,61,13) score=0.81  numeriques
+  box=(983,36,106,16) score=0.89  nouveaux postes
+  box=(635,37,53,17) score=0.86  postes
+  box=(892,37,71,14) score=0.87  des postes
+  box=(1116,35,77,14) score=0.87  poste-candidat
+  box=(1236,37,59,14) score=0.78  donnees
+  box=(125,83,71,17) score=0.79  Favoris?
+  box=(134,103,276,16) score=0.92  Aucun favori, Ils apparaitront ici apres avoir clique sur 
+  box=(168,117,208,13) score=0.88  Favori × dans la page de detail d'un poste.
+  box=(161,153,73,14) score=0.88  Retourala
+  box=(145,167,104,19) score=0.90  listedespostes
+  box=(177,190,88,17) score=0.94  Poste reellement
+  box=(391,197,49,13) score=0.87  Indice de
+  box=(1526,199,94,17) score=0.85  Comparer les
+  box=(1642,207,56,17) score=0.77   Favori
+  box=(177,209,188,25) score=0.90  Architecte d'agents
+  box=(390,209,51,12) score=0.89  popularite
+  box=(1717,201,76,17) score=0.87  Telecharger le
+  box=(1516,217,109,14) score=0.87  rapportsdeCv
+  box=(393,221,30,19) score=0.67  88
+  box=(1735,216,40,14) score=0.82  rapport
+  box=(260,235,20,18) score=0.54  IA
+  box=(117,251,394,19) score=0.91  Premiere apparition : 2026-08 - Echantilons Tendance de croissance : +125
+  box=(224,267,21,12) score=0.54  356
+  box=(368,267,109,16) score=0.90  % (6 derniers mois)
+  box=(129,289,70,23) score=0.84  Asuivre
+  box=(1428,300,72,16) score=0.83  Conception et
+  box=(126,305,492,19) score=0.92  Ce poste apparait de facon stable dans les recrutements reels, demande en hausse
+  box=(1314,305,88,14) score=0.90  Applications LLM
+  box=(1607,302,62,20) score=0.79  Echantillon:
+  box=(1521,307,78,13) score=0.88  Construction de
+  box=(1425,313,78,13) score=0.85  developpement
+  box=(1670,305,111,16) score=0.87   - Source,de donnees
+  box=(1327,318,64,14) score=0.89  et ingenierie
+  box=(1521,317,76,15) score=0.86  systemes RAG
+  box=(1621,318,39,14) score=0.79  : 2 356
+  box=(126,319,443,19) score=0.92  decidez de le metfre% sur 6 mois. Verifiez d'abord vos competences cles, puis
+  box=(1441,324,46,14) score=0.87  d'agents
+  box=(1666,318,122,16) score=0.89  simulee - A titre indicatif
+  box=(148,333,60,13) score=0.92  en favori ou
+  box=(144,344,67,13) score=0.89  d'approfondir.
+  box=(480,364,97,16) score=0.88  Competences cles
+  box=(130,365,79,14) score=0.81  Informations de
+  box=(1385,357,156,27) score=0.83  Stratfcation Responsabilites
+  box=(131,377,75,17) score=0.89  base du poste
+  box=(510,379,42,12) score=0.81  TOP10
+  box=(1404,374,26,10) score=0.79  de la
+  box=(1390,383,55,14) score=0.88  popularite
+  box=(207,385,68,13) score=0.89  Recherche et
+  box=(124,388,56,14) score=0.71  Categorie
+  box=(1477,379,34,15) score=0.83  types
+  box=(514,394,89,13) score=0.89  Applications LLM
+  box=(203,396,76,14) score=0.91  developpement
+  box=(999,390,70,14) score=0.86  Conception et
+  box=(939,401,16,13) score=0.66  92
+  box=(127,402,51,14) score=0.87  du poste
+  box=(995,402,76,14) score=0.88  developpement
+  box=(492,404,11,9) score=0.65  01
+  box=(204,406,119,24) score=0.82  Interhet'fechnologies
+  box=(526,408,63,13) score=0.92  et ingenierie
+  box=(1489,403,231,16) score=0.92  Evaluer et optimiser la performance, Pefficacite
+  box=(1472,413,17,12) score=0.62  04
+  box=(132,414,42,12) score=0.79  Secteur
+  box=(1012,415,42,10) score=0.75  degents
+  box=(1544,418,123,13) score=0.90  et la securite des agents
+  box=(519,419,61,17) score=0.85  Construction
+  box=(1761,412,28,15) score=0.66  80%
+  box=(129,425,47,13) score=0.79  d'activite
+  box=(239,423,49,17) score=0.78  / Finance
+  box=(519,433,61,13) score=0.91  de systemes
+  box=(936,433,19,11) score=0.51  85
+  box=(1017,426,42,14) score=0.86  Prompt
+  box=(492,435,12,8) score=0.52  03
+  box=(966,435,12,9) score=0.66  04
+  box=(127,437,53,14) score=0.87  Niveau du
+  box=(208,437,67,14) score=0.80  Intermediaire
+  box=(1007,438,61,17) score=0.89  Engineering
+  box=(1413,433,16,12) score=0.66  82
+  box=(138,449,31,14) score=0.83  poste
+  box=(220,449,41,14) score=0.79  / Senior
+  box=(538,445,21,10) score=0.58  RAG
+  box=(991,455,66,14) score=0.89  Collaboration
+  box=(530,456,66,14) score=0.85  Appel d'outils
+  box=(130,460,45,14) score=0.86  Lieu de
+  box=(1470,460,20,15) score=0.67  05
+  box=(1492,454,241,16) score=0.88  Favoriser Fapplication concrete de la technologie
+  box=(209,462,124,16) score=0.86  Villes de premiere ligne et
+  box=(939,463,16,12) score=0.52  78
+  box=(1414,463,15,13) score=0.66  72
+  box=(966,466,12,9) score=0.66  06
+  box=(992,468,63,15) score=0.89  multi-agents
+  box=(1519,468,186,14) score=0.88  des agents dans les scenarios metier
+  box=(1761,461,28,14) score=0.75  76%
+  box=(132,474,40,15) score=0.78  travail.
+  box=(208,475,127,14) score=0.92  nouvelles premieres lignes
+  box=(124,485,58,14) score=0.85  Fourchette
+  box=(524,485,42,14) score=0.80  Base de
+  box=(208,491,49,14) score=0.84  20-40K
+  box=(995,483,56,16) score=0.89  Conception
+  box=(939,495,16,12) score=0.59  68
+  box=(964,496,16,11) score=0.66  08
+  box=(991,497,66,13) score=0.83  d'architecture
+  box=(1413,495,16,13) score=0.67  65
+  box=(130,498,46,13) score=0.73  salariale
+  box=(523,498,44,10) score=0.86  donnees
+  box=(1516,497,102,21) score=0.93  Rediger les solutions
+  box=(521,508,46,13) score=0.86  vectorielle
+  box=(1469,508,174,20) score=0.89  06 techniques et la documentation
+  box=(139,514,300,19) score=0.95  Poste stable dans les textes de recrutement reels, et non un
+  box=(1761,509,29,18) score=0.74  72%
+  box=(508,519,80,14) score=0.90  Developpement
+  box=(491,526,14,12) score=0.50  09
+  box=(939,526,15,12) score=0.62  64
+  box=(965,527,15,11) score=0.62  10
+  box=(999,527,55,13) score=0.89  integration
+  box=(132,530,314,22) score=0.88  role dapel de modeles :plaicalfion, apel doutis, recherche
+  box=(528,532,40,14) score=0.75  Python
+  box=(1553,524,29,11) score=0.74  d'API
+  box=(1011,539,30,8) score=0.70  d'API
+  box=(1735,537,58,17) score=0.90  Voir tout
+  box=(211,547,157,16) score=0.92  de connaissances et execution
+  box=(123,573,66,14) score=0.83  Comparaison
+  box=(991,577,74,14) score=0.90  Ce poste vs le
+  box=(1086,575,116,16) score=0.93  Depuis quels postes
+  box=(146,586,21,10) score=0.73  des
+  box=(1009,591,39,11) score=0.86  secteur
+  box=(121,592,70,20) score=0.81  Cimeristomes
+  box=(1105,589,77,14) score=0.87  y arrive-t-on ?
+  box=(368,600,42,14) score=0.86  Avance
+  box=(609,600,30,14) score=0.76  Ecart
+  box=(145,608,17,12) score=0.67  en
+  box=(810,602,88,20) score=0.85  Differenciation
+  box=(361,612,55,19) score=0.67  msnne
+  box=(132,618,41,15) score=0.63  apsce
+  box=(604,613,113,16) score=0.93  Ingenierie des grands
+  box=(627,627,68,13) score=0.82  modeles +26
+  box=(138,645,70,14) score=0.85  Ingenierie des
+  box=(156,658,35,11) score=0.86  grands
+  box=(1022,656,25,14) score=0.75  +26
+  box=(131,669,77,15) score=0.79  Deveoppement
+  box=(134,681,69,14) score=0.87  d'applications
+  box=(1024,682,20,11) score=0.75  +24
+  box=(132,697,62,19) score=0.90  Conception
+  box=(135,709,61,29) score=0.59  Pystemet
+  box=(158,735,13,8) score=0.67  de
+  box=(995,735,17,8) score=0.50  $70
+  box=(1226,730,114,20) score=0.82  Survolez un secteur ou
+  box=(142,743,46,14) score=0.83  donnees
+  box=(1224,745,117,13) score=0.88  un element pour afficher
+  box=(1258,755,52,14) score=0.87  les details
+  box=(132,775,75,13) score=0.89  Tendance de la
+  box=(134,782,105,26) score=0.72  femnde Popularite
+  box=(1087,783,89,14) score=0.89  Offre et demande
+  box=(148,804,16,11) score=0.60  ap
+  box=(203,804,16,11) score=0.64  ap
+  box=(1105,796,52,13) score=0.83  de talents
+  box=(128,815,108,13) score=0.90  publications recherche
+  box=(1188,821,73,17) score=0.85  Demande
+  box=(1109,833,43,18) score=0.75  2.78
+  box=(1114,844,31,15) score=0.82  Ratio
+  box=(1093,858,74,14) score=0.87  offre/demande
+  box=(1190,858,118,16) score=0.90  est 2,8 fois superieure a
+  box=(1235,871,27,11) score=0.66  Foffre
+  box=(1098,885,55,14) score=0.85  Demande :
+  box=(1108,898,38,11) score=0.73  +125 %
+  box=(1729,890,65,14) score=0.80  Offre : 45 %
+  box=(1829,901,44,21) score=0.73  Q&R
+===== image6.png =====
+  box=(721,28,104,16) score=0.82  Carte des talents
+  box=(82,29,110,27) score=0.85  ZhiTuPoJu
+  box=(897,27,56,17) score=0.87  Analyse
+  box=(1152,29,85,14) score=0.89  Appariement
+  box=(1028,30,77,14) score=0.89  Decouverte de
+  box=(1319,29,56,14) score=0.85  Basede
+  box=(1691,32,75,23) score=0.81  developer
+  box=(1796,30,74,24) score=0.81  Quitter
+  box=(581,44,51,17) score=0.76  postes
+  box=(736,45,71,14) score=0.91  numeriques
+  box=(889,45,72,14) score=0.90  despostes
+  box=(1022,44,89,13) score=0.93  nouveaux postes
+  box=(1146,45,99,15) score=0.91  poste-candidat
+  box=(1317,45,60,14) score=0.87  donnees
+  box=(27,75,163,17) score=0.92  Evolution dynamique des
+  box=(8,92,208,13) score=0.86  nmnetenresd'unnnste.evistant.
+  box=(1699,94,64,17) score=0.87  Ingenieur
+  box=(2,101,380,13) score=0.92  A partir du graphe temporel, detecter les ajouts, suppressions et modifications
+  box=(1829,98,60,14) score=0.85   Mise a jour
+  box=(1661,109,138,18) score=0.88  developpementJava
+  box=(48,113,289,13) score=0.92  de competences, suivre Fevolution de la structure du poste
+  box=(1828,111,58,14) score=0.83  dynamique
+  box=(43,148,108,16) score=0.91  Chronologie des
+  box=(951,150,61,14) score=0.79  6 derniers
+  box=(1042,151,54,14) score=0.86  3 derniers
+  box=(1127,151,41,26) score=0.76  1 an
+  box=(1192,154,43,21) score=0.74  Tout
+  box=(1336,147,78,22) score=0.88  Points cles
+  box=(51,164,91,17) score=0.81  changements
+  box=(966,165,33,14) score=0.80  mois
+  box=(1054,164,29,14) score=0.74  mois
+  box=(44,202,64,14) score=0.83  Nombre total
+  box=(149,200,68,17) score=0.89  Competences
+  box=(1299,204,360,18) score=0.88  Collaboratior Le developpement assiste par IA passe d'un × plus  a
+  box=(67,216,14,8) score=0.66  de
+  box=(150,214,68,13) score=0.81  nouvellement
+  box=(1335,221,18,17) score=0.64  IA
+  box=(42,225,66,13) score=0.89  competences
+  box=(157,226,51,11) score=0.82  apparues
+  box=(1450,219,146,13) score=0.84  une  competence de base w
+  box=(41,235,60,15) score=0.88  Nombre de
+  box=(1386,234,463,20) score=0.92  Parmi les ajouts de la periode : programmation assistee par IA, Copilot,
+  box=(36,250,69,13) score=0.90  competences
+  box=(45,266,17,13) score=0.53  70
+  box=(1494,271,71,13) score=0.86  recrutements.
+  box=(45,285,17,13) score=0.56  60
+  box=(1395,292,458,16) score=0.93  Les outils de codage a grands modeles s'implantent plus vite dans la R&D ; la
+  box=(43,304,20,15) score=0.67  50
+  box=(1325,304,53,18) score=0.78  Cause
+  box=(44,325,17,13) score=0.67  40
+  box=(1406,327,142,13) score=0.91  collaboratif une attente rigide.
+  box=(43,344,20,15) score=0.67  30
+  box=(1312,350,75,19) score=0.82  Tendance!
+  box=(1408,347,432,16) score=0.93  Dans 1 a 2 ans, le developpement collaboratif IA (prompts, revue de code,
+  box=(43,363,21,16) score=0.53  20
+  box=(1315,369,72,14) score=0.84  Conclusion
+  box=(1634,362,81,14) score=0.76  sts1rleviendra
+  box=(44,383,19,16) score=0.59  10
+  box=(1466,383,123,13) score=0.87  avantage differenciateur.
+  box=(43,419,54,17) score=0.85  2026-02
+  box=(233,419,54,17) score=0.82  2026-03
+  box=(422,419,55,17) score=0.81  2026-04
+  box=(612,419,54,17) score=0.78  2026-05
+  box=(802,419,54,17) score=0.74  2026-06
+  box=(992,419,54,17) score=0.83  2026-07
+  box=(1182,419,55,17) score=0.75  2026-08
+  box=(1310,421,58,14) score=0.83  Donnees a
+  box=(1323,434,36,14) score=0.76  Pappui
+  box=(1333,451,139,16) score=0.91  Contenu des communautes
+  box=(1517,450,197,16) score=0.89  Penetration des mots-cles  IA 》
+  box=(1330,464,150,16) score=0.94  techniques : +85 % sur un an
+  box=(1523,464,186,19) score=0.93  dans les recrutements : +18 pp
+  box=(43,490,169,17) score=0.87  2026-08 : changements
+  box=(1220,492,22,12) score=0.74  Par
+  box=(1323,485,203,17) score=0.95  6 postes sur 10 ont deja inscrit des outils
+  box=(1213,503,38,14) score=0.87  rapport
+  box=(63,509,130,17) score=0.84  cles de la periode
+  box=(1388,500,78,13) score=0.86  IA dans leur JD
+  box=(1322,549,43,19) score=0.83  Cloud
+  box=(1381,549,288,17) score=0.92  La migration vers le cloud renforce les competences
+  box=(815,563,67,15) score=0.85  Raison du
+  box=(1324,568,36,14) score=0.79  natif
+  box=(132,570,105,23) score=0.87  Competence
+  box=(464,571,43,22) score=0.70  Type
+  box=(621,573,87,17) score=0.82  Importance
+  box=(1441,566,167,13) score=0.95  cloud natifetconteneurisation
+  box=(806,579,84,17) score=0.85  changement
+  box=(1304,591,90,20) score=0.89  Phenomene
+  box=(1397,584,448,13) score=0.93  Les competences cloud natif, Kubernetes, Docker, ServiceMesh pesent davantage dans les
+  box=(1403,605,191,13) score=0.90  et passent de  avance  a  exigence
+  box=(1606,599,31,11) score=0.86  ajouts
+  box=(166,611,87,14) score=0.83  Programmation
+  box=(480,617,14,13) score=0.51  AI
+  box=(817,611,367,16) score=0.92  L'essor des grands modeles pousse les entreprises a integrer PIA dans les
+  box=(950,625,99,13) score=0.85  processus de R&D.
+  box=(167,626,84,13) score=0.87  assistee par IA
+  box=(1470,617,52,13) score=0.81  centrale w.
+  box=(1323,645,54,21) score=0.82  Cause
+  box=(1409,636,428,16) score=0.93  Migration complete des clients publics et Internet vers le cloud : livraison
+  box=(480,663,14,12) score=0.54  Al
+  box=(170,664,56,18) score=0.87  Copilot
+  box=(817,657,368,16) score=0.92  L'essor des grands modeles pousse les entreprises a integrer PIA dans les
+  box=(950,671,99,12) score=0.85  processus de R&D.
+  box=(44,675,91,14) score=0.91  Competences
+  box=(1396,672,120,13) score=0.91  vers les piles cloud natif.
+  box=(58,690,61,16) score=0.59  ajn"gees
+  box=(1313,696,79,14) score=0.84  Tendance/
+  box=(1394,694,450,16) score=0.90  Le cloud natif (orchestration de conteneurs + mallage de services + exploitation declarative)
+  box=(168,708,53,21) score=0.77  Cursor
+  box=(816,704,368,16) score=0.91  L'essor des grands modeles pousse les entreprises a integrer PIA dans les
+  box=(52,710,76,14) score=0.83  competences
+  box=(1311,710,79,20) score=0.87  Conclusion
+  box=(645,711,77,16) score=0.80  ★★★★★
+  box=(1410,712,143,17) score=0.89  le pilier du backend Java,
+  box=(1570,708,102,13) score=0.91  rastera durablement
+  box=(950,718,98,12) score=0.91  processus de R&D.
+  box=(1390,727,185,16) score=0.92  etroitement lie aux microservices.
+  box=(161,762,96,20) score=0.89  Voir plus (6)-
+  box=(1339,766,78,14) score=0.82  Sources de
+  box=(1832,765,33,15) score=0.80  Tout
+  box=(1348,783,59,14) score=0.80  donnees
+  box=(1823,781,48,17) score=0.74  deplier
+  box=(1310,816,165,16) score=0.92  Analyse croisee multi-sources (6
+  box=(1350,830,85,13) score=0.90  sources au total)
+  box=(464,850,42,26) score=0.79  Type
+  box=(131,851,105,24) score=0.86  Competence
+  box=(621,852,89,20) score=0.87  Importance
+  box=(814,843,70,20) score=0.86  Raison du
+  box=(1342,855,63,14) score=0.87  Donnees de
+  box=(808,862,83,14) score=0.90  changement
+  box=(1435,854,33,15) score=0.83  JD de
+  box=(1341,868,64,13) score=0.91  recrutement
+  box=(1418,868,63,13) score=0.83  recrutement
+  box=(1830,869,29,21) score=0.60  OK
+  box=(1327,881,206,17) score=0.88  12 580 JD valides -MAJ :2026-08-01
+  box=(502,894,71,17) score=0.86  Evolution des
+  box=(169,899,45,21) score=0.80  Seata
+  box=(822,895,297,16) score=0.93  L'adoption du cloud natif et des microservices s'approfondit ;
+  box=(646,904,75,14) score=0.83  ★★★★★
+  box=(866,908,209,15) score=0.94  les solutions transactionnelles convergent.
+  box=(476,909,122,13) score=0.91  transactions distribuees
+  box=(1819,902,47,22) score=0.73  Q&R
+  box=(1335,928,101,16) score=0.92  Donnees de postes
+  box=(1457,927,52,17) score=0.85  Donnees
+  box=(503,942,68,14) score=0.89  Evolution des
+  box=(1363,942,44,13) score=0.89  internes
+  box=(1463,943,39,11) score=0.86  privees
+  box=(1827,939,31,23) score=0.65  OK
+  box=(170,950,33,14) score=0.64  TCC
+  box=(819,951,175,13) score=0.95  Adoption accrue du cloud natif et des
+===== image7.png =====
+  box=(553,38,95,17) score=0.92  Actualites des
+  box=(899,38,56,17) score=0.81  Analyse
+  box=(1000,35,103,23) score=0.84  Decouverte de
+  box=(1155,38,97,17) score=0.90  Appariement
+  box=(718,39,111,16) score=0.87  Cartedes talents
+  box=(1298,38,63,17) score=0.79  Base de
+  box=(85,41,108,27) score=0.90  ZhiTuPoJu
+  box=(1690,45,76,22) score=0.85  developer
+  box=(1795,39,78,30) score=0.82  Quitter
+  box=(731,53,81,19) score=0.83  numeriques
+  box=(575,56,50,17) score=0.81  postes
+  box=(889,55,75,17) score=0.86  des postes
+  box=(991,56,119,17) score=0.88  nouveaux postes
+  box=(1149,56,111,17) score=0.89  poste-candidat
+  box=(1295,57,69,17) score=0.87  donnees
+  box=(57,117,167,16) score=0.88  Appariement poste-candidat
+  box=(493,122,60,22) score=0.76  oPoste
+  box=(589,124,226,19) score=0.88  Competences Apprentissage
+  box=(838,124,71,20) score=0.78  Entretien
+  box=(373,125,85,17) score=0.87  Appariement
+  box=(1802,116,40,20) score=0.86  Lancer
+  box=(87,131,110,18) score=0.86  Poste de decision
+  box=(286,126,23,15) score=0.64  CV
+  box=(1782,133,70,14) score=0.86  Tappariement -
+  box=(77,185,32,19) score=0.73  Voir
+  box=(1547,187,61,14) score=0.84  Objectif de
+  box=(1623,191,93,19) score=0.85  Backend Java
+  box=(1726,184,69,19) score=0.83  Entreprises
+  box=(142,192,87,22) score=0.91  Reimporter
+  box=(270,193,219,16) score=0.89   zhangsan_backend_java.txt -0.0 Mo
+  box=(1543,202,68,14) score=0.89  candidature
+  box=(63,203,58,17) score=0.85  I'original
+  box=(1746,201,29,15) score=0.78  cles
+  box=(660,260,65,17) score=0.84  Entrees du
+  box=(977,268,122,17) score=0.80  ANALYSE&EDITION
+  box=(1770,259,83,20) score=0.87  Experiences
+  box=(292,286,61,30) score=0.74  Zhang
+  box=(1782,278,61,17) score=0.82  de projet
+  box=(303,309,41,27) score=0.74  San
+  box=(704,307,84,16) score=0.91  Informations
+  box=(704,324,84,14) score=0.89  personnelles
+  box=(263,341,129,17) score=0.90  Ingenieur developpement
+  box=(988,344,58,17) score=0.77  • Points
+  box=(290,356,73,14) score=0.89  backend Java
+  box=(1001,360,35,18) score=0.83  forts
+  box=(684,370,107,27) score=0.83  Formation
+  box=(162,383,328,16) score=0.89  Tel. : 138-0000-0000 - E-mail : zhangsan@example.com
+  box=(992,376,163,15) score=0.95  1. Pile technique tres alignee sur
+  box=(1050,391,46,12) score=0.81  le poste
+  box=(997,411,829,19) score=0.93  La zone & Experiences de projet  selectionnee constitu la partie la plus convaincante et la plus dense du CV. Ses points forts sont les suivants :
+  box=(706,428,82,17) score=0.84  Experiences
+  box=(57,442,89,20) score=0.89  Formation
+  box=(713,443,67,19) score=0.81  de projet
+  box=(991,438,72,13) score=0.88  trois niveaux :
+  box=(991,464,230,16) score=0.86  2. Donnees quantifiees et α tangibles >
+  box=(70,489,366,17) score=0.88  Universite - Informatique ·Licence<br>2019.09-2023.06
+  box=(707,489,76,17) score=0.86  Experience
+  box=(1015,486,477,16) score=0.91  Le premier projet indique  temps de reponse moyen < 1 s 》, un indicateur dur de
+  box=(694,505,101,14) score=0.88  professionnelle
+  box=(1211,503,82,14) score=0.91  performance :
+  box=(91,525,152,17) score=0.91  Experiences de projet -
+  box=(1022,518,758,15) score=0.92  Le second indique  1oo+ acces concurrents  et  couverture de tests 7o % , deux atouts pour un poste backend : performance et qualite.
+  box=(97,543,139,17) score=0.89  mots-cles cliquables
+  box=(994,535,81,14) score=0.87  pas du simple x
+  box=(701,546,92,17) score=0.87  Competences
+  box=(994,548,53,13) score=0.86  ca fonction
+  box=(709,563,76,17) score=0.88  techniques
+  box=(994,554,520,19) score=0.91  Les validations externes (α excellente evaluation en soutenance w,  3e prix universitaire
+  box=(75,570,491,18) score=0.90  1. Systeme de commandes Java haute concurrence : flux de transaction central, temps de
+  box=(1125,570,254,16) score=0.91  >) convainquent plus que I'autosatisfaction.
+  box=(257,587,121,12) score=0.81  reponse reduit de 40 %
+  box=(63,594,514,19) score=0.92  5 M+ appels/jour. 2. Plateforme marketing'SpringBoot : services de configuration
+  box=(999,587,92,13) score=0.85  3. Role clairement
+  box=(1031,600,28,14) score=0.79  defini
+  box=(679,614,137,23) score=0.90  Auto-évaluation
+  box=(995,610,664,21) score=0.92  Vous mentionnez α chef d'equipe " et α developpeur principal w, et dans le premier projet α organisation du travail.
+  box=(1668,618,158,13) score=0.92  _ce qui montre au recruteur que
+  box=(138,634,366,19) score=0.89  Ontimisation MysQL : requetes lentes, index composites,
+  box=(1735,630,28,14) score=0.72  vous
+  box=(63,649,148,22) score=0.84  QPS multiplie par 3.
+  box=(1086,654,365,15) score=0.91  atout differenciateur precieux pour un recrutement junior.
+  box=(65,688,75,17) score=0.90  Experience
+  box=(51,706,102,16) score=0.92  professionnelle
+  box=(1016,698,45,14) score=0.79  Points a
+  box=(1014,712,49,13) score=0.81  ameliorer
+  box=(68,734,473,16) score=0.91  Aucune experience professionnelle formelle<br>(CV d'exemple - ajouter un stage ou un poste a
+  box=(994,733,199,16) score=0.93  Un point reste toutefois a ameliorer :
+  box=(272,748,64,14) score=0.91  temps plein)
+  box=(1004,754,793,19) score=0.92  L'ordre des projets (α implementation -→ responsabilites -→+ resultats >) est logique, mais le second (librairie en ligne) colle mieux a votre
+  box=(50,775,106,20) score=0.89  Competences
+  box=(1325,769,153,18) score=0.90  objectif,or il est place en
+  box=(1005,781,383,17) score=0.94  seconde position : un recruteur qui parcourt rapidement verra d'abord le projet
+  box=(60,796,86,19) score=0.91  techniques
+  box=(1160,795,71,12) score=0.91  algorithmique.
+  box=(75,821,489,19) score=0.93  Java (expert), SpringBoot (maitrise), MySQL (maitrise), Redis (notions), conception
+  box=(996,813,826,21) score=0.93  En entretien, presentez d'abord le projet librairie, ou reordonnez les deux projets sur le cv (optimisation structurelle ; I'ajustement
+  box=(293,839,52,13) score=0.84  systeme
+  box=(1005,834,75,14) score=0.84  depend de vos
+  box=(77,848,281,18) score=0.95  (famiiarise) <br>Docker, microservices : pas de pratique
+  box=(1007,847,70,14) score=0.90  preferences).
+  box=(194,863,48,13) score=0.86  en projet
+  box=(994,865,85,13) score=0.87  Reecriture ciblee
+  box=(1752,867,70,20) score=0.86  + Modification
+  box=(1780,884,14,13) score=0.65  IA
+  box=(35,899,138,20) score=0.88  Auto-évaluation
+  box=(1815,911,55,23) score=0.72  Q&R
+  box=(1010,941,591,18) score=0.93  Cliquez sur < + Modification IA > pour ouvrir le panneau : modifiez le CV a droite, cliquez sur le texte
+  box=(1190,957,228,16) score=0.94  surligne pour le synchroniser a gauche.
+===== image8.png =====
+  box=(37,23,101,15) score=0.91  Comparaison des
+  box=(49,37,74,13) score=0.89  reecritures IA
+  box=(23,51,139,15) score=0.94  Renforcer les resultats et la
+  box=(38,65,107,13) score=0.89  profondeur technique
+  box=(324,114,41,13) score=0.81  Version
+  box=(51,115,41,13) score=0.81  Version
+  box=(594,113,85,18) score=0.86  Version concise
+  box=(47,127,50,11) score=0.75  guantifiee
+  box=(314,127,58,13) score=0.78  Percytante
+  box=(33,134,194,15) score=0.85  Mettre en avant les resultats chiffres et
+  box=(324,134,221,15) score=0.89  Verbesplusforts,resultats mis en valeur
+  box=(600,134,224,18) score=0.93  Plus concis, densite accrue, plus de sens en
+  box=(615,128,46,12) score=0.71  et dense
+  box=(91,148,76,12) score=0.88  la valeur metier
+  box=(343,149,178,14) score=0.94  pour impressionner le recruteur
+  box=(585,158,49,16) score=0.85  valeur
+  box=(675,149,75,12) score=0.84  moins de mots
+  box=(37,208,79,13) score=0.88  Reecriture ciblee
+  box=(35,220,81,12) score=0.84  surles faiblesses
+  box=(45,226,207,17) score=0.92  Reecrire la structure et Pordre des projets
+  box=(60,241,179,12) score=0.88  selon les points d'amelioration de FlA
+  box=(23,282,107,15) score=0.83  Reecriture en cours :
+  box=(22,296,109,12) score=0.90  experiences de projet
+  box=(83,325,45,14) score=0.89  (editable
+  box=(341,325,46,14) score=0.87  Contenu
+  box=(539,327,44,13) score=0.84  (editable
+  box=(489,328,31,11) score=0.80  Apres
+  box=(682,320,156,16) score=0.95  Cliquez sur le texte surigne pour
+  box=(327,337,69,14) score=0.86  actuel du CV
+  box=(479,340,50,13) score=0.85  reecritur
+  box=(525,340,66,13) score=0.92  directement)
+  box=(690,332,143,15) score=0.92  le synchroniser avec le CV de
+  box=(741,345,41,11) score=0.83  gauche
+  box=(38,364,358,15) score=0.93  1. Systeme de commandes Java haute concurrence : flux de transaction
+  box=(512,362,170,16) score=0.89  1. Librairie en ligne  pilote I
+  box=(196,377,39,14) score=0.84  central,
+  box=(548,377,99,15) score=0.85  2024.09-2025.01
+  box=(45,387,196,15) score=0.91  temps de reponse reduit de 40 %, 5 M+
+  box=(113,400,56,13) score=0.85  appels/jour.
+  box=(488,395,342,13) score=0.94  Aligne sur Iobjectif backend Java : recherche, commande et paiement
+  box=(33,409,357,16) score=0.93  2. Plateforme marketing SpringBoot : services de configuration et
+  box=(168,424,84,14) score=0.84  de distribution,
+  box=(485,415,332,17) score=0.92  via SpringBoot ; MySQL + Redis : 500 K+ requetes/jour,
+  box=(63,433,110,13) score=0.91  conception des tables,
+  box=(37,445,163,15) score=0.87  optimisation des requetes lentes.
+  box=(481,438,112,15) score=0.89  latence P99 < 200 ms.
+  box=(38,462,323,15) score=0.91  3. Optimisation MysQL : requetes lentes, index composites,
+  box=(486,456,322,15) score=0.94  Equipe de 5 personnes, 12 documents techniques, couverture de
+  box=(38,480,86,13) score=0.89  QPS multiplie par
+  box=(632,471,25,11) score=0.83  tests
+  box=(75,494,9,10) score=0.56  3.
+  box=(479,487,101,12) score=0.91  > 70 %, CI tout vert.
+  box=(513,500,213,15) score=0.90  2. Systeme de commandes Java  pilote I
+  box=(486,520,346,17) score=0.91  Fluxdetransaction'central:tempsdereponsede200
+  box=(579,514,86,13) score=0.85  2024.03-2024.08
+  box=(509,543,310,17) score=0.92  (-40%),5M+ appels/jour:haute concurrence et
+  box=(653,536,43,16) score=0.64  120.6s
+  box=(564,562,199,13) score=0.92  optimisationdelaperformance
+  box=(496,591,325,15) score=0.93  Equipe de 5 personnes, 12 documents techniques, 30+ fusions de
+  box=(475,618,302,18) score=0.90  3. Optimisation MySQL— pilote |2025.02-2025.04
+  box=(491,640,324,21) score=0.94  60+requeteslentes,12 indexcomposites,
+  box=(481,658,101,15) score=0.84  QPS800a2400
+  box=(516,672,28,17) score=0.74  (×3)
+===== image9.png =====
+  box=(56,28,144,16) score=0.93  Appariement poste-candidat -
+  box=(439,31,54,20) score=0.81  Poste
+  box=(237,32,42,18) score=0.51  .CV
+  box=(523,31,208,20) score=0.90  CompetencesAppfentissage
+  box=(84,41,90,13) score=0.84  Poste de decision
+  box=(329,41,65,13) score=0.84  Appariement
+  box=(745,40,48,14) score=0.84  Entretien
+  box=(230,115,48,13) score=0.87  Resultats
+  box=(552,106,104,19) score=0.91  Developpement
+  box=(46,121,175,13) score=0.91  RECOMMANDATION DE POSTES*
+  box=(226,126,55,16) score=0.88  des postes
+  box=(588,125,34,15) score=0.78  Java
+  box=(30,138,174,26) score=0.92  Recommandation
+  box=(67,166,98,23) score=0.77  de postes
+  box=(577,174,63,14) score=0.78  Informations
+  box=(675,174,54,14) score=0.91  Diagnostic
+  box=(459,182,46,13) score=0.76  Taux de
+  box=(762,174,61,14) score=0.87  Preparation
+  box=(56,187,186,15) score=0.93  Cliquez sur un poste pour afficher les
+  box=(684,187,35,13) score=0.80  du CV
+  box=(585,188,46,12) score=0.84  du poste
+  box=(763,185,60,17) score=0.87  a rentretien
+  box=(113,200,73,13) score=0.90  details a droite
+  box=(440,195,84,13) score=0.89  correspondance
+  box=(235,233,46,14) score=0.80  Tous les
+  box=(70,234,29,14) score=0.81  Ville :
+  box=(584,231,78,13) score=0.91  Informations de
+  box=(133,241,75,13) score=0.88  Salaire 15-25K
+  box=(66,246,36,17) score=0.78  Bejjing
+  box=(231,247,51,13) score=0.83  domaines
+  box=(584,242,76,15) score=0.85  base du poste
+  box=(551,271,80,17) score=0.86  Entreprise
+  box=(654,263,54,18) score=0.90  Entreprise
+  box=(137,282,55,17) score=0.78  Postea
+  box=(42,283,88,14) score=0.87  Actuellement
+  box=(228,284,48,16) score=0.88  Meilleure
+  box=(310,285,32,15) score=0.80  Haut
+  box=(646,277,70,15) score=0.91  technologique
+  box=(61,298,49,17) score=0.83  adapte
+  box=(135,300,59,14) score=0.90  potentiel
+  box=(211,301,83,10) score=0.86  correspondance
+  box=(305,300,41,14) score=0.81  salaire
+  box=(563,308,69,19) score=0.80  Region 
+  box=(626,309,74,19) score=0.78  Shanghai
+  box=(563,345,56,22) score=0.81  Salaire
+  box=(65,351,92,14) score=0.92  Developpement
+  box=(314,354,28,14) score=0.79  Java
+  box=(402,354,17,13) score=0.67  96
+  box=(647,347,47,17) score=0.84  20-35K
+  box=(56,374,135,16) score=0.90  Grande entreprise Internet
+  box=(70,366,79,13) score=0.88  backend Java
+  box=(314,374,66,14) score=0.86  Spring Boot
+  box=(241,376,35,29) score=0.53  88
+  box=(403,374,16,13) score=0.67  06
+  box=(56,382,91,29) score=0.82  25-45K:femps
+  box=(423,383,95,19) score=0.81  Voir ranalyse du +
+  box=(564,386,55,20) score=0.85  Nature
+  box=(644,380,40,17) score=0.83  Temps
+  box=(313,391,40,19) score=0.82  MySQL
+  box=(402,394,17,13) score=0.67  87
+  box=(450,399,32,14) score=0.83  poste
+  box=(234,402,49,14) score=0.82  % MATCH
+  box=(647,396,34,15) score=0.83  plein
+  box=(84,407,34,11) score=0.72  +plein
+  box=(314,414,33,14) score=0.74  Redis
+  box=(134,415,60,14) score=0.88  2 ecarts de
+  box=(49,422,84,14) score=0.93  correspondances
+  box=(403,414,16,13) score=0.63  72
+  box=(548,427,88,17) score=0.85  Experience
+  box=(129,430,69,13) score=0.83  competences
+  box=(78,435,28,10) score=0.74  fortes
+  box=(642,428,47,14) score=0.81  0-3 ans
+  box=(560,465,65,17) score=0.81  Diplome
+  box=(653,458,58,16) score=0.83  Licence ou
+  box=(46,469,104,19) score=0.89  Developpement
+  box=(314,476,28,14) score=0.79  Java
+  box=(402,476,17,12) score=0.66  92
+  box=(669,473,26,14) score=0.71  plus
+  box=(64,494,128,17) score=0.87  Entreprise technologique -
+  box=(85,488,29,14) score=0.70  lava
+  box=(312,496,69,15) score=0.89  Spring Boot
+  box=(403,496,16,13) score=0.66  85
+  box=(583,496,42,14) score=0.76  Date de
+  box=(241,499,35,28) score=0.52  84
+  box=(425,505,94,20) score=0.83  Voir fanalyse du *
+  box=(654,496,53,14) score=0.90  Disponible
+  box=(581,508,44,12) score=0.88  prise de
+  box=(313,515,40,17) score=0.83  MySQL
+  box=(403,516,16,13) score=0.66  82
+  box=(662,509,34,11) score=0.79  sous 1
+  box=(589,521,29,11) score=0.82  poste
+  box=(451,522,29,11) score=0.81  poste
+  box=(233,525,50,13) score=0.80  % MATCH
+  box=(82,527,26,16) score=0.77  plein
+  box=(659,521,43,10) score=0.83  semaine
+  box=(314,536,33,14) score=0.74  Redis
+  box=(137,538,54,14) score=0.82  1 ecart de
+  box=(49,545,84,13) score=0.92  correspondances
+  box=(403,536,16,13) score=0.66  70
+  box=(129,551,70,14) score=0.89  competences
+  box=(78,557,29,11) score=0.86  fortes
+  box=(573,553,70,14) score=0.89  Exigences du
+  box=(591,566,33,13) score=0.72  poste
+  box=(735,589,45,18) score=0.81  MySQL
+  box=(641,590,73,17) score=0.87  Spring Boot
+  box=(588,591,30,15) score=0.79  Java
+  box=(45,592,95,20) score=0.89  Developpement
+  box=(824,584,32,14) score=0.77  Redis
+  box=(314,597,28,15) score=0.76  Java
+  box=(402,598,17,13) score=0.67  88
+  box=(814,597,54,14) score=0.89  (prioritaire)
+  box=(68,617,117,17) score=0.90  Entreprisededonnees
+  box=(313,616,43,17) score=0.79  Python
+  box=(241,620,36,29) score=0.56  78
+  box=(402,617,17,13) score=0.67  50
+  box=(428,627,85,15) score=0.90  Voir ranalyse du
+  box=(84,631,86,18) score=0.74  -Tempshou - 22-
+  box=(578,625,297,17) score=0.91  Les priorites sont marquees  (prioritaire)  ; preparez
+  box=(59,636,34,12) score=0.66  40K.
+  box=(313,636,25,16) score=0.73  SQL
+  box=(403,637,16,13) score=0.64  65
+  box=(448,641,34,14) score=0.83  poste
+  box=(233,647,50,13) score=0.78  % MATCH
+  box=(81,649,26,15) score=0.78  plein
+  box=(608,640,236,15) score=0.91  les questions de scenario avant 'entretien.
+  box=(313,654,47,19) score=0.84  Hadoop
+  box=(138,660,54,13) score=0.86  1 ecart de
+  box=(53,665,80,14) score=0.87  correspondance
+  box=(402,657,17,13) score=0.67  30
+  box=(129,673,69,14) score=0.88  competences
+  box=(81,678,23,11) score=0.76  forte
+  box=(565,677,82,19) score=0.87  Responsabilites
+  box=(610,698,262,13) score=0.95  Analyse des besoins, conception et implementation des
+  box=(40,711,105,19) score=0.89  Developpement
+  box=(585,716,344,16) score=0.90  Participera la mise en ceuvre etaevoiution des architectures
+  box=(313,727,30,15) score=0.79  Java
+  box=(401,726,19,16) score=0.67  85
+  box=(241,741,35,28) score=0.67  69
+  box=(328,742,31,14) score=0.83  Tests
+  box=(421,742,98,25) score=0.84  Voir Tanalyse du,
+  box=(644,733,222,13) score=0.89  haute concurrence ethaute disponibilite
+  box=(403,748,17,12) score=0.67  40
+  box=(594,743,329,16) score=0.91  Collaborer avec produit, tests et frontend pour la livraison iterative ;
+  box=(313,755,63,13) score=0.91  automatises
+  box=(450,761,34,14) score=0.83  poste
+  box=(680,756,154,13) score=0.94  participer aux revues de code ;
+  box=(233,767,50,13) score=0.77  % MATCH
+  box=(313,768,43,13) score=0.78  Python
+  box=(81,769,27,15) score=0.75  plein
+  box=(403,768,16,13) score=0.63  50
+  box=(584,770,332,13) score=0.92  ,Optimiser en continu la performance et la qualite, capitaliser sur des
+  box=(138,780,54,13) score=0.86  1 ecart de
+  box=(53,785,79,13) score=0.92  correspondance
+  box=(629,783,242,13) score=0.92  composants reutilisables et les bonnes pratiques.
+  box=(79,796,26,14) score=0.83  forte
+  box=(128,793,71,13) score=0.91  competences
+  box=(577,811,58,14) score=0.81  Resume du
+  box=(600,823,16,11) score=0.66  JD
+  box=(579,837,340,16) score=0.93  Conception de Farchitecture serveur et developpement metier central
+  box=(931,838,146,13) score=0.89  competences en ingenierie et
+  box=(702,851,99,13) score=0.89  solides bases Java,
+  box=(920,851,169,13) score=0.91  experience en haute concurrence.

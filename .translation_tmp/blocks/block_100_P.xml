@@ -1,0 +1,202 @@
+<ns0:p ns2:paraId="2BE7594E" ns2:textId="4D8DCEBE" ns0:rsidR="00DD52EF" ns0:rsidRDefault="00C66236">
+      
+      
+      <ns0:pPr>
+        
+        
+        <ns0:ind ns0:firstLine="420"/>
+        
+        
+        <ns0:jc ns0:val="both"/>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+      
+      </ns0:pPr>
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:noProof/>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:drawing>
+          
+          
+          <ns3:anchor distT="0" distB="0" distL="114300" distR="114300" simplePos="0" relativeHeight="251662336" behindDoc="0" locked="0" layoutInCell="1" allowOverlap="1" ns4:anchorId="43555450" ns4:editId="13CD0078">
+            
+            
+            <ns3:simplePos x="0" y="0"/>
+            
+            
+            <ns3:positionH relativeFrom="column">
+              
+              
+              <ns3:posOffset>3171320</ns3:posOffset>
+              
+            
+            </ns3:positionH>
+            
+            
+            <ns3:positionV relativeFrom="paragraph">
+              
+              
+              <ns3:posOffset>40744</ns3:posOffset>
+              
+            
+            </ns3:positionV>
+            
+            
+            <ns3:extent cx="2945765" cy="1483360"/>
+            
+            
+            <ns3:effectExtent l="0" t="0" r="6985" b="2540"/>
+            
+            
+            <ns3:wrapTopAndBottom/>
+            
+            
+            <ns3:docPr id="631190288" name="图片 1"/>
+            
+            
+            <ns3:cNvGraphicFramePr>
+              
+              
+              <ns5:graphicFrameLocks noChangeAspect="1"/>
+              
+            
+            </ns3:cNvGraphicFramePr>
+            
+            
+            <ns5:graphic>
+              
+              
+              <ns5:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">
+                
+                
+                <ns6:pic>
+                  
+                  
+                  <ns6:nvPicPr>
+                    
+                    
+                    <ns6:cNvPr id="631190288" name="图片 1"/>
+                    
+                    
+                    <ns6:cNvPicPr>
+                      
+                      
+                      <ns5:picLocks noChangeAspect="1"/>
+                      
+                    
+                    </ns6:cNvPicPr>
+                    
+                  
+                  </ns6:nvPicPr>
+                  
+                  
+                  <ns6:blipFill>
+                    
+                    
+                    <ns5:blip ns7:embed="rId13"/>
+                    
+                    
+                    <ns5:stretch>
+                      
+                      
+                      <ns5:fillRect/>
+                      
+                    
+                    </ns5:stretch>
+                    
+                  
+                  </ns6:blipFill>
+                  
+                  
+                  <ns6:spPr>
+                    
+                    
+                    <ns5:xfrm>
+                      
+                      
+                      <ns5:off x="0" y="0"/>
+                      
+                      
+                      <ns5:ext cx="2945765" cy="1483360"/>
+                      
+                    
+                    </ns5:xfrm>
+                    
+                    
+                    <ns5:prstGeom prst="rect">
+                      
+                      
+                      <ns5:avLst/>
+                      
+                    
+                    </ns5:prstGeom>
+                    
+                  
+                  </ns6:spPr>
+                  
+                
+                </ns6:pic>
+                
+              
+              </ns5:graphicData>
+              
+            
+            </ns5:graphic>
+            
+          
+          </ns3:anchor>
+          
+        
+        </ns0:drawing>
+        
+      
+      </ns0:r>
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t>La fenêtre de prédiction est fixée, selon les orientations, de 6 à 18 mois ; les sorties entrent dans la liste de suivi pour des comparaisons lors des rescanals ultérieurs.</ns0:t>
+        
+      
+      </ns0:r>
+      
+      
+      
+      
+      
+      
+      
+    
+    </ns0:p>

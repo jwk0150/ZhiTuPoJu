@@ -1,0 +1,77 @@
+<ns0:p ns2:paraId="10A2BDB4" ns2:textId="755CDD61" ns0:rsidR="006E73B6" ns0:rsidRPr="006E73B6" ns0:rsidRDefault="006E73B6" ns0:rsidP="006E73B6">
+      
+      
+      <ns0:pPr>
+        
+        
+        <ns0:ind ns0:firstLine="420"/>
+        
+        
+        <ns0:jc ns0:val="both"/>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+      
+      </ns0:pPr>
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t>L&#x2019;implémentation du système se déploie selon « construction du graphe — découverte des postes émergents — évolution des compétences — appariement poste-candidat — prévention des hallucinations dans le dialogue — validation expérimentale », et correspond une à une aux innovations précédentes. Le graphe de connaissances des compétences est défini comme un graphe orienté pondéré : les nœuds comprennent les postes, les compétences, les secteurs d&#x2019;activité et les entreprises ; les arêtes couvrent quatre types de relations — poste-compétence, poste-secteur, entreprise-poste et compétence-compétence — comme le montre la figure 3. Côté entités, les postes, entreprises et secteurs proviennent principalement des champs structurés ; les compétences proviennent des tableaux de la table de détail et de la correspondance la plus longue avec le dictionnaire appliquée au texte des descriptions, avec normalisation des alias ; les alias inconnus peuvent être extraits avec l&#x2019;aide d&#x2019;un grand modèle de langage, mais doivent être confirmés manuellement ou par le dictionnaire avant insertion en base. Lorsqu&#x2019;un nouveau lot arrive, seuls les poids des arêtes des postes affectés sont recalculés ; la carte numérique des talents agrège ensuite la chaleur et les salaires par province et par ville, soutenant l&#x2019;analyse descendante régionale et la carte mentale des compétences des postes.</ns0:t>
+        
+      
+      </ns0:r>
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+    
+    </ns0:p>

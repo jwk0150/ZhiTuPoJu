@@ -1,0 +1,74 @@
+<ns0:p ns2:paraId="403F5115" ns2:textId="46AFF410" ns0:rsidR="00DD52EF" ns0:rsidRDefault="004D33B7" ns0:rsidP="004D33B7">
+      
+      
+      <ns0:pPr>
+        
+        
+        <ns0:ind ns0:firstLineChars="200" ns0:firstLine="420"/>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+      
+      </ns0:pPr>
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t>Le marché de l&#x2019;emploi actuel est confronté à une contradiction structurelle : le rythme d&#x2019;itération des piles technologiques est plus rapide que le cycle de formation des talents, tandis que les entreprises peinent à recruter et que les travailleurs manquent de parcours clairs. Bien que les textes de recrutement publics constituent une source de signaux importante pour observer les besoins en compétences, ils souffrent couramment de délais de publication, de copies modélisées et de bruit d&#x2019;expression, ce qui contamine directement l&#x2019;extraction de connaissances et les résultats d&#x2019;appariement en aval ; le recrutement traditionnel s&#x2019;appuie par ailleurs largement sur la comparaison de mots-clés, ce qui rend difficile la caractérisation de l&#x2019;évolution dynamique de la structure de compétences des postes, tandis que les grands modèles de langage produisent également facilement des hallucinations par manque de preuves dans la génération de définitions de postes et dans les dialogues de diagnostic. Pour répondre à ces problèmes, cet article conçoit et implémente un système de construction dynamique de graphe de connaissances poste-compétence et d&#x2019;appariement intelligent destiné au marché de l&#x2019;emploi, dénommé « ZhiTuPoJu » (percer la situation grâce aux graphes) : prenant le poste et la compétence comme entités centrales, il intègre la collecte et la gouvernance de données multi-sources, la construction du graphe Neo4j, le raisonnement RAG avec contrôle des hallucinations, et l&#x2019;appariement poste-candidat multidimensionnel, formant une boucle fermée comprenant la découverte des postes émergents, la mise à jour dynamique des compétences, la visualisation panoramique au niveau des points de compétence et le diagnostic par analyse de CV ; les exactitudes de l&#x2019;analyse des JD, de l&#x2019;extraction de CV et de l&#x2019;appariement dépassent toutes 90 %, soutenant ainsi le recrutement des entreprises, la planification de carrière et l&#x2019;évaluation des tendances en matière de talents.</ns0:t>
+        
+      
+      </ns0:r>
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+    
+    </ns0:p>

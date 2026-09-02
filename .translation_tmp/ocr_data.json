@@ -1,0 +1,8588 @@
+{
+ "image1.png": [
+  {
+   "x": 29,
+   "y": 21,
+   "w": 357,
+   "h": 26,
+   "score": 0.93,
+   "text": "A. Data acquisition & preprocessing"
+  },
+  {
+   "x": 1031,
+   "y": 23,
+   "w": 201,
+   "h": 20,
+   "score": 0.92,
+   "text": "B. Feature statistics"
+  },
+  {
+   "x": 41,
+   "y": 62,
+   "w": 119,
+   "h": 20,
+   "score": 0.94,
+   "text": "Input: raw data"
+  },
+  {
+   "x": 1036,
+   "y": 62,
+   "w": 215,
+   "h": 20,
+   "score": 0.91,
+   "text": "Summary of feature metrics"
+  },
+  {
+   "x": 41,
+   "y": 87,
+   "w": 220,
+   "h": 20,
+   "score": 0.94,
+   "text": "(e.g., fastq / mzML / txt / csv)"
+  },
+  {
+   "x": 1052,
+   "y": 103,
+   "w": 97,
+   "h": 19,
+   "score": 0.87,
+   "text": "Total features"
+  },
+  {
+   "x": 1429,
+   "y": 102,
+   "w": 53,
+   "h": 21,
+   "score": 0.85,
+   "text": "12,542"
+  },
+  {
+   "x": 123,
+   "y": 145,
+   "w": 39,
+   "h": 19,
+   "score": 0.79,
+   "text": "mzML"
+  },
+  {
+   "x": 191,
+   "y": 145,
+   "w": 33,
+   "h": 21,
+   "score": 0.59,
+   "text": "IXI"
+  },
+  {
+   "x": 252,
+   "y": 145,
+   "w": 31,
+   "h": 20,
+   "score": 0.73,
+   "text": "CSV"
+  },
+  {
+   "x": 1083,
+   "y": 145,
+   "w": 68,
+   "h": 20,
+   "score": 0.81,
+   "text": "Detected"
+  },
+  {
+   "x": 55,
+   "y": 146,
+   "w": 40,
+   "h": 18,
+   "score": 0.83,
+   "text": "FASTQ"
+  },
+  {
+   "x": 1374,
+   "y": 144,
+   "w": 46,
+   "h": 21,
+   "score": 0.75,
+   "text": "9,683"
+  },
+  {
+   "x": 1027,
+   "y": 186,
+   "w": 122,
+   "h": 20,
+   "score": 0.86,
+   "text": "Missing rate < 20%"
+  },
+  {
+   "x": 40,
+   "y": 189,
+   "w": 117,
+   "h": 24,
+   "score": 0.91,
+   "text": "QC & Cleaning"
+  },
+  {
+   "x": 1319,
+   "y": 187,
+   "w": 42,
+   "h": 18,
+   "score": 0.81,
+   "text": "7,126"
+  },
+  {
+   "x": 42,
+   "y": 219,
+   "w": 127,
+   "h": 20,
+   "score": 0.83,
+   "text": "V Quality control"
+  },
+  {
+   "x": 388,
+   "y": 218,
+   "w": 36,
+   "h": 19,
+   "score": 0.67,
+   "text": "High"
+  },
+  {
+   "x": 1086,
+   "y": 228,
+   "w": 65,
+   "h": 20,
+   "score": 0.78,
+   "text": "CV < 0.5"
+  },
+  {
+   "x": 1269,
+   "y": 229,
+   "w": 42,
+   "h": 18,
+   "score": 0.78,
+   "text": "4,985"
+  },
+  {
+   "x": 40,
+   "y": 240,
+   "w": 213,
+   "h": 24,
+   "score": 0.86,
+   "text": "V Adapter trimming / filtering"
+  },
+  {
+   "x": 42,
+   "y": 264,
+   "w": 122,
+   "h": 22,
+   "score": 0.87,
+   "text": "V Normalization"
+  },
+  {
+   "x": 1064,
+   "y": 271,
+   "w": 84,
+   "h": 20,
+   "score": 0.88,
+   "text": "High quality"
+  },
+  {
+   "x": 1238,
+   "y": 270,
+   "w": 46,
+   "h": 21,
+   "score": 0.73,
+   "text": "3,214"
+  },
+  {
+   "x": 392,
+   "y": 281,
+   "w": 29,
+   "h": 15,
+   "score": 0.75,
+   "text": "Low"
+  },
+  {
+   "x": 38,
+   "y": 302,
+   "w": 197,
+   "h": 20,
+   "score": 0.92,
+   "text": "Output: clean data matrix"
+  },
+  {
+   "x": 102,
+   "y": 328,
+   "w": 159,
+   "h": 20,
+   "score": 0.93,
+   "text": "(Samples × Features)"
+  },
+  {
+   "x": 1032,
+   "y": 321,
+   "w": 239,
+   "h": 20,
+   "score": 0.92,
+   "text": "Output: feature statistics report"
+  },
+  {
+   "x": 676,
+   "y": 392,
+   "w": 149,
+   "h": 27,
+   "score": 0.85,
+   "text": "Main Pipeline"
+  },
+  {
+   "x": 424,
+   "y": 446,
+   "w": 121,
+   "h": 24,
+   "score": 0.91,
+   "text": "2. Preprocessing"
+  },
+  {
+   "x": 595,
+   "y": 447,
+   "w": 152,
+   "h": 21,
+   "score": 0.87,
+   "text": "3. Feature extraction"
+  },
+  {
+   "x": 790,
+   "y": 447,
+   "w": 143,
+   "h": 22,
+   "score": 0.88,
+   "text": "4. Feature selection"
+  },
+  {
+   "x": 236,
+   "y": 448,
+   "w": 135,
+   "h": 22,
+   "score": 0.88,
+   "text": "1. Data acquisition"
+  },
+  {
+   "x": 988,
+   "y": 446,
+   "w": 125,
+   "h": 23,
+   "score": 0.89,
+   "text": "5. Model building"
+  },
+  {
+   "x": 1185,
+   "y": 450,
+   "w": 93,
+   "h": 17,
+   "score": 0.92,
+   "text": "6.Evaluation"
+  },
+  {
+   "x": 1217,
+   "y": 514,
+   "w": 33,
+   "h": 15,
+   "score": 0.52,
+   "text": "AO"
+  },
+  {
+   "x": 438,
+   "y": 551,
+   "w": 95,
+   "h": 27,
+   "score": 0.91,
+   "text": "QC, cleaning,"
+  },
+  {
+   "x": 638,
+   "y": 554,
+   "w": 67,
+   "h": 23,
+   "score": 0.89,
+   "text": "Generate"
+  },
+  {
+   "x": 803,
+   "y": 554,
+   "w": 122,
+   "h": 22,
+   "score": 0.87,
+   "text": "Filter informative"
+  },
+  {
+   "x": 269,
+   "y": 555,
+   "w": 69,
+   "h": 20,
+   "score": 0.8,
+   "text": "Raw data"
+  },
+  {
+   "x": 997,
+   "y": 555,
+   "w": 111,
+   "h": 20,
+   "score": 0.88,
+   "text": "Train & validate"
+  },
+  {
+   "x": 1210,
+   "y": 554,
+   "w": 51,
+   "h": 22,
+   "score": 0.85,
+   "text": "Assess"
+  },
+  {
+   "x": 621,
+   "y": 575,
+   "w": 103,
+   "h": 20,
+   "score": 0.85,
+   "text": "feature matrix"
+  },
+  {
+   "x": 833,
+   "y": 575,
+   "w": 63,
+   "h": 20,
+   "score": 0.86,
+   "text": "features"
+  },
+  {
+   "x": 439,
+   "y": 576,
+   "w": 95,
+   "h": 17,
+   "score": 0.89,
+   "text": "normalization"
+  },
+  {
+   "x": 1022,
+   "y": 575,
+   "w": 57,
+   "h": 19,
+   "score": 0.8,
+   "text": "models"
+  },
+  {
+   "x": 1187,
+   "y": 576,
+   "w": 94,
+   "h": 18,
+   "score": 0.86,
+   "text": "performance"
+  },
+  {
+   "x": 37,
+   "y": 678,
+   "w": 241,
+   "h": 20,
+   "score": 0.91,
+   "text": "C. Results & visualization"
+  },
+  {
+   "x": 1018,
+   "y": 676,
+   "w": 272,
+   "h": 25,
+   "score": 0.9,
+   "text": "D. Interpretation & validation"
+  },
+  {
+   "x": 36,
+   "y": 711,
+   "w": 222,
+   "h": 20,
+   "score": 0.87,
+   "text": "Model performance overview"
+  },
+  {
+   "x": 1027,
+   "y": 711,
+   "w": 176,
+   "h": 17,
+   "score": 0.89,
+   "text": "Interpretation workflow"
+  },
+  {
+   "x": 36,
+   "y": 741,
+   "w": 39,
+   "h": 18,
+   "score": 0.83,
+   "text": "Score"
+  },
+  {
+   "x": 1350,
+   "y": 736,
+   "w": 68,
+   "h": 22,
+   "score": 0.86,
+   "text": "Biological"
+  },
+  {
+   "x": 278,
+   "y": 754,
+   "w": 42,
+   "h": 16,
+   "score": 0.82,
+   "text": "+0.07"
+  },
+  {
+   "x": 122,
+   "y": 756,
+   "w": 43,
+   "h": 17,
+   "score": 0.83,
+   "text": "+0.08"
+  },
+  {
+   "x": 359,
+   "y": 752,
+   "w": 44,
+   "h": 21,
+   "score": 0.74,
+   "text": "+0.05"
+  },
+  {
+   "x": 34,
+   "y": 760,
+   "w": 43,
+   "h": 22,
+   "score": 0.74,
+   "text": "1.0"
+  },
+  {
+   "x": 204,
+   "y": 760,
+   "w": 44,
+   "h": 21,
+   "score": 0.77,
+   "text": "+0.06"
+  },
+  {
+   "x": 1046,
+   "y": 765,
+   "w": 90,
+   "h": 20,
+   "score": 0.88,
+   "text": "Key features"
+  },
+  {
+   "x": 1353,
+   "y": 758,
+   "w": 63,
+   "h": 17,
+   "score": 0.89,
+   "text": "evidence"
+  },
+  {
+   "x": 436,
+   "y": 768,
+   "w": 42,
+   "h": 18,
+   "score": 0.77,
+   "text": "+0.04"
+  },
+  {
+   "x": 1060,
+   "y": 783,
+   "w": 59,
+   "h": 24,
+   "score": 0.82,
+   "text": "(N dol)"
+  },
+  {
+   "x": 1201,
+   "y": 775,
+   "w": 64,
+   "h": 17,
+   "score": 0.83,
+   "text": "Validation"
+  },
+  {
+   "x": 1340,
+   "y": 799,
+   "w": 88,
+   "h": 17,
+   "score": 0.84,
+   "text": "Experimental"
+  },
+  {
+   "x": 1350,
+   "y": 814,
+   "w": 67,
+   "h": 20,
+   "score": 0.81,
+   "text": "validation"
+  },
+  {
+   "x": 35,
+   "y": 828,
+   "w": 33,
+   "h": 19,
+   "score": 0.75,
+   "text": "0.5"
+  },
+  {
+   "x": 1184,
+   "y": 862,
+   "w": 70,
+   "h": 14,
+   "score": 0.86,
+   "text": "Permutation"
+  },
+  {
+   "x": 1050,
+   "y": 868,
+   "w": 70,
+   "h": 17,
+   "score": 0.79,
+   "text": "SHAP value"
+  },
+  {
+   "x": 1311,
+   "y": 864,
+   "w": 97,
+   "h": 22,
+   "score": 0.89,
+   "text": "Cross-validation"
+  },
+  {
+   "x": 1186,
+   "y": 877,
+   "w": 68,
+   "h": 14,
+   "score": 0.9,
+   "text": "importance"
+  },
+  {
+   "x": 287,
+   "y": 911,
+   "w": 25,
+   "h": 20,
+   "score": 0.67,
+   "text": "F1"
+  },
+  {
+   "x": 118,
+   "y": 912,
+   "w": 36,
+   "h": 19,
+   "score": 0.75,
+   "text": "AUC"
+  },
+  {
+   "x": 201,
+   "y": 912,
+   "w": 36,
+   "h": 19,
+   "score": 0.75,
+   "text": "ACC"
+  },
+  {
+   "x": 361,
+   "y": 912,
+   "w": 42,
+   "h": 18,
+   "score": 0.8,
+   "text": "PREC"
+  },
+  {
+   "x": 440,
+   "y": 911,
+   "w": 35,
+   "h": 19,
+   "score": 0.75,
+   "text": "REC"
+  },
+  {
+   "x": 1037,
+   "y": 918,
+   "w": 96,
+   "h": 17,
+   "score": 0.91,
+   "text": "Stability analysis"
+  },
+  {
+   "x": 1177,
+   "y": 918,
+   "w": 92,
+   "h": 17,
+   "score": 0.83,
+   "text": "ROC / PR curve"
+  },
+  {
+   "x": 77,
+   "y": 943,
+   "w": 87,
+   "h": 20,
+   "score": 0.88,
+   "text": "Training set"
+  },
+  {
+   "x": 192,
+   "y": 944,
+   "w": 90,
+   "h": 17,
+   "score": 0.76,
+   "text": "Testset"
+  },
+  {
+   "x": 37,
+   "y": 974,
+   "w": 289,
+   "h": 22,
+   "score": 0.88,
+   "text": "Output: performance summary & plots"
+  },
+  {
+   "x": 1024,
+   "y": 977,
+   "w": 294,
+   "h": 17,
+   "score": 0.93,
+   "text": "Output:interpretable results &validation"
+  }
+ ],
+ "image2.png": [
+  {
+   "x": 3,
+   "y": 4,
+   "w": 316,
+   "h": 20,
+   "score": 0.93,
+   "text": "?DBeaver26.1.5-job_posting_details"
+  },
+  {
+   "x": 9,
+   "y": 24,
+   "w": 60,
+   "h": 21,
+   "score": 0.8,
+   "text": "Fichier"
+  },
+  {
+   "x": 193,
+   "y": 26,
+   "w": 98,
+   "h": 20,
+   "score": 0.87,
+   "text": "Navigation (N)"
+  },
+  {
+   "x": 464,
+   "y": 26,
+   "w": 58,
+   "h": 18,
+   "score": 0.75,
+   "text": "Base de"
+  },
+  {
+   "x": 78,
+   "y": 30,
+   "w": 75,
+   "h": 26,
+   "score": 0.9,
+   "text": "Edition (E)"
+  },
+  {
+   "x": 560,
+   "y": 27,
+   "w": 55,
+   "h": 18,
+   "score": 0.79,
+   "text": "Fenetre"
+  },
+  {
+   "x": 328,
+   "y": 31,
+   "w": 108,
+   "h": 24,
+   "score": 0.77,
+   "text": "Editeur SQL"
+  },
+  {
+   "x": 636,
+   "y": 30,
+   "w": 74,
+   "h": 29,
+   "score": 0.82,
+   "text": "Aide (H)"
+  },
+  {
+   "x": 192,
+   "y": 43,
+   "w": 100,
+   "h": 20,
+   "score": 0.86,
+   "text": "Recherche (A)"
+  },
+  {
+   "x": 451,
+   "y": 42,
+   "w": 81,
+   "h": 22,
+   "score": 0.89,
+   "text": "donnees (D)"
+  },
+  {
+   "x": 24,
+   "y": 44,
+   "w": 31,
+   "h": 23,
+   "score": 0.75,
+   "text": "(F)"
+  },
+  {
+   "x": 571,
+   "y": 43,
+   "w": 31,
+   "h": 20,
+   "score": 0.6,
+   "text": "(W)"
+  },
+  {
+   "x": 276,
+   "y": 65,
+   "w": 137,
+   "h": 24,
+   "score": 0.82,
+   "text": "Exécuter SQL"
+  },
+  {
+   "x": 445,
+   "y": 65,
+   "w": 123,
+   "h": 27,
+   "score": 0.82,
+   "text": "- Annuler"
+  },
+  {
+   "x": 666,
+   "y": 66,
+   "w": 49,
+   "h": 26,
+   "score": 0.77,
+   "text": "Auto"
+  },
+  {
+   "x": 751,
+   "y": 64,
+   "w": 728,
+   "h": 31,
+   "score": 0.87,
+   "text": "CJK の甲zhitu_crawl_db 目public@zhitu_crawl_db 品α"
+  },
+  {
+   "x": 408,
+   "y": 105,
+   "w": 15,
+   "h": 24,
+   "score": 0.65,
+   "text": "000"
+  },
+  {
+   "x": 515,
+   "y": 107,
+   "w": 87,
+   "h": 27,
+   "score": 0.82,
+   "text": "CJK 国 public"
+  },
+  {
+   "x": 644,
+   "y": 108,
+   "w": 87,
+   "h": 27,
+   "score": 0.85,
+   "text": "public"
+  },
+  {
+   "x": 2,
+   "y": 109,
+   "w": 181,
+   "h": 23,
+   "score": 0.91,
+   "text": "Connexion × Projets"
+  },
+  {
+   "x": 1013,
+   "y": 110,
+   "w": 151,
+   "h": 23,
+   "score": 0.91,
+   "text": "job_postings"
+  },
+  {
+   "x": 1207,
+   "y": 110,
+   "w": 172,
+   "h": 23,
+   "score": 0.84,
+   "text": "map_data_table"
+  },
+  {
+   "x": 771,
+   "y": 111,
+   "w": 245,
+   "h": 21,
+   "score": 0.9,
+   "text": "CJK 田 *job_posting_details X"
+  },
+  {
+   "x": 1418,
+   "y": 108,
+   "w": 73,
+   "h": 26,
+   "score": 0.74,
+   "text": "CJK 田 the_t"
+  },
+  {
+   "x": 35,
+   "y": 137,
+   "w": 65,
+   "h": 17,
+   "score": 0.89,
+   "text": "Filtrer les"
+  },
+  {
+   "x": 2,
+   "y": 153,
+   "w": 132,
+   "h": 17,
+   "score": 0.86,
+   "text": "connexions par nom"
+  },
+  {
+   "x": 508,
+   "y": 147,
+   "w": 251,
+   "h": 31,
+   "score": 0.9,
+   "text": "ProprieteDonneesraphique"
+  },
+  {
+   "x": 22,
+   "y": 170,
+   "w": 254,
+   "h": 26,
+   "score": 0.84,
+   "text": "CJK 电 postgres localhost:5432"
+  },
+  {
+   "x": 28,
+   "y": 197,
+   "w": 299,
+   "h": 24,
+   "score": 0.89,
+   "text": "zhitu_crawl_dblocalhost:5433"
+  },
+  {
+   "x": 60,
+   "y": 216,
+   "w": 64,
+   "h": 24,
+   "score": 0.78,
+   "text": "Base de"
+  },
+  {
+   "x": 625,
+   "y": 212,
+   "w": 182,
+   "h": 24,
+   "score": 0.92,
+   "text": "job_posting_details"
+  },
+  {
+   "x": 60,
+   "y": 239,
+   "w": 67,
+   "h": 17,
+   "score": 0.87,
+   "text": "donnees"
+  },
+  {
+   "x": 68,
+   "y": 252,
+   "w": 170,
+   "h": 21,
+   "score": 0.81,
+   "text": "CJK 自 zhitu _crawl db"
+  },
+  {
+   "x": 586,
+   "y": 249,
+   "w": 106,
+   "h": 21,
+   "score": 0.9,
+   "text": "123 detail id"
+  },
+  {
+   "x": 79,
+   "y": 276,
+   "w": 88,
+   "h": 26,
+   "score": 0.83,
+   "text": "Schemas"
+  },
+  {
+   "x": 586,
+   "y": 285,
+   "w": 84,
+   "h": 22,
+   "score": 0.89,
+   "text": "123 job_id"
+  },
+  {
+   "x": 102,
+   "y": 305,
+   "w": 123,
+   "h": 24,
+   "score": 0.84,
+   "text": "> function"
+  },
+  {
+   "x": 588,
+   "y": 313,
+   "w": 178,
+   "h": 26,
+   "score": 0.87,
+   "text": "A-Z company_industry"
+  },
+  {
+   "x": 123,
+   "y": 331,
+   "w": 87,
+   "h": 24,
+   "score": 0.83,
+   "text": "CJK 国 public"
+  },
+  {
+   "x": 1130,
+   "y": 328,
+   "w": 133,
+   "h": 22,
+   "score": 0.87,
+   "text": "CJK 田job_postings"
+  },
+  {
+   "x": 589,
+   "y": 345,
+   "w": 143,
+   "h": 24,
+   "score": 0.89,
+   "text": "A-Z company_size"
+  },
+  {
+   "x": 127,
+   "y": 359,
+   "w": 69,
+   "h": 24,
+   "score": 0.82,
+   "text": "Tables"
+  },
+  {
+   "x": 1101,
+   "y": 364,
+   "w": 54,
+   "h": 22,
+   "score": 0.79,
+   "text": "123 id"
+  },
+  {
+   "x": 588,
+   "y": 375,
+   "w": 167,
+   "h": 25,
+   "score": 0.89,
+   "text": "A-z company_nature"
+  },
+  {
+   "x": 150,
+   "y": 387,
+   "w": 218,
+   "h": 22,
+   "score": 0.9,
+   "text": "CJK >田 job_posting_details"
+  },
+  {
+   "x": 426,
+   "y": 386,
+   "w": 47,
+   "h": 25,
+   "score": 0.68,
+   "text": "67M"
+  },
+  {
+   "x": 589,
+   "y": 405,
+   "w": 152,
+   "h": 23,
+   "score": 0.92,
+   "text": "A-Z company_intro"
+  },
+  {
+   "x": 1107,
+   "y": 402,
+   "w": 135,
+   "h": 20,
+   "score": 0.86,
+   "text": "A-z source_name"
+  },
+  {
+   "x": 153,
+   "y": 414,
+   "w": 159,
+   "h": 23,
+   "score": 0.89,
+   "text": "CJK >田 job_postings"
+  },
+  {
+   "x": 426,
+   "y": 414,
+   "w": 46,
+   "h": 22,
+   "score": 0.56,
+   "text": "19M"
+  },
+  {
+   "x": 589,
+   "y": 435,
+   "w": 174,
+   "h": 23,
+   "score": 0.89,
+   "text": "A-Z company_address"
+  },
+  {
+   "x": 1105,
+   "y": 429,
+   "w": 107,
+   "h": 23,
+   "score": 0.85,
+   "text": "A-Z source_id"
+  },
+  {
+   "x": 153,
+   "y": 441,
+   "w": 188,
+   "h": 23,
+   "score": 0.82,
+   "text": "CJK >由 map_data_table"
+  },
+  {
+   "x": 427,
+   "y": 441,
+   "w": 45,
+   "h": 22,
+   "score": 0.69,
+   "text": "17M"
+  },
+  {
+   "x": 165,
+   "y": 460,
+   "w": 50,
+   "h": 21,
+   "score": 0.85,
+   "text": "Tables"
+  },
+  {
+   "x": 590,
+   "y": 465,
+   "w": 148,
+   "h": 23,
+   "score": 0.84,
+   "text": "A-Z company_logo"
+  },
+  {
+   "x": 1105,
+   "y": 459,
+   "w": 151,
+   "h": 23,
+   "score": 0.85,
+   "text": "A-Z source_id_hash"
+  },
+  {
+   "x": 159,
+   "y": 478,
+   "w": 59,
+   "h": 14,
+   "score": 0.83,
+   "text": "externes"
+  },
+  {
+   "x": 147,
+   "y": 493,
+   "w": 63,
+   "h": 26,
+   "score": 0.79,
+   "text": "Vues"
+  },
+  {
+   "x": 590,
+   "y": 494,
+   "w": 152,
+   "h": 24,
+   "score": 0.88,
+   "text": "A-Z job_description"
+  },
+  {
+   "x": 1106,
+   "y": 490,
+   "w": 93,
+   "h": 22,
+   "score": 0.9,
+   "text": "A-Z job_title"
+  },
+  {
+   "x": 191,
+   "y": 516,
+   "w": 39,
+   "h": 18,
+   "score": 0.75,
+   "text": "Vues"
+  },
+  {
+   "x": 590,
+   "y": 525,
+   "w": 162,
+   "h": 23,
+   "score": 0.89,
+   "text": "A-zZ job_requirement"
+  },
+  {
+   "x": 1104,
+   "y": 520,
+   "w": 162,
+   "h": 25,
+   "score": 0.88,
+   "text": "A-z company_name"
+  },
+  {
+   "x": 145,
+   "y": 549,
+   "w": 78,
+   "h": 24,
+   "score": 0.8,
+   "text": "ndex"
+  },
+  {
+   "x": 590,
+   "y": 555,
+   "w": 142,
+   "h": 23,
+   "score": 0.9,
+   "text": "A-Z job_highlights"
+  },
+  {
+   "x": 1103,
+   "y": 548,
+   "w": 62,
+   "h": 26,
+   "score": 0.72,
+   "text": "A-Z city"
+  },
+  {
+   "x": 128,
+   "y": 576,
+   "w": 116,
+   "h": 23,
+   "score": 0.82,
+   "text": "> Fonctions"
+  },
+  {
+   "x": 586,
+   "y": 581,
+   "w": 115,
+   "h": 30,
+   "score": 0.9,
+   "text": "job_labels"
+  },
+  {
+   "x": 1106,
+   "y": 580,
+   "w": 85,
+   "h": 21,
+   "score": 0.85,
+   "text": "A-Z district"
+  },
+  {
+   "x": 128,
+   "y": 601,
+   "w": 123,
+   "h": 28,
+   "score": 0.86,
+   "text": ">Séquences"
+  },
+  {
+   "x": 586,
+   "y": 611,
+   "w": 74,
+   "h": 29,
+   "score": 0.79,
+   "text": "skills"
+  },
+  {
+   "x": 1103,
+   "y": 610,
+   "w": 117,
+   "h": 23,
+   "score": 0.9,
+   "text": "123 salary_min"
+  },
+  {
+   "x": 179,
+   "y": 624,
+   "w": 64,
+   "h": 17,
+   "score": 0.85,
+   "text": "Types de"
+  },
+  {
+   "x": 181,
+   "y": 639,
+   "w": 60,
+   "h": 18,
+   "score": 0.85,
+   "text": "donnees"
+  },
+  {
+   "x": 585,
+   "y": 640,
+   "w": 100,
+   "h": 32,
+   "score": 0.81,
+   "text": "benefits"
+  },
+  {
+   "x": 1104,
+   "y": 640,
+   "w": 119,
+   "h": 24,
+   "score": 0.87,
+   "text": "123 salary_max"
+  },
+  {
+   "x": 180,
+   "y": 653,
+   "w": 65,
+   "h": 17,
+   "score": 0.86,
+   "text": "Fonctions"
+  },
+  {
+   "x": 168,
+   "y": 665,
+   "w": 85,
+   "h": 23,
+   "score": 0.87,
+   "text": "d'agregation"
+  },
+  {
+   "x": 586,
+   "y": 671,
+   "w": 111,
+   "h": 31,
+   "score": 0.89,
+   "text": "keywords"
+  },
+  {
+   "x": 1106,
+   "y": 670,
+   "w": 116,
+   "h": 23,
+   "score": 0.83,
+   "text": "A-Z salary_unit"
+  },
+  {
+   "x": 123,
+   "y": 683,
+   "w": 130,
+   "h": 23,
+   "score": 0.85,
+   "text": "user_center"
+  },
+  {
+   "x": 586,
+   "y": 704,
+   "w": 160,
+   "h": 23,
+   "score": 0.89,
+   "text": "123 work_years_min"
+  },
+  {
+   "x": 127,
+   "y": 706,
+   "w": 91,
+   "h": 17,
+   "score": 0.89,
+   "text": "Declencheurs"
+  },
+  {
+   "x": 1106,
+   "y": 702,
+   "w": 114,
+   "h": 20,
+   "score": 0.87,
+   "text": "A-z experience"
+  },
+  {
+   "x": 126,
+   "y": 722,
+   "w": 92,
+   "h": 17,
+   "score": 0.85,
+   "text": "d'évenements"
+  },
+  {
+   "x": 587,
+   "y": 735,
+   "w": 163,
+   "h": 23,
+   "score": 0.89,
+   "text": "123 work_years_max"
+  },
+  {
+   "x": 1106,
+   "y": 731,
+   "w": 110,
+   "h": 20,
+   "score": 0.88,
+   "text": "A-Z education"
+  },
+  {
+   "x": 589,
+   "y": 764,
+   "w": 185,
+   "h": 24,
+   "score": 0.9,
+   "text": "A-Z education_required"
+  },
+  {
+   "x": 7,
+   "y": 766,
+   "w": 94,
+   "h": 25,
+   "score": 0.87,
+   "text": "Fichier ×"
+  },
+  {
+   "x": 1105,
+   "y": 760,
+   "w": 99,
+   "h": 24,
+   "score": 0.88,
+   "text": "A-Z job_type"
+  },
+  {
+   "x": 198,
+   "y": 795,
+   "w": 73,
+   "h": 20,
+   "score": 0.9,
+   "text": "Source de"
+  },
+  {
+   "x": 589,
+   "y": 795,
+   "w": 152,
+   "h": 23,
+   "score": 0.9,
+   "text": "A-Z major_required"
+  },
+  {
+   "x": 0,
+   "y": 798,
+   "w": 49,
+   "h": 29,
+   "score": 0.75,
+   "text": "Nom"
+  },
+  {
+   "x": 1106,
+   "y": 790,
+   "w": 133,
+   "h": 24,
+   "score": 0.89,
+   "text": "publish_time"
+  },
+  {
+   "x": 202,
+   "y": 813,
+   "w": 64,
+   "h": 20,
+   "score": 0.87,
+   "text": "donnees"
+  },
+  {
+   "x": 589,
+   "y": 825,
+   "w": 179,
+   "h": 23,
+   "score": 0.9,
+   "text": "A-z language_required"
+  },
+  {
+   "x": 1105,
+   "y": 820,
+   "w": 117,
+   "h": 24,
+   "score": 0.86,
+   "text": "O crawl_time"
+  },
+  {
+   "x": 18,
+   "y": 830,
+   "w": 136,
+   "h": 21,
+   "score": 0.9,
+   "text": "Bookmarks"
+  },
+  {
+   "x": 18,
+   "y": 856,
+   "w": 143,
+   "h": 21,
+   "score": 0.87,
+   "text": "Dashboards"
+  },
+  {
+   "x": 590,
+   "y": 856,
+   "w": 182,
+   "h": 20,
+   "score": 0.9,
+   "text": "A-z certificate_required"
+  },
+  {
+   "x": 1103,
+   "y": 851,
+   "w": 80,
+   "h": 21,
+   "score": 0.86,
+   "text": "123 status"
+  },
+  {
+   "x": 7,
+   "y": 884,
+   "w": 134,
+   "h": 23,
+   "score": 0.83,
+   "text": ">  Diagrams"
+  },
+  {
+   "x": 589,
+   "y": 885,
+   "w": 173,
+   "h": 23,
+   "score": 0.91,
+   "text": "A-Z salary_description"
+  },
+  {
+   "x": 1105,
+   "y": 880,
+   "w": 117,
+   "h": 23,
+   "score": 0.88,
+   "text": "A-z fingerprint"
+  },
+  {
+   "x": 8,
+   "y": 910,
+   "w": 108,
+   "h": 24,
+   "score": 0.86,
+   "text": "> Scripts"
+  },
+  {
+   "x": 588,
+   "y": 913,
+   "w": 147,
+   "h": 27,
+   "score": 0.9,
+   "text": "123 salary_months"
+  },
+  {
+   "x": 1102,
+   "y": 910,
+   "w": 145,
+   "h": 22,
+   "score": 0.92,
+   "text": "123 completeness"
+  },
+  {
+   "x": 585,
+   "y": 942,
+   "w": 157,
+   "h": 28,
+   "score": 0.88,
+   "text": "A-Z salary_currency"
+  }
+ ],
+ "image3.png": [
+  {
+   "x": 1019,
+   "y": 24,
+   "w": 72,
+   "h": 14,
+   "score": 0.86,
+   "text": "Decouverte de"
+  },
+  {
+   "x": 903,
+   "y": 26,
+   "w": 54,
+   "h": 17,
+   "score": 0.87,
+   "text": "Analyse"
+  },
+  {
+   "x": 747,
+   "y": 27,
+   "w": 95,
+   "h": 14,
+   "score": 0.88,
+   "text": "Carte des talents"
+  },
+  {
+   "x": 73,
+   "y": 28,
+   "w": 99,
+   "h": 24,
+   "score": 0.88,
+   "text": "ZhiTuPoJu"
+  },
+  {
+   "x": 616,
+   "y": 28,
+   "w": 73,
+   "h": 14,
+   "score": 0.83,
+   "text": "Actualites des"
+  },
+  {
+   "x": 1150,
+   "y": 28,
+   "w": 66,
+   "h": 14,
+   "score": 0.89,
+   "text": "Appariement"
+  },
+  {
+   "x": 1276,
+   "y": 25,
+   "w": 57,
+   "h": 17,
+   "score": 0.84,
+   "text": "Base de"
+  },
+  {
+   "x": 633,
+   "y": 41,
+   "w": 38,
+   "h": 14,
+   "score": 0.86,
+   "text": "postes"
+  },
+  {
+   "x": 759,
+   "y": 41,
+   "w": 72,
+   "h": 14,
+   "score": 0.81,
+   "text": "numeriques"
+  },
+  {
+   "x": 1028,
+   "y": 37,
+   "w": 54,
+   "h": 11,
+   "score": 0.86,
+   "text": "nouveaux"
+  },
+  {
+   "x": 894,
+   "y": 42,
+   "w": 70,
+   "h": 17,
+   "score": 0.81,
+   "text": "des postes"
+  },
+  {
+   "x": 1145,
+   "y": 41,
+   "w": 76,
+   "h": 14,
+   "score": 0.9,
+   "text": "poste-candidat"
+  },
+  {
+   "x": 1037,
+   "y": 47,
+   "w": 37,
+   "h": 14,
+   "score": 0.86,
+   "text": "postes"
+  },
+  {
+   "x": 1275,
+   "y": 42,
+   "w": 59,
+   "h": 14,
+   "score": 0.87,
+   "text": "donnees"
+  },
+  {
+   "x": 47,
+   "y": 75,
+   "w": 71,
+   "h": 17,
+   "score": 0.85,
+   "text": "Jinzhong"
+  },
+  {
+   "x": 109,
+   "y": 74,
+   "w": 171,
+   "h": 18,
+   "score": 0.92,
+   "text": "g-Analysedespostes"
+  },
+  {
+   "x": 287,
+   "y": 76,
+   "w": 93,
+   "h": 17,
+   "score": 0.83,
+   "text": "Apercu des"
+  },
+  {
+   "x": 184,
+   "y": 94,
+   "w": 54,
+   "h": 18,
+   "score": 0.87,
+   "text": "talents"
+  },
+  {
+   "x": 38,
+   "y": 108,
+   "w": 183,
+   "h": 18,
+   "score": 0.86,
+   "text": "Repartition des postes - Besoins"
+  },
+  {
+   "x": 60,
+   "y": 124,
+   "w": 139,
+   "h": 16,
+   "score": 0.88,
+   "text": "en competences - Profils"
+  },
+  {
+   "x": 76,
+   "y": 184,
+   "w": 69,
+   "h": 27,
+   "score": 0.8,
+   "text": "<Retour"
+  },
+  {
+   "x": 394,
+   "y": 223,
+   "w": 24,
+   "h": 19,
+   "score": 0.77,
+   "text": "Pile"
+  },
+  {
+   "x": 59,
+   "y": 225,
+   "w": 173,
+   "h": 18,
+   "score": 0.93,
+   "text": "Ingenieur logiciel - Carte technique"
+  },
+  {
+   "x": 267,
+   "y": 227,
+   "w": 80,
+   "h": 14,
+   "score": 0.9,
+   "text": "Carte technique"
+  },
+  {
+   "x": 808,
+   "y": 219,
+   "w": 43,
+   "h": 17,
+   "score": 0.83,
+   "text": "MySQL"
+  },
+  {
+   "x": 451,
+   "y": 230,
+   "w": 60,
+   "h": 20,
+   "score": 0.83,
+   "text": "Niveau"
+  },
+  {
+   "x": 665,
+   "y": 230,
+   "w": 72,
+   "h": 19,
+   "score": 0.87,
+   "text": "Kubernetes"
+  },
+  {
+   "x": 123,
+   "y": 240,
+   "w": 45,
+   "h": 13,
+   "score": 0.87,
+   "text": "du poste"
+  },
+  {
+   "x": 283,
+   "y": 240,
+   "w": 48,
+   "h": 14,
+   "score": 0.74,
+   "text": "du poste"
+  },
+  {
+   "x": 368,
+   "y": 241,
+   "w": 78,
+   "h": 14,
+   "score": 0.91,
+   "text": "technologique"
+  },
+  {
+   "x": 938,
+   "y": 253,
+   "w": 35,
+   "h": 15,
+   "score": 0.66,
+   "text": "PACK"
+  },
+  {
+   "x": 552,
+   "y": 288,
+   "w": 68,
+   "h": 17,
+   "score": 0.9,
+   "text": "OpenStack"
+  },
+  {
+   "x": 725,
+   "y": 322,
+   "w": 100,
+   "h": 24,
+   "score": 0.84,
+   "text": "E-commerce"
+  },
+  {
+   "x": 842,
+   "y": 330,
+   "w": 47,
+   "h": 20,
+   "score": 0.85,
+   "text": "JMeter"
+  },
+  {
+   "x": 1029,
+   "y": 331,
+   "w": 57,
+   "h": 17,
+   "score": 0.87,
+   "text": "Materiel"
+  },
+  {
+   "x": 664,
+   "y": 347,
+   "w": 46,
+   "h": 20,
+   "score": 0.8,
+   "text": "Docker"
+  },
+  {
+   "x": 921,
+   "y": 369,
+   "w": 54,
+   "h": 21,
+   "score": 0.69,
+   "text": "doopen"
+  },
+  {
+   "x": 483,
+   "y": 381,
+   "w": 32,
+   "h": 21,
+   "score": 0.79,
+   "text": "Hive"
+  },
+  {
+   "x": 597,
+   "y": 401,
+   "w": 35,
+   "h": 10,
+   "score": 0.85,
+   "text": "Chaine"
+  },
+  {
+   "x": 591,
+   "y": 413,
+   "w": 49,
+   "h": 13,
+   "score": 0.85,
+   "text": "logistique"
+  },
+  {
+   "x": 783,
+   "y": 409,
+   "w": 56,
+   "h": 14,
+   "score": 0.89,
+   "text": "Logiciel de"
+  },
+  {
+   "x": 740,
+   "y": 421,
+   "w": 25,
+   "h": 15,
+   "score": 0.75,
+   "text": "SQL"
+  },
+  {
+   "x": 778,
+   "y": 422,
+   "w": 66,
+   "h": 14,
+   "score": 0.92,
+   "text": "configuration"
+  },
+  {
+   "x": 851,
+   "y": 430,
+   "w": 38,
+   "h": 18,
+   "score": 0.8,
+   "text": "RTOS"
+  },
+  {
+   "x": 986,
+   "y": 433,
+   "w": 49,
+   "h": 14,
+   "score": 0.83,
+   "text": "Tests de"
+  },
+  {
+   "x": 687,
+   "y": 446,
+   "w": 27,
+   "h": 17,
+   "score": 0.72,
+   "text": "Vue"
+  },
+  {
+   "x": 973,
+   "y": 448,
+   "w": 74,
+   "h": 14,
+   "score": 0.91,
+   "text": "performance"
+  },
+  {
+   "x": 1103,
+   "y": 439,
+   "w": 47,
+   "h": 21,
+   "score": 0.87,
+   "text": "Verilog"
+  },
+  {
+   "x": 887,
+   "y": 458,
+   "w": 61,
+   "h": 17,
+   "score": 0.86,
+   "text": "Ingenierie"
+  },
+  {
+   "x": 889,
+   "y": 473,
+   "w": 57,
+   "h": 18,
+   "score": 0.89,
+   "text": "logicielle"
+  },
+  {
+   "x": 555,
+   "y": 484,
+   "w": 21,
+   "h": 15,
+   "score": 0.71,
+   "text": "loT"
+  },
+  {
+   "x": 605,
+   "y": 493,
+   "w": 114,
+   "h": 17,
+   "score": 0.89,
+   "text": "Automatisation"
+  },
+  {
+   "x": 420,
+   "y": 506,
+   "w": 67,
+   "h": 17,
+   "score": 0.82,
+   "text": "TypeScript"
+  },
+  {
+   "x": 1030,
+   "y": 523,
+   "w": 26,
+   "h": 11,
+   "score": 0.83,
+   "text": "Tests"
+  },
+  {
+   "x": 765,
+   "y": 543,
+   "w": 66,
+   "h": 14,
+   "score": 0.84,
+   "text": "Ingenieur"
+  },
+  {
+   "x": 1012,
+   "y": 534,
+   "w": 62,
+   "h": 14,
+   "score": 0.89,
+   "text": "automatis es"
+  },
+  {
+   "x": 643,
+   "y": 563,
+   "w": 32,
+   "h": 11,
+   "score": 0.72,
+   "text": "ication"
+  },
+  {
+   "x": 775,
+   "y": 558,
+   "w": 48,
+   "h": 17,
+   "score": 0.88,
+   "text": "logiciel"
+  },
+  {
+   "x": 523,
+   "y": 573,
+   "w": 54,
+   "h": 18,
+   "score": 0.87,
+   "text": "PyTorch"
+  },
+  {
+   "x": 619,
+   "y": 602,
+   "w": 43,
+   "h": 17,
+   "score": 0.75,
+   "text": "Intemet"
+  },
+  {
+   "x": 613,
+   "y": 615,
+   "w": 55,
+   "h": 14,
+   "score": 0.86,
+   "text": "des objets"
+  },
+  {
+   "x": 1027,
+   "y": 619,
+   "w": 30,
+   "h": 18,
+   "score": 0.68,
+   "text": "ARM"
+  },
+  {
+   "x": 436,
+   "y": 635,
+   "w": 33,
+   "h": 15,
+   "score": 0.83,
+   "text": "Flink"
+  },
+  {
+   "x": 935,
+   "y": 645,
+   "w": 30,
+   "h": 14,
+   "score": 0.64,
+   "text": "inux"
+  },
+  {
+   "x": 535,
+   "y": 663,
+   "w": 62,
+   "h": 17,
+   "score": 0.88,
+   "text": "Selenium"
+  },
+  {
+   "x": 637,
+   "y": 658,
+   "w": 48,
+   "h": 14,
+   "score": 0.89,
+   "text": "Logiciel"
+  },
+  {
+   "x": 633,
+   "y": 673,
+   "w": 58,
+   "h": 14,
+   "score": 0.89,
+   "text": "industriel"
+  },
+  {
+   "x": 886,
+   "y": 683,
+   "w": 61,
+   "h": 20,
+   "score": 0.81,
+   "text": "Acquisition"
+  },
+  {
+   "x": 888,
+   "y": 700,
+   "w": 60,
+   "h": 14,
+   "score": 0.87,
+   "text": "de donnees"
+  },
+  {
+   "x": 1075,
+   "y": 696,
+   "w": 103,
+   "h": 22,
+   "score": 0.88,
+   "text": "Microservices"
+  },
+  {
+   "x": 687,
+   "y": 706,
+   "w": 29,
+   "h": 15,
+   "score": 0.73,
+   "text": "PLC"
+  },
+  {
+   "x": 995,
+   "y": 706,
+   "w": 28,
+   "h": 14,
+   "score": 0.75,
+   "text": "UML"
+  },
+  {
+   "x": 731,
+   "y": 734,
+   "w": 45,
+   "h": 14,
+   "score": 0.78,
+   "text": "SCADA"
+  },
+  {
+   "x": 831,
+   "y": 727,
+   "w": 79,
+   "h": 17,
+   "score": 0.83,
+   "text": "Embarque"
+  },
+  {
+   "x": 595,
+   "y": 741,
+   "w": 38,
+   "h": 17,
+   "score": 0.67,
+   "text": "MQTT"
+  },
+  {
+   "x": 783,
+   "y": 739,
+   "w": 60,
+   "h": 17,
+   "score": 0.87,
+   "text": "CAD/CAM"
+  },
+  {
+   "x": 464,
+   "y": 753,
+   "w": 72,
+   "h": 17,
+   "score": 0.9,
+   "text": "TensorFlow"
+  },
+  {
+   "x": 900,
+   "y": 764,
+   "w": 96,
+   "h": 19,
+   "score": 0.91,
+   "text": "Developpement"
+  },
+  {
+   "x": 919,
+   "y": 781,
+   "w": 57,
+   "h": 14,
+   "score": 0.91,
+   "text": "de pilotes"
+  },
+  {
+   "x": 650,
+   "y": 797,
+   "w": 75,
+   "h": 17,
+   "score": 0.86,
+   "text": "Spring Boot"
+  },
+  {
+   "x": 1035,
+   "y": 800,
+   "w": 47,
+   "h": 17,
+   "score": 0.81,
+   "text": "Grands"
+  },
+  {
+   "x": 858,
+   "y": 815,
+   "w": 17,
+   "h": 12,
+   "score": 0.6,
+   "text": "C#"
+  },
+  {
+   "x": 759,
+   "y": 823,
+   "w": 32,
+   "h": 14,
+   "score": 0.71,
+   "text": "Java"
+  },
+  {
+   "x": 1034,
+   "y": 816,
+   "w": 51,
+   "h": 14,
+   "score": 0.87,
+   "text": "modeles"
+  },
+  {
+   "x": 570,
+   "y": 853,
+   "w": 32,
+   "h": 11,
+   "score": 0.8,
+   "text": "Excel"
+  },
+  {
+   "x": 935,
+   "y": 884,
+   "w": 41,
+   "h": 17,
+   "score": 0.83,
+   "text": "Spark"
+  },
+  {
+   "x": 89,
+   "y": 910,
+   "w": 52,
+   "h": 14,
+   "score": 0.81,
+   "text": "Langages"
+  },
+  {
+   "x": 259,
+   "y": 910,
+   "w": 53,
+   "h": 17,
+   "score": 0.89,
+   "text": "Stockage"
+  },
+  {
+   "x": 443,
+   "y": 911,
+   "w": 29,
+   "h": 15,
+   "score": 0.79,
+   "text": "IA et"
+  },
+  {
+   "x": 340,
+   "y": 913,
+   "w": 64,
+   "h": 14,
+   "score": 0.88,
+   "text": "Ingenierie et"
+  },
+  {
+   "x": 163,
+   "y": 914,
+   "w": 74,
+   "h": 13,
+   "score": 0.91,
+   "text": "Frameworks et"
+  },
+  {
+   "x": 676,
+   "y": 909,
+   "w": 51,
+   "h": 14,
+   "score": 0.76,
+   "text": "Android"
+  },
+  {
+   "x": 106,
+   "y": 922,
+   "w": 16,
+   "h": 11,
+   "score": 0.64,
+   "text": "de"
+  },
+  {
+   "x": 162,
+   "y": 924,
+   "w": 76,
+   "h": 15,
+   "score": 0.89,
+   "text": "developpement"
+  },
+  {
+   "x": 255,
+   "y": 924,
+   "w": 61,
+   "h": 14,
+   "score": 0.84,
+   "text": "de donnees"
+  },
+  {
+   "x": 342,
+   "y": 925,
+   "w": 59,
+   "h": 13,
+   "score": 0.89,
+   "text": "exploitation"
+  },
+  {
+   "x": 427,
+   "y": 925,
+   "w": 61,
+   "h": 14,
+   "score": 0.83,
+   "text": "algorithmes"
+  },
+  {
+   "x": 804,
+   "y": 918,
+   "w": 52,
+   "h": 17,
+   "score": 0.8,
+   "text": "OpenCV"
+  },
+  {
+   "x": 76,
+   "y": 932,
+   "w": 75,
+   "h": 12,
+   "score": 0.92,
+   "text": "programmation"
+  }
+ ],
+ "image4.png": [
+  {
+   "x": 1,
+   "y": 13,
+   "w": 256,
+   "h": 29,
+   "score": 0.89,
+   "text": "ProprietDonneeaphique"
+  },
+  {
+   "x": 189,
+   "y": 52,
+   "w": 357,
+   "h": 20,
+   "score": 0.91,
+   "text": "Saisir une expression SQL pour filtrer les resultats"
+  },
+  {
+   "x": 13,
+   "y": 58,
+   "w": 113,
+   "h": 24,
+   "score": 0.8,
+   "text": "EAfficher SQL"
+  },
+  {
+   "x": 317,
+   "y": 71,
+   "w": 103,
+   "h": 20,
+   "score": 0.86,
+   "text": "(Ctrl+Espace)"
+  },
+  {
+   "x": 166,
+   "y": 96,
+   "w": 126,
+   "h": 30,
+   "score": 0.84,
+   "text": "AZ data_source"
+  },
+  {
+   "x": 368,
+   "y": 96,
+   "w": 136,
+   "h": 30,
+   "score": 0.89,
+   "text": "AZ industry_tags"
+  },
+  {
+   "x": 599,
+   "y": 95,
+   "w": 70,
+   "h": 29,
+   "score": 0.81,
+   "text": "AZ skills"
+  },
+  {
+   "x": 986,
+   "y": 98,
+   "w": 151,
+   "h": 26,
+   "score": 0.89,
+   "text": "A-Z job_description"
+  },
+  {
+   "x": 115,
+   "y": 138,
+   "w": 37,
+   "h": 24,
+   "score": 0.75,
+   "text": "100"
+  },
+  {
+   "x": 161,
+   "y": 138,
+   "w": 65,
+   "h": 25,
+   "score": 0.81,
+   "text": "ai_seed"
+  },
+  {
+   "x": 51,
+   "y": 141,
+   "w": 37,
+   "h": 24,
+   "score": 0.67,
+   "text": "312"
+  },
+  {
+   "x": 383,
+   "y": 134,
+   "w": 104,
+   "h": 17,
+   "score": 0.87,
+   "text": "Developpement"
+  },
+  {
+   "x": 381,
+   "y": 149,
+   "w": 107,
+   "h": 20,
+   "score": 0.93,
+   "text": "loaiciel, Internet"
+  },
+  {
+   "x": 601,
+   "y": 141,
+   "w": 734,
+   "h": 20,
+   "score": 0.92,
+   "text": "Gin, logistique, gRPC, MySQL, acquisition de donnees, Kubernetes - Developpement backend Go"
+  },
+  {
+   "x": 115,
+   "y": 169,
+   "w": 38,
+   "h": 27,
+   "score": 0.75,
+   "text": "100"
+  },
+  {
+   "x": 51,
+   "y": 170,
+   "w": 39,
+   "h": 27,
+   "score": 0.75,
+   "text": "313"
+  },
+  {
+   "x": 162,
+   "y": 170,
+   "w": 64,
+   "h": 25,
+   "score": 0.87,
+   "text": "ai_seed"
+  },
+  {
+   "x": 336,
+   "y": 168,
+   "w": 100,
+   "h": 27,
+   "score": 0.8,
+   "text": "Général"
+  },
+  {
+   "x": 622,
+   "y": 173,
+   "w": 691,
+   "h": 20,
+   "score": 0.92,
+   "text": "MES, logiciel industriel, acquisition de donnees, Excel, automatisation bureautique, WMS - Ingenieur MES"
+  },
+  {
+   "x": 0,
+   "y": 191,
+   "w": 92,
+   "h": 37,
+   "score": 0.73,
+   "text": "ext@4"
+  },
+  {
+   "x": 116,
+   "y": 200,
+   "w": 36,
+   "h": 24,
+   "score": 0.67,
+   "text": "100"
+  },
+  {
+   "x": 162,
+   "y": 200,
+   "w": 65,
+   "h": 25,
+   "score": 0.8,
+   "text": "ai_ seed"
+  },
+  {
+   "x": 339,
+   "y": 198,
+   "w": 100,
+   "h": 27,
+   "score": 0.74,
+   "text": "Général"
+  },
+  {
+   "x": 593,
+   "y": 202,
+   "w": 751,
+   "h": 20,
+   "score": 0.93,
+   "text": "Automatisation bureautique, acquisition de donnees, Excel, wMS, logiciel industriel, MES - Ingenieur vision industrielle"
+  },
+  {
+   "x": 115,
+   "y": 231,
+   "w": 38,
+   "h": 27,
+   "score": 0.75,
+   "text": "100"
+  },
+  {
+   "x": 161,
+   "y": 232,
+   "w": 65,
+   "h": 25,
+   "score": 0.8,
+   "text": "ai_seed"
+  },
+  {
+   "x": 48,
+   "y": 233,
+   "w": 43,
+   "h": 25,
+   "score": 0.75,
+   "text": "315"
+  },
+  {
+   "x": 339,
+   "y": 230,
+   "w": 94,
+   "h": 27,
+   "score": 0.74,
+   "text": "Général"
+  },
+  {
+   "x": 616,
+   "y": 234,
+   "w": 705,
+   "h": 20,
+   "score": 0.94,
+   "text": "Excel, WMS, SQL, logistique, acquisition de donnees, MES, automatisation - Ingenieur robotique industrielle"
+  },
+  {
+   "x": 115,
+   "y": 262,
+   "w": 38,
+   "h": 27,
+   "score": 0.75,
+   "text": "100"
+  },
+  {
+   "x": 162,
+   "y": 263,
+   "w": 65,
+   "h": 25,
+   "score": 0.8,
+   "text": "ai_ seed"
+  },
+  {
+   "x": 47,
+   "y": 266,
+   "w": 44,
+   "h": 25,
+   "score": 0.71,
+   "text": "316"
+  },
+  {
+   "x": 334,
+   "y": 261,
+   "w": 106,
+   "h": 27,
+   "score": 0.7,
+   "text": "Geéneral"
+  },
+  {
+   "x": 605,
+   "y": 266,
+   "w": 725,
+   "h": 20,
+   "score": 0.91,
+   "text": "Logistique, SQL, automatisation bureautique, WMS, acquisition de donnees - Agent des douanes"
+  },
+  {
+   "x": 162,
+   "y": 295,
+   "w": 65,
+   "h": 25,
+   "score": 0.83,
+   "text": "ai_seed"
+  },
+  {
+   "x": 116,
+   "y": 296,
+   "w": 36,
+   "h": 24,
+   "score": 0.67,
+   "text": "100"
+  },
+  {
+   "x": 48,
+   "y": 297,
+   "w": 43,
+   "h": 24,
+   "score": 0.74,
+   "text": "317"
+  },
+  {
+   "x": 339,
+   "y": 293,
+   "w": 94,
+   "h": 27,
+   "score": 0.74,
+   "text": "Général"
+  },
+  {
+   "x": 612,
+   "y": 297,
+   "w": 711,
+   "h": 20,
+   "score": 0.9,
+   "text": "Acquisition de donnees, logistique, MEs, WMS, SQL, automatisation - Ingenieur securite"
+  },
+  {
+   "x": 161,
+   "y": 325,
+   "w": 65,
+   "h": 25,
+   "score": 0.79,
+   "text": "ai_seed"
+  },
+  {
+   "x": 49,
+   "y": 327,
+   "w": 41,
+   "h": 27,
+   "score": 0.75,
+   "text": "318"
+  },
+  {
+   "x": 116,
+   "y": 327,
+   "w": 36,
+   "h": 24,
+   "score": 0.67,
+   "text": "100"
+  },
+  {
+   "x": 381,
+   "y": 320,
+   "w": 109,
+   "h": 20,
+   "score": 0.87,
+   "text": "Developpement"
+  },
+  {
+   "x": 603,
+   "y": 327,
+   "w": 728,
+   "h": 23,
+   "score": 0.93,
+   "text": "WMs, logiciel industriel, acquisition de donnees, Objective-C, logistique - Developpeur ios"
+  },
+  {
+   "x": 383,
+   "y": 339,
+   "w": 106,
+   "h": 17,
+   "score": 0.91,
+   "text": "logiciel, Internet"
+  },
+  {
+   "x": 49,
+   "y": 359,
+   "w": 41,
+   "h": 26,
+   "score": 0.72,
+   "text": "319"
+  },
+  {
+   "x": 116,
+   "y": 359,
+   "w": 36,
+   "h": 24,
+   "score": 0.67,
+   "text": "100"
+  },
+  {
+   "x": 162,
+   "y": 359,
+   "w": 65,
+   "h": 24,
+   "score": 0.87,
+   "text": "ai_seed"
+  },
+  {
+   "x": 371,
+   "y": 360,
+   "w": 964,
+   "h": 23,
+   "score": 0.92,
+   "text": "Developpement logiciel, Internet, fabrication inteligente - C#, logistique, Java, genie logiciel, WMS, SQL, acquisition de donnees - Ingenieur logiciel"
+  },
+  {
+   "x": 386,
+   "y": 383,
+   "w": 76,
+   "h": 20,
+   "score": 0.87,
+   "text": "Produit et"
+  },
+  {
+   "x": 115,
+   "y": 390,
+   "w": 37,
+   "h": 24,
+   "score": 0.75,
+   "text": "100"
+  },
+  {
+   "x": 162,
+   "y": 390,
+   "w": 65,
+   "h": 25,
+   "score": 0.83,
+   "text": "ai_seed"
+  },
+  {
+   "x": 50,
+   "y": 391,
+   "w": 40,
+   "h": 26,
+   "score": 0.64,
+   "text": "320"
+  },
+  {
+   "x": 618,
+   "y": 382,
+   "w": 698,
+   "h": 22,
+   "score": 0.92,
+   "text": "Logiciel industriel, prototypage, WMS, acquisition de donnees, redaction de documents - Analyste"
+  },
+  {
+   "x": 385,
+   "y": 403,
+   "w": 79,
+   "h": 17,
+   "score": 0.85,
+   "text": "numerique"
+  },
+  {
+   "x": 928,
+   "y": 405,
+   "w": 81,
+   "h": 14,
+   "score": 0.87,
+   "text": "fonctionnel"
+  },
+  {
+   "x": 116,
+   "y": 422,
+   "w": 36,
+   "h": 24,
+   "score": 0.67,
+   "text": "100"
+  },
+  {
+   "x": 162,
+   "y": 422,
+   "w": 65,
+   "h": 25,
+   "score": 0.83,
+   "text": "ai_seed"
+  },
+  {
+   "x": 51,
+   "y": 423,
+   "w": 37,
+   "h": 24,
+   "score": 0.68,
+   "text": "321"
+  },
+  {
+   "x": 367,
+   "y": 422,
+   "w": 132,
+   "h": 23,
+   "score": 0.86,
+   "text": "Donnees et IA"
+  },
+  {
+   "x": 612,
+   "y": 424,
+   "w": 710,
+   "h": 20,
+   "score": 0.92,
+   "text": "WMs, logiciel industriel, normes de donnees, metadonnees, logistique - Ingenieur gouvernance des donnees"
+  },
+  {
+   "x": 114,
+   "y": 452,
+   "w": 39,
+   "h": 27,
+   "score": 0.71,
+   "text": "100"
+  },
+  {
+   "x": 381,
+   "y": 448,
+   "w": 107,
+   "h": 17,
+   "score": 0.9,
+   "text": "Developpement"
+  },
+  {
+   "x": 162,
+   "y": 453,
+   "w": 65,
+   "h": 25,
+   "score": 0.83,
+   "text": "ai_seed"
+  },
+  {
+   "x": 50,
+   "y": 454,
+   "w": 40,
+   "h": 26,
+   "score": 0.64,
+   "text": "322"
+  },
+  {
+   "x": 603,
+   "y": 452,
+   "w": 727,
+   "h": 24,
+   "score": 0.93,
+   "text": "WMS, logiciel industriel, acquisition de donnees, Objective-C, logistique - Developpeur ios"
+  },
+  {
+   "x": 381,
+   "y": 464,
+   "w": 106,
+   "h": 20,
+   "score": 0.93,
+   "text": "logiciel, Internet"
+  },
+  {
+   "x": 50,
+   "y": 485,
+   "w": 40,
+   "h": 27,
+   "score": 0.65,
+   "text": "323"
+  },
+  {
+   "x": 162,
+   "y": 485,
+   "w": 64,
+   "h": 25,
+   "score": 0.87,
+   "text": "ai_seed"
+  },
+  {
+   "x": 115,
+   "y": 486,
+   "w": 37,
+   "h": 24,
+   "score": 0.75,
+   "text": "100"
+  },
+  {
+   "x": 364,
+   "y": 485,
+   "w": 141,
+   "h": 24,
+   "score": 0.88,
+   "text": "Donnees et IA"
+  },
+  {
+   "x": 610,
+   "y": 487,
+   "w": 716,
+   "h": 23,
+   "score": 0.94,
+   "text": "Spark, logistique, MES, Hive, Kafka, WMS, logiciel industriel - Ingenieur big data"
+  },
+  {
+   "x": 114,
+   "y": 515,
+   "w": 39,
+   "h": 27,
+   "score": 0.71,
+   "text": "100"
+  },
+  {
+   "x": 162,
+   "y": 516,
+   "w": 65,
+   "h": 25,
+   "score": 0.83,
+   "text": "ai_seed"
+  },
+  {
+   "x": 363,
+   "y": 508,
+   "w": 85,
+   "h": 23,
+   "score": 0.87,
+   "text": "Fabrication"
+  },
+  {
+   "x": 49,
+   "y": 518,
+   "w": 42,
+   "h": 24,
+   "score": 0.64,
+   "text": "324"
+  },
+  {
+   "x": 599,
+   "y": 518,
+   "w": 739,
+   "h": 20,
+   "score": 0.94,
+   "text": "Gestion d'entrepot, production, acquisition de donnees, WMs, transport - Ingenieur systemes MEs"
+  },
+  {
+   "x": 364,
+   "y": 529,
+   "w": 82,
+   "h": 17,
+   "score": 0.84,
+   "text": "intelliaente"
+  },
+  {
+   "x": 50,
+   "y": 548,
+   "w": 39,
+   "h": 27,
+   "score": 0.68,
+   "text": "325"
+  },
+  {
+   "x": 162,
+   "y": 548,
+   "w": 65,
+   "h": 25,
+   "score": 0.83,
+   "text": "ai_seed"
+  },
+  {
+   "x": 115,
+   "y": 549,
+   "w": 37,
+   "h": 24,
+   "score": 0.75,
+   "text": "100"
+  },
+  {
+   "x": 364,
+   "y": 543,
+   "w": 85,
+   "h": 17,
+   "score": 0.91,
+   "text": "Fabrication"
+  },
+  {
+   "x": 362,
+   "y": 559,
+   "w": 86,
+   "h": 20,
+   "score": 0.88,
+   "text": "intelligente"
+  },
+  {
+   "x": 600,
+   "y": 550,
+   "w": 738,
+   "h": 20,
+   "score": 0.93,
+   "text": "Gestion d'entrepot, production, acquisition de donnees, WMS, transport - Ingenieur systemes MEs"
+  },
+  {
+   "x": 162,
+   "y": 579,
+   "w": 65,
+   "h": 24,
+   "score": 0.86,
+   "text": "ai_seed"
+  },
+  {
+   "x": 381,
+   "y": 570,
+   "w": 145,
+   "h": 24,
+   "score": 0.92,
+   "text": "Produit et numerique,"
+  },
+  {
+   "x": 50,
+   "y": 580,
+   "w": 40,
+   "h": 26,
+   "score": 0.62,
+   "text": "326"
+  },
+  {
+   "x": 115,
+   "y": 580,
+   "w": 37,
+   "h": 23,
+   "score": 0.68,
+   "text": "100"
+  },
+  {
+   "x": 427,
+   "y": 591,
+   "w": 54,
+   "h": 17,
+   "score": 0.88,
+   "text": "Internet"
+  },
+  {
+   "x": 639,
+   "y": 582,
+   "w": 658,
+   "h": 19,
+   "score": 0.88,
+   "text": "Logistique, PRD, acquisition de donnees, WMS, etude utilisateur - Chef de produit"
+  },
+  {
+   "x": 115,
+   "y": 611,
+   "w": 37,
+   "h": 24,
+   "score": 0.75,
+   "text": "100"
+  },
+  {
+   "x": 162,
+   "y": 611,
+   "w": 65,
+   "h": 24,
+   "score": 0.87,
+   "text": "ai_seed"
+  },
+  {
+   "x": 51,
+   "y": 612,
+   "w": 37,
+   "h": 24,
+   "score": 0.68,
+   "text": "327"
+  },
+  {
+   "x": 329,
+   "y": 610,
+   "w": 155,
+   "h": 24,
+   "score": 0.87,
+   "text": "Cybersécurité"
+  },
+  {
+   "x": 612,
+   "y": 612,
+   "w": 712,
+   "h": 20,
+   "score": 0.92,
+   "text": "MES, evaluation des risques, audit de securite, logiciel industriel - Ingenieur securite de I'information"
+  },
+  {
+   "x": 162,
+   "y": 641,
+   "w": 65,
+   "h": 25,
+   "score": 0.8,
+   "text": "ai_ seed"
+  },
+  {
+   "x": 50,
+   "y": 642,
+   "w": 40,
+   "h": 26,
+   "score": 0.65,
+   "text": "328"
+  },
+  {
+   "x": 115,
+   "y": 642,
+   "w": 37,
+   "h": 24,
+   "score": 0.75,
+   "text": "100"
+  },
+  {
+   "x": 338,
+   "y": 641,
+   "w": 136,
+   "h": 24,
+   "score": 0.87,
+   "text": "Cybersécurite"
+  },
+  {
+   "x": 606,
+   "y": 643,
+   "w": 723,
+   "h": 20,
+   "score": 0.88,
+   "text": "SiEM, detection d'intrusion, WMs, surveillance de securite - Ingenieur exploitation securite"
+  },
+  {
+   "x": 50,
+   "y": 673,
+   "w": 39,
+   "h": 27,
+   "score": 0.68,
+   "text": "329"
+  },
+  {
+   "x": 162,
+   "y": 673,
+   "w": 65,
+   "h": 25,
+   "score": 0.83,
+   "text": "ai_seed"
+  },
+  {
+   "x": 116,
+   "y": 674,
+   "w": 36,
+   "h": 24,
+   "score": 0.67,
+   "text": "100"
+  },
+  {
+   "x": 364,
+   "y": 666,
+   "w": 160,
+   "h": 23,
+   "score": 0.92,
+   "text": "Developpement logiciel,"
+  },
+  {
+   "x": 633,
+   "y": 674,
+   "w": 669,
+   "h": 23,
+   "score": 0.92,
+   "text": "MES, WMS, CMake, STL, Linux, logistique, multithreading - Développeur C++"
+  },
+  {
+   "x": 371,
+   "y": 686,
+   "w": 146,
+   "h": 17,
+   "score": 0.91,
+   "text": "fabrication intelligente"
+  },
+  {
+   "x": 161,
+   "y": 704,
+   "w": 66,
+   "h": 25,
+   "score": 0.84,
+   "text": "ai_seed"
+  },
+  {
+   "x": 115,
+   "y": 705,
+   "w": 37,
+   "h": 24,
+   "score": 0.75,
+   "text": "100"
+  },
+  {
+   "x": 363,
+   "y": 699,
+   "w": 85,
+   "h": 20,
+   "score": 0.88,
+   "text": "Fabrication"
+  },
+  {
+   "x": 50,
+   "y": 706,
+   "w": 40,
+   "h": 26,
+   "score": 0.64,
+   "text": "330"
+  },
+  {
+   "x": 593,
+   "y": 705,
+   "w": 747,
+   "h": 21,
+   "score": 0.92,
+   "text": "Donnees industrielles, acquisition de donnees, logistique, analyse qualite, MES · Analyste de donnees industrielles"
+  },
+  {
+   "x": 363,
+   "y": 716,
+   "w": 84,
+   "h": 20,
+   "score": 0.86,
+   "text": "intelligente"
+  },
+  {
+   "x": 367,
+   "y": 732,
+   "w": 57,
+   "h": 18,
+   "score": 0.86,
+   "text": "Internet"
+  },
+  {
+   "x": 115,
+   "y": 737,
+   "w": 37,
+   "h": 24,
+   "score": 0.75,
+   "text": "100"
+  },
+  {
+   "x": 162,
+   "y": 737,
+   "w": 65,
+   "h": 24,
+   "score": 0.87,
+   "text": "ai_seed"
+  },
+  {
+   "x": 51,
+   "y": 738,
+   "w": 37,
+   "h": 24,
+   "score": 0.68,
+   "text": "331"
+  },
+  {
+   "x": 611,
+   "y": 736,
+   "w": 712,
+   "h": 24,
+   "score": 0.91,
+   "text": "WMS, MES, microservices, logiciel industriel, acquisition de donnees, loT · Ingenieur plateforme loT"
+  },
+  {
+   "x": 359,
+   "y": 748,
+   "w": 72,
+   "h": 20,
+   "score": 0.89,
+   "text": "des objets"
+  },
+  {
+   "x": 114,
+   "y": 767,
+   "w": 39,
+   "h": 27,
+   "score": 0.71,
+   "text": "100"
+  },
+  {
+   "x": 161,
+   "y": 768,
+   "w": 66,
+   "h": 25,
+   "score": 0.85,
+   "text": "ai_seed"
+  },
+  {
+   "x": 361,
+   "y": 765,
+   "w": 144,
+   "h": 29,
+   "score": 0.83,
+   "text": "Données et IA"
+  },
+  {
+   "x": 49,
+   "y": 769,
+   "w": 40,
+   "h": 26,
+   "score": 0.63,
+   "text": "332"
+  },
+  {
+   "x": 593,
+   "y": 768,
+   "w": 750,
+   "h": 25,
+   "score": 0.93,
+   "text": "Python, machine learning, WMs, ingenierie des caracteristiques, SQL - Ingenieur data mining"
+  }
+ ],
+ "image5.png": [
+  {
+   "x": 609,
+   "y": 15,
+   "w": 105,
+   "h": 22,
+   "score": 0.82,
+   "text": "Actualites des"
+  },
+  {
+   "x": 74,
+   "y": 21,
+   "w": 100,
+   "h": 26,
+   "score": 0.88,
+   "text": "ZhiTuPoJu"
+  },
+  {
+   "x": 993,
+   "y": 21,
+   "w": 88,
+   "h": 14,
+   "score": 0.86,
+   "text": "Decouverte de"
+  },
+  {
+   "x": 902,
+   "y": 22,
+   "w": 54,
+   "h": 14,
+   "score": 0.81,
+   "text": "Analyse"
+  },
+  {
+   "x": 751,
+   "y": 23,
+   "w": 87,
+   "h": 14,
+   "score": 0.9,
+   "text": "Carte des talents"
+  },
+  {
+   "x": 1122,
+   "y": 23,
+   "w": 67,
+   "h": 14,
+   "score": 0.9,
+   "text": "Appariement"
+  },
+  {
+   "x": 1238,
+   "y": 20,
+   "w": 58,
+   "h": 17,
+   "score": 0.84,
+   "text": "Base de"
+  },
+  {
+   "x": 1717,
+   "y": 25,
+   "w": 65,
+   "h": 19,
+   "score": 0.81,
+   "text": "developer"
+  },
+  {
+   "x": 1814,
+   "y": 23,
+   "w": 60,
+   "h": 23,
+   "score": 0.85,
+   "text": "Quitter"
+  },
+  {
+   "x": 763,
+   "y": 36,
+   "w": 61,
+   "h": 13,
+   "score": 0.81,
+   "text": "numeriques"
+  },
+  {
+   "x": 983,
+   "y": 36,
+   "w": 106,
+   "h": 16,
+   "score": 0.89,
+   "text": "nouveaux postes"
+  },
+  {
+   "x": 635,
+   "y": 37,
+   "w": 53,
+   "h": 17,
+   "score": 0.86,
+   "text": "postes"
+  },
+  {
+   "x": 892,
+   "y": 37,
+   "w": 71,
+   "h": 14,
+   "score": 0.87,
+   "text": "des postes"
+  },
+  {
+   "x": 1116,
+   "y": 35,
+   "w": 77,
+   "h": 14,
+   "score": 0.87,
+   "text": "poste-candidat"
+  },
+  {
+   "x": 1236,
+   "y": 37,
+   "w": 59,
+   "h": 14,
+   "score": 0.78,
+   "text": "donnees"
+  },
+  {
+   "x": 125,
+   "y": 83,
+   "w": 71,
+   "h": 17,
+   "score": 0.79,
+   "text": "Favoris?"
+  },
+  {
+   "x": 134,
+   "y": 103,
+   "w": 276,
+   "h": 16,
+   "score": 0.92,
+   "text": "Aucun favori, Ils apparaitront ici apres avoir clique sur"
+  },
+  {
+   "x": 168,
+   "y": 117,
+   "w": 208,
+   "h": 13,
+   "score": 0.88,
+   "text": "Favori × dans la page de detail d'un poste."
+  },
+  {
+   "x": 161,
+   "y": 153,
+   "w": 73,
+   "h": 14,
+   "score": 0.88,
+   "text": "Retourala"
+  },
+  {
+   "x": 145,
+   "y": 167,
+   "w": 104,
+   "h": 19,
+   "score": 0.9,
+   "text": "listedespostes"
+  },
+  {
+   "x": 177,
+   "y": 190,
+   "w": 88,
+   "h": 17,
+   "score": 0.94,
+   "text": "Poste reellement"
+  },
+  {
+   "x": 391,
+   "y": 197,
+   "w": 49,
+   "h": 13,
+   "score": 0.87,
+   "text": "Indice de"
+  },
+  {
+   "x": 1526,
+   "y": 199,
+   "w": 94,
+   "h": 17,
+   "score": 0.85,
+   "text": "Comparer les"
+  },
+  {
+   "x": 1642,
+   "y": 207,
+   "w": 56,
+   "h": 17,
+   "score": 0.77,
+   "text": "Favori"
+  },
+  {
+   "x": 177,
+   "y": 209,
+   "w": 188,
+   "h": 25,
+   "score": 0.9,
+   "text": "Architecte d'agents"
+  },
+  {
+   "x": 390,
+   "y": 209,
+   "w": 51,
+   "h": 12,
+   "score": 0.89,
+   "text": "popularite"
+  },
+  {
+   "x": 1717,
+   "y": 201,
+   "w": 76,
+   "h": 17,
+   "score": 0.87,
+   "text": "Telecharger le"
+  },
+  {
+   "x": 1516,
+   "y": 217,
+   "w": 109,
+   "h": 14,
+   "score": 0.87,
+   "text": "rapportsdeCv"
+  },
+  {
+   "x": 393,
+   "y": 221,
+   "w": 30,
+   "h": 19,
+   "score": 0.67,
+   "text": "88"
+  },
+  {
+   "x": 1735,
+   "y": 216,
+   "w": 40,
+   "h": 14,
+   "score": 0.82,
+   "text": "rapport"
+  },
+  {
+   "x": 260,
+   "y": 235,
+   "w": 20,
+   "h": 18,
+   "score": 0.54,
+   "text": "IA"
+  },
+  {
+   "x": 117,
+   "y": 251,
+   "w": 394,
+   "h": 19,
+   "score": 0.91,
+   "text": "Premiere apparition : 2026-08 - Echantilons Tendance de croissance : +125"
+  },
+  {
+   "x": 224,
+   "y": 267,
+   "w": 21,
+   "h": 12,
+   "score": 0.54,
+   "text": "356"
+  },
+  {
+   "x": 368,
+   "y": 267,
+   "w": 109,
+   "h": 16,
+   "score": 0.9,
+   "text": "% (6 derniers mois)"
+  },
+  {
+   "x": 129,
+   "y": 289,
+   "w": 70,
+   "h": 23,
+   "score": 0.84,
+   "text": "Asuivre"
+  },
+  {
+   "x": 1428,
+   "y": 300,
+   "w": 72,
+   "h": 16,
+   "score": 0.83,
+   "text": "Conception et"
+  },
+  {
+   "x": 126,
+   "y": 305,
+   "w": 492,
+   "h": 19,
+   "score": 0.92,
+   "text": "Ce poste apparait de facon stable dans les recrutements reels, demande en hausse"
+  },
+  {
+   "x": 1314,
+   "y": 305,
+   "w": 88,
+   "h": 14,
+   "score": 0.9,
+   "text": "Applications LLM"
+  },
+  {
+   "x": 1607,
+   "y": 302,
+   "w": 62,
+   "h": 20,
+   "score": 0.79,
+   "text": "Echantillon:"
+  },
+  {
+   "x": 1521,
+   "y": 307,
+   "w": 78,
+   "h": 13,
+   "score": 0.88,
+   "text": "Construction de"
+  },
+  {
+   "x": 1425,
+   "y": 313,
+   "w": 78,
+   "h": 13,
+   "score": 0.85,
+   "text": "developpement"
+  },
+  {
+   "x": 1670,
+   "y": 305,
+   "w": 111,
+   "h": 16,
+   "score": 0.87,
+   "text": "- Source,de donnees"
+  },
+  {
+   "x": 1327,
+   "y": 318,
+   "w": 64,
+   "h": 14,
+   "score": 0.89,
+   "text": "et ingenierie"
+  },
+  {
+   "x": 1521,
+   "y": 317,
+   "w": 76,
+   "h": 15,
+   "score": 0.86,
+   "text": "systemes RAG"
+  },
+  {
+   "x": 1621,
+   "y": 318,
+   "w": 39,
+   "h": 14,
+   "score": 0.79,
+   "text": ": 2 356"
+  },
+  {
+   "x": 126,
+   "y": 319,
+   "w": 443,
+   "h": 19,
+   "score": 0.92,
+   "text": "decidez de le metfre% sur 6 mois. Verifiez d'abord vos competences cles, puis"
+  },
+  {
+   "x": 1441,
+   "y": 324,
+   "w": 46,
+   "h": 14,
+   "score": 0.87,
+   "text": "d'agents"
+  },
+  {
+   "x": 1666,
+   "y": 318,
+   "w": 122,
+   "h": 16,
+   "score": 0.89,
+   "text": "simulee - A titre indicatif"
+  },
+  {
+   "x": 148,
+   "y": 333,
+   "w": 60,
+   "h": 13,
+   "score": 0.92,
+   "text": "en favori ou"
+  },
+  {
+   "x": 144,
+   "y": 344,
+   "w": 67,
+   "h": 13,
+   "score": 0.89,
+   "text": "d'approfondir."
+  },
+  {
+   "x": 480,
+   "y": 364,
+   "w": 97,
+   "h": 16,
+   "score": 0.88,
+   "text": "Competences cles"
+  },
+  {
+   "x": 130,
+   "y": 365,
+   "w": 79,
+   "h": 14,
+   "score": 0.81,
+   "text": "Informations de"
+  },
+  {
+   "x": 1385,
+   "y": 357,
+   "w": 156,
+   "h": 27,
+   "score": 0.83,
+   "text": "Stratfcation Responsabilites"
+  },
+  {
+   "x": 131,
+   "y": 377,
+   "w": 75,
+   "h": 17,
+   "score": 0.89,
+   "text": "base du poste"
+  },
+  {
+   "x": 510,
+   "y": 379,
+   "w": 42,
+   "h": 12,
+   "score": 0.81,
+   "text": "TOP10"
+  },
+  {
+   "x": 1404,
+   "y": 374,
+   "w": 26,
+   "h": 10,
+   "score": 0.79,
+   "text": "de la"
+  },
+  {
+   "x": 1390,
+   "y": 383,
+   "w": 55,
+   "h": 14,
+   "score": 0.88,
+   "text": "popularite"
+  },
+  {
+   "x": 207,
+   "y": 385,
+   "w": 68,
+   "h": 13,
+   "score": 0.89,
+   "text": "Recherche et"
+  },
+  {
+   "x": 124,
+   "y": 388,
+   "w": 56,
+   "h": 14,
+   "score": 0.71,
+   "text": "Categorie"
+  },
+  {
+   "x": 1477,
+   "y": 379,
+   "w": 34,
+   "h": 15,
+   "score": 0.83,
+   "text": "types"
+  },
+  {
+   "x": 514,
+   "y": 394,
+   "w": 89,
+   "h": 13,
+   "score": 0.89,
+   "text": "Applications LLM"
+  },
+  {
+   "x": 203,
+   "y": 396,
+   "w": 76,
+   "h": 14,
+   "score": 0.91,
+   "text": "developpement"
+  },
+  {
+   "x": 999,
+   "y": 390,
+   "w": 70,
+   "h": 14,
+   "score": 0.86,
+   "text": "Conception et"
+  },
+  {
+   "x": 939,
+   "y": 401,
+   "w": 16,
+   "h": 13,
+   "score": 0.66,
+   "text": "92"
+  },
+  {
+   "x": 127,
+   "y": 402,
+   "w": 51,
+   "h": 14,
+   "score": 0.87,
+   "text": "du poste"
+  },
+  {
+   "x": 995,
+   "y": 402,
+   "w": 76,
+   "h": 14,
+   "score": 0.88,
+   "text": "developpement"
+  },
+  {
+   "x": 492,
+   "y": 404,
+   "w": 11,
+   "h": 9,
+   "score": 0.65,
+   "text": "01"
+  },
+  {
+   "x": 204,
+   "y": 406,
+   "w": 119,
+   "h": 24,
+   "score": 0.82,
+   "text": "Interhet'fechnologies"
+  },
+  {
+   "x": 526,
+   "y": 408,
+   "w": 63,
+   "h": 13,
+   "score": 0.92,
+   "text": "et ingenierie"
+  },
+  {
+   "x": 1489,
+   "y": 403,
+   "w": 231,
+   "h": 16,
+   "score": 0.92,
+   "text": "Evaluer et optimiser la performance, Pefficacite"
+  },
+  {
+   "x": 1472,
+   "y": 413,
+   "w": 17,
+   "h": 12,
+   "score": 0.62,
+   "text": "04"
+  },
+  {
+   "x": 132,
+   "y": 414,
+   "w": 42,
+   "h": 12,
+   "score": 0.79,
+   "text": "Secteur"
+  },
+  {
+   "x": 1012,
+   "y": 415,
+   "w": 42,
+   "h": 10,
+   "score": 0.75,
+   "text": "degents"
+  },
+  {
+   "x": 1544,
+   "y": 418,
+   "w": 123,
+   "h": 13,
+   "score": 0.9,
+   "text": "et la securite des agents"
+  },
+  {
+   "x": 519,
+   "y": 419,
+   "w": 61,
+   "h": 17,
+   "score": 0.85,
+   "text": "Construction"
+  },
+  {
+   "x": 1761,
+   "y": 412,
+   "w": 28,
+   "h": 15,
+   "score": 0.66,
+   "text": "80%"
+  },
+  {
+   "x": 129,
+   "y": 425,
+   "w": 47,
+   "h": 13,
+   "score": 0.79,
+   "text": "d'activite"
+  },
+  {
+   "x": 239,
+   "y": 423,
+   "w": 49,
+   "h": 17,
+   "score": 0.78,
+   "text": "/ Finance"
+  },
+  {
+   "x": 519,
+   "y": 433,
+   "w": 61,
+   "h": 13,
+   "score": 0.91,
+   "text": "de systemes"
+  },
+  {
+   "x": 936,
+   "y": 433,
+   "w": 19,
+   "h": 11,
+   "score": 0.51,
+   "text": "85"
+  },
+  {
+   "x": 1017,
+   "y": 426,
+   "w": 42,
+   "h": 14,
+   "score": 0.86,
+   "text": "Prompt"
+  },
+  {
+   "x": 492,
+   "y": 435,
+   "w": 12,
+   "h": 8,
+   "score": 0.52,
+   "text": "03"
+  },
+  {
+   "x": 966,
+   "y": 435,
+   "w": 12,
+   "h": 9,
+   "score": 0.66,
+   "text": "04"
+  },
+  {
+   "x": 127,
+   "y": 437,
+   "w": 53,
+   "h": 14,
+   "score": 0.87,
+   "text": "Niveau du"
+  },
+  {
+   "x": 208,
+   "y": 437,
+   "w": 67,
+   "h": 14,
+   "score": 0.8,
+   "text": "Intermediaire"
+  },
+  {
+   "x": 1007,
+   "y": 438,
+   "w": 61,
+   "h": 17,
+   "score": 0.89,
+   "text": "Engineering"
+  },
+  {
+   "x": 1413,
+   "y": 433,
+   "w": 16,
+   "h": 12,
+   "score": 0.66,
+   "text": "82"
+  },
+  {
+   "x": 138,
+   "y": 449,
+   "w": 31,
+   "h": 14,
+   "score": 0.83,
+   "text": "poste"
+  },
+  {
+   "x": 220,
+   "y": 449,
+   "w": 41,
+   "h": 14,
+   "score": 0.79,
+   "text": "/ Senior"
+  },
+  {
+   "x": 538,
+   "y": 445,
+   "w": 21,
+   "h": 10,
+   "score": 0.58,
+   "text": "RAG"
+  },
+  {
+   "x": 991,
+   "y": 455,
+   "w": 66,
+   "h": 14,
+   "score": 0.89,
+   "text": "Collaboration"
+  },
+  {
+   "x": 530,
+   "y": 456,
+   "w": 66,
+   "h": 14,
+   "score": 0.85,
+   "text": "Appel d'outils"
+  },
+  {
+   "x": 130,
+   "y": 460,
+   "w": 45,
+   "h": 14,
+   "score": 0.86,
+   "text": "Lieu de"
+  },
+  {
+   "x": 1470,
+   "y": 460,
+   "w": 20,
+   "h": 15,
+   "score": 0.67,
+   "text": "05"
+  },
+  {
+   "x": 1492,
+   "y": 454,
+   "w": 241,
+   "h": 16,
+   "score": 0.88,
+   "text": "Favoriser Fapplication concrete de la technologie"
+  },
+  {
+   "x": 209,
+   "y": 462,
+   "w": 124,
+   "h": 16,
+   "score": 0.86,
+   "text": "Villes de premiere ligne et"
+  },
+  {
+   "x": 939,
+   "y": 463,
+   "w": 16,
+   "h": 12,
+   "score": 0.52,
+   "text": "78"
+  },
+  {
+   "x": 1414,
+   "y": 463,
+   "w": 15,
+   "h": 13,
+   "score": 0.66,
+   "text": "72"
+  },
+  {
+   "x": 966,
+   "y": 466,
+   "w": 12,
+   "h": 9,
+   "score": 0.66,
+   "text": "06"
+  },
+  {
+   "x": 992,
+   "y": 468,
+   "w": 63,
+   "h": 15,
+   "score": 0.89,
+   "text": "multi-agents"
+  },
+  {
+   "x": 1519,
+   "y": 468,
+   "w": 186,
+   "h": 14,
+   "score": 0.88,
+   "text": "des agents dans les scenarios metier"
+  },
+  {
+   "x": 1761,
+   "y": 461,
+   "w": 28,
+   "h": 14,
+   "score": 0.75,
+   "text": "76%"
+  },
+  {
+   "x": 132,
+   "y": 474,
+   "w": 40,
+   "h": 15,
+   "score": 0.78,
+   "text": "travail."
+  },
+  {
+   "x": 208,
+   "y": 475,
+   "w": 127,
+   "h": 14,
+   "score": 0.92,
+   "text": "nouvelles premieres lignes"
+  },
+  {
+   "x": 124,
+   "y": 485,
+   "w": 58,
+   "h": 14,
+   "score": 0.85,
+   "text": "Fourchette"
+  },
+  {
+   "x": 524,
+   "y": 485,
+   "w": 42,
+   "h": 14,
+   "score": 0.8,
+   "text": "Base de"
+  },
+  {
+   "x": 208,
+   "y": 491,
+   "w": 49,
+   "h": 14,
+   "score": 0.84,
+   "text": "20-40K"
+  },
+  {
+   "x": 995,
+   "y": 483,
+   "w": 56,
+   "h": 16,
+   "score": 0.89,
+   "text": "Conception"
+  },
+  {
+   "x": 939,
+   "y": 495,
+   "w": 16,
+   "h": 12,
+   "score": 0.59,
+   "text": "68"
+  },
+  {
+   "x": 964,
+   "y": 496,
+   "w": 16,
+   "h": 11,
+   "score": 0.66,
+   "text": "08"
+  },
+  {
+   "x": 991,
+   "y": 497,
+   "w": 66,
+   "h": 13,
+   "score": 0.83,
+   "text": "d'architecture"
+  },
+  {
+   "x": 1413,
+   "y": 495,
+   "w": 16,
+   "h": 13,
+   "score": 0.67,
+   "text": "65"
+  },
+  {
+   "x": 130,
+   "y": 498,
+   "w": 46,
+   "h": 13,
+   "score": 0.73,
+   "text": "salariale"
+  },
+  {
+   "x": 523,
+   "y": 498,
+   "w": 44,
+   "h": 10,
+   "score": 0.86,
+   "text": "donnees"
+  },
+  {
+   "x": 1516,
+   "y": 497,
+   "w": 102,
+   "h": 21,
+   "score": 0.93,
+   "text": "Rediger les solutions"
+  },
+  {
+   "x": 521,
+   "y": 508,
+   "w": 46,
+   "h": 13,
+   "score": 0.86,
+   "text": "vectorielle"
+  },
+  {
+   "x": 1469,
+   "y": 508,
+   "w": 174,
+   "h": 20,
+   "score": 0.89,
+   "text": "06 techniques et la documentation"
+  },
+  {
+   "x": 139,
+   "y": 514,
+   "w": 300,
+   "h": 19,
+   "score": 0.95,
+   "text": "Poste stable dans les textes de recrutement reels, et non un"
+  },
+  {
+   "x": 1761,
+   "y": 509,
+   "w": 29,
+   "h": 18,
+   "score": 0.74,
+   "text": "72%"
+  },
+  {
+   "x": 508,
+   "y": 519,
+   "w": 80,
+   "h": 14,
+   "score": 0.9,
+   "text": "Developpement"
+  },
+  {
+   "x": 491,
+   "y": 526,
+   "w": 14,
+   "h": 12,
+   "score": 0.5,
+   "text": "09"
+  },
+  {
+   "x": 939,
+   "y": 526,
+   "w": 15,
+   "h": 12,
+   "score": 0.62,
+   "text": "64"
+  },
+  {
+   "x": 965,
+   "y": 527,
+   "w": 15,
+   "h": 11,
+   "score": 0.62,
+   "text": "10"
+  },
+  {
+   "x": 999,
+   "y": 527,
+   "w": 55,
+   "h": 13,
+   "score": 0.89,
+   "text": "integration"
+  },
+  {
+   "x": 132,
+   "y": 530,
+   "w": 314,
+   "h": 22,
+   "score": 0.88,
+   "text": "role dapel de modeles :plaicalfion, apel doutis, recherche"
+  },
+  {
+   "x": 528,
+   "y": 532,
+   "w": 40,
+   "h": 14,
+   "score": 0.75,
+   "text": "Python"
+  },
+  {
+   "x": 1553,
+   "y": 524,
+   "w": 29,
+   "h": 11,
+   "score": 0.74,
+   "text": "d'API"
+  },
+  {
+   "x": 1011,
+   "y": 539,
+   "w": 30,
+   "h": 8,
+   "score": 0.7,
+   "text": "d'API"
+  },
+  {
+   "x": 1735,
+   "y": 537,
+   "w": 58,
+   "h": 17,
+   "score": 0.9,
+   "text": "Voir tout"
+  },
+  {
+   "x": 211,
+   "y": 547,
+   "w": 157,
+   "h": 16,
+   "score": 0.92,
+   "text": "de connaissances et execution"
+  },
+  {
+   "x": 123,
+   "y": 573,
+   "w": 66,
+   "h": 14,
+   "score": 0.83,
+   "text": "Comparaison"
+  },
+  {
+   "x": 991,
+   "y": 577,
+   "w": 74,
+   "h": 14,
+   "score": 0.9,
+   "text": "Ce poste vs le"
+  },
+  {
+   "x": 1086,
+   "y": 575,
+   "w": 116,
+   "h": 16,
+   "score": 0.93,
+   "text": "Depuis quels postes"
+  },
+  {
+   "x": 146,
+   "y": 586,
+   "w": 21,
+   "h": 10,
+   "score": 0.73,
+   "text": "des"
+  },
+  {
+   "x": 1009,
+   "y": 591,
+   "w": 39,
+   "h": 11,
+   "score": 0.86,
+   "text": "secteur"
+  },
+  {
+   "x": 121,
+   "y": 592,
+   "w": 70,
+   "h": 20,
+   "score": 0.81,
+   "text": "Cimeristomes"
+  },
+  {
+   "x": 1105,
+   "y": 589,
+   "w": 77,
+   "h": 14,
+   "score": 0.87,
+   "text": "y arrive-t-on ?"
+  },
+  {
+   "x": 368,
+   "y": 600,
+   "w": 42,
+   "h": 14,
+   "score": 0.86,
+   "text": "Avance"
+  },
+  {
+   "x": 609,
+   "y": 600,
+   "w": 30,
+   "h": 14,
+   "score": 0.76,
+   "text": "Ecart"
+  },
+  {
+   "x": 145,
+   "y": 608,
+   "w": 17,
+   "h": 12,
+   "score": 0.67,
+   "text": "en"
+  },
+  {
+   "x": 810,
+   "y": 602,
+   "w": 88,
+   "h": 20,
+   "score": 0.85,
+   "text": "Differenciation"
+  },
+  {
+   "x": 361,
+   "y": 612,
+   "w": 55,
+   "h": 19,
+   "score": 0.67,
+   "text": "msnne"
+  },
+  {
+   "x": 132,
+   "y": 618,
+   "w": 41,
+   "h": 15,
+   "score": 0.63,
+   "text": "apsce"
+  },
+  {
+   "x": 604,
+   "y": 613,
+   "w": 113,
+   "h": 16,
+   "score": 0.93,
+   "text": "Ingenierie des grands"
+  },
+  {
+   "x": 627,
+   "y": 627,
+   "w": 68,
+   "h": 13,
+   "score": 0.82,
+   "text": "modeles +26"
+  },
+  {
+   "x": 138,
+   "y": 645,
+   "w": 70,
+   "h": 14,
+   "score": 0.85,
+   "text": "Ingenierie des"
+  },
+  {
+   "x": 156,
+   "y": 658,
+   "w": 35,
+   "h": 11,
+   "score": 0.86,
+   "text": "grands"
+  },
+  {
+   "x": 1022,
+   "y": 656,
+   "w": 25,
+   "h": 14,
+   "score": 0.75,
+   "text": "+26"
+  },
+  {
+   "x": 131,
+   "y": 669,
+   "w": 77,
+   "h": 15,
+   "score": 0.79,
+   "text": "Deveoppement"
+  },
+  {
+   "x": 134,
+   "y": 681,
+   "w": 69,
+   "h": 14,
+   "score": 0.87,
+   "text": "d'applications"
+  },
+  {
+   "x": 1024,
+   "y": 682,
+   "w": 20,
+   "h": 11,
+   "score": 0.75,
+   "text": "+24"
+  },
+  {
+   "x": 132,
+   "y": 697,
+   "w": 62,
+   "h": 19,
+   "score": 0.9,
+   "text": "Conception"
+  },
+  {
+   "x": 135,
+   "y": 709,
+   "w": 61,
+   "h": 29,
+   "score": 0.59,
+   "text": "Pystemet"
+  },
+  {
+   "x": 158,
+   "y": 735,
+   "w": 13,
+   "h": 8,
+   "score": 0.67,
+   "text": "de"
+  },
+  {
+   "x": 995,
+   "y": 735,
+   "w": 17,
+   "h": 8,
+   "score": 0.5,
+   "text": "$70"
+  },
+  {
+   "x": 1226,
+   "y": 730,
+   "w": 114,
+   "h": 20,
+   "score": 0.82,
+   "text": "Survolez un secteur ou"
+  },
+  {
+   "x": 142,
+   "y": 743,
+   "w": 46,
+   "h": 14,
+   "score": 0.83,
+   "text": "donnees"
+  },
+  {
+   "x": 1224,
+   "y": 745,
+   "w": 117,
+   "h": 13,
+   "score": 0.88,
+   "text": "un element pour afficher"
+  },
+  {
+   "x": 1258,
+   "y": 755,
+   "w": 52,
+   "h": 14,
+   "score": 0.87,
+   "text": "les details"
+  },
+  {
+   "x": 132,
+   "y": 775,
+   "w": 75,
+   "h": 13,
+   "score": 0.89,
+   "text": "Tendance de la"
+  },
+  {
+   "x": 134,
+   "y": 782,
+   "w": 105,
+   "h": 26,
+   "score": 0.72,
+   "text": "femnde Popularite"
+  },
+  {
+   "x": 1087,
+   "y": 783,
+   "w": 89,
+   "h": 14,
+   "score": 0.89,
+   "text": "Offre et demande"
+  },
+  {
+   "x": 148,
+   "y": 804,
+   "w": 16,
+   "h": 11,
+   "score": 0.6,
+   "text": "ap"
+  },
+  {
+   "x": 203,
+   "y": 804,
+   "w": 16,
+   "h": 11,
+   "score": 0.64,
+   "text": "ap"
+  },
+  {
+   "x": 1105,
+   "y": 796,
+   "w": 52,
+   "h": 13,
+   "score": 0.83,
+   "text": "de talents"
+  },
+  {
+   "x": 128,
+   "y": 815,
+   "w": 108,
+   "h": 13,
+   "score": 0.9,
+   "text": "publications recherche"
+  },
+  {
+   "x": 1188,
+   "y": 821,
+   "w": 73,
+   "h": 17,
+   "score": 0.85,
+   "text": "Demande"
+  },
+  {
+   "x": 1109,
+   "y": 833,
+   "w": 43,
+   "h": 18,
+   "score": 0.75,
+   "text": "2.78"
+  },
+  {
+   "x": 1114,
+   "y": 844,
+   "w": 31,
+   "h": 15,
+   "score": 0.82,
+   "text": "Ratio"
+  },
+  {
+   "x": 1093,
+   "y": 858,
+   "w": 74,
+   "h": 14,
+   "score": 0.87,
+   "text": "offre/demande"
+  },
+  {
+   "x": 1190,
+   "y": 858,
+   "w": 118,
+   "h": 16,
+   "score": 0.9,
+   "text": "est 2,8 fois superieure a"
+  },
+  {
+   "x": 1235,
+   "y": 871,
+   "w": 27,
+   "h": 11,
+   "score": 0.66,
+   "text": "Foffre"
+  },
+  {
+   "x": 1098,
+   "y": 885,
+   "w": 55,
+   "h": 14,
+   "score": 0.85,
+   "text": "Demande :"
+  },
+  {
+   "x": 1108,
+   "y": 898,
+   "w": 38,
+   "h": 11,
+   "score": 0.73,
+   "text": "+125 %"
+  },
+  {
+   "x": 1729,
+   "y": 890,
+   "w": 65,
+   "h": 14,
+   "score": 0.8,
+   "text": "Offre : 45 %"
+  },
+  {
+   "x": 1829,
+   "y": 901,
+   "w": 44,
+   "h": 21,
+   "score": 0.73,
+   "text": "Q&R"
+  }
+ ],
+ "image6.png": [
+  {
+   "x": 721,
+   "y": 28,
+   "w": 104,
+   "h": 16,
+   "score": 0.82,
+   "text": "Carte des talents"
+  },
+  {
+   "x": 82,
+   "y": 29,
+   "w": 110,
+   "h": 27,
+   "score": 0.85,
+   "text": "ZhiTuPoJu"
+  },
+  {
+   "x": 897,
+   "y": 27,
+   "w": 56,
+   "h": 17,
+   "score": 0.87,
+   "text": "Analyse"
+  },
+  {
+   "x": 1152,
+   "y": 29,
+   "w": 85,
+   "h": 14,
+   "score": 0.89,
+   "text": "Appariement"
+  },
+  {
+   "x": 1028,
+   "y": 30,
+   "w": 77,
+   "h": 14,
+   "score": 0.89,
+   "text": "Decouverte de"
+  },
+  {
+   "x": 1319,
+   "y": 29,
+   "w": 56,
+   "h": 14,
+   "score": 0.85,
+   "text": "Basede"
+  },
+  {
+   "x": 1691,
+   "y": 32,
+   "w": 75,
+   "h": 23,
+   "score": 0.81,
+   "text": "developer"
+  },
+  {
+   "x": 1796,
+   "y": 30,
+   "w": 74,
+   "h": 24,
+   "score": 0.81,
+   "text": "Quitter"
+  },
+  {
+   "x": 581,
+   "y": 44,
+   "w": 51,
+   "h": 17,
+   "score": 0.76,
+   "text": "postes"
+  },
+  {
+   "x": 736,
+   "y": 45,
+   "w": 71,
+   "h": 14,
+   "score": 0.91,
+   "text": "numeriques"
+  },
+  {
+   "x": 889,
+   "y": 45,
+   "w": 72,
+   "h": 14,
+   "score": 0.9,
+   "text": "despostes"
+  },
+  {
+   "x": 1022,
+   "y": 44,
+   "w": 89,
+   "h": 13,
+   "score": 0.93,
+   "text": "nouveaux postes"
+  },
+  {
+   "x": 1146,
+   "y": 45,
+   "w": 99,
+   "h": 15,
+   "score": 0.91,
+   "text": "poste-candidat"
+  },
+  {
+   "x": 1317,
+   "y": 45,
+   "w": 60,
+   "h": 14,
+   "score": 0.87,
+   "text": "donnees"
+  },
+  {
+   "x": 27,
+   "y": 75,
+   "w": 163,
+   "h": 17,
+   "score": 0.92,
+   "text": "Evolution dynamique des"
+  },
+  {
+   "x": 8,
+   "y": 92,
+   "w": 208,
+   "h": 13,
+   "score": 0.86,
+   "text": "nmnetenresd'unnnste.evistant."
+  },
+  {
+   "x": 1699,
+   "y": 94,
+   "w": 64,
+   "h": 17,
+   "score": 0.87,
+   "text": "Ingenieur"
+  },
+  {
+   "x": 2,
+   "y": 101,
+   "w": 380,
+   "h": 13,
+   "score": 0.92,
+   "text": "A partir du graphe temporel, detecter les ajouts, suppressions et modifications"
+  },
+  {
+   "x": 1829,
+   "y": 98,
+   "w": 60,
+   "h": 14,
+   "score": 0.85,
+   "text": "Mise a jour"
+  },
+  {
+   "x": 1661,
+   "y": 109,
+   "w": 138,
+   "h": 18,
+   "score": 0.88,
+   "text": "developpementJava"
+  },
+  {
+   "x": 48,
+   "y": 113,
+   "w": 289,
+   "h": 13,
+   "score": 0.92,
+   "text": "de competences, suivre Fevolution de la structure du poste"
+  },
+  {
+   "x": 1828,
+   "y": 111,
+   "w": 58,
+   "h": 14,
+   "score": 0.83,
+   "text": "dynamique"
+  },
+  {
+   "x": 43,
+   "y": 148,
+   "w": 108,
+   "h": 16,
+   "score": 0.91,
+   "text": "Chronologie des"
+  },
+  {
+   "x": 951,
+   "y": 150,
+   "w": 61,
+   "h": 14,
+   "score": 0.79,
+   "text": "6 derniers"
+  },
+  {
+   "x": 1042,
+   "y": 151,
+   "w": 54,
+   "h": 14,
+   "score": 0.86,
+   "text": "3 derniers"
+  },
+  {
+   "x": 1127,
+   "y": 151,
+   "w": 41,
+   "h": 26,
+   "score": 0.76,
+   "text": "1 an"
+  },
+  {
+   "x": 1192,
+   "y": 154,
+   "w": 43,
+   "h": 21,
+   "score": 0.74,
+   "text": "Tout"
+  },
+  {
+   "x": 1336,
+   "y": 147,
+   "w": 78,
+   "h": 22,
+   "score": 0.88,
+   "text": "Points cles"
+  },
+  {
+   "x": 51,
+   "y": 164,
+   "w": 91,
+   "h": 17,
+   "score": 0.81,
+   "text": "changements"
+  },
+  {
+   "x": 966,
+   "y": 165,
+   "w": 33,
+   "h": 14,
+   "score": 0.8,
+   "text": "mois"
+  },
+  {
+   "x": 1054,
+   "y": 164,
+   "w": 29,
+   "h": 14,
+   "score": 0.74,
+   "text": "mois"
+  },
+  {
+   "x": 44,
+   "y": 202,
+   "w": 64,
+   "h": 14,
+   "score": 0.83,
+   "text": "Nombre total"
+  },
+  {
+   "x": 149,
+   "y": 200,
+   "w": 68,
+   "h": 17,
+   "score": 0.89,
+   "text": "Competences"
+  },
+  {
+   "x": 1299,
+   "y": 204,
+   "w": 360,
+   "h": 18,
+   "score": 0.88,
+   "text": "Collaboratior Le developpement assiste par IA passe d'un × plus  a"
+  },
+  {
+   "x": 67,
+   "y": 216,
+   "w": 14,
+   "h": 8,
+   "score": 0.66,
+   "text": "de"
+  },
+  {
+   "x": 150,
+   "y": 214,
+   "w": 68,
+   "h": 13,
+   "score": 0.81,
+   "text": "nouvellement"
+  },
+  {
+   "x": 1335,
+   "y": 221,
+   "w": 18,
+   "h": 17,
+   "score": 0.64,
+   "text": "IA"
+  },
+  {
+   "x": 42,
+   "y": 225,
+   "w": 66,
+   "h": 13,
+   "score": 0.89,
+   "text": "competences"
+  },
+  {
+   "x": 157,
+   "y": 226,
+   "w": 51,
+   "h": 11,
+   "score": 0.82,
+   "text": "apparues"
+  },
+  {
+   "x": 1450,
+   "y": 219,
+   "w": 146,
+   "h": 13,
+   "score": 0.84,
+   "text": "une  competence de base w"
+  },
+  {
+   "x": 41,
+   "y": 235,
+   "w": 60,
+   "h": 15,
+   "score": 0.88,
+   "text": "Nombre de"
+  },
+  {
+   "x": 1386,
+   "y": 234,
+   "w": 463,
+   "h": 20,
+   "score": 0.92,
+   "text": "Parmi les ajouts de la periode : programmation assistee par IA, Copilot,"
+  },
+  {
+   "x": 36,
+   "y": 250,
+   "w": 69,
+   "h": 13,
+   "score": 0.9,
+   "text": "competences"
+  },
+  {
+   "x": 45,
+   "y": 266,
+   "w": 17,
+   "h": 13,
+   "score": 0.53,
+   "text": "70"
+  },
+  {
+   "x": 1494,
+   "y": 271,
+   "w": 71,
+   "h": 13,
+   "score": 0.86,
+   "text": "recrutements."
+  },
+  {
+   "x": 45,
+   "y": 285,
+   "w": 17,
+   "h": 13,
+   "score": 0.56,
+   "text": "60"
+  },
+  {
+   "x": 1395,
+   "y": 292,
+   "w": 458,
+   "h": 16,
+   "score": 0.93,
+   "text": "Les outils de codage a grands modeles s'implantent plus vite dans la R&D ; la"
+  },
+  {
+   "x": 43,
+   "y": 304,
+   "w": 20,
+   "h": 15,
+   "score": 0.67,
+   "text": "50"
+  },
+  {
+   "x": 1325,
+   "y": 304,
+   "w": 53,
+   "h": 18,
+   "score": 0.78,
+   "text": "Cause"
+  },
+  {
+   "x": 44,
+   "y": 325,
+   "w": 17,
+   "h": 13,
+   "score": 0.67,
+   "text": "40"
+  },
+  {
+   "x": 1406,
+   "y": 327,
+   "w": 142,
+   "h": 13,
+   "score": 0.91,
+   "text": "collaboratif une attente rigide."
+  },
+  {
+   "x": 43,
+   "y": 344,
+   "w": 20,
+   "h": 15,
+   "score": 0.67,
+   "text": "30"
+  },
+  {
+   "x": 1312,
+   "y": 350,
+   "w": 75,
+   "h": 19,
+   "score": 0.82,
+   "text": "Tendance!"
+  },
+  {
+   "x": 1408,
+   "y": 347,
+   "w": 432,
+   "h": 16,
+   "score": 0.93,
+   "text": "Dans 1 a 2 ans, le developpement collaboratif IA (prompts, revue de code,"
+  },
+  {
+   "x": 43,
+   "y": 363,
+   "w": 21,
+   "h": 16,
+   "score": 0.53,
+   "text": "20"
+  },
+  {
+   "x": 1315,
+   "y": 369,
+   "w": 72,
+   "h": 14,
+   "score": 0.84,
+   "text": "Conclusion"
+  },
+  {
+   "x": 1634,
+   "y": 362,
+   "w": 81,
+   "h": 14,
+   "score": 0.76,
+   "text": "sts1rleviendra"
+  },
+  {
+   "x": 44,
+   "y": 383,
+   "w": 19,
+   "h": 16,
+   "score": 0.59,
+   "text": "10"
+  },
+  {
+   "x": 1466,
+   "y": 383,
+   "w": 123,
+   "h": 13,
+   "score": 0.87,
+   "text": "avantage differenciateur."
+  },
+  {
+   "x": 43,
+   "y": 419,
+   "w": 54,
+   "h": 17,
+   "score": 0.85,
+   "text": "2026-02"
+  },
+  {
+   "x": 233,
+   "y": 419,
+   "w": 54,
+   "h": 17,
+   "score": 0.82,
+   "text": "2026-03"
+  },
+  {
+   "x": 422,
+   "y": 419,
+   "w": 55,
+   "h": 17,
+   "score": 0.81,
+   "text": "2026-04"
+  },
+  {
+   "x": 612,
+   "y": 419,
+   "w": 54,
+   "h": 17,
+   "score": 0.78,
+   "text": "2026-05"
+  },
+  {
+   "x": 802,
+   "y": 419,
+   "w": 54,
+   "h": 17,
+   "score": 0.74,
+   "text": "2026-06"
+  },
+  {
+   "x": 992,
+   "y": 419,
+   "w": 54,
+   "h": 17,
+   "score": 0.83,
+   "text": "2026-07"
+  },
+  {
+   "x": 1182,
+   "y": 419,
+   "w": 55,
+   "h": 17,
+   "score": 0.75,
+   "text": "2026-08"
+  },
+  {
+   "x": 1310,
+   "y": 421,
+   "w": 58,
+   "h": 14,
+   "score": 0.83,
+   "text": "Donnees a"
+  },
+  {
+   "x": 1323,
+   "y": 434,
+   "w": 36,
+   "h": 14,
+   "score": 0.76,
+   "text": "Pappui"
+  },
+  {
+   "x": 1333,
+   "y": 451,
+   "w": 139,
+   "h": 16,
+   "score": 0.91,
+   "text": "Contenu des communautes"
+  },
+  {
+   "x": 1517,
+   "y": 450,
+   "w": 197,
+   "h": 16,
+   "score": 0.89,
+   "text": "Penetration des mots-cles  IA 》"
+  },
+  {
+   "x": 1330,
+   "y": 464,
+   "w": 150,
+   "h": 16,
+   "score": 0.94,
+   "text": "techniques : +85 % sur un an"
+  },
+  {
+   "x": 1523,
+   "y": 464,
+   "w": 186,
+   "h": 19,
+   "score": 0.93,
+   "text": "dans les recrutements : +18 pp"
+  },
+  {
+   "x": 43,
+   "y": 490,
+   "w": 169,
+   "h": 17,
+   "score": 0.87,
+   "text": "2026-08 : changements"
+  },
+  {
+   "x": 1220,
+   "y": 492,
+   "w": 22,
+   "h": 12,
+   "score": 0.74,
+   "text": "Par"
+  },
+  {
+   "x": 1323,
+   "y": 485,
+   "w": 203,
+   "h": 17,
+   "score": 0.95,
+   "text": "6 postes sur 10 ont deja inscrit des outils"
+  },
+  {
+   "x": 1213,
+   "y": 503,
+   "w": 38,
+   "h": 14,
+   "score": 0.87,
+   "text": "rapport"
+  },
+  {
+   "x": 63,
+   "y": 509,
+   "w": 130,
+   "h": 17,
+   "score": 0.84,
+   "text": "cles de la periode"
+  },
+  {
+   "x": 1388,
+   "y": 500,
+   "w": 78,
+   "h": 13,
+   "score": 0.86,
+   "text": "IA dans leur JD"
+  },
+  {
+   "x": 1322,
+   "y": 549,
+   "w": 43,
+   "h": 19,
+   "score": 0.83,
+   "text": "Cloud"
+  },
+  {
+   "x": 1381,
+   "y": 549,
+   "w": 288,
+   "h": 17,
+   "score": 0.92,
+   "text": "La migration vers le cloud renforce les competences"
+  },
+  {
+   "x": 815,
+   "y": 563,
+   "w": 67,
+   "h": 15,
+   "score": 0.85,
+   "text": "Raison du"
+  },
+  {
+   "x": 1324,
+   "y": 568,
+   "w": 36,
+   "h": 14,
+   "score": 0.79,
+   "text": "natif"
+  },
+  {
+   "x": 132,
+   "y": 570,
+   "w": 105,
+   "h": 23,
+   "score": 0.87,
+   "text": "Competence"
+  },
+  {
+   "x": 464,
+   "y": 571,
+   "w": 43,
+   "h": 22,
+   "score": 0.7,
+   "text": "Type"
+  },
+  {
+   "x": 621,
+   "y": 573,
+   "w": 87,
+   "h": 17,
+   "score": 0.82,
+   "text": "Importance"
+  },
+  {
+   "x": 1441,
+   "y": 566,
+   "w": 167,
+   "h": 13,
+   "score": 0.95,
+   "text": "cloud natifetconteneurisation"
+  },
+  {
+   "x": 806,
+   "y": 579,
+   "w": 84,
+   "h": 17,
+   "score": 0.85,
+   "text": "changement"
+  },
+  {
+   "x": 1304,
+   "y": 591,
+   "w": 90,
+   "h": 20,
+   "score": 0.89,
+   "text": "Phenomene"
+  },
+  {
+   "x": 1397,
+   "y": 584,
+   "w": 448,
+   "h": 13,
+   "score": 0.93,
+   "text": "Les competences cloud natif, Kubernetes, Docker, ServiceMesh pesent davantage dans les"
+  },
+  {
+   "x": 1403,
+   "y": 605,
+   "w": 191,
+   "h": 13,
+   "score": 0.9,
+   "text": "et passent de  avance  a  exigence"
+  },
+  {
+   "x": 1606,
+   "y": 599,
+   "w": 31,
+   "h": 11,
+   "score": 0.86,
+   "text": "ajouts"
+  },
+  {
+   "x": 166,
+   "y": 611,
+   "w": 87,
+   "h": 14,
+   "score": 0.83,
+   "text": "Programmation"
+  },
+  {
+   "x": 480,
+   "y": 617,
+   "w": 14,
+   "h": 13,
+   "score": 0.51,
+   "text": "AI"
+  },
+  {
+   "x": 817,
+   "y": 611,
+   "w": 367,
+   "h": 16,
+   "score": 0.92,
+   "text": "L'essor des grands modeles pousse les entreprises a integrer PIA dans les"
+  },
+  {
+   "x": 950,
+   "y": 625,
+   "w": 99,
+   "h": 13,
+   "score": 0.85,
+   "text": "processus de R&D."
+  },
+  {
+   "x": 167,
+   "y": 626,
+   "w": 84,
+   "h": 13,
+   "score": 0.87,
+   "text": "assistee par IA"
+  },
+  {
+   "x": 1470,
+   "y": 617,
+   "w": 52,
+   "h": 13,
+   "score": 0.81,
+   "text": "centrale w."
+  },
+  {
+   "x": 1323,
+   "y": 645,
+   "w": 54,
+   "h": 21,
+   "score": 0.82,
+   "text": "Cause"
+  },
+  {
+   "x": 1409,
+   "y": 636,
+   "w": 428,
+   "h": 16,
+   "score": 0.93,
+   "text": "Migration complete des clients publics et Internet vers le cloud : livraison"
+  },
+  {
+   "x": 480,
+   "y": 663,
+   "w": 14,
+   "h": 12,
+   "score": 0.54,
+   "text": "Al"
+  },
+  {
+   "x": 170,
+   "y": 664,
+   "w": 56,
+   "h": 18,
+   "score": 0.87,
+   "text": "Copilot"
+  },
+  {
+   "x": 817,
+   "y": 657,
+   "w": 368,
+   "h": 16,
+   "score": 0.92,
+   "text": "L'essor des grands modeles pousse les entreprises a integrer PIA dans les"
+  },
+  {
+   "x": 950,
+   "y": 671,
+   "w": 99,
+   "h": 12,
+   "score": 0.85,
+   "text": "processus de R&D."
+  },
+  {
+   "x": 44,
+   "y": 675,
+   "w": 91,
+   "h": 14,
+   "score": 0.91,
+   "text": "Competences"
+  },
+  {
+   "x": 1396,
+   "y": 672,
+   "w": 120,
+   "h": 13,
+   "score": 0.91,
+   "text": "vers les piles cloud natif."
+  },
+  {
+   "x": 58,
+   "y": 690,
+   "w": 61,
+   "h": 16,
+   "score": 0.59,
+   "text": "ajn\"gees"
+  },
+  {
+   "x": 1313,
+   "y": 696,
+   "w": 79,
+   "h": 14,
+   "score": 0.84,
+   "text": "Tendance/"
+  },
+  {
+   "x": 1394,
+   "y": 694,
+   "w": 450,
+   "h": 16,
+   "score": 0.9,
+   "text": "Le cloud natif (orchestration de conteneurs + mallage de services + exploitation declarative)"
+  },
+  {
+   "x": 168,
+   "y": 708,
+   "w": 53,
+   "h": 21,
+   "score": 0.77,
+   "text": "Cursor"
+  },
+  {
+   "x": 816,
+   "y": 704,
+   "w": 368,
+   "h": 16,
+   "score": 0.91,
+   "text": "L'essor des grands modeles pousse les entreprises a integrer PIA dans les"
+  },
+  {
+   "x": 52,
+   "y": 710,
+   "w": 76,
+   "h": 14,
+   "score": 0.83,
+   "text": "competences"
+  },
+  {
+   "x": 1311,
+   "y": 710,
+   "w": 79,
+   "h": 20,
+   "score": 0.87,
+   "text": "Conclusion"
+  },
+  {
+   "x": 645,
+   "y": 711,
+   "w": 77,
+   "h": 16,
+   "score": 0.8,
+   "text": "★★★★★"
+  },
+  {
+   "x": 1410,
+   "y": 712,
+   "w": 143,
+   "h": 17,
+   "score": 0.89,
+   "text": "le pilier du backend Java,"
+  },
+  {
+   "x": 1570,
+   "y": 708,
+   "w": 102,
+   "h": 13,
+   "score": 0.91,
+   "text": "rastera durablement"
+  },
+  {
+   "x": 950,
+   "y": 718,
+   "w": 98,
+   "h": 12,
+   "score": 0.91,
+   "text": "processus de R&D."
+  },
+  {
+   "x": 1390,
+   "y": 727,
+   "w": 185,
+   "h": 16,
+   "score": 0.92,
+   "text": "etroitement lie aux microservices."
+  },
+  {
+   "x": 161,
+   "y": 762,
+   "w": 96,
+   "h": 20,
+   "score": 0.89,
+   "text": "Voir plus (6)-"
+  },
+  {
+   "x": 1339,
+   "y": 766,
+   "w": 78,
+   "h": 14,
+   "score": 0.82,
+   "text": "Sources de"
+  },
+  {
+   "x": 1832,
+   "y": 765,
+   "w": 33,
+   "h": 15,
+   "score": 0.8,
+   "text": "Tout"
+  },
+  {
+   "x": 1348,
+   "y": 783,
+   "w": 59,
+   "h": 14,
+   "score": 0.8,
+   "text": "donnees"
+  },
+  {
+   "x": 1823,
+   "y": 781,
+   "w": 48,
+   "h": 17,
+   "score": 0.74,
+   "text": "deplier"
+  },
+  {
+   "x": 1310,
+   "y": 816,
+   "w": 165,
+   "h": 16,
+   "score": 0.92,
+   "text": "Analyse croisee multi-sources (6"
+  },
+  {
+   "x": 1350,
+   "y": 830,
+   "w": 85,
+   "h": 13,
+   "score": 0.9,
+   "text": "sources au total)"
+  },
+  {
+   "x": 464,
+   "y": 850,
+   "w": 42,
+   "h": 26,
+   "score": 0.79,
+   "text": "Type"
+  },
+  {
+   "x": 131,
+   "y": 851,
+   "w": 105,
+   "h": 24,
+   "score": 0.86,
+   "text": "Competence"
+  },
+  {
+   "x": 621,
+   "y": 852,
+   "w": 89,
+   "h": 20,
+   "score": 0.87,
+   "text": "Importance"
+  },
+  {
+   "x": 814,
+   "y": 843,
+   "w": 70,
+   "h": 20,
+   "score": 0.86,
+   "text": "Raison du"
+  },
+  {
+   "x": 1342,
+   "y": 855,
+   "w": 63,
+   "h": 14,
+   "score": 0.87,
+   "text": "Donnees de"
+  },
+  {
+   "x": 808,
+   "y": 862,
+   "w": 83,
+   "h": 14,
+   "score": 0.9,
+   "text": "changement"
+  },
+  {
+   "x": 1435,
+   "y": 854,
+   "w": 33,
+   "h": 15,
+   "score": 0.83,
+   "text": "JD de"
+  },
+  {
+   "x": 1341,
+   "y": 868,
+   "w": 64,
+   "h": 13,
+   "score": 0.91,
+   "text": "recrutement"
+  },
+  {
+   "x": 1418,
+   "y": 868,
+   "w": 63,
+   "h": 13,
+   "score": 0.83,
+   "text": "recrutement"
+  },
+  {
+   "x": 1830,
+   "y": 869,
+   "w": 29,
+   "h": 21,
+   "score": 0.6,
+   "text": "OK"
+  },
+  {
+   "x": 1327,
+   "y": 881,
+   "w": 206,
+   "h": 17,
+   "score": 0.88,
+   "text": "12 580 JD valides -MAJ :2026-08-01"
+  },
+  {
+   "x": 502,
+   "y": 894,
+   "w": 71,
+   "h": 17,
+   "score": 0.86,
+   "text": "Evolution des"
+  },
+  {
+   "x": 169,
+   "y": 899,
+   "w": 45,
+   "h": 21,
+   "score": 0.8,
+   "text": "Seata"
+  },
+  {
+   "x": 822,
+   "y": 895,
+   "w": 297,
+   "h": 16,
+   "score": 0.93,
+   "text": "L'adoption du cloud natif et des microservices s'approfondit ;"
+  },
+  {
+   "x": 646,
+   "y": 904,
+   "w": 75,
+   "h": 14,
+   "score": 0.83,
+   "text": "★★★★★"
+  },
+  {
+   "x": 866,
+   "y": 908,
+   "w": 209,
+   "h": 15,
+   "score": 0.94,
+   "text": "les solutions transactionnelles convergent."
+  },
+  {
+   "x": 476,
+   "y": 909,
+   "w": 122,
+   "h": 13,
+   "score": 0.91,
+   "text": "transactions distribuees"
+  },
+  {
+   "x": 1819,
+   "y": 902,
+   "w": 47,
+   "h": 22,
+   "score": 0.73,
+   "text": "Q&R"
+  },
+  {
+   "x": 1335,
+   "y": 928,
+   "w": 101,
+   "h": 16,
+   "score": 0.92,
+   "text": "Donnees de postes"
+  },
+  {
+   "x": 1457,
+   "y": 927,
+   "w": 52,
+   "h": 17,
+   "score": 0.85,
+   "text": "Donnees"
+  },
+  {
+   "x": 503,
+   "y": 942,
+   "w": 68,
+   "h": 14,
+   "score": 0.89,
+   "text": "Evolution des"
+  },
+  {
+   "x": 1363,
+   "y": 942,
+   "w": 44,
+   "h": 13,
+   "score": 0.89,
+   "text": "internes"
+  },
+  {
+   "x": 1463,
+   "y": 943,
+   "w": 39,
+   "h": 11,
+   "score": 0.86,
+   "text": "privees"
+  },
+  {
+   "x": 1827,
+   "y": 939,
+   "w": 31,
+   "h": 23,
+   "score": 0.65,
+   "text": "OK"
+  },
+  {
+   "x": 170,
+   "y": 950,
+   "w": 33,
+   "h": 14,
+   "score": 0.64,
+   "text": "TCC"
+  },
+  {
+   "x": 819,
+   "y": 951,
+   "w": 175,
+   "h": 13,
+   "score": 0.95,
+   "text": "Adoption accrue du cloud natif et des"
+  }
+ ],
+ "image7.png": [
+  {
+   "x": 553,
+   "y": 38,
+   "w": 95,
+   "h": 17,
+   "score": 0.92,
+   "text": "Actualites des"
+  },
+  {
+   "x": 899,
+   "y": 38,
+   "w": 56,
+   "h": 17,
+   "score": 0.81,
+   "text": "Analyse"
+  },
+  {
+   "x": 1000,
+   "y": 35,
+   "w": 103,
+   "h": 23,
+   "score": 0.84,
+   "text": "Decouverte de"
+  },
+  {
+   "x": 1155,
+   "y": 38,
+   "w": 97,
+   "h": 17,
+   "score": 0.9,
+   "text": "Appariement"
+  },
+  {
+   "x": 718,
+   "y": 39,
+   "w": 111,
+   "h": 16,
+   "score": 0.87,
+   "text": "Cartedes talents"
+  },
+  {
+   "x": 1298,
+   "y": 38,
+   "w": 63,
+   "h": 17,
+   "score": 0.79,
+   "text": "Base de"
+  },
+  {
+   "x": 85,
+   "y": 41,
+   "w": 108,
+   "h": 27,
+   "score": 0.9,
+   "text": "ZhiTuPoJu"
+  },
+  {
+   "x": 1690,
+   "y": 45,
+   "w": 76,
+   "h": 22,
+   "score": 0.85,
+   "text": "developer"
+  },
+  {
+   "x": 1795,
+   "y": 39,
+   "w": 78,
+   "h": 30,
+   "score": 0.82,
+   "text": "Quitter"
+  },
+  {
+   "x": 731,
+   "y": 53,
+   "w": 81,
+   "h": 19,
+   "score": 0.83,
+   "text": "numeriques"
+  },
+  {
+   "x": 575,
+   "y": 56,
+   "w": 50,
+   "h": 17,
+   "score": 0.81,
+   "text": "postes"
+  },
+  {
+   "x": 889,
+   "y": 55,
+   "w": 75,
+   "h": 17,
+   "score": 0.86,
+   "text": "des postes"
+  },
+  {
+   "x": 991,
+   "y": 56,
+   "w": 119,
+   "h": 17,
+   "score": 0.88,
+   "text": "nouveaux postes"
+  },
+  {
+   "x": 1149,
+   "y": 56,
+   "w": 111,
+   "h": 17,
+   "score": 0.89,
+   "text": "poste-candidat"
+  },
+  {
+   "x": 1295,
+   "y": 57,
+   "w": 69,
+   "h": 17,
+   "score": 0.87,
+   "text": "donnees"
+  },
+  {
+   "x": 57,
+   "y": 117,
+   "w": 167,
+   "h": 16,
+   "score": 0.88,
+   "text": "Appariement poste-candidat"
+  },
+  {
+   "x": 493,
+   "y": 122,
+   "w": 60,
+   "h": 22,
+   "score": 0.76,
+   "text": "oPoste"
+  },
+  {
+   "x": 589,
+   "y": 124,
+   "w": 226,
+   "h": 19,
+   "score": 0.88,
+   "text": "Competences Apprentissage"
+  },
+  {
+   "x": 838,
+   "y": 124,
+   "w": 71,
+   "h": 20,
+   "score": 0.78,
+   "text": "Entretien"
+  },
+  {
+   "x": 373,
+   "y": 125,
+   "w": 85,
+   "h": 17,
+   "score": 0.87,
+   "text": "Appariement"
+  },
+  {
+   "x": 1802,
+   "y": 116,
+   "w": 40,
+   "h": 20,
+   "score": 0.86,
+   "text": "Lancer"
+  },
+  {
+   "x": 87,
+   "y": 131,
+   "w": 110,
+   "h": 18,
+   "score": 0.86,
+   "text": "Poste de decision"
+  },
+  {
+   "x": 286,
+   "y": 126,
+   "w": 23,
+   "h": 15,
+   "score": 0.64,
+   "text": "CV"
+  },
+  {
+   "x": 1782,
+   "y": 133,
+   "w": 70,
+   "h": 14,
+   "score": 0.86,
+   "text": "Tappariement -"
+  },
+  {
+   "x": 77,
+   "y": 185,
+   "w": 32,
+   "h": 19,
+   "score": 0.73,
+   "text": "Voir"
+  },
+  {
+   "x": 1547,
+   "y": 187,
+   "w": 61,
+   "h": 14,
+   "score": 0.84,
+   "text": "Objectif de"
+  },
+  {
+   "x": 1623,
+   "y": 191,
+   "w": 93,
+   "h": 19,
+   "score": 0.85,
+   "text": "Backend Java"
+  },
+  {
+   "x": 1726,
+   "y": 184,
+   "w": 69,
+   "h": 19,
+   "score": 0.83,
+   "text": "Entreprises"
+  },
+  {
+   "x": 142,
+   "y": 192,
+   "w": 87,
+   "h": 22,
+   "score": 0.91,
+   "text": "Reimporter"
+  },
+  {
+   "x": 270,
+   "y": 193,
+   "w": 219,
+   "h": 16,
+   "score": 0.89,
+   "text": "zhangsan_backend_java.txt -0.0 Mo"
+  },
+  {
+   "x": 1543,
+   "y": 202,
+   "w": 68,
+   "h": 14,
+   "score": 0.89,
+   "text": "candidature"
+  },
+  {
+   "x": 63,
+   "y": 203,
+   "w": 58,
+   "h": 17,
+   "score": 0.85,
+   "text": "I'original"
+  },
+  {
+   "x": 1746,
+   "y": 201,
+   "w": 29,
+   "h": 15,
+   "score": 0.78,
+   "text": "cles"
+  },
+  {
+   "x": 660,
+   "y": 260,
+   "w": 65,
+   "h": 17,
+   "score": 0.84,
+   "text": "Entrees du"
+  },
+  {
+   "x": 977,
+   "y": 268,
+   "w": 122,
+   "h": 17,
+   "score": 0.8,
+   "text": "ANALYSE&EDITION"
+  },
+  {
+   "x": 1770,
+   "y": 259,
+   "w": 83,
+   "h": 20,
+   "score": 0.87,
+   "text": "Experiences"
+  },
+  {
+   "x": 292,
+   "y": 286,
+   "w": 61,
+   "h": 30,
+   "score": 0.74,
+   "text": "Zhang"
+  },
+  {
+   "x": 1782,
+   "y": 278,
+   "w": 61,
+   "h": 17,
+   "score": 0.82,
+   "text": "de projet"
+  },
+  {
+   "x": 303,
+   "y": 309,
+   "w": 41,
+   "h": 27,
+   "score": 0.74,
+   "text": "San"
+  },
+  {
+   "x": 704,
+   "y": 307,
+   "w": 84,
+   "h": 16,
+   "score": 0.91,
+   "text": "Informations"
+  },
+  {
+   "x": 704,
+   "y": 324,
+   "w": 84,
+   "h": 14,
+   "score": 0.89,
+   "text": "personnelles"
+  },
+  {
+   "x": 263,
+   "y": 341,
+   "w": 129,
+   "h": 17,
+   "score": 0.9,
+   "text": "Ingenieur developpement"
+  },
+  {
+   "x": 988,
+   "y": 344,
+   "w": 58,
+   "h": 17,
+   "score": 0.77,
+   "text": "• Points"
+  },
+  {
+   "x": 290,
+   "y": 356,
+   "w": 73,
+   "h": 14,
+   "score": 0.89,
+   "text": "backend Java"
+  },
+  {
+   "x": 1001,
+   "y": 360,
+   "w": 35,
+   "h": 18,
+   "score": 0.83,
+   "text": "forts"
+  },
+  {
+   "x": 684,
+   "y": 370,
+   "w": 107,
+   "h": 27,
+   "score": 0.83,
+   "text": "Formation"
+  },
+  {
+   "x": 162,
+   "y": 383,
+   "w": 328,
+   "h": 16,
+   "score": 0.89,
+   "text": "Tel. : 138-0000-0000 - E-mail : zhangsan@example.com"
+  },
+  {
+   "x": 992,
+   "y": 376,
+   "w": 163,
+   "h": 15,
+   "score": 0.95,
+   "text": "1. Pile technique tres alignee sur"
+  },
+  {
+   "x": 1050,
+   "y": 391,
+   "w": 46,
+   "h": 12,
+   "score": 0.81,
+   "text": "le poste"
+  },
+  {
+   "x": 997,
+   "y": 411,
+   "w": 829,
+   "h": 19,
+   "score": 0.93,
+   "text": "La zone & Experiences de projet  selectionnee constitu la partie la plus convaincante et la plus dense du CV. Ses points forts sont les suivants :"
+  },
+  {
+   "x": 706,
+   "y": 428,
+   "w": 82,
+   "h": 17,
+   "score": 0.84,
+   "text": "Experiences"
+  },
+  {
+   "x": 57,
+   "y": 442,
+   "w": 89,
+   "h": 20,
+   "score": 0.89,
+   "text": "Formation"
+  },
+  {
+   "x": 713,
+   "y": 443,
+   "w": 67,
+   "h": 19,
+   "score": 0.81,
+   "text": "de projet"
+  },
+  {
+   "x": 991,
+   "y": 438,
+   "w": 72,
+   "h": 13,
+   "score": 0.88,
+   "text": "trois niveaux :"
+  },
+  {
+   "x": 991,
+   "y": 464,
+   "w": 230,
+   "h": 16,
+   "score": 0.86,
+   "text": "2. Donnees quantifiees et α tangibles >"
+  },
+  {
+   "x": 70,
+   "y": 489,
+   "w": 366,
+   "h": 17,
+   "score": 0.88,
+   "text": "Universite - Informatique ·Licence<br>2019.09-2023.06"
+  },
+  {
+   "x": 707,
+   "y": 489,
+   "w": 76,
+   "h": 17,
+   "score": 0.86,
+   "text": "Experience"
+  },
+  {
+   "x": 1015,
+   "y": 486,
+   "w": 477,
+   "h": 16,
+   "score": 0.91,
+   "text": "Le premier projet indique  temps de reponse moyen < 1 s 》, un indicateur dur de"
+  },
+  {
+   "x": 694,
+   "y": 505,
+   "w": 101,
+   "h": 14,
+   "score": 0.88,
+   "text": "professionnelle"
+  },
+  {
+   "x": 1211,
+   "y": 503,
+   "w": 82,
+   "h": 14,
+   "score": 0.91,
+   "text": "performance :"
+  },
+  {
+   "x": 91,
+   "y": 525,
+   "w": 152,
+   "h": 17,
+   "score": 0.91,
+   "text": "Experiences de projet -"
+  },
+  {
+   "x": 1022,
+   "y": 518,
+   "w": 758,
+   "h": 15,
+   "score": 0.92,
+   "text": "Le second indique  1oo+ acces concurrents  et  couverture de tests 7o % , deux atouts pour un poste backend : performance et qualite."
+  },
+  {
+   "x": 97,
+   "y": 543,
+   "w": 139,
+   "h": 17,
+   "score": 0.89,
+   "text": "mots-cles cliquables"
+  },
+  {
+   "x": 994,
+   "y": 535,
+   "w": 81,
+   "h": 14,
+   "score": 0.87,
+   "text": "pas du simple x"
+  },
+  {
+   "x": 701,
+   "y": 546,
+   "w": 92,
+   "h": 17,
+   "score": 0.87,
+   "text": "Competences"
+  },
+  {
+   "x": 994,
+   "y": 548,
+   "w": 53,
+   "h": 13,
+   "score": 0.86,
+   "text": "ca fonction"
+  },
+  {
+   "x": 709,
+   "y": 563,
+   "w": 76,
+   "h": 17,
+   "score": 0.88,
+   "text": "techniques"
+  },
+  {
+   "x": 994,
+   "y": 554,
+   "w": 520,
+   "h": 19,
+   "score": 0.91,
+   "text": "Les validations externes (α excellente evaluation en soutenance w,  3e prix universitaire"
+  },
+  {
+   "x": 75,
+   "y": 570,
+   "w": 491,
+   "h": 18,
+   "score": 0.9,
+   "text": "1. Systeme de commandes Java haute concurrence : flux de transaction central, temps de"
+  },
+  {
+   "x": 1125,
+   "y": 570,
+   "w": 254,
+   "h": 16,
+   "score": 0.91,
+   "text": ">) convainquent plus que I'autosatisfaction."
+  },
+  {
+   "x": 257,
+   "y": 587,
+   "w": 121,
+   "h": 12,
+   "score": 0.81,
+   "text": "reponse reduit de 40 %"
+  },
+  {
+   "x": 63,
+   "y": 594,
+   "w": 514,
+   "h": 19,
+   "score": 0.92,
+   "text": "5 M+ appels/jour. 2. Plateforme marketing'SpringBoot : services de configuration"
+  },
+  {
+   "x": 999,
+   "y": 587,
+   "w": 92,
+   "h": 13,
+   "score": 0.85,
+   "text": "3. Role clairement"
+  },
+  {
+   "x": 1031,
+   "y": 600,
+   "w": 28,
+   "h": 14,
+   "score": 0.79,
+   "text": "defini"
+  },
+  {
+   "x": 679,
+   "y": 614,
+   "w": 137,
+   "h": 23,
+   "score": 0.9,
+   "text": "Auto-évaluation"
+  },
+  {
+   "x": 995,
+   "y": 610,
+   "w": 664,
+   "h": 21,
+   "score": 0.92,
+   "text": "Vous mentionnez α chef d'equipe \" et α developpeur principal w, et dans le premier projet α organisation du travail."
+  },
+  {
+   "x": 1668,
+   "y": 618,
+   "w": 158,
+   "h": 13,
+   "score": 0.92,
+   "text": "_ce qui montre au recruteur que"
+  },
+  {
+   "x": 138,
+   "y": 634,
+   "w": 366,
+   "h": 19,
+   "score": 0.89,
+   "text": "Ontimisation MysQL : requetes lentes, index composites,"
+  },
+  {
+   "x": 1735,
+   "y": 630,
+   "w": 28,
+   "h": 14,
+   "score": 0.72,
+   "text": "vous"
+  },
+  {
+   "x": 63,
+   "y": 649,
+   "w": 148,
+   "h": 22,
+   "score": 0.84,
+   "text": "QPS multiplie par 3."
+  },
+  {
+   "x": 1086,
+   "y": 654,
+   "w": 365,
+   "h": 15,
+   "score": 0.91,
+   "text": "atout differenciateur precieux pour un recrutement junior."
+  },
+  {
+   "x": 65,
+   "y": 688,
+   "w": 75,
+   "h": 17,
+   "score": 0.9,
+   "text": "Experience"
+  },
+  {
+   "x": 51,
+   "y": 706,
+   "w": 102,
+   "h": 16,
+   "score": 0.92,
+   "text": "professionnelle"
+  },
+  {
+   "x": 1016,
+   "y": 698,
+   "w": 45,
+   "h": 14,
+   "score": 0.79,
+   "text": "Points a"
+  },
+  {
+   "x": 1014,
+   "y": 712,
+   "w": 49,
+   "h": 13,
+   "score": 0.81,
+   "text": "ameliorer"
+  },
+  {
+   "x": 68,
+   "y": 734,
+   "w": 473,
+   "h": 16,
+   "score": 0.91,
+   "text": "Aucune experience professionnelle formelle<br>(CV d'exemple - ajouter un stage ou un poste a"
+  },
+  {
+   "x": 994,
+   "y": 733,
+   "w": 199,
+   "h": 16,
+   "score": 0.93,
+   "text": "Un point reste toutefois a ameliorer :"
+  },
+  {
+   "x": 272,
+   "y": 748,
+   "w": 64,
+   "h": 14,
+   "score": 0.91,
+   "text": "temps plein)"
+  },
+  {
+   "x": 1004,
+   "y": 754,
+   "w": 793,
+   "h": 19,
+   "score": 0.92,
+   "text": "L'ordre des projets (α implementation -→ responsabilites -→+ resultats >) est logique, mais le second (librairie en ligne) colle mieux a votre"
+  },
+  {
+   "x": 50,
+   "y": 775,
+   "w": 106,
+   "h": 20,
+   "score": 0.89,
+   "text": "Competences"
+  },
+  {
+   "x": 1325,
+   "y": 769,
+   "w": 153,
+   "h": 18,
+   "score": 0.9,
+   "text": "objectif,or il est place en"
+  },
+  {
+   "x": 1005,
+   "y": 781,
+   "w": 383,
+   "h": 17,
+   "score": 0.94,
+   "text": "seconde position : un recruteur qui parcourt rapidement verra d'abord le projet"
+  },
+  {
+   "x": 60,
+   "y": 796,
+   "w": 86,
+   "h": 19,
+   "score": 0.91,
+   "text": "techniques"
+  },
+  {
+   "x": 1160,
+   "y": 795,
+   "w": 71,
+   "h": 12,
+   "score": 0.91,
+   "text": "algorithmique."
+  },
+  {
+   "x": 75,
+   "y": 821,
+   "w": 489,
+   "h": 19,
+   "score": 0.93,
+   "text": "Java (expert), SpringBoot (maitrise), MySQL (maitrise), Redis (notions), conception"
+  },
+  {
+   "x": 996,
+   "y": 813,
+   "w": 826,
+   "h": 21,
+   "score": 0.93,
+   "text": "En entretien, presentez d'abord le projet librairie, ou reordonnez les deux projets sur le cv (optimisation structurelle ; I'ajustement"
+  },
+  {
+   "x": 293,
+   "y": 839,
+   "w": 52,
+   "h": 13,
+   "score": 0.84,
+   "text": "systeme"
+  },
+  {
+   "x": 1005,
+   "y": 834,
+   "w": 75,
+   "h": 14,
+   "score": 0.84,
+   "text": "depend de vos"
+  },
+  {
+   "x": 77,
+   "y": 848,
+   "w": 281,
+   "h": 18,
+   "score": 0.95,
+   "text": "(famiiarise) <br>Docker, microservices : pas de pratique"
+  },
+  {
+   "x": 1007,
+   "y": 847,
+   "w": 70,
+   "h": 14,
+   "score": 0.9,
+   "text": "preferences)."
+  },
+  {
+   "x": 194,
+   "y": 863,
+   "w": 48,
+   "h": 13,
+   "score": 0.86,
+   "text": "en projet"
+  },
+  {
+   "x": 994,
+   "y": 865,
+   "w": 85,
+   "h": 13,
+   "score": 0.87,
+   "text": "Reecriture ciblee"
+  },
+  {
+   "x": 1752,
+   "y": 867,
+   "w": 70,
+   "h": 20,
+   "score": 0.86,
+   "text": "+ Modification"
+  },
+  {
+   "x": 1780,
+   "y": 884,
+   "w": 14,
+   "h": 13,
+   "score": 0.65,
+   "text": "IA"
+  },
+  {
+   "x": 35,
+   "y": 899,
+   "w": 138,
+   "h": 20,
+   "score": 0.88,
+   "text": "Auto-évaluation"
+  },
+  {
+   "x": 1815,
+   "y": 911,
+   "w": 55,
+   "h": 23,
+   "score": 0.72,
+   "text": "Q&R"
+  },
+  {
+   "x": 1010,
+   "y": 941,
+   "w": 591,
+   "h": 18,
+   "score": 0.93,
+   "text": "Cliquez sur < + Modification IA > pour ouvrir le panneau : modifiez le CV a droite, cliquez sur le texte"
+  },
+  {
+   "x": 1190,
+   "y": 957,
+   "w": 228,
+   "h": 16,
+   "score": 0.94,
+   "text": "surligne pour le synchroniser a gauche."
+  }
+ ],
+ "image8.png": [
+  {
+   "x": 37,
+   "y": 23,
+   "w": 101,
+   "h": 15,
+   "score": 0.91,
+   "text": "Comparaison des"
+  },
+  {
+   "x": 49,
+   "y": 37,
+   "w": 74,
+   "h": 13,
+   "score": 0.89,
+   "text": "reecritures IA"
+  },
+  {
+   "x": 23,
+   "y": 51,
+   "w": 139,
+   "h": 15,
+   "score": 0.94,
+   "text": "Renforcer les resultats et la"
+  },
+  {
+   "x": 38,
+   "y": 65,
+   "w": 107,
+   "h": 13,
+   "score": 0.89,
+   "text": "profondeur technique"
+  },
+  {
+   "x": 324,
+   "y": 114,
+   "w": 41,
+   "h": 13,
+   "score": 0.81,
+   "text": "Version"
+  },
+  {
+   "x": 51,
+   "y": 115,
+   "w": 41,
+   "h": 13,
+   "score": 0.81,
+   "text": "Version"
+  },
+  {
+   "x": 594,
+   "y": 113,
+   "w": 85,
+   "h": 18,
+   "score": 0.86,
+   "text": "Version concise"
+  },
+  {
+   "x": 47,
+   "y": 127,
+   "w": 50,
+   "h": 11,
+   "score": 0.75,
+   "text": "guantifiee"
+  },
+  {
+   "x": 314,
+   "y": 127,
+   "w": 58,
+   "h": 13,
+   "score": 0.78,
+   "text": "Percytante"
+  },
+  {
+   "x": 33,
+   "y": 134,
+   "w": 194,
+   "h": 15,
+   "score": 0.85,
+   "text": "Mettre en avant les resultats chiffres et"
+  },
+  {
+   "x": 324,
+   "y": 134,
+   "w": 221,
+   "h": 15,
+   "score": 0.89,
+   "text": "Verbesplusforts,resultats mis en valeur"
+  },
+  {
+   "x": 600,
+   "y": 134,
+   "w": 224,
+   "h": 18,
+   "score": 0.93,
+   "text": "Plus concis, densite accrue, plus de sens en"
+  },
+  {
+   "x": 615,
+   "y": 128,
+   "w": 46,
+   "h": 12,
+   "score": 0.71,
+   "text": "et dense"
+  },
+  {
+   "x": 91,
+   "y": 148,
+   "w": 76,
+   "h": 12,
+   "score": 0.88,
+   "text": "la valeur metier"
+  },
+  {
+   "x": 343,
+   "y": 149,
+   "w": 178,
+   "h": 14,
+   "score": 0.94,
+   "text": "pour impressionner le recruteur"
+  },
+  {
+   "x": 585,
+   "y": 158,
+   "w": 49,
+   "h": 16,
+   "score": 0.85,
+   "text": "valeur"
+  },
+  {
+   "x": 675,
+   "y": 149,
+   "w": 75,
+   "h": 12,
+   "score": 0.84,
+   "text": "moins de mots"
+  },
+  {
+   "x": 37,
+   "y": 208,
+   "w": 79,
+   "h": 13,
+   "score": 0.88,
+   "text": "Reecriture ciblee"
+  },
+  {
+   "x": 35,
+   "y": 220,
+   "w": 81,
+   "h": 12,
+   "score": 0.84,
+   "text": "surles faiblesses"
+  },
+  {
+   "x": 45,
+   "y": 226,
+   "w": 207,
+   "h": 17,
+   "score": 0.92,
+   "text": "Reecrire la structure et Pordre des projets"
+  },
+  {
+   "x": 60,
+   "y": 241,
+   "w": 179,
+   "h": 12,
+   "score": 0.88,
+   "text": "selon les points d'amelioration de FlA"
+  },
+  {
+   "x": 23,
+   "y": 282,
+   "w": 107,
+   "h": 15,
+   "score": 0.83,
+   "text": "Reecriture en cours :"
+  },
+  {
+   "x": 22,
+   "y": 296,
+   "w": 109,
+   "h": 12,
+   "score": 0.9,
+   "text": "experiences de projet"
+  },
+  {
+   "x": 83,
+   "y": 325,
+   "w": 45,
+   "h": 14,
+   "score": 0.89,
+   "text": "(editable"
+  },
+  {
+   "x": 341,
+   "y": 325,
+   "w": 46,
+   "h": 14,
+   "score": 0.87,
+   "text": "Contenu"
+  },
+  {
+   "x": 539,
+   "y": 327,
+   "w": 44,
+   "h": 13,
+   "score": 0.84,
+   "text": "(editable"
+  },
+  {
+   "x": 489,
+   "y": 328,
+   "w": 31,
+   "h": 11,
+   "score": 0.8,
+   "text": "Apres"
+  },
+  {
+   "x": 682,
+   "y": 320,
+   "w": 156,
+   "h": 16,
+   "score": 0.95,
+   "text": "Cliquez sur le texte surigne pour"
+  },
+  {
+   "x": 327,
+   "y": 337,
+   "w": 69,
+   "h": 14,
+   "score": 0.86,
+   "text": "actuel du CV"
+  },
+  {
+   "x": 479,
+   "y": 340,
+   "w": 50,
+   "h": 13,
+   "score": 0.85,
+   "text": "reecritur"
+  },
+  {
+   "x": 525,
+   "y": 340,
+   "w": 66,
+   "h": 13,
+   "score": 0.92,
+   "text": "directement)"
+  },
+  {
+   "x": 690,
+   "y": 332,
+   "w": 143,
+   "h": 15,
+   "score": 0.92,
+   "text": "le synchroniser avec le CV de"
+  },
+  {
+   "x": 741,
+   "y": 345,
+   "w": 41,
+   "h": 11,
+   "score": 0.83,
+   "text": "gauche"
+  },
+  {
+   "x": 38,
+   "y": 364,
+   "w": 358,
+   "h": 15,
+   "score": 0.93,
+   "text": "1. Systeme de commandes Java haute concurrence : flux de transaction"
+  },
+  {
+   "x": 512,
+   "y": 362,
+   "w": 170,
+   "h": 16,
+   "score": 0.89,
+   "text": "1. Librairie en ligne  pilote I"
+  },
+  {
+   "x": 196,
+   "y": 377,
+   "w": 39,
+   "h": 14,
+   "score": 0.84,
+   "text": "central,"
+  },
+  {
+   "x": 548,
+   "y": 377,
+   "w": 99,
+   "h": 15,
+   "score": 0.85,
+   "text": "2024.09-2025.01"
+  },
+  {
+   "x": 45,
+   "y": 387,
+   "w": 196,
+   "h": 15,
+   "score": 0.91,
+   "text": "temps de reponse reduit de 40 %, 5 M+"
+  },
+  {
+   "x": 113,
+   "y": 400,
+   "w": 56,
+   "h": 13,
+   "score": 0.85,
+   "text": "appels/jour."
+  },
+  {
+   "x": 488,
+   "y": 395,
+   "w": 342,
+   "h": 13,
+   "score": 0.94,
+   "text": "Aligne sur Iobjectif backend Java : recherche, commande et paiement"
+  },
+  {
+   "x": 33,
+   "y": 409,
+   "w": 357,
+   "h": 16,
+   "score": 0.93,
+   "text": "2. Plateforme marketing SpringBoot : services de configuration et"
+  },
+  {
+   "x": 168,
+   "y": 424,
+   "w": 84,
+   "h": 14,
+   "score": 0.84,
+   "text": "de distribution,"
+  },
+  {
+   "x": 485,
+   "y": 415,
+   "w": 332,
+   "h": 17,
+   "score": 0.92,
+   "text": "via SpringBoot ; MySQL + Redis : 500 K+ requetes/jour,"
+  },
+  {
+   "x": 63,
+   "y": 433,
+   "w": 110,
+   "h": 13,
+   "score": 0.91,
+   "text": "conception des tables,"
+  },
+  {
+   "x": 37,
+   "y": 445,
+   "w": 163,
+   "h": 15,
+   "score": 0.87,
+   "text": "optimisation des requetes lentes."
+  },
+  {
+   "x": 481,
+   "y": 438,
+   "w": 112,
+   "h": 15,
+   "score": 0.89,
+   "text": "latence P99 < 200 ms."
+  },
+  {
+   "x": 38,
+   "y": 462,
+   "w": 323,
+   "h": 15,
+   "score": 0.91,
+   "text": "3. Optimisation MysQL : requetes lentes, index composites,"
+  },
+  {
+   "x": 486,
+   "y": 456,
+   "w": 322,
+   "h": 15,
+   "score": 0.94,
+   "text": "Equipe de 5 personnes, 12 documents techniques, couverture de"
+  },
+  {
+   "x": 38,
+   "y": 480,
+   "w": 86,
+   "h": 13,
+   "score": 0.89,
+   "text": "QPS multiplie par"
+  },
+  {
+   "x": 632,
+   "y": 471,
+   "w": 25,
+   "h": 11,
+   "score": 0.83,
+   "text": "tests"
+  },
+  {
+   "x": 75,
+   "y": 494,
+   "w": 9,
+   "h": 10,
+   "score": 0.56,
+   "text": "3."
+  },
+  {
+   "x": 479,
+   "y": 487,
+   "w": 101,
+   "h": 12,
+   "score": 0.91,
+   "text": "> 70 %, CI tout vert."
+  },
+  {
+   "x": 513,
+   "y": 500,
+   "w": 213,
+   "h": 15,
+   "score": 0.9,
+   "text": "2. Systeme de commandes Java  pilote I"
+  },
+  {
+   "x": 486,
+   "y": 520,
+   "w": 346,
+   "h": 17,
+   "score": 0.91,
+   "text": "Fluxdetransaction'central:tempsdereponsede200"
+  },
+  {
+   "x": 579,
+   "y": 514,
+   "w": 86,
+   "h": 13,
+   "score": 0.85,
+   "text": "2024.03-2024.08"
+  },
+  {
+   "x": 509,
+   "y": 543,
+   "w": 310,
+   "h": 17,
+   "score": 0.92,
+   "text": "(-40%),5M+ appels/jour:haute concurrence et"
+  },
+  {
+   "x": 653,
+   "y": 536,
+   "w": 43,
+   "h": 16,
+   "score": 0.64,
+   "text": "120.6s"
+  },
+  {
+   "x": 564,
+   "y": 562,
+   "w": 199,
+   "h": 13,
+   "score": 0.92,
+   "text": "optimisationdelaperformance"
+  },
+  {
+   "x": 496,
+   "y": 591,
+   "w": 325,
+   "h": 15,
+   "score": 0.93,
+   "text": "Equipe de 5 personnes, 12 documents techniques, 30+ fusions de"
+  },
+  {
+   "x": 475,
+   "y": 618,
+   "w": 302,
+   "h": 18,
+   "score": 0.9,
+   "text": "3. Optimisation MySQL— pilote |2025.02-2025.04"
+  },
+  {
+   "x": 491,
+   "y": 640,
+   "w": 324,
+   "h": 21,
+   "score": 0.94,
+   "text": "60+requeteslentes,12 indexcomposites,"
+  },
+  {
+   "x": 481,
+   "y": 658,
+   "w": 101,
+   "h": 15,
+   "score": 0.84,
+   "text": "QPS800a2400"
+  },
+  {
+   "x": 516,
+   "y": 672,
+   "w": 28,
+   "h": 17,
+   "score": 0.74,
+   "text": "(×3)"
+  }
+ ],
+ "image9.png": [
+  {
+   "x": 56,
+   "y": 28,
+   "w": 144,
+   "h": 16,
+   "score": 0.93,
+   "text": "Appariement poste-candidat -"
+  },
+  {
+   "x": 439,
+   "y": 31,
+   "w": 54,
+   "h": 20,
+   "score": 0.81,
+   "text": "Poste"
+  },
+  {
+   "x": 237,
+   "y": 32,
+   "w": 42,
+   "h": 18,
+   "score": 0.51,
+   "text": ".CV"
+  },
+  {
+   "x": 523,
+   "y": 31,
+   "w": 208,
+   "h": 20,
+   "score": 0.9,
+   "text": "CompetencesAppfentissage"
+  },
+  {
+   "x": 84,
+   "y": 41,
+   "w": 90,
+   "h": 13,
+   "score": 0.84,
+   "text": "Poste de decision"
+  },
+  {
+   "x": 329,
+   "y": 41,
+   "w": 65,
+   "h": 13,
+   "score": 0.84,
+   "text": "Appariement"
+  },
+  {
+   "x": 745,
+   "y": 40,
+   "w": 48,
+   "h": 14,
+   "score": 0.84,
+   "text": "Entretien"
+  },
+  {
+   "x": 230,
+   "y": 115,
+   "w": 48,
+   "h": 13,
+   "score": 0.87,
+   "text": "Resultats"
+  },
+  {
+   "x": 552,
+   "y": 106,
+   "w": 104,
+   "h": 19,
+   "score": 0.91,
+   "text": "Developpement"
+  },
+  {
+   "x": 46,
+   "y": 121,
+   "w": 175,
+   "h": 13,
+   "score": 0.91,
+   "text": "RECOMMANDATION DE POSTES*"
+  },
+  {
+   "x": 226,
+   "y": 126,
+   "w": 55,
+   "h": 16,
+   "score": 0.88,
+   "text": "des postes"
+  },
+  {
+   "x": 588,
+   "y": 125,
+   "w": 34,
+   "h": 15,
+   "score": 0.78,
+   "text": "Java"
+  },
+  {
+   "x": 30,
+   "y": 138,
+   "w": 174,
+   "h": 26,
+   "score": 0.92,
+   "text": "Recommandation"
+  },
+  {
+   "x": 67,
+   "y": 166,
+   "w": 98,
+   "h": 23,
+   "score": 0.77,
+   "text": "de postes"
+  },
+  {
+   "x": 577,
+   "y": 174,
+   "w": 63,
+   "h": 14,
+   "score": 0.78,
+   "text": "Informations"
+  },
+  {
+   "x": 675,
+   "y": 174,
+   "w": 54,
+   "h": 14,
+   "score": 0.91,
+   "text": "Diagnostic"
+  },
+  {
+   "x": 459,
+   "y": 182,
+   "w": 46,
+   "h": 13,
+   "score": 0.76,
+   "text": "Taux de"
+  },
+  {
+   "x": 762,
+   "y": 174,
+   "w": 61,
+   "h": 14,
+   "score": 0.87,
+   "text": "Preparation"
+  },
+  {
+   "x": 56,
+   "y": 187,
+   "w": 186,
+   "h": 15,
+   "score": 0.93,
+   "text": "Cliquez sur un poste pour afficher les"
+  },
+  {
+   "x": 684,
+   "y": 187,
+   "w": 35,
+   "h": 13,
+   "score": 0.8,
+   "text": "du CV"
+  },
+  {
+   "x": 585,
+   "y": 188,
+   "w": 46,
+   "h": 12,
+   "score": 0.84,
+   "text": "du poste"
+  },
+  {
+   "x": 763,
+   "y": 185,
+   "w": 60,
+   "h": 17,
+   "score": 0.87,
+   "text": "a rentretien"
+  },
+  {
+   "x": 113,
+   "y": 200,
+   "w": 73,
+   "h": 13,
+   "score": 0.9,
+   "text": "details a droite"
+  },
+  {
+   "x": 440,
+   "y": 195,
+   "w": 84,
+   "h": 13,
+   "score": 0.89,
+   "text": "correspondance"
+  },
+  {
+   "x": 235,
+   "y": 233,
+   "w": 46,
+   "h": 14,
+   "score": 0.8,
+   "text": "Tous les"
+  },
+  {
+   "x": 70,
+   "y": 234,
+   "w": 29,
+   "h": 14,
+   "score": 0.81,
+   "text": "Ville :"
+  },
+  {
+   "x": 584,
+   "y": 231,
+   "w": 78,
+   "h": 13,
+   "score": 0.91,
+   "text": "Informations de"
+  },
+  {
+   "x": 133,
+   "y": 241,
+   "w": 75,
+   "h": 13,
+   "score": 0.88,
+   "text": "Salaire 15-25K"
+  },
+  {
+   "x": 66,
+   "y": 246,
+   "w": 36,
+   "h": 17,
+   "score": 0.78,
+   "text": "Bejjing"
+  },
+  {
+   "x": 231,
+   "y": 247,
+   "w": 51,
+   "h": 13,
+   "score": 0.83,
+   "text": "domaines"
+  },
+  {
+   "x": 584,
+   "y": 242,
+   "w": 76,
+   "h": 15,
+   "score": 0.85,
+   "text": "base du poste"
+  },
+  {
+   "x": 551,
+   "y": 271,
+   "w": 80,
+   "h": 17,
+   "score": 0.86,
+   "text": "Entreprise"
+  },
+  {
+   "x": 654,
+   "y": 263,
+   "w": 54,
+   "h": 18,
+   "score": 0.9,
+   "text": "Entreprise"
+  },
+  {
+   "x": 137,
+   "y": 282,
+   "w": 55,
+   "h": 17,
+   "score": 0.78,
+   "text": "Postea"
+  },
+  {
+   "x": 42,
+   "y": 283,
+   "w": 88,
+   "h": 14,
+   "score": 0.87,
+   "text": "Actuellement"
+  },
+  {
+   "x": 228,
+   "y": 284,
+   "w": 48,
+   "h": 16,
+   "score": 0.88,
+   "text": "Meilleure"
+  },
+  {
+   "x": 310,
+   "y": 285,
+   "w": 32,
+   "h": 15,
+   "score": 0.8,
+   "text": "Haut"
+  },
+  {
+   "x": 646,
+   "y": 277,
+   "w": 70,
+   "h": 15,
+   "score": 0.91,
+   "text": "technologique"
+  },
+  {
+   "x": 61,
+   "y": 298,
+   "w": 49,
+   "h": 17,
+   "score": 0.83,
+   "text": "adapte"
+  },
+  {
+   "x": 135,
+   "y": 300,
+   "w": 59,
+   "h": 14,
+   "score": 0.9,
+   "text": "potentiel"
+  },
+  {
+   "x": 211,
+   "y": 301,
+   "w": 83,
+   "h": 10,
+   "score": 0.86,
+   "text": "correspondance"
+  },
+  {
+   "x": 305,
+   "y": 300,
+   "w": 41,
+   "h": 14,
+   "score": 0.81,
+   "text": "salaire"
+  },
+  {
+   "x": 563,
+   "y": 308,
+   "w": 69,
+   "h": 19,
+   "score": 0.8,
+   "text": "Region"
+  },
+  {
+   "x": 626,
+   "y": 309,
+   "w": 74,
+   "h": 19,
+   "score": 0.78,
+   "text": "Shanghai"
+  },
+  {
+   "x": 563,
+   "y": 345,
+   "w": 56,
+   "h": 22,
+   "score": 0.81,
+   "text": "Salaire"
+  },
+  {
+   "x": 65,
+   "y": 351,
+   "w": 92,
+   "h": 14,
+   "score": 0.92,
+   "text": "Developpement"
+  },
+  {
+   "x": 314,
+   "y": 354,
+   "w": 28,
+   "h": 14,
+   "score": 0.79,
+   "text": "Java"
+  },
+  {
+   "x": 402,
+   "y": 354,
+   "w": 17,
+   "h": 13,
+   "score": 0.67,
+   "text": "96"
+  },
+  {
+   "x": 647,
+   "y": 347,
+   "w": 47,
+   "h": 17,
+   "score": 0.84,
+   "text": "20-35K"
+  },
+  {
+   "x": 56,
+   "y": 374,
+   "w": 135,
+   "h": 16,
+   "score": 0.9,
+   "text": "Grande entreprise Internet"
+  },
+  {
+   "x": 70,
+   "y": 366,
+   "w": 79,
+   "h": 13,
+   "score": 0.88,
+   "text": "backend Java"
+  },
+  {
+   "x": 314,
+   "y": 374,
+   "w": 66,
+   "h": 14,
+   "score": 0.86,
+   "text": "Spring Boot"
+  },
+  {
+   "x": 241,
+   "y": 376,
+   "w": 35,
+   "h": 29,
+   "score": 0.53,
+   "text": "88"
+  },
+  {
+   "x": 403,
+   "y": 374,
+   "w": 16,
+   "h": 13,
+   "score": 0.67,
+   "text": "06"
+  },
+  {
+   "x": 56,
+   "y": 382,
+   "w": 91,
+   "h": 29,
+   "score": 0.82,
+   "text": "25-45K:femps"
+  },
+  {
+   "x": 423,
+   "y": 383,
+   "w": 95,
+   "h": 19,
+   "score": 0.81,
+   "text": "Voir ranalyse du +"
+  },
+  {
+   "x": 564,
+   "y": 386,
+   "w": 55,
+   "h": 20,
+   "score": 0.85,
+   "text": "Nature"
+  },
+  {
+   "x": 644,
+   "y": 380,
+   "w": 40,
+   "h": 17,
+   "score": 0.83,
+   "text": "Temps"
+  },
+  {
+   "x": 313,
+   "y": 391,
+   "w": 40,
+   "h": 19,
+   "score": 0.82,
+   "text": "MySQL"
+  },
+  {
+   "x": 402,
+   "y": 394,
+   "w": 17,
+   "h": 13,
+   "score": 0.67,
+   "text": "87"
+  },
+  {
+   "x": 450,
+   "y": 399,
+   "w": 32,
+   "h": 14,
+   "score": 0.83,
+   "text": "poste"
+  },
+  {
+   "x": 234,
+   "y": 402,
+   "w": 49,
+   "h": 14,
+   "score": 0.82,
+   "text": "% MATCH"
+  },
+  {
+   "x": 647,
+   "y": 396,
+   "w": 34,
+   "h": 15,
+   "score": 0.83,
+   "text": "plein"
+  },
+  {
+   "x": 84,
+   "y": 407,
+   "w": 34,
+   "h": 11,
+   "score": 0.72,
+   "text": "+plein"
+  },
+  {
+   "x": 314,
+   "y": 414,
+   "w": 33,
+   "h": 14,
+   "score": 0.74,
+   "text": "Redis"
+  },
+  {
+   "x": 134,
+   "y": 415,
+   "w": 60,
+   "h": 14,
+   "score": 0.88,
+   "text": "2 ecarts de"
+  },
+  {
+   "x": 49,
+   "y": 422,
+   "w": 84,
+   "h": 14,
+   "score": 0.93,
+   "text": "correspondances"
+  },
+  {
+   "x": 403,
+   "y": 414,
+   "w": 16,
+   "h": 13,
+   "score": 0.63,
+   "text": "72"
+  },
+  {
+   "x": 548,
+   "y": 427,
+   "w": 88,
+   "h": 17,
+   "score": 0.85,
+   "text": "Experience"
+  },
+  {
+   "x": 129,
+   "y": 430,
+   "w": 69,
+   "h": 13,
+   "score": 0.83,
+   "text": "competences"
+  },
+  {
+   "x": 78,
+   "y": 435,
+   "w": 28,
+   "h": 10,
+   "score": 0.74,
+   "text": "fortes"
+  },
+  {
+   "x": 642,
+   "y": 428,
+   "w": 47,
+   "h": 14,
+   "score": 0.81,
+   "text": "0-3 ans"
+  },
+  {
+   "x": 560,
+   "y": 465,
+   "w": 65,
+   "h": 17,
+   "score": 0.81,
+   "text": "Diplome"
+  },
+  {
+   "x": 653,
+   "y": 458,
+   "w": 58,
+   "h": 16,
+   "score": 0.83,
+   "text": "Licence ou"
+  },
+  {
+   "x": 46,
+   "y": 469,
+   "w": 104,
+   "h": 19,
+   "score": 0.89,
+   "text": "Developpement"
+  },
+  {
+   "x": 314,
+   "y": 476,
+   "w": 28,
+   "h": 14,
+   "score": 0.79,
+   "text": "Java"
+  },
+  {
+   "x": 402,
+   "y": 476,
+   "w": 17,
+   "h": 12,
+   "score": 0.66,
+   "text": "92"
+  },
+  {
+   "x": 669,
+   "y": 473,
+   "w": 26,
+   "h": 14,
+   "score": 0.71,
+   "text": "plus"
+  },
+  {
+   "x": 64,
+   "y": 494,
+   "w": 128,
+   "h": 17,
+   "score": 0.87,
+   "text": "Entreprise technologique -"
+  },
+  {
+   "x": 85,
+   "y": 488,
+   "w": 29,
+   "h": 14,
+   "score": 0.7,
+   "text": "lava"
+  },
+  {
+   "x": 312,
+   "y": 496,
+   "w": 69,
+   "h": 15,
+   "score": 0.89,
+   "text": "Spring Boot"
+  },
+  {
+   "x": 403,
+   "y": 496,
+   "w": 16,
+   "h": 13,
+   "score": 0.66,
+   "text": "85"
+  },
+  {
+   "x": 583,
+   "y": 496,
+   "w": 42,
+   "h": 14,
+   "score": 0.76,
+   "text": "Date de"
+  },
+  {
+   "x": 241,
+   "y": 499,
+   "w": 35,
+   "h": 28,
+   "score": 0.52,
+   "text": "84"
+  },
+  {
+   "x": 425,
+   "y": 505,
+   "w": 94,
+   "h": 20,
+   "score": 0.83,
+   "text": "Voir fanalyse du *"
+  },
+  {
+   "x": 654,
+   "y": 496,
+   "w": 53,
+   "h": 14,
+   "score": 0.9,
+   "text": "Disponible"
+  },
+  {
+   "x": 581,
+   "y": 508,
+   "w": 44,
+   "h": 12,
+   "score": 0.88,
+   "text": "prise de"
+  },
+  {
+   "x": 313,
+   "y": 515,
+   "w": 40,
+   "h": 17,
+   "score": 0.83,
+   "text": "MySQL"
+  },
+  {
+   "x": 403,
+   "y": 516,
+   "w": 16,
+   "h": 13,
+   "score": 0.66,
+   "text": "82"
+  },
+  {
+   "x": 662,
+   "y": 509,
+   "w": 34,
+   "h": 11,
+   "score": 0.79,
+   "text": "sous 1"
+  },
+  {
+   "x": 589,
+   "y": 521,
+   "w": 29,
+   "h": 11,
+   "score": 0.82,
+   "text": "poste"
+  },
+  {
+   "x": 451,
+   "y": 522,
+   "w": 29,
+   "h": 11,
+   "score": 0.81,
+   "text": "poste"
+  },
+  {
+   "x": 233,
+   "y": 525,
+   "w": 50,
+   "h": 13,
+   "score": 0.8,
+   "text": "% MATCH"
+  },
+  {
+   "x": 82,
+   "y": 527,
+   "w": 26,
+   "h": 16,
+   "score": 0.77,
+   "text": "plein"
+  },
+  {
+   "x": 659,
+   "y": 521,
+   "w": 43,
+   "h": 10,
+   "score": 0.83,
+   "text": "semaine"
+  },
+  {
+   "x": 314,
+   "y": 536,
+   "w": 33,
+   "h": 14,
+   "score": 0.74,
+   "text": "Redis"
+  },
+  {
+   "x": 137,
+   "y": 538,
+   "w": 54,
+   "h": 14,
+   "score": 0.82,
+   "text": "1 ecart de"
+  },
+  {
+   "x": 49,
+   "y": 545,
+   "w": 84,
+   "h": 13,
+   "score": 0.92,
+   "text": "correspondances"
+  },
+  {
+   "x": 403,
+   "y": 536,
+   "w": 16,
+   "h": 13,
+   "score": 0.66,
+   "text": "70"
+  },
+  {
+   "x": 129,
+   "y": 551,
+   "w": 70,
+   "h": 14,
+   "score": 0.89,
+   "text": "competences"
+  },
+  {
+   "x": 78,
+   "y": 557,
+   "w": 29,
+   "h": 11,
+   "score": 0.86,
+   "text": "fortes"
+  },
+  {
+   "x": 573,
+   "y": 553,
+   "w": 70,
+   "h": 14,
+   "score": 0.89,
+   "text": "Exigences du"
+  },
+  {
+   "x": 591,
+   "y": 566,
+   "w": 33,
+   "h": 13,
+   "score": 0.72,
+   "text": "poste"
+  },
+  {
+   "x": 735,
+   "y": 589,
+   "w": 45,
+   "h": 18,
+   "score": 0.81,
+   "text": "MySQL"
+  },
+  {
+   "x": 641,
+   "y": 590,
+   "w": 73,
+   "h": 17,
+   "score": 0.87,
+   "text": "Spring Boot"
+  },
+  {
+   "x": 588,
+   "y": 591,
+   "w": 30,
+   "h": 15,
+   "score": 0.79,
+   "text": "Java"
+  },
+  {
+   "x": 45,
+   "y": 592,
+   "w": 95,
+   "h": 20,
+   "score": 0.89,
+   "text": "Developpement"
+  },
+  {
+   "x": 824,
+   "y": 584,
+   "w": 32,
+   "h": 14,
+   "score": 0.77,
+   "text": "Redis"
+  },
+  {
+   "x": 314,
+   "y": 597,
+   "w": 28,
+   "h": 15,
+   "score": 0.76,
+   "text": "Java"
+  },
+  {
+   "x": 402,
+   "y": 598,
+   "w": 17,
+   "h": 13,
+   "score": 0.67,
+   "text": "88"
+  },
+  {
+   "x": 814,
+   "y": 597,
+   "w": 54,
+   "h": 14,
+   "score": 0.89,
+   "text": "(prioritaire)"
+  },
+  {
+   "x": 68,
+   "y": 617,
+   "w": 117,
+   "h": 17,
+   "score": 0.9,
+   "text": "Entreprisededonnees"
+  },
+  {
+   "x": 313,
+   "y": 616,
+   "w": 43,
+   "h": 17,
+   "score": 0.79,
+   "text": "Python"
+  },
+  {
+   "x": 241,
+   "y": 620,
+   "w": 36,
+   "h": 29,
+   "score": 0.56,
+   "text": "78"
+  },
+  {
+   "x": 402,
+   "y": 617,
+   "w": 17,
+   "h": 13,
+   "score": 0.67,
+   "text": "50"
+  },
+  {
+   "x": 428,
+   "y": 627,
+   "w": 85,
+   "h": 15,
+   "score": 0.9,
+   "text": "Voir ranalyse du"
+  },
+  {
+   "x": 84,
+   "y": 631,
+   "w": 86,
+   "h": 18,
+   "score": 0.74,
+   "text": "-Tempshou - 22-"
+  },
+  {
+   "x": 578,
+   "y": 625,
+   "w": 297,
+   "h": 17,
+   "score": 0.91,
+   "text": "Les priorites sont marquees  (prioritaire)  ; preparez"
+  },
+  {
+   "x": 59,
+   "y": 636,
+   "w": 34,
+   "h": 12,
+   "score": 0.66,
+   "text": "40K."
+  },
+  {
+   "x": 313,
+   "y": 636,
+   "w": 25,
+   "h": 16,
+   "score": 0.73,
+   "text": "SQL"
+  },
+  {
+   "x": 403,
+   "y": 637,
+   "w": 16,
+   "h": 13,
+   "score": 0.64,
+   "text": "65"
+  },
+  {
+   "x": 448,
+   "y": 641,
+   "w": 34,
+   "h": 14,
+   "score": 0.83,
+   "text": "poste"
+  },
+  {
+   "x": 233,
+   "y": 647,
+   "w": 50,
+   "h": 13,
+   "score": 0.78,
+   "text": "% MATCH"
+  },
+  {
+   "x": 81,
+   "y": 649,
+   "w": 26,
+   "h": 15,
+   "score": 0.78,
+   "text": "plein"
+  },
+  {
+   "x": 608,
+   "y": 640,
+   "w": 236,
+   "h": 15,
+   "score": 0.91,
+   "text": "les questions de scenario avant 'entretien."
+  },
+  {
+   "x": 313,
+   "y": 654,
+   "w": 47,
+   "h": 19,
+   "score": 0.84,
+   "text": "Hadoop"
+  },
+  {
+   "x": 138,
+   "y": 660,
+   "w": 54,
+   "h": 13,
+   "score": 0.86,
+   "text": "1 ecart de"
+  },
+  {
+   "x": 53,
+   "y": 665,
+   "w": 80,
+   "h": 14,
+   "score": 0.87,
+   "text": "correspondance"
+  },
+  {
+   "x": 402,
+   "y": 657,
+   "w": 17,
+   "h": 13,
+   "score": 0.67,
+   "text": "30"
+  },
+  {
+   "x": 129,
+   "y": 673,
+   "w": 69,
+   "h": 14,
+   "score": 0.88,
+   "text": "competences"
+  },
+  {
+   "x": 81,
+   "y": 678,
+   "w": 23,
+   "h": 11,
+   "score": 0.76,
+   "text": "forte"
+  },
+  {
+   "x": 565,
+   "y": 677,
+   "w": 82,
+   "h": 19,
+   "score": 0.87,
+   "text": "Responsabilites"
+  },
+  {
+   "x": 610,
+   "y": 698,
+   "w": 262,
+   "h": 13,
+   "score": 0.95,
+   "text": "Analyse des besoins, conception et implementation des"
+  },
+  {
+   "x": 40,
+   "y": 711,
+   "w": 105,
+   "h": 19,
+   "score": 0.89,
+   "text": "Developpement"
+  },
+  {
+   "x": 585,
+   "y": 716,
+   "w": 344,
+   "h": 16,
+   "score": 0.9,
+   "text": "Participera la mise en ceuvre etaevoiution des architectures"
+  },
+  {
+   "x": 313,
+   "y": 727,
+   "w": 30,
+   "h": 15,
+   "score": 0.79,
+   "text": "Java"
+  },
+  {
+   "x": 401,
+   "y": 726,
+   "w": 19,
+   "h": 16,
+   "score": 0.67,
+   "text": "85"
+  },
+  {
+   "x": 241,
+   "y": 741,
+   "w": 35,
+   "h": 28,
+   "score": 0.67,
+   "text": "69"
+  },
+  {
+   "x": 328,
+   "y": 742,
+   "w": 31,
+   "h": 14,
+   "score": 0.83,
+   "text": "Tests"
+  },
+  {
+   "x": 421,
+   "y": 742,
+   "w": 98,
+   "h": 25,
+   "score": 0.84,
+   "text": "Voir Tanalyse du,"
+  },
+  {
+   "x": 644,
+   "y": 733,
+   "w": 222,
+   "h": 13,
+   "score": 0.89,
+   "text": "haute concurrence ethaute disponibilite"
+  },
+  {
+   "x": 403,
+   "y": 748,
+   "w": 17,
+   "h": 12,
+   "score": 0.67,
+   "text": "40"
+  },
+  {
+   "x": 594,
+   "y": 743,
+   "w": 329,
+   "h": 16,
+   "score": 0.91,
+   "text": "Collaborer avec produit, tests et frontend pour la livraison iterative ;"
+  },
+  {
+   "x": 313,
+   "y": 755,
+   "w": 63,
+   "h": 13,
+   "score": 0.91,
+   "text": "automatises"
+  },
+  {
+   "x": 450,
+   "y": 761,
+   "w": 34,
+   "h": 14,
+   "score": 0.83,
+   "text": "poste"
+  },
+  {
+   "x": 680,
+   "y": 756,
+   "w": 154,
+   "h": 13,
+   "score": 0.94,
+   "text": "participer aux revues de code ;"
+  },
+  {
+   "x": 233,
+   "y": 767,
+   "w": 50,
+   "h": 13,
+   "score": 0.77,
+   "text": "% MATCH"
+  },
+  {
+   "x": 313,
+   "y": 768,
+   "w": 43,
+   "h": 13,
+   "score": 0.78,
+   "text": "Python"
+  },
+  {
+   "x": 81,
+   "y": 769,
+   "w": 27,
+   "h": 15,
+   "score": 0.75,
+   "text": "plein"
+  },
+  {
+   "x": 403,
+   "y": 768,
+   "w": 16,
+   "h": 13,
+   "score": 0.63,
+   "text": "50"
+  },
+  {
+   "x": 584,
+   "y": 770,
+   "w": 332,
+   "h": 13,
+   "score": 0.92,
+   "text": ",Optimiser en continu la performance et la qualite, capitaliser sur des"
+  },
+  {
+   "x": 138,
+   "y": 780,
+   "w": 54,
+   "h": 13,
+   "score": 0.86,
+   "text": "1 ecart de"
+  },
+  {
+   "x": 53,
+   "y": 785,
+   "w": 79,
+   "h": 13,
+   "score": 0.92,
+   "text": "correspondance"
+  },
+  {
+   "x": 629,
+   "y": 783,
+   "w": 242,
+   "h": 13,
+   "score": 0.92,
+   "text": "composants reutilisables et les bonnes pratiques."
+  },
+  {
+   "x": 79,
+   "y": 796,
+   "w": 26,
+   "h": 14,
+   "score": 0.83,
+   "text": "forte"
+  },
+  {
+   "x": 128,
+   "y": 793,
+   "w": 71,
+   "h": 13,
+   "score": 0.91,
+   "text": "competences"
+  },
+  {
+   "x": 577,
+   "y": 811,
+   "w": 58,
+   "h": 14,
+   "score": 0.81,
+   "text": "Resume du"
+  },
+  {
+   "x": 600,
+   "y": 823,
+   "w": 16,
+   "h": 11,
+   "score": 0.66,
+   "text": "JD"
+  },
+  {
+   "x": 579,
+   "y": 837,
+   "w": 340,
+   "h": 16,
+   "score": 0.93,
+   "text": "Conception de Farchitecture serveur et developpement metier central"
+  },
+  {
+   "x": 931,
+   "y": 838,
+   "w": 146,
+   "h": 13,
+   "score": 0.89,
+   "text": "competences en ingenierie et"
+  },
+  {
+   "x": 702,
+   "y": 851,
+   "w": 99,
+   "h": 13,
+   "score": 0.89,
+   "text": "solides bases Java,"
+  },
+  {
+   "x": 920,
+   "y": 851,
+   "w": 169,
+   "h": 13,
+   "score": 0.91,
+   "text": "experience en haute concurrence."
+  }
+ ]
+}

@@ -1,0 +1,47 @@
+<ns0:p ns2:paraId="58FFB22D" ns2:textId="5773021A" ns0:rsidR="00DD52EF" ns0:rsidRDefault="00000000">
+      
+      
+      <ns0:pPr>
+        
+        
+        <ns0:ind ns0:firstLineChars="200" ns0:firstLine="420"/>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+      
+      </ns0:pPr>
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:rFonts ns0:hint="eastAsia"/>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t>Dans l&#x2019;ensemble, les recherches nationales et internationales reconnaissent la valeur importante de la fusion de données multi-sources et des graphes de connaissances pour l&#x2019;analyse des compétences des postes, mais des problèmes subsistent : dispersion des sources de données, difficulté de fusion des données hétérogènes et caractérisation insuffisante des variations dynamiques des relations poste-compétence. Les méthodes existantes s&#x2019;intéressent le plus souvent à un maillon unique — construction du graphe de connaissances ou appariement de postes — et les études portant sur la boucle fermée complète « collecte de données — extraction de connaissances — construction du graphe — mise à jour dynamique — analyse de l&#x2019;évolution » restent insuffisantes. Par conséquent, il est nécessaire de construire un graphe de connaissances poste-compétence multi-sources et hétérogène destiné au marché de l&#x2019;emploi, afin de caractériser dynamiquement l&#x2019;évolution des besoins en postes et celle de la structure des compétences.</ns0:t>
+        
+      
+      </ns0:r>
+      
+      
+      
+      
+      
+    
+    </ns0:p>

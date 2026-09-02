@@ -629,14 +629,27 @@ async def fetch_city_detail(
         max_demand = max(demand_map.values(), default=0)
         title_rows.sort(key=lambda r: _city_order_score(city_short, r["job_title"], demand_map[r["job_title"]], max_demand))
         title_rows = title_rows[:20]
+        # 每个岗位类型的常见学历/经验要求（真实数据聚合，供岗位卡片"基本信息"展示）
+        ee_rows = await conn.fetch(f"""
+            SELECT job_title,
+                   COALESCE(NULLIF(TRIM(mode() WITHIN GROUP (ORDER BY COALESCE(NULLIF(TRIM(education), ''), '不限'))), ''), '不限') AS edu,
+                   COALESCE(NULLIF(TRIM(mode() WITHIN GROUP (ORDER BY COALESCE(NULLIF(TRIM(experience), ''), '不限'))), ''), '不限') AS exp
+            FROM the_total_table
+            WHERE {city_match} AND job_title IS NOT NULL AND job_title <> ''{extra_where}
+            GROUP BY job_title
+        """, *all_params)
+        ee_map = {r["job_title"]: (r["edu"], r["exp"]) for r in ee_rows}
         top_jobs = []
         for i, r in enumerate(title_rows):
             avg_s = float(r["avg_sal"]) if r["avg_sal"] else 0
             _, caps = _infer_capabilities(r["job_title"])
+            ee = ee_map.get(r["job_title"], ("不限", "不限"))
             top_jobs.append({
                 "id": i + 1, "name": r["job_title"], "count": demand_map[r["job_title"]],
                 "avgSalary": round(avg_s, 0), "category": categorize_job(r["job_title"]),
                 "skills": caps[:8],
+                "education": ee[0] or "不限",
+                "experience": ee[1] or "不限",
             })
         if top_jobs:
             max_cnt = top_jobs[0]["count"]
@@ -1581,6 +1594,176 @@ async def fetch_job_tech_graph(
         "levels": levels,
         "maxFrequency": max_freq,
         "isFallback": False,
+    }
+
+
+# ========== 更新图谱（挑战杯演示）：动态重选技术并写入 new_skill_table ==========
+
+# 通用补充技术池（演示用，与前端兜底池对齐）
+_UPDATE_TECH_POOL = [
+    "Python", "Java", "JavaScript", "TypeScript", "Go", "C", "C++", "C#", "PHP", "Ruby",
+    "Swift", "Kotlin", "Rust", "SQL", "Scala", "Shell",
+    "Django", "Flask", "Spring Boot", "Spring Cloud", "MyBatis", "Hibernate", "FastAPI",
+    "Express", "Laravel", "Node.js", "Netty", "Dubbo", "gRPC", "WebSocket", "JWT", "Celery",
+    "MySQL", "PostgreSQL", "MongoDB", "Redis", "Oracle", "SQLite", "Elasticsearch",
+    "HBase", "ClickHouse", "Hive", "Doris", "Redis Cluster",
+    "Docker", "Kubernetes", "K8s", "Git", "GitLab CI", "Jenkins", "Nginx", "Linux",
+    "Ansible", "Helm", "Prometheus", "Grafana", "Docker Compose", "ZooKeeper", "Terraform",
+    "TensorFlow", "PyTorch", "Keras", "Scikit-learn", "Pandas", "NumPy", "OpenCV",
+    "XGBoost", "LightGBM", "LangChain", "PaddlePaddle",
+    "Spark", "Hadoop", "Kafka", "Flink", "Airflow", "DataX", "Flume", "ETL", "OLAP", "Presto",
+    "Vue", "React", "Angular", "Next.js", "Vite", "Webpack", "HTML5", "CSS3", "ECharts", "Uni-app",
+    "微服务", "分布式架构", "消息队列", "高并发", "负载均衡", "云原生",
+    "数据结构与算法", "操作系统", "计算机网络", "数据库原理", "设计模式", "并发编程",
+    "Selenium", "JMeter", "Postman", "Jest", "Cypress", "Playwright", "Pytest",
+]
+
+
+async def update_job_tech_graph(
+    conn: asyncpg.Connection,
+    job_title: str,
+    round_no: int = 1,
+) -> Optional[dict]:
+    """动态更新岗位技术图谱（挑战杯演示）：
+
+    1) 从 the_total_table（视图，指向 the_total_table_copy1）提取该岗位真实技术池；
+    2) 与通用补充池合并；
+    3) 按"轮次"确定性策略重新选择一批技术（数量随轮次明显变化、核心技术保留、边缘技术轮换）；
+    4) 将本次结果写入 new_skill_table（同一数据库，数据版本 = 轮次）；
+    5) 返回与 fetch_job_tech_graph 相同结构的 categories + levels。
+    """
+    from collections import Counter
+
+    # 0. 确保 new_skill_table 存在（与 the_total_table_copy1 同一数据库/schema）
+    await conn.execute("""
+        CREATE TABLE IF NOT EXISTS public.new_skill_table (
+            id BIGSERIAL PRIMARY KEY,
+            tech_name VARCHAR(200) NOT NULL,
+            category VARCHAR(100) NOT NULL DEFAULT '其他',
+            job_title VARCHAR(200) NOT NULL,
+            weight INTEGER NOT NULL DEFAULT 50,
+            is_visible BOOLEAN NOT NULL DEFAULT TRUE,
+            data_version INTEGER NOT NULL DEFAULT 1,
+            updated_at TIMESTAMP NOT NULL DEFAULT now()
+        )
+    """)
+
+    # 1. 该岗位真实技术池（来自 the_total_table_copy1 的数据）
+    rows = await conn.fetch("""
+        SELECT skills FROM the_total_table
+        WHERE skills IS NOT NULL AND skills <> '' AND job_title = $1
+        LIMIT 3000
+    """, job_title)
+    counter: Counter = Counter()
+    for r in rows:
+        for raw in (r["skills"] or "").split(","):
+            name = raw.strip()
+            if name:
+                counter[name] += 1
+    existing = [{"name": n, "cat": _classify_job_tech(n), "freq": f}
+                for n, f in counter.most_common(200)]
+    # 无真实数据时退化为通用池
+    if not existing:
+        existing = [{"name": t, "cat": _classify_job_tech(t), "freq": 1}
+                    for t in _UPDATE_TECH_POOL]
+
+    # 2. 合并通用池（去重）
+    used = {e["name"] for e in existing}
+    pool = list(existing)
+    for t in _UPDATE_TECH_POOL:
+        if t not in used:
+            used.add(t)
+            pool.append({"name": t, "cat": _classify_job_tech(t), "freq": 1})
+
+    # 3. 确定性轮次选择：数量随轮次变化（18~37），相邻轮次明显不同
+    count = 18 + ((round_no * 7) % 20)
+    count = min(count, len(pool))
+    # 核心技术（高频 TOP8 保留，保证每轮都有岗位核心技术）
+    core_count = min(8, max(3, len(existing) * 4 // 10))
+    core = [{"name": e["name"], "cat": e["cat"]} for e in existing[:core_count]]
+    core_used = {c["name"] for c in core}
+    rest = [p for p in pool if p["name"] not in core_used]
+
+    # 确定性洗牌（同一轮次结果稳定，不同轮次结果变化）
+    seed = round_no * 99991 + 7
+    s = seed
+    shuffled = list(rest)
+    for i in range(len(shuffled) - 1, 0, -1):
+        s = (s * 1103515245 + 12345) % 2147483648
+        j = s % (i + 1)
+        shuffled[i], shuffled[j] = shuffled[j], shuffled[i]
+
+    picked = list(core)
+    for p in shuffled:
+        if len(picked) >= count:
+            break
+        picked.append({"name": p["name"], "cat": p["cat"]})
+    k = 0
+    while len(picked) < count and rest:
+        picked.append({"name": rest[k % len(rest)]["name"], "cat": rest[k % len(rest)]["cat"]})
+        k += 1
+    picked = picked[:count]
+
+    # 4. 写入 new_skill_table（覆盖该岗位上一版本）
+    await conn.execute(
+        "DELETE FROM public.new_skill_table WHERE job_title = $1", job_title
+    )
+    for i, p in enumerate(picked):
+        weight = 92 - min(72, i * 78 // max(1, len(picked)))
+        await conn.execute(
+            """INSERT INTO public.new_skill_table
+               (tech_name, category, job_title, weight, is_visible, data_version)
+               VALUES ($1, $2, $3, $4, TRUE, $5)""",
+            p["name"], p["cat"], job_title, weight, round_no,
+        )
+
+    # 5. 构建返回数据（结构同 fetch_job_tech_graph）
+    cat_map: Dict[str, list] = {}
+    for i, p in enumerate(picked):
+        weight = 92 - min(72, i * 78 // max(1, len(picked)))
+        cat_map.setdefault(p["cat"], []).append({
+            "name": p["name"],
+            "type": "technology",
+            "frequency": weight,
+            # size 与原图谱一致归一化到 14~42：平方映射让多数节点偏小、核心节点突出
+            "size": max(14, min(42, 14 + int(28 * (weight / 92) ** 2))),
+            "ratio": round(min(0.98, weight / 100), 2),
+        })
+    categories = [
+        {"name": cat, "type": "category", "technologies": techs}
+        for cat, techs in cat_map.items()
+        if techs
+    ]
+    categories.sort(key=lambda c: -sum(t["frequency"] for t in c["technologies"]))
+
+    # 级别视图：初级/中级/高级 均衡分配
+    level_names = ["初级", "中级", "高级"]
+    levels = []
+    for li, lv in enumerate(level_names):
+        start = len(picked) * li // 3
+        end = len(picked) * (li + 1) // 3
+        techs = []
+        for j, p in enumerate(picked[start:end]):
+            techs.append({
+                "name": p["name"],
+                "type": "technology",
+                "frequency": 60 + ((j * 13 + li * 7) % 30),
+                "size": 14 + ((j * 7 + li * 5) % 29),
+                "ratio": round(min(0.95, 0.4 + ((j * 11 + li * 9) % 50) / 100), 2),
+            })
+        if techs:
+            levels.append({"name": lv, "type": "level", "technologies": techs})
+
+    return {
+        "jobTitle": job_title,
+        "centerJob": job_title,
+        "skillCount": sum(t["frequency"] for c in categories for t in c["technologies"]),
+        "uniqueSkills": len(picked),
+        "categories": categories,
+        "levels": levels,
+        "maxFrequency": max((t["frequency"] for c in categories for t in c["technologies"]), default=1),
+        "dataVersion": round_no,
+        "sourceTable": "new_skill_table",
     }
 
 

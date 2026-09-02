@@ -1,0 +1,42 @@
+Abstract: The rapid expansion of the digital economy has made the technology-stack update cycle significantly shorter than the traditional talent-training cycle; the labor market simultaneously exhibits two phenomena: enterprises struggle to recruit,
+auditable innovations on over twelve thousand real postings:(1)SHA256 content fingerprints plus a fifteen-field completeness gate enforced by database triggers;(2)three-dimension emergence scoring with six-stage discovery chain and evidence counting;
+Overall, domestic and international research acknowledges the important value of multi-source data fusion and knowledge graphs for job-skill analysis, but problems remain: scattered data sources, difficulty in fusing heterogeneous data, and insuffici
+The design objectives of the system can be summarized as follows: verifiable input data, queryable graph relations, recomputable evolution differentials, and actionable matching conclusions. The corresponding design constraint is that any conclusion 
+for a record to enter the high-confidence pool of discovery/evolution. Data: after deduplication over the three sources, 12495 valid records, of which 11680 are high-quality (93.5%); the intra-source deduplication rate is about 15%–20%; a completenes
+The transfer contribution
+prevents weakly correlated skills from being artificially overvalued. Data: the matching accuracy is 0.927 (90% threshold); the ablation removing the skill dimension makes it drop by 8.4 percentage points, which shows that the weight configuration is
+Innovation I5: (evidence-based control and hallucination prevention, corresponding to the lower-right corner of Figure 1 and to Chapter VIII). Discovery/generation conclusions require a number of evidence sources
+The implementation of the system unfolds according to “graph construction — emerging-job discovery — skill evolution — job–candidate matching — hallucination prevention in dialogue — experimental validation”, and corresponds one-to-one to the precedi
+Emerging-job discovery is carried out by means of a six-step reasoning chain: multi-source integration, semantic disambiguation and clustering, emergence scoring, definition generation, trend extrapolation, and evidence audit. The definition fields g
+V=Vposte∪Vcompétences∪Vsecteurs∪Ventreprises
+where Vposte denotes the set of job entities, Vcompétences the set of skill entities, Vsecteurs the set of industry entities, and Ventreprises the set of enterprise entities. Jobs and skills are the central nodes of the whole graph; industries and en
+Considering that the occurrence frequencies of different skills within the same job are not identical, this paper further defines weights for the job-skill relations. Let Dposte be the set of valid recruitment postings corresponding to a given job, a
+w(poste,s)=n(poste,s)/(Dposte)
+where (Dposte) represents the total number of valid recruitment postings corresponding to the job, and n(poste,s) the number of occurrences of skill s in these postings. The larger this value, the more frequently the skill appears in the recruitment 
+poste
+poste
+poste
+where wₜ₁(poste,s) and wₜ₂(poste,s) denote respectively the weights of the job-skill relation in two different statistical time windows. When Δw is greater than 0, the recruitment demand for this skill has strengthened in the later time window; when 
+Overall, the job-skill knowledge graph in this paper can be summarized in four components: “entities, relations, weights, and time”. The entities describe the jobs, skills, industries, and enterprises of the recruitment market; the relations express 
+In recent years, knowledge graphs have gradually moved from static knowledge organization to dynamic knowledge representation. Peng et al. conducted a systematic review of the works on knowledge graphs, emphasizing that they allow the structural repr
+Alias mappings are, for example,
+Evidence audit: at least two independent evidence sources (different companies or different platforms) are required. In case of insufficient evidence, the item is marked low_evidence and enters the manual queue. It is further checked whether the defi
+, we record on the sources
+. The skill set is obtained by scanning the description text with the _SKILL_VOCAB dictionary, which guarantees that the two sources use the same extractor; the three-state decision rule is as follows:
+, recording the relative increase
+The relative rate of variation can be written as
+, the transfer contribution
+The score of the skill dimension (out of 100) is:
+DCF: differentiable conformal training for the factuality of LLM reasoning [10]. ttesdorf et al. (2026) propose the Differentiable Coherent Factuality (DCF) [10], whose central elements are as follows:
+Acc=0.927; removal of the skill dimension ΔAcc=−0.084
+3.12 Conclusion and Perspectives
+Limitations: the data horizon is about twelve months, which does not allow correctly detecting long-cycle occupational rebounds; the pseudo-temporal approach relies on the hypothesis of penetration differences between platforms, which may become inva
+Conclusion
+Batini C,Scannapieco M.Data and information quality:Dimensions,principles and techniques[M].Cham:Springer,2016.
+Peng C,Xia F,Naseriparsa M,et al.Knowledge Graphs:Opportunities and Challenges[J].Artificial Intelligence Review,2023,56:13071-13102.DOI:10.1007/s10462-023-10465-9.
+Goyal N,Kalra J,Sharma C,et al.JobXMLC:EXtreme Multi-Label Classification of Job Skills with Graph Neural Networks[C]//Findings of the Association for Computational Linguistics:EACL 2023.Dubrovnik,Croatia:Association for Computational Linguistics,202
+[6] Zhang Qi, Gui Tao, Zheng Rui, et al. A review of research on named entity recognition[J]. Journal of Software, 2018, 29(3): 812-831.
+Lewis P,Perez E,Piktus A,et al.Retrieval-augmented generation for knowledge-intensive NLP tasks[C]//Advances in Neural Information Processing Systems 33(NeurIPS 2020).2020:9459-9474.
+Li Y,Gao J,Meng C,et al.A survey on truth discovery[J].ACM SIGKDD Explorations Newsletter,2016,17(2):1-16.
+Yifan Feng,Hao Hu,Shihui Ying,Xingliang Hou,Shiquan Liu,Mingyuan Yang,Junchang Li,Shaoyi Du,Nanning
+[11] Hu Xiaoyong, Huang Jie, Lin Zirou, et al. AI ethics in education: conceptual framework, cognitive state, and risk prevention[J]. Modern Distance Education Research, 2022, 34(2): 21-29.

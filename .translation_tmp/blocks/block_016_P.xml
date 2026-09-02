@@ -1,0 +1,47 @@
+<ns0:p ns2:paraId="159E407B" ns2:textId="7FA77CFD" ns0:rsidR="00DD52EF" ns0:rsidRDefault="00000000">
+      
+      
+      <ns0:pPr>
+        
+        
+        <ns0:ind ns0:firstLineChars="200" ns0:firstLine="420"/>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+      
+      </ns0:pPr>
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:rFonts ns0:hint="eastAsia"/>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t>En Chine, la recherche sur les graphes de connaissances poste-compétence a démarré plus tardivement et se concentre actuellement principalement sur l&#x2019;exploration des informations de recrutement, l&#x2019;analyse des compétences professionnelles et l&#x2019;appariement poste-candidat. Les chercheurs exploitent progressivement des données hétérogènes multi-sources — sites de recrutement, normes professionnelles, ressources de formation — afin d&#x2019;extraire, par le traitement du langage naturel et les techniques de graphes de connaissances, les postes, les compétences et leurs relations, et de parvenir ainsi à une expression structurée des besoins en postes, appliquée ensuite à la recommandation de talents et à la planification de carrière. Toutefois, les travaux existants restent principalement axés sur l&#x2019;organisation statique des connaissances et des applications mono-scénario ; les études sur les changements dynamiques des besoins en postes induits par le développement industriel et sur l&#x2019;évolution continue des graphes de connaissances demeurent relativement insuffisantes.</ns0:t>
+        
+      
+      </ns0:r>
+      
+      
+      
+      
+      
+    
+    </ns0:p>

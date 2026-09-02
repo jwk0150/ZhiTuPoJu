@@ -1,0 +1,112 @@
+<ns0:p ns2:paraId="38D5B4A7" ns2:textId="48A0FC44" ns0:rsidR="00DD52EF" ns0:rsidRDefault="006E73B6" ns0:rsidP="00D95D8D">
+      
+      
+      <ns0:pPr>
+        
+        
+        <ns0:spacing ns0:after="240"/>
+        
+        
+        <ns0:ind ns0:firstLine="420"/>
+        
+        
+        <ns0:jc ns0:val="both"/>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+      
+      </ns0:pPr>
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t>En pratique, les enregistrements vérifiant $c(p)&lt;60%$ sont marqués comme de faible qualité et n&#x2019;intègrent pas, par défaut, le pool d&#x2019;échantillons haute confiance de la découverte et de l&#x2019;évolution. Côté recherche, pg_trgm GIN et btree_gin sont déployés afin que la correspondance floue sur les titres et les filtres composés puissent utiliser des index. La validation croisée inter-sources compare les empreintes et les dates de publication d&#x2019;un même poste logique selon les différentes source_name, et fournit des entrées pour le comptage de preuves du module de découverte [2].</ns0:t>
+        
+      
+      </ns0:r>
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:rFonts ns0:hint="eastAsia"/>
+          
+          
+          <ns0:vertAlign ns0:val="superscript"/>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t/>
+        
+      
+      </ns0:r>
+      
+      
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t/>
+        
+      
+      </ns0:r>
+      
+    
+    </ns0:p>

@@ -1,0 +1,106 @@
+<ns0:p ns2:paraId="64B828FA" ns2:textId="40FD1BA2" ns0:rsidR="00DD52EF" ns0:rsidRDefault="004E287A" ns0:rsidP="00072740">
+      
+      
+      <ns0:pPr>
+        
+        
+        <ns0:ind ns0:firstLine="420"/>
+        
+        
+        <ns0:jc ns0:val="center"/>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:sz ns0:val="18"/>
+          
+          
+          <ns0:szCs ns0:val="20"/>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+      
+      </ns0:pPr>
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t>L&#x2019;évaluation quantitative couvre les trois seuils du concours et deux indicateurs de processus : l&#x2019;exactitude de l&#x2019;analyse des JD est de 93.9 %, celle de l&#x2019;extraction de CV de 91.0 % et celle de l&#x2019;appariement poste-candidat de 92.7 %, toutes non inférieures à 90 % ; le F1 de la découverte des postes émergents est de 0.824 et le Kappa de cohérence entre l&#x2019;évolution et les annotations d&#x2019;experts est de 0.76. Afin d&#x2019;éviter que les innovations ne restent des formulations vagues, le tableau 1 met en correspondance I1–I5 avec les indicateurs chiffrés ci-dessus et les modules d&#x2019;implémentation ; les évaluateurs peuvent ainsi retracer, à partir du tableau, les formules et les chemins de code, l&#x2019;interface réelle étant illustrée à la figure 9. Pour les deux innovations qualitatives de découverte et d&#x2019;évolution, une comparaison est en outre effectuée avec une ligne de base fondée sur la fréquence et une ligne de base TF-IDF de mots nouveaux ; les résultats montrent que le gain ne relève pas d&#x2019;une simple transposition de statistiques de mots-clés. Tableau 1. Innovations et preuves quantitatives correspondantes</ns0:t>
+        
+      
+        <ns0:br ns0:type="column"/>
+      </ns0:r>
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:sz ns0:val="18"/>
+          
+          
+          <ns0:szCs ns0:val="20"/>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t/>
+        
+      
+      </ns0:r>
+      
+      
+      
+    
+    </ns0:p>

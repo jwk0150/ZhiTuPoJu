@@ -1,0 +1,1004 @@
+<ns0:tbl>
+      
+      
+      <ns0:tblPr>
+        
+        
+        <ns0:tblStyle ns0:val="af7"/>
+        
+        
+        <ns0:tblW ns0:w="0" ns0:type="auto"/>
+        
+        
+        <ns0:tblBorders>
+          
+          
+          <ns0:top ns0:val="none" ns0:sz="0" ns0:space="0" ns0:color="auto"/>
+          
+          
+          <ns0:left ns0:val="none" ns0:sz="0" ns0:space="0" ns0:color="auto"/>
+          
+          
+          <ns0:bottom ns0:val="none" ns0:sz="0" ns0:space="0" ns0:color="auto"/>
+          
+          
+          <ns0:right ns0:val="none" ns0:sz="0" ns0:space="0" ns0:color="auto"/>
+          
+          
+          <ns0:insideH ns0:val="none" ns0:sz="0" ns0:space="0" ns0:color="auto"/>
+          
+          
+          <ns0:insideV ns0:val="none" ns0:sz="0" ns0:space="0" ns0:color="auto"/>
+          
+        
+        </ns0:tblBorders>
+        
+        
+        <ns0:tblLook ns0:val="04A0" ns0:firstRow="1" ns0:lastRow="0" ns0:firstColumn="1" ns0:lastColumn="0" ns0:noHBand="0" ns0:noVBand="1"/>
+        
+      
+      </ns0:tblPr>
+      
+      
+      <ns0:tblGrid>
+        
+        
+        <ns0:gridCol ns0:w="398"/>
+        
+        
+        <ns0:gridCol ns0:w="3691"/>
+        
+        
+        <ns0:gridCol ns0:w="550"/>
+        
+      
+      </ns0:tblGrid>
+      
+      
+      <ns0:tr ns0:rsidR="009B0905" ns0:rsidRPr="00D71A9F" ns2:paraId="302153C8" ns2:textId="77777777" ns0:rsidTr="00077B42">
+        
+        
+        <ns0:tc>
+          
+          
+          <ns0:tcPr>
+            
+            
+            <ns0:tcW ns0:w="562" ns0:type="dxa"/>
+            
+          
+          </ns0:tcPr>
+          
+          
+          <ns0:p ns2:paraId="6C6BC9CE" ns2:textId="77777777" ns0:rsidR="009B0905" ns0:rsidRPr="00D71A9F" ns0:rsidRDefault="009B0905" ns0:rsidP="00535F17">
+            
+            
+            <ns0:pPr>
+              
+              
+              <ns0:spacing ns0:before="120" ns0:after="120"/>
+              
+              
+              <ns0:rPr>
+                
+                
+                <ns0:sz ns0:val="20"/>
+                
+                
+                <ns0:szCs ns0:val="21"/>
+                
+                
+                <ns0:lang ns0:eastAsia="zh-CN"/>
+                
+              
+              </ns0:rPr>
+              
+            
+            </ns0:pPr>
+            
+            
+            <ns0:bookmarkStart ns0:id="12" ns0:name="OLE_LINK21"/>
+            
+          
+          </ns0:p>
+          
+        
+        </ns0:tc>
+        
+        
+        <ns0:tc>
+          
+          
+          <ns0:tcPr>
+            
+            
+            <ns0:tcW ns0:w="3544" ns0:type="dxa"/>
+            
+            
+            <ns0:vAlign ns0:val="center"/>
+            
+            
+            <ns0:hideMark/>
+            
+          
+          </ns0:tcPr>
+          
+          
+          <ns0:p ns2:paraId="7E29C7DD" ns2:textId="7C661AB3" ns0:rsidR="009B0905" ns0:rsidRPr="00D71A9F" ns0:rsidRDefault="00000000" ns0:rsidP="00535F17">
+            
+            
+            <ns0:pPr>
+              
+              
+              <ns0:spacing ns0:before="120" ns0:after="240"/>
+              
+              
+              <ns0:rPr>
+                
+                
+                <ns0:sz ns0:val="20"/>
+                
+                
+                <ns0:szCs ns0:val="21"/>
+                
+                
+                <ns0:lang ns0:eastAsia="zh-CN"/>
+                
+              
+              </ns0:rPr>
+              
+            
+            </ns0:pPr>
+            
+            
+            <ns9:oMathPara>
+              
+              
+              <ns9:oMath>
+                
+                
+                <ns9:eqArr>
+                  
+                  
+                  <ns9:eqArrPr>
+                    
+                    
+                    <ns9:maxDist ns9:val="1"/>
+                    
+                    
+                    <ns9:ctrlPr>
+                      
+                      
+                      <ns0:rPr>
+                        
+                        
+                        <ns0:rFonts ns0:ascii="Cambria Math" ns0:hAnsi="Cambria Math"/>
+                        
+                        
+                        <ns0:i/>
+                        
+                        
+                        <ns0:sz ns0:val="20"/>
+                        
+                        
+                        <ns0:szCs ns0:val="21"/>
+                        
+                        
+                        <ns0:lang ns0:eastAsia="zh-CN"/>
+                        
+                      
+                      </ns0:rPr>
+                      
+                    
+                    </ns9:ctrlPr>
+                    
+                  
+                  </ns9:eqArrPr>
+                  
+                  
+                  <ns9:e>
+                    
+                    
+                    <ns9:m>
+                      
+                      
+                      <ns9:mPr>
+                        
+                        
+                        <ns9:mcs>
+                          
+                          
+                          <ns9:mc>
+                            
+                            
+                            <ns9:mcPr>
+                              
+                              
+                              <ns9:count ns9:val="1"/>
+                              
+                              
+                              <ns9:mcJc ns9:val="center"/>
+                              
+                            
+                            </ns9:mcPr>
+                            
+                          
+                          </ns9:mc>
+                          
+                        
+                        </ns9:mcs>
+                        
+                        
+                        <ns9:ctrlPr>
+                          
+                          
+                          <ns0:rPr>
+                            
+                            
+                            <ns0:rFonts ns0:ascii="Cambria Math" ns0:hAnsi="Cambria Math"/>
+                            
+                            
+                            <ns0:i/>
+                            
+                            
+                            <ns0:sz ns0:val="20"/>
+                            
+                            
+                            <ns0:szCs ns0:val="21"/>
+                            
+                            
+                            <ns0:lang ns0:eastAsia="zh-CN"/>
+                            
+                          
+                          </ns0:rPr>
+                          
+                        
+                        </ns9:ctrlPr>
+                        
+                      
+                      </ns9:mPr>
+                      
+                      
+                      <ns9:mr>
+                        
+                        
+                        <ns9:e>
+                          
+                          
+                          <ns9:r>
+                            
+                            
+                            <ns9:rPr>
+                              
+                              
+                              <ns9:sty ns9:val="p"/>
+                              
+                            
+                            </ns9:rPr>
+                            
+                            
+                            <ns0:rPr>
+                              
+                              
+                              <ns0:rFonts ns0:ascii="Cambria Math" ns0:hAnsi="Cambria Math"/>
+                              
+                              
+                              <ns0:sz ns0:val="20"/>
+                              
+                              
+                              <ns0:szCs ns0:val="21"/>
+                              
+                              
+                              <ns0:lang ns0:eastAsia="zh-CN"/>
+                              
+                            
+                            </ns0:rPr>
+                            
+                            
+                            <ns9:t>〖Change%〗_</ns9:t>
+                            
+                          
+                          </ns9:r>
+                          
+                          
+                          
+                          
+                          
+                          <ns9:r>
+                            
+                            
+                            <ns0:rPr>
+                              
+                              
+                              <ns0:rFonts ns0:ascii="Cambria Math" ns0:hAnsi="Cambria Math"/>
+                              
+                              
+                              <ns0:sz ns0:val="20"/>
+                              
+                              
+                              <ns0:szCs ns0:val="21"/>
+                              
+                              
+                              <ns0:lang ns0:eastAsia="zh-CN"/>
+                              
+                            
+                            </ns0:rPr>
+                            
+                            
+                            <ns9:t>s=</ns9:t>
+                            
+                          
+                          </ns9:r>
+                          
+                        
+                        </ns9:e>
+                        
+                      
+                      </ns9:mr>
+                      
+                      
+                      <ns9:mr>
+                        
+                        
+                        <ns9:e>
+                          
+                          
+                          <ns9:sSub>
+                            
+                            
+                            <ns9:sSubPr>
+                              
+                              
+                              <ns9:ctrlPr>
+                                
+                                
+                                <ns0:rPr>
+                                  
+                                  
+                                  <ns0:rFonts ns0:ascii="Cambria Math" ns0:hAnsi="Cambria Math"/>
+                                  
+                                  
+                                  <ns0:sz ns0:val="20"/>
+                                  
+                                  
+                                  <ns0:szCs ns0:val="21"/>
+                                  
+                                  
+                                  <ns0:lang ns0:eastAsia="zh-CN"/>
+                                  
+                                
+                                </ns0:rPr>
+                                
+                              
+                              </ns9:ctrlPr>
+                              
+                            
+                            </ns9:sSubPr>
+                            
+                            
+                            <ns9:e>
+                              
+                              
+                              <ns9:r>
+                                
+                                
+                                <ns0:rPr>
+                                  
+                                  
+                                  <ns0:rFonts ns0:ascii="Cambria Math" ns0:hAnsi="Cambria Math"/>
+                                  
+                                  
+                                  <ns0:sz ns0:val="20"/>
+                                  
+                                  
+                                  <ns0:szCs ns0:val="21"/>
+                                  
+                                  
+                                  <ns0:lang ns0:eastAsia="zh-CN"/>
+                                  
+                                
+                                </ns0:rPr>
+                                
+                                
+                                <ns9:t>Δ</ns9:t>
+                                
+                              
+                              </ns9:r>
+                              
+                              
+                              <ns9:ctrlPr>
+                                
+                                
+                                <ns0:rPr>
+                                  
+                                  
+                                  <ns0:rFonts ns0:ascii="Cambria Math" ns0:hAnsi="Cambria Math"/>
+                                  
+                                  
+                                  <ns0:i/>
+                                  
+                                  
+                                  <ns0:sz ns0:val="20"/>
+                                  
+                                  
+                                  <ns0:szCs ns0:val="21"/>
+                                  
+                                  
+                                  <ns0:lang ns0:eastAsia="zh-CN"/>
+                                  
+                                
+                                </ns0:rPr>
+                                
+                              
+                              </ns9:ctrlPr>
+                              
+                            
+                            </ns9:e>
+                            
+                            
+                            <ns9:sub>
+                              
+                              
+                              <ns9:r>
+                                
+                                
+                                <ns0:rPr>
+                                  
+                                  
+                                  <ns0:rFonts ns0:ascii="Cambria Math" ns0:hAnsi="Cambria Math"/>
+                                  
+                                  
+                                  <ns0:sz ns0:val="20"/>
+                                  
+                                  
+                                  <ns0:szCs ns0:val="21"/>
+                                  
+                                  
+                                  <ns0:lang ns0:eastAsia="zh-CN"/>
+                                  
+                                
+                                </ns0:rPr>
+                                
+                                
+                                <ns9:t>s</ns9:t>
+                                
+                              
+                              </ns9:r>
+                              
+                            
+                            </ns9:sub>
+                            
+                          
+                          </ns9:sSub>
+                          
+                          
+                          <ns9:r>
+                            
+                            
+                            <ns9:rPr>
+                              
+                              
+                              <ns9:lit/>
+                              
+                              
+                              <ns9:sty ns9:val="p"/>
+                              
+                            
+                            </ns9:rPr>
+                            
+                            
+                            <ns0:rPr>
+                              
+                              
+                              <ns0:rFonts ns0:ascii="Cambria Math" ns0:hAnsi="Cambria Math"/>
+                              
+                              
+                              <ns0:sz ns0:val="20"/>
+                              
+                              
+                              <ns0:szCs ns0:val="21"/>
+                              
+                              
+                              <ns0:lang ns0:eastAsia="zh-CN"/>
+                              
+                            
+                            </ns0:rPr>
+                            
+                            
+                            <ns9:t>/</ns9:t>
+                            
+                          
+                          </ns9:r>
+                          
+                          
+                          <ns9:d>
+                            
+                            
+                            <ns9:dPr>
+                              
+                              
+                              <ns9:ctrlPr>
+                                
+                                
+                                <ns0:rPr>
+                                  
+                                  
+                                  <ns0:rFonts ns0:ascii="Cambria Math" ns0:hAnsi="Cambria Math"/>
+                                  
+                                  
+                                  <ns0:sz ns0:val="20"/>
+                                  
+                                  
+                                  <ns0:szCs ns0:val="21"/>
+                                  
+                                  
+                                  <ns0:lang ns0:eastAsia="zh-CN"/>
+                                  
+                                
+                                </ns0:rPr>
+                                
+                              
+                              </ns9:ctrlPr>
+                              
+                            
+                            </ns9:dPr>
+                            
+                            
+                            <ns9:e>
+                              
+                              
+                              <ns9:r>
+                                
+                                
+                                <ns0:rPr>
+                                  
+                                  
+                                  <ns0:rFonts ns0:ascii="Cambria Math" ns0:hAnsi="Cambria Math"/>
+                                  
+                                  
+                                  <ns0:sz ns0:val="20"/>
+                                  
+                                  
+                                  <ns0:szCs ns0:val="21"/>
+                                  
+                                  
+                                  <ns0:lang ns0:eastAsia="zh-CN"/>
+                                  
+                                
+                                </ns0:rPr>
+                                
+                                
+                                <ns9:t>max</ns9:t>
+                                
+                              
+                              </ns9:r>
+                              
+                              
+                              <ns9:d>
+                                
+                                
+                                <ns9:dPr>
+                                  
+                                  
+                                  <ns9:ctrlPr>
+                                    
+                                    
+                                    <ns0:rPr>
+                                      
+                                      
+                                      <ns0:rFonts ns0:ascii="Cambria Math" ns0:hAnsi="Cambria Math"/>
+                                      
+                                      
+                                      <ns0:i/>
+                                      
+                                      
+                                      <ns0:sz ns0:val="20"/>
+                                      
+                                      
+                                      <ns0:szCs ns0:val="21"/>
+                                      
+                                      
+                                      <ns0:lang ns0:eastAsia="zh-CN"/>
+                                      
+                                    
+                                    </ns0:rPr>
+                                    
+                                  
+                                  </ns9:ctrlPr>
+                                  
+                                
+                                </ns9:dPr>
+                                
+                                
+                                <ns9:e>
+                                  
+                                  
+                                  <ns9:sSubSup>
+                                    
+                                    
+                                    <ns9:sSubSupPr>
+                                      
+                                      
+                                      <ns9:ctrlPr>
+                                        
+                                        
+                                        <ns0:rPr>
+                                          
+                                          
+                                          <ns0:rFonts ns0:ascii="Cambria Math" ns0:hAnsi="Cambria Math"/>
+                                          
+                                          
+                                          <ns0:sz ns0:val="20"/>
+                                          
+                                          
+                                          <ns0:szCs ns0:val="21"/>
+                                          
+                                          
+                                          <ns0:lang ns0:eastAsia="zh-CN"/>
+                                          
+                                        
+                                        </ns0:rPr>
+                                        
+                                      
+                                      </ns9:ctrlPr>
+                                      
+                                    
+                                    </ns9:sSubSupPr>
+                                    
+                                    
+                                    <ns9:e>
+                                      
+                                      
+                                      <ns9:r>
+                                        
+                                        
+                                        <ns0:rPr>
+                                          
+                                          
+                                          <ns0:rFonts ns0:ascii="Cambria Math" ns0:hAnsi="Cambria Math"/>
+                                          
+                                          
+                                          <ns0:sz ns0:val="20"/>
+                                          
+                                          
+                                          <ns0:szCs ns0:val="21"/>
+                                          
+                                          
+                                          <ns0:lang ns0:eastAsia="zh-CN"/>
+                                          
+                                        
+                                        </ns0:rPr>
+                                        
+                                        
+                                        <ns9:t>r</ns9:t>
+                                        
+                                      
+                                      </ns9:r>
+                                      
+                                      
+                                      <ns9:ctrlPr>
+                                        
+                                        
+                                        <ns0:rPr>
+                                          
+                                          
+                                          <ns0:rFonts ns0:ascii="Cambria Math" ns0:hAnsi="Cambria Math"/>
+                                          
+                                          
+                                          <ns0:i/>
+                                          
+                                          
+                                          <ns0:sz ns0:val="20"/>
+                                          
+                                          
+                                          <ns0:szCs ns0:val="21"/>
+                                          
+                                          
+                                          <ns0:lang ns0:eastAsia="zh-CN"/>
+                                          
+                                        
+                                        </ns0:rPr>
+                                        
+                                      
+                                      </ns9:ctrlPr>
+                                      
+                                    
+                                    </ns9:e>
+                                    
+                                    
+                                    <ns9:sub>
+                                      
+                                      
+                                      <ns9:r>
+                                        
+                                        
+                                        <ns0:rPr>
+                                          
+                                          
+                                          <ns0:rFonts ns0:ascii="Cambria Math" ns0:hAnsi="Cambria Math"/>
+                                          
+                                          
+                                          <ns0:sz ns0:val="20"/>
+                                          
+                                          
+                                          <ns0:szCs ns0:val="21"/>
+                                          
+                                          
+                                          <ns0:lang ns0:eastAsia="zh-CN"/>
+                                          
+                                        
+                                        </ns0:rPr>
+                                        
+                                        
+                                        <ns9:t>s</ns9:t>
+                                        
+                                      
+                                      </ns9:r>
+                                      
+                                    
+                                    </ns9:sub>
+                                    
+                                    
+                                    <ns9:sup>
+                                      
+                                      
+                                      <ns9:r>
+                                        
+                                        
+                                        <ns0:rPr>
+                                          
+                                          
+                                          <ns0:rFonts ns0:ascii="Cambria Math" ns0:hAnsi="Cambria Math"/>
+                                          
+                                          
+                                          <ns0:sz ns0:val="20"/>
+                                          
+                                          
+                                          <ns0:szCs ns0:val="21"/>
+                                          
+                                          
+                                          <ns0:lang ns0:eastAsia="zh-CN"/>
+                                          
+                                        
+                                        </ns0:rPr>
+                                        
+                                        
+                                        <ns9:t>A</ns9:t>
+                                        
+                                      
+                                      </ns9:r>
+                                      
+                                    
+                                    </ns9:sup>
+                                    
+                                  
+                                  </ns9:sSubSup>
+                                  
+                                  
+                                  <ns9:r>
+                                    
+                                    
+                                    <ns0:rPr>
+                                      
+                                      
+                                      <ns0:rFonts ns0:ascii="Cambria Math" ns0:hAnsi="Cambria Math"/>
+                                      
+                                      
+                                      <ns0:sz ns0:val="20"/>
+                                      
+                                      
+                                      <ns0:szCs ns0:val="21"/>
+                                      
+                                      
+                                      <ns0:lang ns0:eastAsia="zh-CN"/>
+                                      
+                                    
+                                    </ns0:rPr>
+                                    
+                                    
+                                    <ns9:t>,0.5</ns9:t>
+                                    
+                                  
+                                  </ns9:r>
+                                  
+                                
+                                </ns9:e>
+                                
+                              
+                              </ns9:d>
+                              
+                            
+                            </ns9:e>
+                            
+                          
+                          </ns9:d>
+                          
+                          
+                          <ns9:r>
+                            
+                            
+                            <ns0:rPr>
+                              
+                              
+                              <ns0:rFonts ns0:ascii="Cambria Math" ns0:hAnsi="Cambria Math"/>
+                              
+                              
+                              <ns0:sz ns0:val="20"/>
+                              
+                              
+                              <ns0:szCs ns0:val="21"/>
+                              
+                              
+                              <ns0:lang ns0:eastAsia="zh-CN"/>
+                              
+                            
+                            </ns0:rPr>
+                            
+                            
+                            <ns9:t>×100%</ns9:t>
+                            
+                          
+                          </ns9:r>
+                          
+                        
+                        </ns9:e>
+                        
+                      
+                      </ns9:mr>
+                      
+                    
+                    </ns9:m>
+                    
+                  
+                  </ns9:e>
+                  
+                
+                </ns9:eqArr>
+                
+              
+              </ns9:oMath>
+              
+            
+            </ns9:oMathPara>
+            
+          
+          </ns0:p>
+          
+        
+        </ns0:tc>
+        
+        
+        <ns0:tc>
+          
+          
+          <ns0:tcPr>
+            
+            
+            <ns0:tcW ns0:w="523" ns0:type="dxa"/>
+            
+            
+            <ns0:hideMark/>
+            
+          
+          </ns0:tcPr>
+          
+          
+          <ns0:p ns2:paraId="23E55602" ns2:textId="6861C0E0" ns0:rsidR="009B0905" ns0:rsidRPr="00D71A9F" ns0:rsidRDefault="009B0905" ns0:rsidP="009B0905">
+            
+            
+            <ns0:pPr>
+              
+              
+              <ns0:keepNext/>
+              
+              
+              <ns0:spacing ns0:before="120" ns0:after="120"/>
+              
+              
+              <ns0:jc ns0:val="right"/>
+              
+              
+              <ns0:rPr>
+                
+                
+                <ns0:sz ns0:val="20"/>
+                
+                
+                <ns0:szCs ns0:val="21"/>
+                
+                
+                <ns0:lang ns0:eastAsia="zh-CN"/>
+                
+              
+              </ns0:rPr>
+              
+            
+            </ns0:pPr>
+            
+            
+            <ns0:r>
+              
+              
+              <ns0:rPr>
+                
+                
+                <ns0:sz ns0:val="20"/>
+                
+                
+                <ns0:szCs ns0:val="21"/>
+                
+                
+                <ns0:lang ns0:eastAsia="zh-CN"/>
+                
+              
+              </ns0:rPr>
+              
+              
+              <ns0:t>(</ns0:t>
+              
+            
+            </ns0:r>
+            
+            
+            <ns0:r>
+              
+              
+              <ns0:rPr>
+                
+                
+                <ns0:rFonts ns0:hint="eastAsia"/>
+                
+                
+                <ns0:sz ns0:val="20"/>
+                
+                
+                <ns0:szCs ns0:val="21"/>
+                
+                
+                <ns0:lang ns0:eastAsia="zh-CN"/>
+                
+              
+              </ns0:rPr>
+              
+              
+              <ns0:t>18</ns0:t>
+              
+            
+            </ns0:r>
+            
+            
+            
+            <ns0:r>
+              
+              
+              <ns0:rPr>
+                
+                
+                <ns0:sz ns0:val="20"/>
+                
+                
+                <ns0:szCs ns0:val="21"/>
+                
+                
+                <ns0:lang ns0:eastAsia="zh-CN"/>
+                
+              
+              </ns0:rPr>
+              
+              
+              <ns0:t>)</ns0:t>
+              
+            
+            </ns0:r>
+            
+          
+          </ns0:p>
+          
+        
+        </ns0:tc>
+        
+      
+      </ns0:tr>
+      
+    
+    </ns0:tbl>

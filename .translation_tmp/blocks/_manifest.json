@@ -1,0 +1,1150 @@
+[
+ {
+  "idx": 0,
+  "kind": "P",
+  "start": 888,
+  "end": 2166,
+  "text": "Conception et mise en œuvre d'un système de construction dynamique de graphe de connaissances poste-compétence et d'appariement de talents, fondé sur des données de recrutement multi-sources"
+ },
+ {
+  "idx": 1,
+  "kind": "P",
+  "start": 2181,
+  "end": 4460,
+  "text": "Yinghuai Fu¹, Shuai Li²*"
+ },
+ {
+  "idx": 2,
+  "kind": "P",
+  "start": 4475,
+  "end": 5910,
+  "text": "¹École d'intelligence artificielle et de big data, Université de technologie du Henan, Zhengzhou, Henan, Chine"
+ },
+ {
+  "idx": 3,
+  "kind": "P",
+  "start": 5925,
+  "end": 7242,
+  "text": "*Auteur correspondant"
+ },
+ {
+  "idx": 4,
+  "kind": "P",
+  "start": 7257,
+  "end": 15000,
+  "text": "Résumé : L'expansion rapide de l'économie numérique rend le cycle de mise à jour des piles technologiques nettement plus court que le cycle traditionnel de formation des talents ; le marché du travail présente simultanément deux phénomènes : les entreprises éprouvent des difficultés à recruter et le"
+ },
+ {
+  "idx": 5,
+  "kind": "P",
+  "start": 15015,
+  "end": 16725,
+  "text": "Mots-clés : graphe de connaissances poste-compétence ; analyse de l'évolution dynamique ; gouvernance des données hétérogènes multi-sources ; découverte des postes émergents ; appariement poste-candidat ; génération augmentée par récupération ; contrôle des hallucinations"
+ },
+ {
+  "idx": 6,
+  "kind": "P",
+  "start": 16740,
+  "end": 17975,
+  "text": "Design and Implementation of a Job-Skill Knowledge Graph and Talent Matching System Driven by Multi-Source Recruitment Data"
+ },
+ {
+  "idx": 7,
+  "kind": "P",
+  "start": 17990,
+  "end": 20807,
+  "text": "Yinghuai Fu¹,Shuai Li2*"
+ },
+ {
+  "idx": 8,
+  "kind": "P",
+  "start": 20822,
+  "end": 22522,
+  "text": "¹School of Artificial Intelligence and Big Data, Henan University of Technology, Zhengzhou, Henan, China"
+ },
+ {
+  "idx": 9,
+  "kind": "P",
+  "start": 22537,
+  "end": 23628,
+  "text": "*Corresponding Author"
+ },
+ {
+  "idx": 10,
+  "kind": "P",
+  "start": 23643,
+  "end": 28087,
+  "text": "Abstract:Labor-market skill demand shifts faster than education cycles,while public job ads suffer lag,duplication,and noise.Addressing the challenge of multi-source cleaning with cross-validation and hallucination control for competency graphs,this paper presents Digital Talent Mapping with five au"
+ },
+ {
+  "idx": 11,
+  "kind": "P",
+  "start": 28102,
+  "end": 31108,
+  "text": "Keywords:The Job–Competency Knowledge Graph;Dynamic Evolution Analysis;Multi-source Data Governance;Emerging Job Discovery;Human-Job Matching;Retrieval-Augmented Generation;Hallucination Control"
+ },
+ {
+  "idx": 12,
+  "kind": "P",
+  "start": 31123,
+  "end": 32507,
+  "text": "I. Introduction"
+ },
+ {
+  "idx": 13,
+  "kind": "P",
+  "start": 32522,
+  "end": 35515,
+  "text": "Le marché de l'emploi actuel est confronté à une contradiction structurelle : le rythme d'itération des piles technologiques est plus rapide que le cycle de formation des talents, tandis que les entreprises peinent à recruter et que les travailleurs manquent de parcours clairs. Bien que les textes d"
+ },
+ {
+  "idx": 14,
+  "kind": "P",
+  "start": 35530,
+  "end": 41736,
+  "text": "II. Travaux connexes"
+ },
+ {
+  "idx": 15,
+  "kind": "P",
+  "start": 41751,
+  "end": 43569,
+  "text": "À l'étranger, la recherche sur les graphes de connaissances poste-compétence est relativement mature : des classifications professionnelles, des référentiels de compétences et des normes de postes relativement complets ont été établis, et des données dynamiques telles que les informations de recrute"
+ },
+ {
+  "idx": 16,
+  "kind": "P",
+  "start": 43584,
+  "end": 45443,
+  "text": "En Chine, la recherche sur les graphes de connaissances poste-compétence a démarré plus tardivement et se concentre actuellement principalement sur l'exploration des informations de recrutement, l'analyse des compétences professionnelles et l'appariement poste-candidat. Les chercheurs exploitent pro"
+ },
+ {
+  "idx": 17,
+  "kind": "P",
+  "start": 45458,
+  "end": 47264,
+  "text": "Dans l'ensemble, les recherches nationales et internationales reconnaissent la valeur importante de la fusion de données multi-sources et des graphes de connaissances pour l'analyse des compétences des postes, mais des problèmes subsistent : dispersion des sources de données, difficulté de fusion de"
+ },
+ {
+  "idx": 18,
+  "kind": "P",
+  "start": 47279,
+  "end": 48917,
+  "text": "III. Conception et implémentation du système"
+ },
+ {
+  "idx": 19,
+  "kind": "P",
+  "start": 48932,
+  "end": 51054,
+  "text": "3.1 Architecture du système"
+ },
+ {
+  "idx": 20,
+  "kind": "P",
+  "start": 51069,
+  "end": 52661,
+  "text": "Le système est organisé globalement en trois couches : couche d'entrée, couche de traitement et couche de sortie (figure 1). La couche d'entrée reçoit des corpus multi-sources tels que les JD des plateformes de recrutement, les champs complémentaires fournis par les entreprises et les CV des utilisa"
+ },
+ {
+  "idx": 21,
+  "kind": "P",
+  "start": 52676,
+  "end": 53792,
+  "text": "Figure 1. Cadre général de recherche « Input-Hidden-Output » du système"
+ },
+ {
+  "idx": 22,
+  "kind": "P",
+  "start": 53807,
+  "end": 54896,
+  "text": "ainsi que des réponses de dialogue contraintes par les preuves. Les encadrés agrandis aux quatre coins de la figure 1 correspondent aux innovations centrales décrites plus loin ; chacune d'elles est assortie d'une définition formelle, de seuils d'implémentation et de preuves quantitatives, afin d'év"
+ },
+ {
+  "idx": 23,
+  "kind": "P",
+  "start": 54911,
+  "end": 57805,
+  "text": "Sur le plan fonctionnel, le système forme une chaîne en quatre maillons : « collecte et gouvernance — services de graphe — analyse intelligente — interaction applicative ». Le volet collecte et gouvernance assure l'insertion multi-sources, la déduplication par empreinte, la notation de complétude et"
+ },
+ {
+  "idx": 24,
+  "kind": "P",
+  "start": 57820,
+  "end": 63187,
+  "text": "Les objectifs de conception du système peuvent se résumer ainsi : données entrantes vérifiables, relations du graphe interrogeables, différentiels d'évolution recalculables et conclusions d'appariement actionnables. La contrainte de conception correspondante est que toute conclusion telle que « défi"
+ },
+ {
+  "idx": 25,
+  "kind": "P",
+  "start": 63202,
+  "end": 65251,
+  "text": "Figure 2. Tables et champs de la base de données"
+ },
+ {
+  "idx": 26,
+  "kind": "P",
+  "start": 65266,
+  "end": 67738,
+  "text": "Les données principales des postes sont réparties entre une table principale de consultation et une table de détail, reliées l'une à l'autre par une clé étrangère en relation 1:1, comme le montre la figure 2. La table principale porte les champs de filtrage à forte fréquence (source, titre, entrepri"
+ },
+ {
+  "idx": 27,
+  "kind": "P",
+  "start": 67753,
+  "end": 68582,
+  "text": "La complétude calcule la proportion de champs non vides sur quinze champs clés :"
+ },
+ {
+  "idx": 28,
+  "kind": "TBL",
+  "start": 68597,
+  "end": 95376,
+  "text": "cp=1/15i=115▒1fip≠∅×100% (1)"
+ },
+ {
+  "idx": 29,
+  "kind": "P",
+  "start": 95435,
+  "end": 97573,
+  "text": "En pratique, les enregistrements vérifiant $c(p)<60%$ sont marqués comme de faible qualité et n'intègrent pas, par défaut, le pool d'échantillons haute confiance de la découverte et de l'évolution. Côté recherche, pg_trgm GIN et btree_gin sont déployés afin que la correspondance floue sur les titres"
+ },
+ {
+  "idx": 30,
+  "kind": "P",
+  "start": 97588,
+  "end": 98771,
+  "text": "3.2 Innovations du système"
+ },
+ {
+  "idx": 31,
+  "kind": "P",
+  "start": 98786,
+  "end": 100552,
+  "text": "Innovation I1 : (contrôle de qualité, correspondant au coin supérieur gauche de la figure 1). Pour chaque enregistrement de poste, l'empreinte de contenu et la complétude de quinze champs sont calculées ; la notation et la déduplication sont effectuées automatiquement dans les déclencheurs de la bas"
+ },
+ {
+  "idx": 32,
+  "kind": "TBL",
+  "start": 100567,
+  "end": 136276,
+  "text": "fpp=SHA256xpcp=1/15i=115▒1fip≠∅×100% (2)"
+ },
+ {
+  "idx": 33,
+  "kind": "P",
+  "start": 136291,
+  "end": 139688,
+  "text": "Ici, x(p) désigne la chaîne centrale obtenue par concaténation du titre, de l'entreprise, de la ville, du salaire, de l'expérience et du niveau d'études. La règle de contrôle exige c(p)≥60% pour qu'un enregistrement puisse entrer dans le pool haute confiance de découverte/évolution. Données : après "
+ },
+ {
+  "idx": 34,
+  "kind": "P",
+  "start": 139703,
+  "end": 141996,
+  "text": "Innovation I2 : (mesure d'émergence tridimensionnelle et chaîne de raisonnement en six étapes, correspondant au segment de découverte de la figure 1). Pour un cluster de titres G, on définit"
+ },
+ {
+  "idx": 35,
+  "kind": "TBL",
+  "start": 142011,
+  "end": 172062,
+  "text": "ConfG=TG+SG+CGT≤50, S≤30, C≤20(3)"
+ },
+ {
+  "idx": 36,
+  "kind": "P",
+  "start": 172121,
+  "end": 175047,
+  "text": "et l'on produit une chaîne en six étapes rejouable : intégration → désambiguïsation → notation → définition → extrapolation → audit. Données : sur 23 catégories d'annotations d'experts, la précision est de 0.750, le rappel de 0.913 et le F1 de 0.824 ; le cas d'étude Conf=42+20+15=77 entre en candida"
+ },
+ {
+  "idx": 37,
+  "kind": "P",
+  "start": 175062,
+  "end": 185952,
+  "text": "Innovation I3 : (différenciation de compétences pseudo-temporelle multi-sources, correspondant au coin inférieur gauche de la figure 1). La différence des taux d'apparition entre la source plus ancienne A et la source plus récente B, notée Δ_s=r_s^B-r_s^A, permet de déterminer les ajouts, suppressio"
+ },
+ {
+  "idx": 38,
+  "kind": "P",
+  "start": 185967,
+  "end": 187486,
+  "text": "Innovation I4 : (appariement pondéré en cinq dimensions et borne supérieure de transfert, correspondant au coin supérieur droit de la figure 1). Le score total"
+ },
+ {
+  "idx": 39,
+  "kind": "TBL",
+  "start": 187501,
+  "end": 228233,
+  "text": "M=0.42sskill+0.24ssem+0.14sproj+0.10sexp+0.10sgraph(4)"
+ },
+ {
+  "idx": 40,
+  "kind": "P",
+  "start": 228292,
+  "end": 231567,
+  "text": "La contribution de transfert transfer(t)=min(0.65,c_t·0.65) évite que des compétences faiblement corrélées ne soient artificiellement surévaluées. Données : l'exactitude de l'appariement est de 0.927 (seuil de 90 %) ; l'ablation supprimant la dimension compétences la fait chuter de 8.4 points de pou"
+ },
+ {
+  "idx": 41,
+  "kind": "P",
+  "start": 231582,
+  "end": 234921,
+  "text": "Innovation I5 : (contrôle par preuves et prévention des hallucinations, correspondant au coin inférieur droit de la figure 1 et au chapitre VIII). Les conclusions de découverte/génération exigent un nombre de sources de preuves |S|≥2, faute de quoi elles sont marquées low_evidence et soumises à une "
+ },
+ {
+  "idx": 42,
+  "kind": "P",
+  "start": 234936,
+  "end": 236122,
+  "text": "3.3 Implémentation du système"
+ },
+ {
+  "idx": 43,
+  "kind": "P",
+  "start": 236137,
+  "end": 238517,
+  "text": "L'implémentation du système se déploie selon « construction du graphe — découverte des postes émergents — évolution des compétences — appariement poste-candidat — prévention des hallucinations dans le dialogue — validation expérimentale », et correspond une à une aux innovations précédentes. Le grap"
+ },
+ {
+  "idx": 44,
+  "kind": "P",
+  "start": 238532,
+  "end": 246340,
+  "text": "La découverte des postes émergents s'effectue au moyen d'une chaîne de raisonnement en six étapes : intégration multi-sources, désambiguïsation et regroupement, notation de l'émergence, génération de définitions, extrapolation des tendances et audit des preuves. Les champs de définition privilégient"
+ },
+ {
+  "idx": 45,
+  "kind": "P",
+  "start": 246355,
+  "end": 248528,
+  "text": "L'environnement expérimental est Windows 11, Python 3.12, PostgreSQL et FastAPI ; lorsque DeepSeek est indisponible, une dégradation automatique s'opère. Après déduplication, on compte environ 12500 postes valides, dont environ 93.5 % de haute qualité ; le graphe comprend environ 5747 nœuds et 13081"
+ },
+ {
+  "idx": 46,
+  "kind": "P",
+  "start": 248543,
+  "end": 251143,
+  "text": "3.4 Définition formelle du graphe"
+ },
+ {
+  "idx": 47,
+  "kind": "P",
+  "start": 251202,
+  "end": 252885,
+  "text": "Le graphe de connaissances des compétences est défini comme un graphe orienté pondéré G=(V,E). L'ensemble des nœuds"
+ },
+ {
+  "idx": 48,
+  "kind": "TBL",
+  "start": 252900,
+  "end": 260431,
+  "text": "V=J∪S∪I∪C(5)"
+ },
+ {
+  "idx": 49,
+  "kind": "P",
+  "start": 260490,
+  "end": 268577,
+  "text": "où J désigne les postes, S les compétences, I les secteurs d'activité et C les entreprises. L'ensemble des arêtes comprend quatre types de relations : REQUIRES, BELONGS_TO, RECRUITS et RELATED_TO, reliant respectivement poste-compétence, poste-secteur, entreprise-poste et compétence-compétence. Voir"
+ },
+ {
+  "idx": 50,
+  "kind": "P",
+  "start": 268592,
+  "end": 272948,
+  "text": "Le poids de l'arête REQUIRES, noté w_(j,s), prend la fréquence d'apparition de la compétence s dans l'ensemble des JD correspondant au poste j."
+ },
+ {
+  "idx": 51,
+  "kind": "P",
+  "start": 272963,
+  "end": 274522,
+  "text": "L'arête RELATED_TO est contrainte conjointement par la co-occurrence et le dictionnaire de transfert établi manuellement, fournissant ainsi un a priori à _relation_transfer du module d'appariement."
+ },
+ {
+  "idx": 52,
+  "kind": "P",
+  "start": 274537,
+  "end": 275631,
+  "text": "Figure 3. Visualisation du graphe technologique des postes"
+ },
+ {
+  "idx": 53,
+  "kind": "P",
+  "start": 275646,
+  "end": 276794,
+  "text": "En s'appuyant sur l'analyse précédente des postes, compétences, secteurs et entreprises, cet article représente le graphe de connaissances poste-compétence comme un graphe orienté pondéré décrivant les relations entre différentes entités. Sa définition formelle de base est la suivante :"
+ },
+ {
+  "idx": 54,
+  "kind": "TBL",
+  "start": 276809,
+  "end": 282103,
+  "text": "G=(V,E,W)(6)"
+ },
+ {
+  "idx": 55,
+  "kind": "P",
+  "start": 282118,
+  "end": 283274,
+  "text": "où V est l'ensemble des nœuds d'entités du graphe, E l'ensemble des relations entre entités et W l'ensemble des poids associés aux relations. Selon les types de données réellement utilisés par le système, les nœuds se répartissent principalement en quatre catégories — postes, compétences, secteurs e"
+ },
+ {
+  "idx": 56,
+  "kind": "P",
+  "start": 283289,
+  "end": 284169,
+  "text": "V=Vposte∪Vcompétences∪Vsecteurs∪Ventreprises"
+ },
+ {
+  "idx": 57,
+  "kind": "P",
+  "start": 284184,
+  "end": 285557,
+  "text": "où Vposte désigne l'ensemble des entités de postes, Vcompétences l'ensemble des entités de compétences, Vsecteurs l'ensemble des entités de secteurs et Ventreprises l'ensemble des entités d'entreprises. Les postes et les compétences sont les nœuds centraux de l'ensemble du graphe ; les secteurs et l"
+ },
+ {
+  "idx": 58,
+  "kind": "P",
+  "start": 285572,
+  "end": 286976,
+  "text": "En ce qui concerne la conception des relations, cet article ne relie pas simplement toutes les entités entre elles, mais les organise selon les relations sémantiques réellement présentes dans les données de recrutement. Les relations du graphe comprennent principalement la relation de besoin poste-c"
+ },
+ {
+  "idx": 59,
+  "kind": "P",
+  "start": 286991,
+  "end": 287877,
+  "text": "E=Ebesoins∪Eappartenance∪Erecrutement∪Eassociation"
+ },
+ {
+  "idx": 60,
+  "kind": "P",
+  "start": 287892,
+  "end": 289201,
+  "text": "où Ebesoins désigne la relation de besoin entre poste et compétence, correspondant à REQUIRES dans le graphe ; Eappartenance la relation d'appartenance entre poste et secteur, correspondant à BELONGS_TO ; Erecrutement la relation de recrutement entre entreprise et poste, correspondant à RECRUITS ; E"
+ },
+ {
+  "idx": 61,
+  "kind": "P",
+  "start": 289216,
+  "end": 290264,
+  "text": "Pour le graphe technologique des postes, la relation de besoin entre poste et compétence est la plus importante. Par conséquent, cet article décrit l'association entre poste et compétence sous forme de triplet :"
+ },
+ {
+  "idx": 62,
+  "kind": "P",
+  "start": 290279,
+  "end": 291165,
+  "text": "(poste,REQUIRES,compétences)"
+ },
+ {
+  "idx": 63,
+  "kind": "P",
+  "start": 291180,
+  "end": 292023,
+  "text": "Par exemple :"
+ },
+ {
+  "idx": 64,
+  "kind": "P",
+  "start": 292038,
+  "end": 292949,
+  "text": "(Développeur Java,REQUIRES,Spring Boot)"
+ },
+ {
+  "idx": 65,
+  "kind": "P",
+  "start": 292964,
+  "end": 294375,
+  "text": "indique que, dans les données de recrutement, le poste d'ingénieur de développement Java présente un besoin pour la compétence Spring Boot. De cette manière, les informations dispersées dans la description du poste, les exigences de poste et les champs de compétences des offres de recrutement peuven"
+ },
+ {
+  "idx": 66,
+  "kind": "P",
+  "start": 294390,
+  "end": 295746,
+  "text": "Considérant que la fréquence d'apparition des différentes compétences dans un même poste n'est pas identique, cet article définit en outre des poids pour les relations poste-compétence. Soit Dposte l'ensemble des offres de recrutement valides correspondant à un poste donné, et n(poste,s) le nombre d"
+ },
+ {
+  "idx": 67,
+  "kind": "TBL",
+  "start": 295761,
+  "end": 301210,
+  "text": "w(poste,s)=n(poste,s)/(Dposte)(7)"
+ },
+ {
+  "idx": 68,
+  "kind": "P",
+  "start": 301225,
+  "end": 302774,
+  "text": "où (Dposte) représente le nombre total d'offres de recrutement valides correspondant au poste, et n(poste,s) le nombre d'apparitions de la compétence s dans ces offres. Plus cette valeur est grande, plus la compétence apparaît fréquemment dans les besoins de recrutement du poste concerné et plus son"
+ },
+ {
+  "idx": 69,
+  "kind": "P",
+  "start": 302789,
+  "end": 304077,
+  "text": "Le graphe de cet article n'est pas figé. Les plateformes de recrutement produisent en continu de nouvelles offres, et les besoins des entreprises en compétences techniques évoluent avec le développement technologique et les mutations industrielles. Par conséquent, en s'appuyant sur la structure stat"
+ },
+ {
+  "idx": 70,
+  "kind": "TBL",
+  "start": 304092,
+  "end": 309390,
+  "text": "Gₜ=(Vₜ,Eₜ,Wₜ)(8)"
+ },
+ {
+  "idx": 71,
+  "kind": "P",
+  "start": 309405,
+  "end": 312802,
+  "text": "où Vₜ, Eₜ et Wₜ désignent respectivement les ensembles de nœuds, de relations et de poids de relations correspondant au temps t. Lorsque de nouvelles données de recrutement entrent dans le système, il n'est pas nécessaire de recalculer l'intégralité du graphe : il suffit de recalculer les poids des "
+ },
+ {
+  "idx": 72,
+  "kind": "P",
+  "start": 312817,
+  "end": 313737,
+  "text": "La variation du besoin d'un même poste et d'une même compétence entre différentes fenêtres temporelles peut en outre s'exprimer comme :"
+ },
+ {
+  "idx": 73,
+  "kind": "TBL",
+  "start": 313752,
+  "end": 321799,
+  "text": "Δw(poste,s)=wₜ₂(poste,s)-wₜ₁(poste,s)(9)"
+ },
+ {
+  "idx": 74,
+  "kind": "P",
+  "start": 321814,
+  "end": 328615,
+  "text": "où wₜ₁(poste,s) et wₜ₂(poste,s) désignent respectivement les poids de la relation poste-compétence dans deux fenêtres temporelles de statistiques différentes. Lorsque Δw est supérieur à 0, le besoin de recrutement de cette compétence s'est renforcé dans la fenêtre temporelle ultérieure ; lorsque Δw "
+ },
+ {
+  "idx": 75,
+  "kind": "P",
+  "start": 328630,
+  "end": 334148,
+  "text": "Dans l'ensemble, le graphe de connaissances poste-compétence de cet article peut se résumer en quatre composantes : « entités, relations, poids et temps ». Les entités décrivent les postes, compétences, secteurs et entreprises du marché du recrutement ; les relations expriment les liens sémantiques "
+ },
+ {
+  "idx": 76,
+  "kind": "P",
+  "start": 334163,
+  "end": 338762,
+  "text": "Ces dernières années, les graphes de connaissances sont passés progressivement d'une organisation statique des connaissances à une représentation dynamique des connaissances. Peng et al. ont procédé à une revue systématique des travaux sur les graphes de connaissances, en soulignant qu'ils permetten"
+ },
+ {
+  "idx": 77,
+  "kind": "P",
+  "start": 338777,
+  "end": 341408,
+  "text": "3.5 Extraction et normalisation des entités"
+ },
+ {
+  "idx": 78,
+  "kind": "P",
+  "start": 341423,
+  "end": 345591,
+  "text": "Les entités de postes, d'entreprises et de secteurs proviennent principalement des champs structurés. Les entités de compétences proviennent du tableau skills de la table de détail et du balayage du texte des descriptions par le dictionnaire, comme le montre la figure 4. Le système maintient un voca"
+ },
+ {
+  "idx": 79,
+  "kind": "TBL",
+  "start": 345606,
+  "end": 369055,
+  "text": "Sj=s∈Vsk:s 出现在 Dj 中(10)"
+ },
+ {
+  "idx": 80,
+  "kind": "P",
+  "start": 369114,
+  "end": 373719,
+  "text": "Des mappages d'alias sont par exemple K8s↦Kubernetes. Cette méthode présente un rappel stable et reproductible, avec une complexité linéaire par rapport à la longueur du texte. Pour les alias inconnus, une extraction assistée par grand modèle de langage est autorisée, mais doit être confirmée par le"
+ },
+ {
+  "idx": 81,
+  "kind": "P",
+  "start": 373734,
+  "end": 374541,
+  "text": "Figure 4. Exemple de données de la table de détail"
+ },
+ {
+  "idx": 82,
+  "kind": "P",
+  "start": 374556,
+  "end": 376560,
+  "text": "3.6 Inférence des relations et mise à jour des poids des arêtes"
+ },
+ {
+  "idx": 83,
+  "kind": "P",
+  "start": 376575,
+  "end": 382718,
+  "text": "REQUIRES est établi directement par la co-occurrence poste-compétence ; BELONGS_TO est mappé à partir du champ secteur ; RECRUITS relie les entités à partir du champ entreprise ; RELATED_TO combine le comptage de co-occurrence et la confiance de la table de transfert. Soit j la taille de l'échantill"
+ },
+ {
+  "idx": 84,
+  "kind": "TBL",
+  "start": 382733,
+  "end": 405216,
+  "text": "wj,s=cj,s/nj(11)"
+ },
+ {
+  "idx": 85,
+  "kind": "P",
+  "start": 405275,
+  "end": 406305,
+  "text": "Lorsqu'un nouveau lot est inséré, il suffit de recalculer les poids des arêtes des postes affectés, sans reconstruire l'intégralité du graphe. Pour les requêtes à forte fréquence (postes adjacents d'une compétence donnée, plus court chemin de pontage entre deux compétences), des vues matérialisées o"
+ },
+ {
+  "idx": 86,
+  "kind": "P",
+  "start": 406320,
+  "end": 410828,
+  "text": "3.7 Découverte et prédiction des postes émergents"
+ },
+ {
+  "idx": 87,
+  "kind": "P",
+  "start": 410843,
+  "end": 417434,
+  "text": "Formulation du problème et chaîne de raisonnement en six étapes : la découverte des postes émergents doit identifier, en dehors des référentiels standards, les clusters de postes « en cours de formation » et fournir une définition auditable. Une passe de balayage est notée comme une chaîne de raison"
+ },
+ {
+  "idx": 88,
+  "kind": "TBL",
+  "start": 417449,
+  "end": 453678,
+  "text": "sk=phasek,metricsk,evidencek,statusk(12)"
+ },
+ {
+  "idx": 89,
+  "kind": "P",
+  "start": 453693,
+  "end": 459130,
+  "text": "Les six étapes sont respectivement : l'intégration de données multi-sources, la désambiguïsation sémantique et le regroupement, la notation multidimensionnelle de l'émergence, la génération de définitions de postes, l'extrapolation des tendances et l'audit des preuves. La figure 5 présente le flux d"
+ },
+ {
+  "idx": 90,
+  "kind": "P",
+  "start": 459145,
+  "end": 460159,
+  "text": "Figure 5. Page de découverte et de prédiction des nouveaux postes"
+ },
+ {
+  "idx": 91,
+  "kind": "P",
+  "start": 460174,
+  "end": 464805,
+  "text": "Notation de l'émergence tridimensionnelle : pour un cluster G, la confiance globale Conf(G)∈[0,100] est la somme de trois composantes (conformément à _score_group_detailed dans backend/routers/discovery.py) :"
+ },
+ {
+  "idx": 92,
+  "kind": "TBL",
+  "start": 464820,
+  "end": 484048,
+  "text": "ConfG=TG+SG+CG(13)"
+ },
+ {
+  "idx": 93,
+  "kind": "P",
+  "start": 484107,
+  "end": 493585,
+  "text": "où T(G)=min(∑w, 50) est la nouveauté du titre, S(G)=min(5·|S_G^nov |, 30) le score de combinaison de compétences et C(G)=min(5·|I_G^trad |, 20)  le débordement intersectoriel. La signification des symboles est donnée dans le tableau 2. La quantité auxiliaire de croissance sur les 30 derniers jours"
+ },
+ {
+  "idx": 94,
+  "kind": "TBL",
+  "start": 493600,
+  "end": 516826,
+  "text": "gG=n30G/G×200(14)"
+ },
+ {
+  "idx": 95,
+  "kind": "P",
+  "start": 516885,
+  "end": 520944,
+  "text": "où n_30(G) est le nombre d'échantillons publiés au sein du cluster au cours des 30 derniers jours ; g(G) ne sert que d'aide au classement et ne remplace pas directement Conf."
+ },
+ {
+  "idx": 96,
+  "kind": "TBL",
+  "start": 520959,
+  "end": 543799,
+  "text": "Conf=42+20+15=77min42,50+min20,30+min15,20(15)"
+ },
+ {
+  "idx": 97,
+  "kind": "P",
+  "start": 543858,
+  "end": 547938,
+  "text": "Génération de définitions de postes et correction des orientations futures : l'objet de définition D_j comprend des champs tels que le nom, la catégorie, le niveau, le texte de définition, les compétences essentielles/bonus, le scénario, les responsabilités, la confiance et la liste de preuves. Les "
+ },
+ {
+  "idx": 98,
+  "kind": "P",
+  "start": 547953,
+  "end": 551811,
+  "text": "L'ensemble des orientations futures {f} possède une confiance de base Conf_0 (f) ; si sa compétence apparaît parmi les compétences centrales de la découverte de ce tour, alors"
+ },
+ {
+  "idx": 99,
+  "kind": "TBL",
+  "start": 551826,
+  "end": 575805,
+  "text": "Conf(f)=min(100, Conf_0 (f)+3·∑_(s∈S_f)1[s∈CoreSkills])(16)"
+ },
+ {
+  "idx": 100,
+  "kind": "P",
+  "start": 575865,
+  "end": 580528,
+  "text": "La fenêtre de prédiction est fixée, selon les orientations, de 6 à 18 mois ; les sorties entrent dans la liste de suivi pour des comparaisons lors des rescanals ultérieurs."
+ },
+ {
+  "idx": 101,
+  "kind": "P",
+  "start": 580543,
+  "end": 583428,
+  "text": "Audit des preuves : au moins deux sources de preuves indépendantes (entreprises différentes ou plateformes différentes) sont exigées. En cas de preuves insuffisantes, l'élément est marqué low_evidence et entre dans la file d'attente manuelle. On vérifie en outre si le texte de definition introduit d"
+ },
+ {
+  "idx": 102,
+  "kind": "P",
+  "start": 583443,
+  "end": 587374,
+  "text": "3.8 Évolution dynamique des compétences des postes existants"
+ },
+ {
+  "idx": 103,
+  "kind": "P",
+  "start": 587389,
+  "end": 597761,
+  "text": "Extraction de compétences et taux d'apparition : pour la catégorie de postes j, on enregistre sur les sources A et B la taille de l'échantillon n_A,n_B et le comptage des compétences c_s^A,c_s^B ; on définit"
+ },
+ {
+  "idx": 104,
+  "kind": "TBL",
+  "start": 597776,
+  "end": 648162,
+  "text": "rsA=csA/nA×100%,rsB=csB/nB×100%(17)"
+ },
+ {
+  "idx": 105,
+  "kind": "P",
+  "start": 648222,
+  "end": 654281,
+  "text": "La différence est Δ_s=r_s^B-r_s^A. L'ensemble de compétences est obtenu en balayant le texte des descriptions avec le dictionnaire _SKILL_VOCAB, ce qui garantit que les deux sources utilisent le même extracteur ; la règle de décision à trois états est la suivante :"
+ },
+ {
+  "idx": 106,
+  "kind": "P",
+  "start": 654296,
+  "end": 657519,
+  "text": "Lorsque n_A,n_B≥5, la décision, alignée sur _diff_skills dans evolution_agent.py, est la suivante :"
+ },
+ {
+  "idx": 107,
+  "kind": "P",
+  "start": 657534,
+  "end": 667255,
+  "text": "Ajout : Δ_s≥5 et r_s^B>0, en enregistrant l'augmentation relative growth=round(Δ_s/max(r_s^A,0.5)×100)%."
+ },
+ {
+  "idx": 108,
+  "kind": "P",
+  "start": 667270,
+  "end": 674646,
+  "text": "Suppression : Δ_s≤-3 et r_s^B=0 et r_s^A>0, en enregistrant le pourcentage de décroissance."
+ },
+ {
+  "idx": 109,
+  "kind": "P",
+  "start": 674661,
+  "end": 678772,
+  "text": "Modification : 3≤|Δ_s|≤15 et les deux côtés sont tous deux supérieurs à 0 ; si Δ_s>0, on marque « bonus → essentiel », sinon « essentiel → bonus »."
+ },
+ {
+  "idx": 110,
+  "kind": "P",
+  "start": 678787,
+  "end": 680314,
+  "text": "Lorsque l'échantillon d'une seule source est insuffisant, on revient à une sortie à étiquettes faibles des compétences fréquentes de cette source, en déclarant data_source dans la réponse afin d'éviter un affichage vide du frontal."
+ },
+ {
+  "idx": 111,
+  "kind": "P",
+  "start": 680329,
+  "end": 681099,
+  "text": "Le taux de variation relatif peut s'écrire"
+ },
+ {
+  "idx": 112,
+  "kind": "TBL",
+  "start": 681114,
+  "end": 715032,
+  "text": "〖Change%〗_s=Δs/maxrsA,0.5×100%(18)"
+ },
+ {
+  "idx": 113,
+  "kind": "P",
+  "start": 715092,
+  "end": 717328,
+  "text": "Sortie et révision manuelle : chaque résultat d'évolution est accompagné de la taille de l'échantillon, du nom de la source et de l'amplitude de la différence. Pour les éléments contestés (par exemple un « poste en reprise » suspecté d'être marqué comme un ajout), on peut procéder à un contrôle du p"
+ },
+ {
+  "idx": 114,
+  "kind": "P",
+  "start": 717343,
+  "end": 718333,
+  "text": "Figure 6. Interface d'évolution dynamique des compétences"
+ },
+ {
+  "idx": 115,
+  "kind": "P",
+  "start": 718348,
+  "end": 722207,
+  "text": "3.9 Appariement poste-candidat et parcours d'apprentissage"
+ },
+ {
+  "idx": 116,
+  "kind": "P",
+  "start": 722222,
+  "end": 735178,
+  "text": "Formulation du problème : étant donné un ensemble de postes J et un profil de candidat P, on cherche une fonction de mappage f:P×J→[0,100] telle que f(P,j) quantifie le degré d'appariement, et l'on génère un parcours d'apprentissage exécutable π=⟨t_1,…,t_k⟩ pour combler les écarts. Voir la figure 7"
+ },
+ {
+  "idx": 117,
+  "kind": "P",
+  "start": 735193,
+  "end": 736211,
+  "text": "Figure 7. Appariement poste-candidat et parcours d'apprentissage"
+ },
+ {
+  "idx": 118,
+  "kind": "P",
+  "start": 736226,
+  "end": 740272,
+  "text": "Modèle de pondération en cinq dimensions et notations : le score total (implémenté sur 100 points, puis tronqué à [0ⓜ,98]) est"
+ },
+ {
+  "idx": 119,
+  "kind": "TBL",
+  "start": 740287,
+  "end": 783857,
+  "text": "Mj=0.42sskill+0.24ssem+0.14sproj+0.10sexp+0.10sgraph(19)"
+ },
+ {
+  "idx": 120,
+  "kind": "P",
+  "start": 783872,
+  "end": 785881,
+  "text": "Les poids sont cohérents avec score_matches, et 0.42+0.24+0.14+0.10+0.10=1."
+ },
+ {
+  "idx": 121,
+  "kind": "P",
+  "start": 785896,
+  "end": 799635,
+  "text": "Notons R_j la liste des compétences essentielles (ordonnée, pouvant contenir des sémantiques répétées mais normalisée dans l'implémentation), P_j la liste des compétences bonus et S_P l'ensemble des compétences du candidat. Soient R_j∩S_P l'ensemble des correspondances directes et Miss=R_j⧵S_P l'ens"
+ },
+ {
+  "idx": 122,
+  "kind": "TBL",
+  "start": 799650,
+  "end": 819240,
+  "text": "transfert=min0.65, ct·0.65 (20)"
+ },
+ {
+  "idx": 123,
+  "kind": "P",
+  "start": 819300,
+  "end": 820347,
+  "text": "Le score de la dimension compétences (sur 100) est :"
+ },
+ {
+  "idx": 124,
+  "kind": "TBL",
+  "start": 820362,
+  "end": 874939,
+  "text": "sskill=100·nhit+vtr/max1,Rj+2.5·npref (21)"
+ },
+ {
+  "idx": 125,
+  "kind": "P",
+  "start": 874954,
+  "end": 889672,
+  "text": "où n_hit=|R_j∩S_P|, v_tr=∑_(t∈Miss)▒transfer(t), n_pref=|P_j∩S_P|, avec troncature à 100 au maximum. Le score sémantique s_sem et le score de projet s_proj privilégient les résultats de l'examen par grand modèle de langage et, à défaut, une heuristique textuelle. Le score d'expérience"
+ },
+ {
+  "idx": 126,
+  "kind": "TBL",
+  "start": 889687,
+  "end": 909146,
+  "text": "sexp=min100, 58+7·yP (22)"
+ },
+ {
+  "idx": 127,
+  "kind": "P",
+  "start": 909206,
+  "end": 910034,
+  "text": "Si la durée est inconnue, on retient 55. Score du graphe : en présence d'un transfert,"
+ },
+ {
+  "idx": 128,
+  "kind": "TBL",
+  "start": 910049,
+  "end": 945778,
+  "text": "sgraph=min100, 45+55·c,c=1/Misst∈Missct (23)"
+ },
+ {
+  "idx": 129,
+  "kind": "P",
+  "start": 945793,
+  "end": 950121,
+  "text": "En cas de correspondance directe sans transfert, s_graph=min(82, 48+7·n_hit) ; sinon, on retient 35. Si l'on n'a ni correspondance ni transfert, le score total est réduit de 8 points en guise de pénalité."
+ },
+ {
+  "idx": 130,
+  "kind": "P",
+  "start": 950136,
+  "end": 955943,
+  "text": "Analyse des écarts et parcours d'apprentissage : pour chaque compétence manquante, on définit un degré de préparation rd_t=100c_t (valeur par défaut faible en l'absence de transfert). rd_t<40 est considéré comme un écart de priorité élevée. Le parcours d'apprentissage retient au plus les 4 premiers "
+ },
+ {
+  "idx": 131,
+  "kind": "P",
+  "start": 955958,
+  "end": 960355,
+  "text": "3.10 Dialogue avec les grands modèles de langage et contrôle des hallucinations"
+ },
+ {
+  "idx": 132,
+  "kind": "P",
+  "start": 960370,
+  "end": 967961,
+  "text": "Contraintes de génération et dégradation : il est interdit d'inventer des noms et des identifiants de postes absents du contexte ; la sortie structurée doit respecter les champs JSON convenus. En cas de clé manquante, de dépassement de délai ou d'échec d'analyse, le système bascule vers des réponses"
+ },
+ {
+  "idx": 133,
+  "kind": "P",
+  "start": 967976,
+  "end": 969014,
+  "text": "Figure 8. Comparaison de diagnostics réels contre les hallucinations"
+ },
+ {
+  "idx": 134,
+  "kind": "P",
+  "start": 969029,
+  "end": 972548,
+  "text": "Limites des hallucinations des grands modèles de langage et de la génération augmentée par récupération : la génération augmentée par récupération (RAG) atténue les hallucinations en fournissant des connaissances externes au LLM, mais la recherche vectorielle du RAG traditionnel ne renvoie que des f"
+ },
+ {
+  "idx": 135,
+  "kind": "P",
+  "start": 972563,
+  "end": 975133,
+  "text": "DCF : l'entraînement conforme différentiable pour la factualité du raisonnement des LLM [10]. ttesdorf et al. (2026) proposent le Differentiable Coherent Factuality (DCF) [10], dont les éléments centraux sont les suivants :"
+ },
+ {
+  "idx": 136,
+  "kind": "P",
+  "start": 975148,
+  "end": 976421,
+  "text": "Cadre conforme : la sortie du LLM est décomposée en plusieurs sous-affirmations (subclaims), chacune recevant un score de risque ; un seuil calibré filtre les affirmations à haut risque, garantissant statistiquement que le taux d'hallucination reste inférieur au niveau fixé par l'utilisateur (par ex"
+ },
+ {
+  "idx": 137,
+  "kind": "P",
+  "start": 976436,
+  "end": 977585,
+  "text": "Modélisation par graphe de dépendance : la sortie est représentée comme un graphe de dépendance, validant conjointement les affirmations et leurs ancêtres logiques, afin d'éviter que des « conclusions ultérieures ne reposent sur des prémisses non établies » ;"
+ },
+ {
+  "idx": 138,
+  "kind": "P",
+  "start": 977600,
+  "end": 979858,
+  "text": "Relaxation différentiable : le processus de filtrage Coherent Factuality, auparavant non différentiable, est réécrit sous une forme différentiable, permettant au scoreur d'apprendre directement à partir des données ; au moment du déploiement, le scoreur appris est « réinséré » dans le flux algorithm"
+ },
+ {
+  "idx": 139,
+  "kind": "P",
+  "start": 979873,
+  "end": 983315,
+  "text": "3.11 Expériences et résultats"
+ },
+ {
+  "idx": 140,
+  "kind": "P",
+  "start": 983330,
+  "end": 986870,
+  "text": "Les expériences ont été réalisées sous Windows 11, Python 3.12, PostgreSQL 15 et FastAPI 0.115 ; les grands modèles de langage sont invoqués via DeepSeek Chat, avec une dégradation automatique vers l'heuristique locale lorsque la clé est absente, afin de garantir la reproductibilité de la chaîne cen"
+ },
+ {
+  "idx": 141,
+  "kind": "P",
+  "start": 986885,
+  "end": 989500,
+  "text": "L'évaluation quantitative couvre les trois seuils du concours et deux indicateurs de processus : l'exactitude de l'analyse des JD est de 93.9 %, celle de l'extraction de CV de 91.0 % et celle de l'appariement poste-candidat de 92.7 %, toutes non inférieures à 90 % ; le F1 de la découverte des postes"
+ },
+ {
+  "idx": 142,
+  "kind": "TBL",
+  "start": 989515,
+  "end": 1012838,
+  "text": "InnovationFormule / règle centralePreuves chiffréesI1 Contrôle de qualitéfp=SHA256(x), c(p) quinze champs12495 valides, 11680 de haute qualité (93.5 %) ; exemple 13/15≈0.87I2 Émergence tridimensionnelleConf=T+S+C≤100P/R/F1=0.750/0.913/0.824 ; cas d'étude 77 points retenuI3 Différentiel pseudo-tempor"
+ },
+ {
+  "idx": 143,
+  "kind": "P",
+  "start": 1012853,
+  "end": 1017412,
+  "text": "Figure 9. Exemple de données réelles de postes"
+ },
+ {
+  "idx": 144,
+  "kind": "P",
+  "start": 1017427,
+  "end": 1019315,
+  "text": "3.12 Conclusion et perspectives"
+ },
+ {
+  "idx": 145,
+  "kind": "P",
+  "start": 1019330,
+  "end": 1026302,
+  "text": "Bilan des travaux : cet article, adressant le sujet XH-202621, traduit la « validation croisée du nettoyage multi-sources » et le « contrôle des hallucinations des compétences » en cinq innovations vérifiables, et livre un système exécutable. I1 déplace le contrôle en amont vers les déclencheurs d'i"
+ },
+ {
+  "idx": 146,
+  "kind": "P",
+  "start": 1026317,
+  "end": 1029189,
+  "text": "Limites : l'horizon des données est d'environ douze mois, ce qui ne permet pas de détecter correctement les reprises professionnelles à long cycle ; le pseudo-temporel repose sur l'hypothèse de différences de pénétration entre plateformes, qui peut devenir invalide dans les domaines où les sources s"
+ },
+ {
+  "idx": 147,
+  "kind": "P",
+  "start": 1029204,
+  "end": 1030370,
+  "text": "Dans l'ensemble, le système démontre qu'il est possible d'enchaîner la qualité des données, la construction du graphe, la découverte et l'évolution, et le diagnostic poste-candidat en une chaîne exécutable sur des corpus de recrutement réels ; sa valeur ne réside pas dans la proposition de nouveaux "
+ },
+ {
+  "idx": 148,
+  "kind": "P",
+  "start": 1030385,
+  "end": 1031397,
+  "text": "Conclusion"
+ },
+ {
+  "idx": 149,
+  "kind": "P",
+  "start": 1031457,
+  "end": 1033422,
+  "text": "Face aux difficultés réelles du contexte de l'économie numérique — « la vitesse d'itération technologique dépasse de loin le cycle de formation des talents, les entreprises rencontrent des difficultés à recruter pour les postes émergents, et les parcours de développement professionnel des candidats "
+ },
+ {
+  "idx": 150,
+  "kind": "P",
+  "start": 1033437,
+  "end": 1036276,
+  "text": "Au niveau des données, la plateforme met en place un mécanisme distribué de collecte et de fusion couvrant plusieurs plateformes de recrutement (contournement anti-robots avec Playwright, échange coopératif de fichiers JSONL, déduplication idempotente), formant un ensemble de données hétérogènes mul"
+ },
+ {
+  "idx": 151,
+  "kind": "P",
+  "start": 1036291,
+  "end": 1037810,
+  "text": "La plateforme présente une valeur applicative concrète dans des scénarios tels que la planification de carrière des candidats, les décisions de recrutement des entreprises et l'ajustement des orientations de la formation ; elle permet de réduire dans une certaine mesure la contradiction structurelle"
+ },
+ {
+  "idx": 152,
+  "kind": "P",
+  "start": 1037825,
+  "end": 1038762,
+  "text": "Références"
+ },
+ {
+  "idx": 153,
+  "kind": "P",
+  "start": 1038777,
+  "end": 1040770,
+  "text": "[1] Kleppmann M.Designing data-intensive applications:The big ideas behind reliable,scalable,and maintainable systems[M].Sebastopol:O'Reilly Media,2017."
+ },
+ {
+  "idx": 154,
+  "kind": "P",
+  "start": 1040785,
+  "end": 1043086,
+  "text": "[2] Batini C,Scannapieco M.Data and information quality:Dimensions,principles and techniques[M].Cham:Springer,2016."
+ },
+ {
+  "idx": 155,
+  "kind": "P",
+  "start": 1043101,
+  "end": 1045957,
+  "text": "[3] Peng C,Xia F,Naseriparsa M,et al.Knowledge Graphs:Opportunities and Challenges[J].Artificial Intelligence Review,2023,56:13071-13102.DOI:10.1007/s10462-023-10465-9."
+ },
+ {
+  "idx": 156,
+  "kind": "P",
+  "start": 1045972,
+  "end": 1048972,
+  "text": "[4] Goyal N,Kalra J,Sharma C,et al.JobXMLC:EXtreme Multi-Label Classification of Job Skills with Graph Neural Networks[C]//Findings of the Association for Computational Linguistics:EACL 2023.Dubrovnik,Croatia:Association for Computational Linguistics,2023:2181-2191.DOI:10.18653/v1/2023.findings-eacl"
+ },
+ {
+  "idx": 157,
+  "kind": "P",
+  "start": 1048987,
+  "end": 1051916,
+  "text": "[5] Seif A,Toh S,Lee H K.A Dynamic Jobs-Skills Knowledge Graph[C]//RecSys in HR'24:The 4th Workshop on Recommender Systems for Human Resources,in conjunction with the 18th ACM Conference on Recommender Systems.Bari,Italy,2024."
+ },
+ {
+  "idx": 158,
+  "kind": "P",
+  "start": 1051931,
+  "end": 1057841,
+  "text": "[6] Zhang Qi, Gui Tao, Zheng Rui, et al. Revue de la recherche sur la reconnaissance des entités nommées[J]. Journal of Software, 2018, 29(3): 812-831."
+ },
+ {
+  "idx": 159,
+  "kind": "P",
+  "start": 1057856,
+  "end": 1059604,
+  "text": "[7] Lewis P,Perez E,Piktus A,et al.Retrieval-augmented generation for knowledge-intensive NLP tasks[C]//Advances in Neural Information Processing Systems 33(NeurIPS 2020).2020:9459-9474."
+ },
+ {
+  "idx": 160,
+  "kind": "P",
+  "start": 1059619,
+  "end": 1061133,
+  "text": "[8] Li Y,Gao J,Meng C,et al.A survey on truth discovery[J].ACM SIGKDD Explorations Newsletter,2016,17(2):1-16."
+ },
+ {
+  "idx": 161,
+  "kind": "P",
+  "start": 1061148,
+  "end": 1064299,
+  "text": "[9] Yifan Feng,Hao Hu,Shihui Ying,Xingliang Hou,Shiquan Liu,Mingyuan Yang,Junchang Li,Shaoyi Du,Nanning Zheng,Han Hu,and Yue Gao.Hyper-RAG:combating LLM hallucinations using hypergraph-driven retrieval-augmented generation.Nature Communications,vol.17,Article 5778,2026.DOI:10.1038/s41467-026-71411-1"
+ },
+ {
+  "idx": 162,
+  "kind": "P",
+  "start": 1064314,
+  "end": 1065683,
+  "text": "[10] Nathan Hittesdorf,Marco Salzetta,and Lu Cheng.Differentiable Conformal Training for LLM Reasoning Factuality.In Proceedings of the 43rd International Conference on Machine Learning(ICML 2026),Poster #2501,2026."
+ },
+ {
+  "idx": 163,
+  "kind": "P",
+  "start": 1065698,
+  "end": 1072678,
+  "text": "[11] Hu Xiaoyong, Huang Jie, Lin Zirou, et al. Éthique de l'IA en éducation : cadre conceptuel, état cognitif et prévention des risques[J]. Modern Distance Education Research, 2022, 34(2): 21-29."
+ }
+]

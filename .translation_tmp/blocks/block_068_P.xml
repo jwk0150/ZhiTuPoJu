@@ -1,0 +1,64 @@
+<ns0:p ns2:paraId="72214444" ns2:textId="52AD9E31" ns0:rsidR="006F394F" ns0:rsidRDefault="006F394F" ns0:rsidP="006F394F">
+      
+      
+      <ns0:pPr>
+        
+        
+        <ns0:ind ns0:firstLine="420"/>
+        
+        
+        <ns0:jc ns0:val="both"/>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:rFonts ns0:hint="eastAsia"/>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+      
+      </ns0:pPr>
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:rFonts ns0:hint="eastAsia"/>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t>où (Dposte) représente le nombre total d&#x2019;offres de recrutement valides correspondant au poste, et n(poste,s) le nombre d&#x2019;apparitions de la compétence s dans ces offres. Plus cette valeur est grande, plus la compétence apparaît fréquemment dans les besoins de recrutement du poste concerné et plus son importance dans la structure technologique du poste est élevée. Le poids des arêtes permet d&#x2019;éviter un jugement binaire fondé uniquement sur la présence ou l&#x2019;absence de la compétence, et le graphe peut ainsi refléter plus finement les différences de niveau de besoin entre compétences.</ns0:t>
+        
+      
+      </ns0:r>
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+    
+    </ns0:p>

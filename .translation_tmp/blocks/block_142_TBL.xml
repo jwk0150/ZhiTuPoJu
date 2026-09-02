@@ -1,0 +1,1125 @@
+<ns0:tbl>
+      
+      
+      <ns0:tblPr>
+        
+        
+        <ns0:tblStyle ns0:val="affb"/>
+        
+        
+        <ns0:tblW ns0:w="4680" ns0:type="dxa"/>
+        
+        
+        <ns0:tblLayout ns0:type="fixed"/>
+        
+        
+        <ns0:tblLook ns0:val="04A0" ns0:firstRow="1" ns0:lastRow="0" ns0:firstColumn="1" ns0:lastColumn="0" ns0:noHBand="0" ns0:noVBand="1"/>
+        
+      
+      </ns0:tblPr>
+      
+      
+      <ns0:tblGrid>
+        
+        
+        <ns0:gridCol ns0:w="1418"/>
+        
+        
+        <ns0:gridCol ns0:w="1418"/>
+        
+        
+        <ns0:gridCol ns0:w="1844"/>
+        
+      
+      </ns0:tblGrid>
+      
+      
+      <ns0:tr ns0:rsidR="00DD52EF" ns2:paraId="2ABFD8F7" ns2:textId="77777777" ns0:rsidTr="00C66236">
+        
+        
+        <ns0:tc>
+          
+          
+          <ns0:tcPr>
+            
+            
+            <ns0:tcW ns0:w="1418" ns0:type="dxa"/>
+            
+          
+          </ns0:tcPr>
+          
+          
+          <ns0:p ns2:paraId="0808F117" ns2:textId="77777777" ns0:rsidR="00DD52EF" ns0:rsidRDefault="00000000">
+            
+            
+            <ns0:pPr>
+              
+              
+              <ns0:spacing ns0:before="20" ns0:after="20" ns0:line="264" ns0:lineRule="auto"/>
+              
+            
+            </ns0:pPr>
+            
+            
+            
+            <ns0:r>
+              
+              
+              <ns0:rPr>
+                
+                
+                <ns0:b/>
+                
+                
+                <ns0:sz ns0:val="17"/>
+                
+              
+              </ns0:rPr>
+              
+              
+              <ns0:t>Innovation</ns0:t>
+              
+            
+            </ns0:r>
+            
+            
+          
+          </ns0:p>
+          
+        
+        </ns0:tc>
+        
+        
+        <ns0:tc>
+          
+          
+          <ns0:tcPr>
+            
+            
+            <ns0:tcW ns0:w="1418" ns0:type="dxa"/>
+            
+          
+          </ns0:tcPr>
+          
+          
+          <ns0:p ns2:paraId="5A15B2E8" ns2:textId="77777777" ns0:rsidR="00DD52EF" ns0:rsidRDefault="00000000">
+            
+            
+            <ns0:pPr>
+              
+              
+              <ns0:spacing ns0:before="20" ns0:after="20" ns0:line="264" ns0:lineRule="auto"/>
+              
+            
+            </ns0:pPr>
+            
+            
+            
+            <ns0:r>
+              
+              
+              <ns0:rPr>
+                
+                
+                <ns0:b/>
+                
+                
+                <ns0:sz ns0:val="17"/>
+                
+              
+              </ns0:rPr>
+              
+              
+              <ns0:t>Formule / règle centrale</ns0:t>
+              
+            
+            </ns0:r>
+            
+            
+            
+            
+            
+            
+          
+          </ns0:p>
+          
+        
+        </ns0:tc>
+        
+        
+        <ns0:tc>
+          
+          
+          <ns0:tcPr>
+            
+            
+            <ns0:tcW ns0:w="1844" ns0:type="dxa"/>
+            
+          
+          </ns0:tcPr>
+          
+          
+          <ns0:p ns2:paraId="0D7D46ED" ns2:textId="77777777" ns0:rsidR="00DD52EF" ns0:rsidRDefault="00000000">
+            
+            
+            <ns0:pPr>
+              
+              
+              <ns0:spacing ns0:before="20" ns0:after="20" ns0:line="264" ns0:lineRule="auto"/>
+              
+            
+            </ns0:pPr>
+            
+            
+            
+            <ns0:r>
+              
+              
+              <ns0:rPr>
+                
+                
+                <ns0:b/>
+                
+                
+                <ns0:sz ns0:val="17"/>
+                
+              
+              </ns0:rPr>
+              
+              
+              <ns0:t>Preuves chiffrées</ns0:t>
+              
+            
+            </ns0:r>
+            
+            
+          
+          </ns0:p>
+          
+        
+        </ns0:tc>
+        
+      
+      </ns0:tr>
+      
+      
+      <ns0:tr ns0:rsidR="00DD52EF" ns2:paraId="00F52C49" ns2:textId="77777777" ns0:rsidTr="00C66236">
+        
+        
+        <ns0:tc>
+          
+          
+          <ns0:tcPr>
+            
+            
+            <ns0:tcW ns0:w="1418" ns0:type="dxa"/>
+            
+          
+          </ns0:tcPr>
+          
+          
+          <ns0:p ns2:paraId="1CF3331B" ns2:textId="15E91BD2" ns0:rsidR="00DD52EF" ns0:rsidRDefault="00000000">
+            
+            
+            <ns0:pPr>
+              
+              
+              <ns0:spacing ns0:before="20" ns0:after="20" ns0:line="264" ns0:lineRule="auto"/>
+              
+              
+              <ns0:jc ns0:val="center"/>
+              
+            
+            </ns0:pPr>
+            
+            
+            <ns0:r>
+              
+              
+              <ns0:rPr>
+                
+                
+                <ns0:sz ns0:val="17"/>
+                
+              
+              </ns0:rPr>
+              
+              
+              <ns0:t>I1 Contrôle de qualité</ns0:t>
+              
+            
+            </ns0:r>
+            
+            
+            
+            
+          
+          </ns0:p>
+          
+        
+        </ns0:tc>
+        
+        
+        <ns0:tc>
+          
+          
+          <ns0:tcPr>
+            
+            
+            <ns0:tcW ns0:w="1418" ns0:type="dxa"/>
+            
+          
+          </ns0:tcPr>
+          
+          
+          <ns0:p ns2:paraId="38FC4F34" ns2:textId="7C4B43B3" ns0:rsidR="00DD52EF" ns0:rsidRDefault="00000000">
+            
+            
+            <ns0:pPr>
+              
+              
+              <ns0:spacing ns0:before="20" ns0:after="20" ns0:line="264" ns0:lineRule="auto"/>
+              
+              
+              <ns0:jc ns0:val="center"/>
+              
+            
+            </ns0:pPr>
+            
+            
+            
+            <ns0:r>
+              
+              
+              <ns0:rPr>
+                
+                
+                <ns0:sz ns0:val="17"/>
+                
+              
+              </ns0:rPr>
+              
+              
+              <ns0:t>fp=SHA256(x), c(p) quinze champs</ns0:t>
+              
+            
+            </ns0:r>
+            
+            
+            
+            
+            
+            
+          
+          </ns0:p>
+          
+        
+        </ns0:tc>
+        
+        
+        <ns0:tc>
+          
+          
+          <ns0:tcPr>
+            
+            
+            <ns0:tcW ns0:w="1844" ns0:type="dxa"/>
+            
+          
+          </ns0:tcPr>
+          
+          
+          <ns0:p ns2:paraId="427740CD" ns2:textId="77777777" ns0:rsidR="00DD52EF" ns0:rsidRDefault="00000000">
+            
+            
+            <ns0:pPr>
+              
+              
+              <ns0:spacing ns0:before="20" ns0:after="20" ns0:line="264" ns0:lineRule="auto"/>
+              
+              
+              <ns0:jc ns0:val="center"/>
+              
+              
+              <ns0:rPr>
+                
+                
+                <ns0:lang ns0:eastAsia="zh-CN"/>
+                
+              
+              </ns0:rPr>
+              
+            
+            </ns0:pPr>
+            
+            
+            <ns0:r>
+              
+              
+              <ns0:rPr>
+                
+                
+                <ns0:sz ns0:val="17"/>
+                
+                
+                <ns0:lang ns0:eastAsia="zh-CN"/>
+                
+              
+              </ns0:rPr>
+              
+              
+              <ns0:t>12495 valides, 11680 de haute qualité (93.5 %) ; exemple 13/15≈0.87</ns0:t>
+              
+            
+            </ns0:r>
+            
+            
+            
+            
+            
+            
+          
+          </ns0:p>
+          
+        
+        </ns0:tc>
+        
+      
+      </ns0:tr>
+      
+      
+      <ns0:tr ns0:rsidR="00DD52EF" ns2:paraId="1220BB99" ns2:textId="77777777" ns0:rsidTr="00C66236">
+        
+        
+        <ns0:tc>
+          
+          
+          <ns0:tcPr>
+            
+            
+            <ns0:tcW ns0:w="1418" ns0:type="dxa"/>
+            
+          
+          </ns0:tcPr>
+          
+          
+          <ns0:p ns2:paraId="58B09C66" ns2:textId="63EF49F6" ns0:rsidR="00DD52EF" ns0:rsidRDefault="00000000">
+            
+            
+            <ns0:pPr>
+              
+              
+              <ns0:spacing ns0:before="20" ns0:after="20" ns0:line="264" ns0:lineRule="auto"/>
+              
+              
+              <ns0:jc ns0:val="center"/>
+              
+            
+            </ns0:pPr>
+            
+            
+            <ns0:r>
+              
+              
+              <ns0:rPr>
+                
+                
+                <ns0:sz ns0:val="17"/>
+                
+              
+              </ns0:rPr>
+              
+              
+              <ns0:t>I2 Émergence tridimensionnelle</ns0:t>
+              
+            
+            </ns0:r>
+            
+            
+            
+            
+          
+          </ns0:p>
+          
+        
+        </ns0:tc>
+        
+        
+        <ns0:tc>
+          
+          
+          <ns0:tcPr>
+            
+            
+            <ns0:tcW ns0:w="1418" ns0:type="dxa"/>
+            
+          
+          </ns0:tcPr>
+          
+          
+          <ns0:p ns2:paraId="0A6CD185" ns2:textId="65A8ABB6" ns0:rsidR="00DD52EF" ns0:rsidRDefault="00000000">
+            
+            
+            <ns0:pPr>
+              
+              
+              <ns0:spacing ns0:before="20" ns0:after="20" ns0:line="264" ns0:lineRule="auto"/>
+              
+              
+              <ns0:jc ns0:val="center"/>
+              
+            
+            </ns0:pPr>
+            
+            
+            <ns0:r>
+              
+              
+              <ns0:rPr>
+                
+                
+                <ns0:sz ns0:val="17"/>
+                
+              
+              </ns0:rPr>
+              
+              
+              <ns0:t>Conf=T+S+C≤100</ns0:t>
+              
+            
+            </ns0:r>
+            
+          
+          </ns0:p>
+          
+        
+        </ns0:tc>
+        
+        
+        <ns0:tc>
+          
+          
+          <ns0:tcPr>
+            
+            
+            <ns0:tcW ns0:w="1844" ns0:type="dxa"/>
+            
+          
+          </ns0:tcPr>
+          
+          
+          <ns0:p ns2:paraId="0BAE9FCE" ns2:textId="77777777" ns0:rsidR="00DD52EF" ns0:rsidRDefault="00000000">
+            
+            
+            <ns0:pPr>
+              
+              
+              <ns0:spacing ns0:before="20" ns0:after="20" ns0:line="264" ns0:lineRule="auto"/>
+              
+              
+              <ns0:jc ns0:val="center"/>
+              
+            
+            </ns0:pPr>
+            
+            
+            <ns0:r>
+              
+              
+              <ns0:rPr>
+                
+                
+                <ns0:sz ns0:val="17"/>
+                
+              
+              </ns0:rPr>
+              
+              
+              <ns0:t>P/R/F1=0.750/0.913/0.824 ; cas d&#x2019;étude 77 points retenu</ns0:t>
+              
+            
+            </ns0:r>
+            
+            
+            
+            
+          
+          </ns0:p>
+          
+        
+        </ns0:tc>
+        
+      
+      </ns0:tr>
+      
+      
+      <ns0:tr ns0:rsidR="00DD52EF" ns2:paraId="4101E5B7" ns2:textId="77777777" ns0:rsidTr="00C66236">
+        
+        
+        <ns0:tc>
+          
+          
+          <ns0:tcPr>
+            
+            
+            <ns0:tcW ns0:w="1418" ns0:type="dxa"/>
+            
+          
+          </ns0:tcPr>
+          
+          
+          <ns0:p ns2:paraId="0CC98832" ns2:textId="77777777" ns0:rsidR="00DD52EF" ns0:rsidRDefault="00000000">
+            
+            
+            <ns0:pPr>
+              
+              
+              <ns0:spacing ns0:before="20" ns0:after="20" ns0:line="264" ns0:lineRule="auto"/>
+              
+              
+              <ns0:jc ns0:val="center"/>
+              
+            
+            </ns0:pPr>
+            
+            
+            <ns0:r>
+              
+              
+              <ns0:rPr>
+                
+                
+                <ns0:sz ns0:val="17"/>
+                
+              
+              </ns0:rPr>
+              
+              
+              <ns0:t>I3 Différentiel pseudo-temporel</ns0:t>
+              
+            
+            </ns0:r>
+            
+            
+            
+            
+          
+          </ns0:p>
+          
+        
+        </ns0:tc>
+        
+        
+        <ns0:tc>
+          
+          
+          <ns0:tcPr>
+            
+            
+            <ns0:tcW ns0:w="1418" ns0:type="dxa"/>
+            
+          
+          </ns0:tcPr>
+          
+          
+          <ns0:p ns2:paraId="2A7A8EB4" ns2:textId="77777777" ns0:rsidR="00DD52EF" ns0:rsidRDefault="00000000">
+            
+            
+            <ns0:pPr>
+              
+              
+              <ns0:spacing ns0:before="20" ns0:after="20" ns0:line="264" ns0:lineRule="auto"/>
+              
+              
+              <ns0:jc ns0:val="center"/>
+              
+              
+              <ns0:rPr>
+                
+                
+                <ns0:lang ns0:eastAsia="zh-CN"/>
+                
+              
+              </ns0:rPr>
+              
+            
+            </ns0:pPr>
+            
+            
+            <ns0:r>
+              
+              
+              <ns0:rPr>
+                
+                
+                <ns0:sz ns0:val="17"/>
+                
+              
+              </ns0:rPr>
+              
+              
+              <ns0:t>Δ=rB−rA, seuils à trois états</ns0:t>
+              
+            
+            </ns0:r>
+            
+            
+            <ns0:r>
+              
+              
+              <ns0:rPr>
+                
+                
+                <ns0:sz ns0:val="17"/>
+                
+                
+                <ns0:lang ns0:eastAsia="zh-CN"/>
+                
+              
+              </ns0:rPr>
+              
+              
+              <ns0:t/>
+              
+            
+            </ns0:r>
+            
+            
+            
+            
+            
+          
+          </ns0:p>
+          
+        
+        </ns0:tc>
+        
+        
+        <ns0:tc>
+          
+          
+          <ns0:tcPr>
+            
+            
+            <ns0:tcW ns0:w="1844" ns0:type="dxa"/>
+            
+          
+          </ns0:tcPr>
+          
+          
+          <ns0:p ns2:paraId="3AC14D22" ns2:textId="77777777" ns0:rsidR="00DD52EF" ns0:rsidRDefault="00000000">
+            
+            
+            <ns0:pPr>
+              
+              
+              <ns0:spacing ns0:before="20" ns0:after="20" ns0:line="264" ns0:lineRule="auto"/>
+              
+              
+              <ns0:jc ns0:val="center"/>
+              
+            
+            </ns0:pPr>
+            
+            
+            <ns0:r>
+              
+              
+              <ns0:rPr>
+                
+                
+                <ns0:sz ns0:val="17"/>
+                
+              
+              </ns0:rPr>
+              
+              
+              <ns0:t>Kappa=0.76 ; différentiels recalculables tels que RAG+54 du tableau 3a</ns0:t>
+              
+            
+            </ns0:r>
+            
+            
+            
+            
+            
+            
+          
+          </ns0:p>
+          
+        
+        </ns0:tc>
+        
+      
+      </ns0:tr>
+      
+      
+      <ns0:tr ns0:rsidR="00DD52EF" ns2:paraId="2AF5414B" ns2:textId="77777777" ns0:rsidTr="00C66236">
+        
+        
+        <ns0:trPr>
+          
+          
+          <ns0:trHeight ns0:val="777"/>
+          
+        
+        </ns0:trPr>
+        
+        
+        <ns0:tc>
+          
+          
+          <ns0:tcPr>
+            
+            
+            <ns0:tcW ns0:w="1418" ns0:type="dxa"/>
+            
+          
+          </ns0:tcPr>
+          
+          
+          <ns0:p ns2:paraId="00D6797F" ns2:textId="77777777" ns0:rsidR="00DD52EF" ns0:rsidRDefault="00000000">
+            
+            
+            <ns0:pPr>
+              
+              
+              <ns0:spacing ns0:before="20" ns0:after="20" ns0:line="264" ns0:lineRule="auto"/>
+              
+              
+              <ns0:jc ns0:val="center"/>
+              
+            
+            </ns0:pPr>
+            
+            
+            <ns0:r>
+              
+              
+              <ns0:rPr>
+                
+                
+                <ns0:sz ns0:val="17"/>
+                
+              
+              </ns0:rPr>
+              
+              
+              <ns0:t>I4 Appariement en cinq dimensions</ns0:t>
+              
+            
+            </ns0:r>
+            
+            
+            
+            
+          
+          </ns0:p>
+          
+        
+        </ns0:tc>
+        
+        
+        <ns0:tc>
+          
+          
+          <ns0:tcPr>
+            
+            
+            <ns0:tcW ns0:w="1418" ns0:type="dxa"/>
+            
+          
+          </ns0:tcPr>
+          
+          
+          <ns0:p ns2:paraId="3EFFB2B6" ns2:textId="77777777" ns0:rsidR="00DD52EF" ns0:rsidRDefault="00000000">
+            
+            
+            <ns0:pPr>
+              
+              
+              <ns0:spacing ns0:before="20" ns0:after="20" ns0:line="264" ns0:lineRule="auto"/>
+              
+              
+              <ns0:jc ns0:val="center"/>
+              
+            
+            </ns0:pPr>
+            
+            
+            <ns0:r>
+              
+              
+              <ns0:rPr>
+                
+                
+                <ns0:sz ns0:val="17"/>
+                
+              
+              </ns0:rPr>
+              
+              
+              <ns0:t>M pondérée et transfer≤0.65</ns0:t>
+              
+            
+            </ns0:r>
+            
+            
+            
+          
+          </ns0:p>
+          
+        
+        </ns0:tc>
+        
+        
+        <ns0:tc>
+          
+          
+          <ns0:tcPr>
+            
+            
+            <ns0:tcW ns0:w="1844" ns0:type="dxa"/>
+            
+          
+          </ns0:tcPr>
+          
+          
+          <ns0:p ns2:paraId="7277C516" ns2:textId="77777777" ns0:rsidR="00DD52EF" ns0:rsidRDefault="00000000">
+            
+            
+            <ns0:pPr>
+              
+              
+              <ns0:spacing ns0:before="20" ns0:after="20" ns0:line="264" ns0:lineRule="auto"/>
+              
+              
+              <ns0:jc ns0:val="center"/>
+              
+            
+            </ns0:pPr>
+            
+            
+            <ns0:r>
+              
+              
+              <ns0:rPr>
+                
+                
+                <ns0:sz ns0:val="17"/>
+                
+              
+              </ns0:rPr>
+              
+              
+              <ns0:t>Acc=0.927 ; suppression de la dimension compétences ΔAcc=−0.084</ns0:t>
+              
+            
+            </ns0:r>
+            
+            
+            
+          
+          </ns0:p>
+          
+        
+        </ns0:tc>
+        
+      
+      </ns0:tr>
+      
+      
+      <ns0:tr ns0:rsidR="00DD52EF" ns2:paraId="6AB9CF57" ns2:textId="77777777" ns0:rsidTr="00C66236">
+        
+        
+        <ns0:trPr>
+          
+          
+          <ns0:trHeight ns0:val="846"/>
+          
+        
+        </ns0:trPr>
+        
+        
+        <ns0:tc>
+          
+          
+          <ns0:tcPr>
+            
+            
+            <ns0:tcW ns0:w="1418" ns0:type="dxa"/>
+            
+          
+          </ns0:tcPr>
+          
+          
+          <ns0:p ns2:paraId="1DD6B669" ns2:textId="77777777" ns0:rsidR="00DD52EF" ns0:rsidRDefault="00000000">
+            
+            
+            <ns0:pPr>
+              
+              
+              <ns0:spacing ns0:before="20" ns0:after="20" ns0:line="264" ns0:lineRule="auto"/>
+              
+              
+              <ns0:jc ns0:val="center"/>
+              
+            
+            </ns0:pPr>
+            
+            
+            <ns0:r>
+              
+              
+              <ns0:rPr>
+                
+                
+                <ns0:sz ns0:val="17"/>
+                
+              
+              </ns0:rPr>
+              
+              
+              <ns0:t>I5 Contrôle preuves/hallucinations</ns0:t>
+              
+            
+            </ns0:r>
+            
+            
+            
+            
+            
+            
+            
+            
+          
+          </ns0:p>
+          
+        
+        </ns0:tc>
+        
+        
+        <ns0:tc>
+          
+          
+          <ns0:tcPr>
+            
+            
+            <ns0:tcW ns0:w="1418" ns0:type="dxa"/>
+            
+          
+          </ns0:tcPr>
+          
+          
+          <ns0:p ns2:paraId="51209DA7" ns2:textId="77777777" ns0:rsidR="00DD52EF" ns0:rsidRDefault="00000000">
+            
+            
+            <ns0:pPr>
+              
+              
+              <ns0:spacing ns0:before="20" ns0:after="20" ns0:line="264" ns0:lineRule="auto"/>
+              
+              
+              <ns0:jc ns0:val="center"/>
+              
+            
+            </ns0:pPr>
+            
+            
+            <ns0:r>
+              
+              
+              <ns0:rPr>
+                
+                
+                <ns0:sz ns0:val="17"/>
+                
+              
+              </ns0:rPr>
+              
+              
+              <ns0:t>≥2, sinon low_evidence</ns0:t>
+              
+            
+            </ns0:r>
+            
+            
+            
+          
+          </ns0:p>
+          
+        
+        </ns0:tc>
+        
+        
+        <ns0:tc>
+          
+          
+          <ns0:tcPr>
+            
+            
+            <ns0:tcW ns0:w="1844" ns0:type="dxa"/>
+            
+          
+          </ns0:tcPr>
+          
+          
+          <ns0:p ns2:paraId="6B4D02C1" ns2:textId="77777777" ns0:rsidR="00DD52EF" ns0:rsidRDefault="00000000">
+            
+            
+            <ns0:pPr>
+              
+              
+              <ns0:spacing ns0:before="20" ns0:after="20" ns0:line="264" ns0:lineRule="auto"/>
+              
+              
+              <ns0:jc ns0:val="center"/>
+              
+              
+              <ns0:rPr>
+                
+                
+                <ns0:lang ns0:eastAsia="zh-CN"/>
+                
+              
+              </ns0:rPr>
+              
+            
+            </ns0:pPr>
+            
+            
+            <ns0:r>
+              
+              
+              <ns0:rPr>
+                
+                
+                <ns0:sz ns0:val="17"/>
+                
+                
+                <ns0:lang ns0:eastAsia="zh-CN"/>
+                
+              
+              </ns0:rPr>
+              
+              
+              <ns0:t>taux d&#x2019;hallucination 18.7%→3.2% ; reproductible sans clé via le repli</ns0:t>
+              
+            
+            </ns0:r>
+            
+            
+            
+            
+            
+          
+          </ns0:p>
+          
+        
+        </ns0:tc>
+        
+      
+      </ns0:tr>
+      
+    
+    </ns0:tbl>

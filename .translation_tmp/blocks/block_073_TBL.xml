@@ -1,0 +1,381 @@
+<ns0:tbl>
+      
+      
+      <ns0:tblPr>
+        
+        
+        <ns0:tblStyle ns0:val="af7"/>
+        
+        
+        <ns0:tblW ns0:w="0" ns0:type="auto"/>
+        
+        
+        <ns0:tblBorders>
+          
+          
+          <ns0:top ns0:val="none" ns0:sz="0" ns0:space="0" ns0:color="auto"/>
+          
+          
+          <ns0:left ns0:val="none" ns0:sz="0" ns0:space="0" ns0:color="auto"/>
+          
+          
+          <ns0:bottom ns0:val="none" ns0:sz="0" ns0:space="0" ns0:color="auto"/>
+          
+          
+          <ns0:right ns0:val="none" ns0:sz="0" ns0:space="0" ns0:color="auto"/>
+          
+          
+          <ns0:insideH ns0:val="none" ns0:sz="0" ns0:space="0" ns0:color="auto"/>
+          
+          
+          <ns0:insideV ns0:val="none" ns0:sz="0" ns0:space="0" ns0:color="auto"/>
+          
+        
+        </ns0:tblBorders>
+        
+        
+        <ns0:tblLook ns0:val="04A0" ns0:firstRow="1" ns0:lastRow="0" ns0:firstColumn="1" ns0:lastColumn="0" ns0:noHBand="0" ns0:noVBand="1"/>
+        
+      
+      </ns0:tblPr>
+      
+      
+      <ns0:tblGrid>
+        
+        
+        <ns0:gridCol ns0:w="284"/>
+        
+        
+        <ns0:gridCol ns0:w="3822"/>
+        
+        
+        <ns0:gridCol ns0:w="523"/>
+        
+      
+      </ns0:tblGrid>
+      
+      
+      <ns0:tr ns0:rsidR="000C1944" ns2:paraId="67A38171" ns2:textId="77777777" ns0:rsidTr="000C1944">
+        
+        
+        <ns0:tc>
+          
+          
+          <ns0:tcPr>
+            
+            
+            <ns0:tcW ns0:w="284" ns0:type="dxa"/>
+            
+          
+          </ns0:tcPr>
+          
+          
+          <ns0:p ns2:paraId="56DE3D53" ns2:textId="77777777" ns0:rsidR="000C1944" ns0:rsidRDefault="000C1944" ns0:rsidP="003119CD">
+            
+            
+            <ns0:pPr>
+              
+              
+              <ns0:spacing ns0:before="60" ns0:after="120"/>
+              
+              
+              <ns0:jc ns0:val="both"/>
+              
+              
+              <ns0:rPr>
+                
+                
+                <ns0:lang ns0:eastAsia="zh-CN"/>
+                
+              
+              </ns0:rPr>
+              
+            
+            </ns0:pPr>
+            
+          
+          </ns0:p>
+          
+        
+        </ns0:tc>
+        
+        
+        <ns0:tc>
+          
+          
+          <ns0:tcPr>
+            
+            
+            <ns0:tcW ns0:w="3822" ns0:type="dxa"/>
+            
+            
+            <ns0:vAlign ns0:val="center"/>
+            
+          
+          </ns0:tcPr>
+          
+          
+          <ns0:p ns2:paraId="26E3905D" ns2:textId="08B28A6A" ns0:rsidR="000C1944" ns0:rsidRPr="00E37E50" ns0:rsidRDefault="000C1944" ns0:rsidP="000C1944">
+            
+            
+            <ns0:pPr>
+              
+              
+              <ns0:ind ns0:firstLine="420"/>
+              
+              
+              <ns0:jc ns0:val="both"/>
+              
+              
+              <ns0:rPr>
+                
+                
+                <ns0:rFonts ns0:hint="eastAsia"/>
+                
+                
+                <ns0:lang ns0:eastAsia="zh-CN"/>
+                
+              
+              </ns0:rPr>
+              
+            
+            </ns0:pPr>
+            
+            
+            <ns0:r>
+              
+              
+              <ns0:rPr>
+                
+                
+                <ns0:rFonts ns0:hint="eastAsia"/>
+                
+                
+                <ns0:lang ns0:eastAsia="zh-CN"/>
+                
+              
+              </ns0:rPr>
+              
+              
+              <ns0:t>Δ</ns0:t>
+              
+            
+            </ns0:r>
+            
+            
+            <ns0:r>
+              
+              
+              <ns0:rPr>
+                
+                
+                <ns0:lang ns0:eastAsia="zh-CN"/>
+                
+              
+              </ns0:rPr>
+              
+              
+              <ns0:t>w(</ns0:t>
+              
+            
+            </ns0:r>
+            
+            
+            <ns0:r>
+              
+              
+              <ns0:rPr>
+                
+                
+                <ns0:rFonts ns0:hint="eastAsia"/>
+                
+                
+                <ns0:lang ns0:eastAsia="zh-CN"/>
+                
+              
+              </ns0:rPr>
+              
+              
+              <ns0:t>poste</ns0:t>
+              
+            
+            </ns0:r>
+            
+            
+            <ns0:r>
+              
+              
+              <ns0:rPr>
+                
+                
+                <ns0:lang ns0:eastAsia="zh-CN"/>
+                
+              
+              </ns0:rPr>
+              
+              
+              <ns0:t>,s)=wₜ₂(</ns0:t>
+              
+            
+            </ns0:r>
+            
+            
+            <ns0:r>
+              
+              
+              <ns0:rPr>
+                
+                
+                <ns0:rFonts ns0:hint="eastAsia"/>
+                
+                
+                <ns0:lang ns0:eastAsia="zh-CN"/>
+                
+              
+              </ns0:rPr>
+              
+              
+              <ns0:t>poste</ns0:t>
+              
+            
+            </ns0:r>
+            
+            
+            <ns0:r>
+              
+              
+              <ns0:rPr>
+                
+                
+                <ns0:lang ns0:eastAsia="zh-CN"/>
+                
+              
+              </ns0:rPr>
+              
+              
+              <ns0:t>,s)-wₜ₁(</ns0:t>
+              
+            
+            </ns0:r>
+            
+            
+            <ns0:r>
+              
+              
+              <ns0:rPr>
+                
+                
+                <ns0:rFonts ns0:hint="eastAsia"/>
+                
+                
+                <ns0:lang ns0:eastAsia="zh-CN"/>
+                
+              
+              </ns0:rPr>
+              
+              
+              <ns0:t>poste</ns0:t>
+              
+            
+            </ns0:r>
+            
+            
+            <ns0:r>
+              
+              
+              <ns0:rPr>
+                
+                
+                <ns0:lang ns0:eastAsia="zh-CN"/>
+                
+              
+              </ns0:rPr>
+              
+              
+              <ns0:t>,s)</ns0:t>
+              
+            
+            </ns0:r>
+            
+          
+          </ns0:p>
+          
+        
+        </ns0:tc>
+        
+        
+        <ns0:tc>
+          
+          
+          <ns0:tcPr>
+            
+            
+            <ns0:tcW ns0:w="523" ns0:type="dxa"/>
+            
+            
+            <ns0:vAlign ns0:val="center"/>
+            
+          
+          </ns0:tcPr>
+          
+          
+          <ns0:p ns2:paraId="03261941" ns2:textId="4EC59912" ns0:rsidR="000C1944" ns0:rsidRDefault="000C1944" ns0:rsidP="000C1944">
+            
+            
+            <ns0:pPr>
+              
+              
+              <ns0:keepNext/>
+              
+              
+              <ns0:spacing ns0:before="60" ns0:after="120"/>
+              
+              
+              <ns0:jc ns0:val="right"/>
+              
+              
+              <ns0:rPr>
+                
+                
+                <ns0:lang ns0:eastAsia="zh-CN"/>
+                
+              
+              </ns0:rPr>
+              
+            
+            </ns0:pPr>
+            
+            
+            <ns0:r>
+              
+              
+              <ns0:rPr>
+                
+                
+                <ns0:rFonts ns0:hint="eastAsia"/>
+                
+                
+                <ns0:lang ns0:eastAsia="zh-CN"/>
+                
+              
+              </ns0:rPr>
+              
+              
+              <ns0:t>(9)</ns0:t>
+              
+            
+            </ns0:r>
+            
+            
+            
+          
+          </ns0:p>
+          
+        
+        </ns0:tc>
+        
+      
+      </ns0:tr>
+      
+    
+    </ns0:tbl>

@@ -1,0 +1,57 @@
+<ns0:p ns2:paraId="20A5420D" ns2:textId="1BD2B353" ns0:rsidR="006F394F" ns0:rsidRDefault="006F394F" ns0:rsidP="006F394F">
+      
+      
+      <ns0:pPr>
+        
+        
+        <ns0:ind ns0:firstLine="420"/>
+        
+        
+        <ns0:jc ns0:val="both"/>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:rFonts ns0:hint="eastAsia"/>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+      
+      </ns0:pPr>
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:rFonts ns0:hint="eastAsia"/>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t>où Vposte désigne l&#x2019;ensemble des entités de postes, Vcompétences l&#x2019;ensemble des entités de compétences, Vsecteurs l&#x2019;ensemble des entités de secteurs et Ventreprises l&#x2019;ensemble des entités d&#x2019;entreprises. Les postes et les compétences sont les nœuds centraux de l&#x2019;ensemble du graphe ; les secteurs et les entreprises servent principalement à compléter l&#x2019;environnement métier des postes et les informations relatives aux entités recruteuses.</ns0:t>
+        
+      
+      </ns0:r>
+      
+      
+      
+      
+      
+      
+      
+      
+      
+    
+    </ns0:p>

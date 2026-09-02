@@ -1,0 +1,98 @@
+<ns0:p ns2:paraId="3A9D649A" ns2:textId="55C600C0" ns0:rsidR="006E73B6" ns0:rsidRDefault="006E73B6" ns0:rsidP="006E73B6">
+      
+      
+      <ns0:pPr>
+        
+        
+        <ns0:ind ns0:firstLine="420"/>
+        
+        
+        <ns0:jc ns0:val="both"/>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+      
+      </ns0:pPr>
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t>Sur le plan fonctionnel, le système forme une chaîne en quatre maillons : « collecte et gouvernance — services de graphe — analyse intelligente — interaction applicative ». Le volet collecte et gouvernance assure l&#x2019;insertion multi-sources, la déduplication par empreinte, la notation de complétude et la validation croisée inter-sources ; le volet services de graphe organise les postes, les compétences, les secteurs d&#x2019;activité et les entreprises, ainsi que leurs relations, en un graphe orienté pondéré interrogeable, et prend en charge des visualisations telles que la carte de chaleur régionale et la carte mentale poste-compétence ; le volet analyse intelligente assure la découverte des postes émergents, l&#x2019;évolution des compétences des postes existants et l&#x2019;appariement poste-candidat en cinq dimensions ; le volet interaction applicative correspond aux modules frontaux tels que la carte numérique des talents, l&#x2019;analyse des postes, la découverte de nouveaux postes, l&#x2019;appariement poste-candidat et l&#x2019;assistant CV, réalisant une boucle fermée allant de la tendance régionale au diagnostic individuel. Sur le plan technique, FastAPI fournit une interface REST unifiée, PostgreSQL héberge les données principales des postes et le centre utilisateur, Neo4j assure les requêtes sur le graphe, et le frontal organise les différentes vues métier dans une coquille multi-pages ; les grands modèles de langage ne sont utilisés que pour le polissage rédactionnel et l&#x2019;examen sémantique, tandis que les chemins centraux de découverte, d&#x2019;évolution et d&#x2019;appariement conservent une implémentation heuristique sans modèle, afin de garantir la dégradabilité des services et la reproductibilité des résultats.</ns0:t>
+        
+      
+        <ns0:lastRenderedPageBreak/>
+        <ns0:t/>
+      </ns0:r>
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+    
+    </ns0:p>

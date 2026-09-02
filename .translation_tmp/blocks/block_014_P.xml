@@ -1,0 +1,262 @@
+<ns0:p ns2:paraId="753FDC9F" ns2:textId="02533231" ns0:rsidR="00DD52EF" ns0:rsidRPr="002B3FFB" ns0:rsidRDefault="004D33B7">
+      
+      
+      <ns0:pPr>
+        
+        
+        <ns0:pStyle ns0:val="1"/>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:sz ns0:val="28"/>
+          
+          
+          <ns0:szCs ns0:val="32"/>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+      
+      </ns0:pPr>
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:b ns0:val="0"/>
+          
+          
+          <ns0:bCs ns0:val="0"/>
+          
+          
+          <ns0:noProof/>
+          
+          
+          <ns0:sz ns0:val="28"/>
+          
+          
+          <ns0:szCs ns0:val="32"/>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:drawing>
+          
+          
+          <ns3:anchor distT="0" distB="0" distL="114300" distR="114300" simplePos="0" relativeHeight="251659264" behindDoc="0" locked="0" layoutInCell="1" allowOverlap="1" ns4:anchorId="100754B5" ns4:editId="2D0FB194">
+            
+            
+            <ns3:simplePos x="0" y="0"/>
+            
+            
+            <ns3:positionH relativeFrom="column">
+              
+              
+              <ns3:posOffset>3158490</ns3:posOffset>
+              
+            
+            </ns3:positionH>
+            
+            
+            <ns3:positionV relativeFrom="paragraph">
+              
+              
+              <ns3:posOffset>102235</ns3:posOffset>
+              
+            
+            </ns3:positionV>
+            
+            
+            <ns3:extent cx="2949575" cy="3261360"/>
+            
+            
+            <ns3:effectExtent l="0" t="0" r="3175" b="0"/>
+            
+            
+            <ns3:wrapSquare wrapText="bothSides"/>
+            
+            
+            <ns3:docPr id="875099931" name="图片 1"/>
+            
+            
+            <ns3:cNvGraphicFramePr>
+              
+              
+              <ns5:graphicFrameLocks noChangeAspect="1"/>
+              
+            
+            </ns3:cNvGraphicFramePr>
+            
+            
+            <ns5:graphic>
+              
+              
+              <ns5:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">
+                
+                
+                <ns6:pic>
+                  
+                  
+                  <ns6:nvPicPr>
+                    
+                    
+                    <ns6:cNvPr id="875099931" name="图片 1"/>
+                    
+                    
+                    <ns6:cNvPicPr>
+                      
+                      
+                      <ns5:picLocks noChangeAspect="1" noChangeArrowheads="1"/>
+                      
+                    
+                    </ns6:cNvPicPr>
+                    
+                  
+                  </ns6:nvPicPr>
+                  
+                  
+                  <ns6:blipFill>
+                    
+                    
+                    <ns5:blip ns7:embed="rId8">
+                      
+                      
+                      <ns5:extLst>
+                        
+                        
+                        <ns5:ext uri="{28A0092B-C50C-407E-A947-70E740481C1C}">
+                          
+                          
+                          <ns8:useLocalDpi val="0"/>
+                          
+                        
+                        </ns5:ext>
+                        
+                      
+                      </ns5:extLst>
+                      
+                    
+                    </ns5:blip>
+                    
+                    
+                    <ns5:srcRect/>
+                    
+                    
+                    <ns5:stretch>
+                      
+                      
+                      <ns5:fillRect/>
+                      
+                    
+                    </ns5:stretch>
+                    
+                  
+                  </ns6:blipFill>
+                  
+                  
+                  <ns6:spPr>
+                    
+                    
+                    <ns5:xfrm>
+                      
+                      
+                      <ns5:off x="0" y="0"/>
+                      
+                      
+                      <ns5:ext cx="2949575" cy="3261360"/>
+                      
+                    
+                    </ns5:xfrm>
+                    
+                    
+                    <ns5:prstGeom prst="rect">
+                      
+                      
+                      <ns5:avLst/>
+                      
+                    
+                    </ns5:prstGeom>
+                    
+                    
+                    <ns5:noFill/>
+                    
+                    
+                    <ns5:ln>
+                      
+                      
+                      <ns5:noFill/>
+                      
+                    
+                    </ns5:ln>
+                    
+                  
+                  </ns6:spPr>
+                  
+                
+                </ns6:pic>
+                
+              
+              </ns5:graphicData>
+              
+            
+            </ns5:graphic>
+            
+            
+            <ns4:sizeRelV relativeFrom="margin">
+              
+              
+              <ns4:pctHeight>0</ns4:pctHeight>
+              
+            
+            </ns4:sizeRelV>
+            
+          
+          </ns3:anchor>
+          
+        
+        </ns0:drawing>
+        
+      
+      </ns0:r>
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:rFonts ns0:ascii="Times New Roman" ns0:eastAsia="黑体" ns0:hAnsi="Times New Roman" ns0:hint="eastAsia"/>
+          
+          
+          <ns0:sz ns0:val="28"/>
+          
+          
+          <ns0:szCs ns0:val="32"/>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t>II. Travaux connexes</ns0:t>
+        
+      
+      </ns0:r>
+      
+    
+    </ns0:p>

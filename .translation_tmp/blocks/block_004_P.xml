@@ -1,0 +1,378 @@
+<ns0:p ns2:paraId="27983B9D" ns2:textId="77777777" ns0:rsidR="00DD52EF" ns0:rsidRDefault="00000000">
+      
+      
+      <ns0:pPr>
+        
+        
+        <ns0:spacing ns0:after="80"/>
+        
+        
+        <ns0:ind ns0:firstLineChars="200" ns0:firstLine="361"/>
+        
+        
+        <ns0:jc ns0:val="both"/>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+      
+      </ns0:pPr>
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:rFonts ns0:eastAsia="黑体"/>
+          
+          
+          <ns0:b/>
+          
+          
+          <ns0:sz ns0:val="18"/>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t>Résumé : L&#x2019;expansion rapide de l&#x2019;économie numérique rend le cycle de mise à jour des piles technologiques nettement plus court que le cycle traditionnel de formation des talents ; le marché du travail présente simultanément deux phénomènes : les entreprises éprouvent des difficultés à recruter et les travailleurs manquent de parcours clairs. Les textes de recrutement publics constituent une source de signaux importante pour observer les besoins en compétences, mais leur décalage temporel, leur duplication homogène et le bruit d&#x2019;expression contaminent directement les résultats du graphe et de l&#x2019;appariement en aval. Face à la validation croisée du nettoyage des données et au contrôle des hallucinations des modèles d&#x2019;IA, cet article présente, sur un système ingénierique couvrant plusieurs dizaines de milliers d&#x2019;offres d&#x2019;emploi réelles, cinq innovations vérifiables dont la chaîne complète a été implémentée : (1) un contrôle de qualité fondé sur l&#x2019;empreinte de contenu et la complétude de quinze champs, qui déplace la fiabilité en amont vers les déclencheurs d&#x2019;insertion en base de données ; (2) la découverte de postes émergents fondée sur une mesure d&#x2019;émergence tridimensionnelle et une chaîne de raisonnement en six étapes, dont les conclusions portent le comptage des sources de preuves ; (3) une différenciation de compétences pseudo-temporelle multi-sources, qui étiquette les ajouts, suppressions et modifications au moyen d&#x2019;un $\Delta_s$ recalculable ; (4) un appariement en cinq dimensions avec des poids de $0.42/0.24/0.14/0.10/0.10$, une borne supérieure de $0.65$ étant appliquée à la contribution de transfert de graphe ; (5) un contrôle par preuves avec $|S|\!\ge\!2$ et un repli heuristique local pour supprimer les hallucinations. Dans l&#x2019;évaluation en ligne, les exactitudes moyennes de l&#x2019;analyse des JD, de l&#x2019;extraction de CV et de l&#x2019;appariement poste-candidat ne sont pas inférieures à 90 % ; le F1 de la découverte des postes émergents est de 0.824 et le Kappa de l&#x2019;évolution par rapport aux annotations d&#x2019;experts est de 0.76. L&#x2019;ensemble de l&#x2019;article organise de manière cohérente les formules, les pseudo-codes, les expériences comparatives et les ablations, afin que les innovations proposées soient étayées à la fois par les données et par l&#x2019;implémentation.</ns0:t>
+        
+      
+      </ns0:r>
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:rFonts ns0:eastAsia="楷体"/>
+          
+          
+          <ns0:sz ns0:val="18"/>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t/>
+        
+      
+      </ns0:r>
+      
+      
+      
+      
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:rFonts ns0:eastAsia="楷体" ns0:hint="eastAsia"/>
+          
+          
+          <ns0:sz ns0:val="18"/>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t/>
+        
+      
+      </ns0:r>
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:rFonts ns0:eastAsia="楷体"/>
+          
+          
+          <ns0:sz ns0:val="18"/>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t/>
+        
+      
+      </ns0:r>
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:rFonts ns0:eastAsia="楷体" ns0:hint="eastAsia"/>
+          
+          
+          <ns0:sz ns0:val="18"/>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t/>
+        
+      
+      </ns0:r>
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:rFonts ns0:eastAsia="楷体"/>
+          
+          
+          <ns0:sz ns0:val="18"/>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t/>
+        
+      
+      </ns0:r>
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:rFonts ns0:eastAsia="楷体" ns0:hint="eastAsia"/>
+          
+          
+          <ns0:sz ns0:val="18"/>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t/>
+        
+      
+      </ns0:r>
+      
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:rFonts ns0:eastAsia="楷体"/>
+          
+          
+          <ns0:sz ns0:val="18"/>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t/>
+        
+      
+      </ns0:r>
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:rFonts ns0:eastAsia="楷体" ns0:hint="eastAsia"/>
+          
+          
+          <ns0:sz ns0:val="18"/>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t/>
+        
+      
+      </ns0:r>
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:rFonts ns0:eastAsia="楷体"/>
+          
+          
+          <ns0:sz ns0:val="18"/>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t/>
+        
+      
+      </ns0:r>
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:rFonts ns0:eastAsia="楷体" ns0:hint="eastAsia"/>
+          
+          
+          <ns0:sz ns0:val="18"/>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t/>
+        
+      
+      </ns0:r>
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:rFonts ns0:eastAsia="楷体"/>
+          
+          
+          <ns0:sz ns0:val="18"/>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t/>
+        
+      
+      </ns0:r>
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+    
+    </ns0:p>

@@ -1,0 +1,62 @@
+<ns0:p ns2:paraId="663ED1E0" ns2:textId="53346748" ns0:rsidR="006F394F" ns0:rsidRDefault="006F394F" ns0:rsidP="006F394F">
+      
+      
+      <ns0:pPr>
+        
+        
+        <ns0:ind ns0:firstLine="420"/>
+        
+        
+        <ns0:jc ns0:val="both"/>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+      
+      </ns0:pPr>
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:rFonts ns0:hint="eastAsia"/>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t>Considérant que la fréquence d&#x2019;apparition des différentes compétences dans un même poste n&#x2019;est pas identique, cet article définit en outre des poids pour les relations poste-compétence. Soit Dposte l&#x2019;ensemble des offres de recrutement valides correspondant à un poste donné, et n(poste,s) le nombre d&#x2019;apparitions de la compétence s dans les offres de recrutement de ce poste ; le poids de besoin entre le poste et la compétence est alors défini comme :</ns0:t>
+        
+      
+      </ns0:r>
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+    
+    </ns0:p>

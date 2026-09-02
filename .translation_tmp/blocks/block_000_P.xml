@@ -1,0 +1,61 @@
+<ns0:p ns2:paraId="315AC2C8" ns2:textId="77777777" ns0:rsidR="00DD52EF" ns0:rsidRDefault="00000000">
+      
+      
+      <ns0:pPr>
+        
+        
+        <ns0:spacing ns0:afterLines="50" ns0:after="120" ns0:line="240" ns0:lineRule="auto"/>
+        
+        
+        <ns0:jc ns0:val="center"/>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:rFonts ns0:eastAsia="黑体"/>
+          
+          
+          <ns0:b/>
+          
+          
+          <ns0:sz ns0:val="36"/>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+      
+      </ns0:pPr>
+      
+      
+      <ns0:r>
+        
+        
+        <ns0:rPr>
+          
+          
+          <ns0:rFonts ns0:eastAsia="黑体" ns0:hint="eastAsia"/>
+          
+          
+          <ns0:b/>
+          
+          
+          <ns0:sz ns0:val="36"/>
+          
+          
+          <ns0:lang ns0:eastAsia="zh-CN"/>
+          
+        
+        </ns0:rPr>
+        
+        
+        <ns0:t>Conception et mise en œuvre d&#x2019;un système de construction dynamique de graphe de connaissances poste-compétence et d&#x2019;appariement de talents, fondé sur des données de recrutement multi-sources</ns0:t>
+        
+      
+      </ns0:r>
+      
+    
+    </ns0:p>
