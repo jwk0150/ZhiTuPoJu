@@ -1053,7 +1053,7 @@ body.disc-lock .content{overflow-y:auto!important;padding:20px 24px 32px!importa
 /* 数字人才地图样式 (ZhiTuPoJu) */
 .talent-map-layer{position:absolute;top:0;left:0;right:0;bottom:0;background:transparent}
 .talent-province-header{padding:10px 0 16px;border-bottom:1px solid rgba(255,255,255,.08)}
-.talent-province-header h2{font-size:20px;color:#e4cfa0;margin-bottom:8px}
+.talent-province-header h2{font-size:20px;color:#1A1A1A;margin-bottom:8px}
 .talent-province-stats{display:flex;gap:24px;color:rgba(255,255,255,.7);font-size:13px}
 .talent-province-stats span{color:#c9a86a;font-weight:600}
 #talent-province-jobs{display:flex;flex-direction:column;gap:10px;margin-top:16px}
@@ -1064,9 +1064,9 @@ body.disc-lock .content{overflow-y:auto!important;padding:20px 24px 32px!importa
 .talent-job-count{font-size:12px;color:var(--accent-cyan);font-family:var(--font-mono),monospace}
 .talent-job-meta{font-size:12px;color:rgba(255,255,255,.5);display:flex;gap:12px}
 .talent-job-skills{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
-.talent-job-skill{font-size:11px;padding:2px 8px;border-radius:4px;background:rgba(201,168,106,.12);color:#e4cfa0}
+.talent-job-skill{font-size:11px;padding:2px 8px;border-radius:4px;background:rgba(168,139,78,.12);color:#5C4A28}
 .talent-job-card-footer{display:flex;justify-content:space-between;align-items:center;margin-top:10px;padding-top:8px;border-top:1px solid rgba(255,255,255,.06)}
-.talent-job-btn{font-size:11px;padding:4px 12px;border-radius:6px;border:1px solid rgba(201,168,106,.35);background:rgba(201,168,106,.1);color:#e4cfa0;cursor:pointer;transition:all .2s}
+.talent-job-btn{font-size:11px;padding:4px 12px;border-radius:6px;border:1px solid rgba(168,139,78,.35);background:#fff;color:#5C4A28;cursor:pointer;transition:all .2s}
 .talent-job-btn:hover{background:rgba(201,168,106,.2);border-color:#c9a86a}
 /* 学习路径 + 新增技能详情样式 (ZhiTuPoJu1) */
 .lp-layout{display:grid;grid-template-columns:260px 1fr;gap:16px;align-items:start}
@@ -1682,7 +1682,7 @@ body.disc-lock .content{overflow-y:auto!important;padding:20px 24px 32px!importa
 .detail-rel-item{display:flex;align-items:center;gap:10px;padding:8px 10px;background:var(--bg-page);border-radius:8px;font-size:13px}
 .detail-rel-item .name{color:var(--text-dark);font-weight:600}
 .detail-rel-item .rel{color:var(--text-muted);font-size:12px}
-#talent-detail-hover .talent-hover-skill{font-size:11px;padding:2px 8px;border-radius:4px;background:rgba(201,168,106,.12);color:#e4cfa0;border:1px solid rgba(201,168,106,.28)}
+#talent-detail-hover .talent-hover-skill{font-size:11px;padding:2px 8px;border-radius:4px;background:rgba(168,139,78,.12);color:#5C4A28;border:1px solid rgba(168,139,78,.28)}
 #talent-detail-hover .talent-hover-bar{height:4px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden}
 #talent-detail-hover .talent-hover-bar>div{height:100%;border-radius:2px;background:linear-gradient(90deg,#3aa8b4,#c9a86a)}
 #talent-detail-hover .talent-hover-pct-row{margin-bottom:7px}
@@ -1743,8 +1743,8 @@ body.disc-lock .content{overflow-y:auto!important;padding:20px 24px 32px!importa
 /* 数字人才地图样式 (ZhiTuPoJu) */
 .talent-map-layer{position:absolute;top:0;left:0;right:0;bottom:0;background:transparent}
 .talent-province-header{padding:4px 0 14px;border-bottom:1px solid rgba(255,255,255,.08)}
-.talent-province-header h2{font-size:22px;color:#e4cfa0;margin:0;font-weight:650;letter-spacing:.02em;line-height:1.3}
-.talent-province-stats{display:flex;flex-wrap:wrap;gap:10px 22px;color:rgba(213,224,219,.72);font-size:13px;margin-top:12px}
+.talent-province-header h2{font-size:22px;color:#1A1A1A;margin:0;font-weight:650;letter-spacing:.02em;line-height:1.3}
+.talent-province-stats{display:flex;flex-wrap:wrap;gap:10px 22px;color:#4B5563;font-size:13px;margin-top:12px}
 .talent-province-stats span{color:#c9a86a;font-weight:600;font-variant-numeric:tabular-nums}
 #talent-province-jobs{display:flex;flex-direction:column;gap:12px;margin-top:18px;padding-bottom:8px}
 .talent-job-card{display:flex;flex-direction:column;gap:12px;background:rgba(16,28,25,.55);border:1px solid rgba(201,168,106,.18);border-radius:12px;padding:16px 18px;cursor:pointer;transition:border-color .2s ease,background .2s ease;min-height:118px;box-sizing:border-box}
@@ -1752,20 +1752,20 @@ body.disc-lock .content{overflow-y:auto!important;padding:20px 24px 32px!importa
 .talent-job-card-header{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
 .talent-job-name{font-size:16px;font-weight:650;color:#e8eee9;line-height:1.35;min-width:0;flex:1}
 .talent-job-meta-right{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:8px;flex-shrink:0}
-.talent-job-salary{font-size:14px;font-weight:650;color:#e4cfa0;font-family:var(--font-mono),monospace;white-space:nowrap}
-.talent-job-hot{font-size:12px;color:rgba(213,224,219,.7);white-space:nowrap}
-.talent-job-category{font-size:11px;padding:3px 8px;border-radius:999px;background:rgba(201,168,106,.12);color:#e4cfa0;border:1px solid rgba(201,168,106,.22);white-space:nowrap}
+.talent-job-salary{font-size:14px;font-weight:650;color:#5C4A28;font-family:var(--font-mono),monospace;white-space:nowrap}
+.talent-job-hot{font-size:12px;color:#6B7280;white-space:nowrap}
+.talent-job-category{font-size:11px;padding:3px 8px;border-radius:999px;background:rgba(168,139,78,.12);color:#5C4A28;border:1px solid rgba(168,139,78,.28);white-space:nowrap}
 .talent-job-skills{display:flex;flex-wrap:wrap;gap:6px;min-height:26px;align-content:flex-start}
-.talent-job-skill{font-size:11px;padding:3px 8px;border-radius:4px;background:rgba(201,168,106,.12);color:#e4cfa0;border:1px solid rgba(201,168,106,.18)}
+.talent-job-skill{font-size:11px;padding:3px 8px;border-radius:4px;background:rgba(168,139,78,.12);color:#5C4A28;border:1px solid rgba(168,139,78,.28)}
 .talent-job-skill.is-empty{opacity:.45;border-style:dashed}
 .talent-job-card-footer{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:2px;padding-top:10px;border-top:1px solid rgba(255,255,255,.06)}
 .talent-job-foot-left{display:flex;align-items:center;gap:12px;min-width:0}
 .talent-job-top{font-size:11px;font-weight:700;letter-spacing:.06em;color:#c9a86a;font-family:var(--font-mono),monospace}
-.talent-job-count{font-size:12px;color:rgba(213,224,219,.65);font-family:var(--font-mono),monospace}
-.talent-job-btn{font-size:12px;padding:6px 12px;border-radius:8px;border:1px solid rgba(201,168,106,.35);background:rgba(201,168,106,.1);color:#e4cfa0;cursor:pointer;transition:background .2s,border-color .2s;white-space:nowrap;flex-shrink:0}
+.talent-job-count{font-size:12px;color:#6B7280;font-family:var(--font-mono),monospace}
+.talent-job-btn{font-size:12px;padding:6px 12px;border-radius:8px;border:1px solid rgba(168,139,78,.35);background:#fff;color:#5C4A28;cursor:pointer;transition:background .2s,border-color .2s;white-space:nowrap;flex-shrink:0}
 .talent-job-btn:hover{background:rgba(201,168,106,.2);border-color:#c9a86a}
 #talent-detail-job{min-height:280px}
-#talent-detail-job .talent-job-detail-name{font-size:18px;font-weight:650;color:#e4cfa0;margin-bottom:4px}
+#talent-detail-job .talent-job-detail-name{font-size:18px;font-weight:650;color:#1A1A1A;margin-bottom:4px}
 #talent-detail-job .talent-job-detail-sub{font-size:12px;color:var(--text-muted);margin-bottom:14px}
 .graph-canvas.is-province-view{overflow:hidden}
 /* 学习路径 + 新增技能详情样式 (ZhiTuPoJu1) */
@@ -2468,28 +2468,28 @@ body.match-view-active #view-match.active{height:calc(100vh - 52px);width:100vw}
     .ability-survey-foot{padding:8px 16px}
 }
 
-/* ===== 岗位知识图谱：墨金风格（覆盖蓝紫/青绿旧色） ===== */
-body[data-page="map"] .graph-city-label{color:#e4cfa0;font-size:14px;font-weight:650;letter-spacing:.4px;text-shadow:0 1px 8px rgba(0,0,0,.35)}
+/* ===== 岗位知识图谱：浅色纸面（覆盖深色遗留） ===== */
+body[data-page="map"] .graph-city-label{color:#5C4A28;font-size:14px;font-weight:650;letter-spacing:.4px;text-shadow:none}
 body[data-page="map"] .graph-mode-bubble{
   font-size:12.5px;font-weight:600;letter-spacing:.4px;padding:6px 16px;border-radius:999px;
-  border:1px solid rgba(201,168,106,.32);background:rgba(201,168,106,.1);color:rgba(228,207,160,.88);
+  border:1px solid rgba(168,139,78,.35);background:#fff;color:#5C4A28;
   cursor:pointer;transition:background .2s,border-color .2s,color .2s,transform .2s;white-space:nowrap;
-  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)
+  backdrop-filter:none;-webkit-backdrop-filter:none
 }
-body[data-page="map"] .graph-mode-bubble:hover{background:rgba(201,168,106,.18);border-color:rgba(201,168,106,.55);color:#f0e2c0;transform:translateY(-1px)}
+body[data-page="map"] .graph-mode-bubble:hover{background:rgba(168,139,78,.1);border-color:rgba(168,139,78,.5);color:#1A1A1A;transform:translateY(-1px)}
 body[data-page="map"] .graph-mode-bubble.active{
-  background:rgba(201,168,106,.28);border-color:rgba(201,168,106,.75);color:#fff8e8;
-  box-shadow:0 0 14px rgba(201,168,106,.28),inset 0 0 10px rgba(228,207,160,.08)
+  background:rgba(168,139,78,.18);border-color:rgba(168,139,78,.55);color:#1A1A1A;
+  box-shadow:none
 }
 body[data-page="map"] .tech-node-tooltip{
-  background:rgba(16,28,25,.96)!important;border:1px solid rgba(201,168,106,.4)!important;color:#e8eee9!important;
-  box-shadow:0 6px 22px rgba(0,0,0,.45),0 0 16px rgba(201,168,106,.16)!important
+  background:#fff!important;border:1px solid rgba(168,139,78,.35)!important;color:#1A1A1A!important;
+  box-shadow:0 6px 22px rgba(60,45,30,.12)!important
 }
 body[data-page="map"] #talent-detail-province .graph-btn{
-  color:#e4cfa0;background:rgba(201,168,106,.1);border-color:rgba(201,168,106,.32);
+  color:#5C4A28;background:#fff;border-color:rgba(168,139,78,.35);
   width:auto;height:auto;padding:6px 12px;font-size:13px
 }
-body[data-page="map"] #talent-detail-province .graph-btn:hover{background:rgba(201,168,106,.2);border-color:#c9a86a}
+body[data-page="map"] #talent-detail-province .graph-btn:hover{background:rgba(168,139,78,.1);border-color:#8B7340}
 body[data-page="map"] .graph-mode-toggle{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 body[data-page="map"] .graph-toolbar-left{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 
@@ -2505,9 +2505,9 @@ body[data-page="map"] .graph-toolbar-left{display:flex;align-items:center;gap:10
   width:36px;height:36px;padding:0;
   display:inline-flex;align-items:center;justify-content:center;
   border-radius:10px;
-  border:1px solid rgba(201,168,106,.4);
-  background:rgba(16,28,25,.7);
-  color:#e4cfa0;
+  border:1px solid rgba(168,139,78,.4);
+  background:#fff;
+  color:#5C4A28;
 }
 #talent-layer-graph .talent-graph-back-inbar svg{width:18px;height:18px}
 #talent-layer-graph .graph-city-label{
@@ -2518,30 +2518,30 @@ body[data-page="map"] .graph-toolbar-left{display:flex;align-items:center;gap:10
   white-space:nowrap;
   padding:6px 14px;
   border-radius:999px;
-  border:1px solid rgba(201,168,106,.35);
-  background:rgba(16,28,25,.62);
-  color:#e8d9b0 !important;
+  border:1px solid rgba(168,139,78,.35);
+  background:#fff;
+  color:#5C4A28 !important;
   font-size:13px;
   font-weight:650;
   letter-spacing:.3px;
 }
 #talent-layer-graph .graph-mode-bubble{
   font-size:12.5px;font-weight:650;letter-spacing:.3px;padding:6px 16px;border-radius:999px;
-  border:1px solid rgba(201,168,106,.48) !important;
-  background:rgba(201,168,106,.16) !important;
-  color:#f0e2c0 !important;
+  border:1px solid rgba(168,139,78,.4) !important;
+  background:#fff !important;
+  color:#5C4A28 !important;
   cursor:pointer;white-space:nowrap;
 }
 #talent-layer-graph .graph-mode-bubble:hover{
-  background:rgba(201,168,106,.26) !important;
-  border-color:rgba(201,168,106,.7) !important;
-  color:#fff8e8 !important;
+  background:rgba(168,139,78,.1) !important;
+  border-color:rgba(168,139,78,.55) !important;
+  color:#1A1A1A !important;
 }
 #talent-layer-graph .graph-mode-bubble.active{
-  background:linear-gradient(135deg,#e4cfa0,#c9a86a) !important;
-  border-color:transparent !important;
-  color:#1a1208 !important;
-  box-shadow:0 4px 14px rgba(201,168,106,.3);
+  background:rgba(168,139,78,.18) !important;
+  border-color:rgba(168,139,78,.55) !important;
+  color:#1A1A1A !important;
+  box-shadow:none;
 }
 
 /* 我的能力个人图谱：必须有高度，否则 G6 容器为 0 一直空白 */
@@ -2551,7 +2551,7 @@ body[data-page="map"] .graph-toolbar-left{display:flex;align-items:center;gap:10
   padding:12px 20px;flex-shrink:0;
   border-bottom:1px solid rgba(201,168,106,.16);
 }
-.ability-graph-title{font-size:15px;font-weight:700;color:#e4cfa0}
+.ability-graph-title{font-size:15px;font-weight:700;color:#1A1A1A}
 .ability-graph-actions{display:flex;align-items:center;gap:10px}
 .ability-graph-wrap{flex:1 1 auto;min-height:320px;height:100%;position:relative;overflow:hidden}
 .ability-graph-foot{
@@ -2559,43 +2559,43 @@ body[data-page="map"] .graph-toolbar-left{display:flex;align-items:center;gap:10
   padding:10px 20px;flex-shrink:0;
   border-top:1px solid rgba(201,168,106,.14);
 }
-.ability-graph-summary{font-size:12px;color:rgba(213,224,219,.7)}
+.ability-graph-summary{font-size:12px;color:#6B7280}
 
-/* 右侧技术详情高对比（不依赖 body 选择器，避免嵌入场景失效） */
-#talent-detail-province .tech-detail-section-title{color:#c9a86a !important;letter-spacing:.04em}
-#talent-detail-province .tech-detail-section-title::before{background:#c9a86a !important}
-#talent-detail-province .tech-detail-text{color:#d8e2dc !important}
-#talent-detail-province .tech-detail-name{color:#eef3ef !important}
+/* 右侧技术详情高对比（浅色纸面） */
+#talent-detail-province .tech-detail-section-title{color:#3D3420 !important;letter-spacing:.04em}
+#talent-detail-province .tech-detail-section-title::before{background:#8B7340 !important}
+#talent-detail-province .tech-detail-text{color:#1F2937 !important}
+#talent-detail-province .tech-detail-name{color:#111111 !important}
 #talent-detail-province .tech-detail-tag{
-  background:rgba(201,168,106,.14) !important;
-  color:#f0e2c0 !important;
-  border:1px solid rgba(201,168,106,.38) !important;
+  background:rgba(168,139,78,.12) !important;
+  color:#3D3420 !important;
+  border:1px solid rgba(168,139,78,.35) !important;
 }
 #talent-detail-province .tech-detail-tag--kp,
 #talent-detail-province .tech-detail-path-item{
-  background:rgba(143,168,148,.22) !important;
-  color:#eef3ef !important;
-  border:1px solid rgba(168,184,154,.42) !important;
+  background:rgba(47,107,90,.1) !important;
+  color:#1F5C4C !important;
+  border:1px solid rgba(47,107,90,.28) !important;
   padding:4px 10px;border-radius:6px;
 }
-#talent-detail-province .tech-detail-path-arrow{color:rgba(228,207,160,.65) !important}
+#talent-detail-province .tech-detail-path-arrow{color:#8B7340 !important}
 #talent-detail-province .tech-detail-stats{
-  background:rgba(8,16,14,.55) !important;
-  border:1px solid rgba(201,168,106,.25) !important;
+  background:#FAF8F5 !important;
+  border:1px solid rgba(168,139,78,.28) !important;
   border-radius:10px;
 }
 #talent-detail-province .tech-detail-stat-row{
-  border-bottom-color:rgba(255,255,255,.1) !important;
+  border-bottom-color:rgba(0,0,0,.06) !important;
   align-items:flex-start;gap:12px;
 }
-#talent-detail-province .tech-detail-stat-label{color:rgba(213,224,219,.7) !important;flex-shrink:0}
+#talent-detail-province .tech-detail-stat-label{color:#4B5563 !important;flex-shrink:0}
 #talent-detail-province .tech-detail-stat-value{
-  color:#e4cfa0 !important;text-align:right;line-height:1.55;
+  color:#5C4A28 !important;text-align:right;line-height:1.55;
   word-break:break-word;max-width:64%;white-space:normal;
 }
-#talent-detail-province .tech-detail-stat-value--jobs{font-size:12px !important;color:#d5e0db !important}
-#talent-detail-province .tech-detail-header{border-bottom-color:rgba(201,168,106,.22) !important}
-#talent-detail-province .tech-detail-hot-star{color:#c9a86a !important}
+#talent-detail-province .tech-detail-stat-value--jobs{font-size:12px !important;color:#374151 !important}
+#talent-detail-province .tech-detail-header{border-bottom-color:rgba(168,139,78,.22) !important}
+#talent-detail-province .tech-detail-hot-star{color:#8B7340 !important}
 
 /* ===== Soft Ink Gold · 图谱全模块切换动效（轻量：无 filter，短时长，优先不卡） ===== */
 :root{
@@ -2705,10 +2705,11 @@ body[data-page="map"] .graph-toolbar-left{display:flex;align-items:center;gap:10
   gap:4px;
   padding:3px;
   border-radius:999px;
-  background:rgba(12,20,18,.45);
-  border:1px solid rgba(201,168,106,.22);
+  background:rgba(255,255,255,.92);
+  border:1px solid rgba(168,139,78,.35);
   backdrop-filter:blur(10px);
   -webkit-backdrop-filter:blur(10px);
+  box-shadow:0 2px 10px rgba(60,45,30,.06);
 }
 #talent-layer-graph .graph-mode-pill{
   position:absolute;
@@ -2731,8 +2732,8 @@ body[data-page="map"] .graph-toolbar-left{display:flex;align-items:center;gap:10
   transition:color .35s var(--tm-ease-soft),transform .25s var(--tm-ease-out);
 }
 #talent-layer-graph .graph-mode-bubble:hover{
-  background:rgba(201,168,106,.1) !important;
-  color:#fff8e8 !important;
+  background:rgba(168,139,78,.1) !important;
+  color:#1A1A1A !important;
   transform:translateY(-1px);
 }
 #talent-layer-graph .graph-mode-bubble.active{
@@ -2850,7 +2851,7 @@ body[data-page="map"] #talent-detail-hover[style*="display:block"]{
 body[data-page="map"] #talent-hover-name{
   font-size:18px;
   font-weight:700;
-  color:#eef3ef !important;
+  color:#1A1A1A !important;
   line-height:1.35;
   word-break:break-word;
   display:-webkit-box;
@@ -2897,6 +2898,8 @@ body[data-page="map"] #talent-detail-hover .detail-rel-item{
   width:100%;
   box-sizing:border-box;
   padding:8px 10px;
+  background:#FAF8F5 !important;
+  border:1px solid rgba(0,0,0,.06) !important;
   background:rgba(8,16,14,.45);
   border:1px solid rgba(201,168,106,.16);
   border-radius:8px;
@@ -2907,7 +2910,7 @@ body[data-page="map"] #talent-detail-hover .detail-rel-item .name{
   overflow:hidden;
   text-overflow:ellipsis;
   white-space:nowrap;
-  color:#e8eee9;
+  color:#1A1A1A;
   font-weight:600;
   font-size:12.5px;
 }
@@ -2917,7 +2920,7 @@ body[data-page="map"] #talent-detail-hover .detail-rel-item .rel{
   overflow:hidden;
   text-overflow:ellipsis;
   white-space:nowrap;
-  color:rgba(213,224,219,.68);
+  color:#6B7280;
   font-size:11px;
   text-align:right;
 }
@@ -2966,9 +2969,9 @@ body[data-page="map"] #talent-prov-top-jobs .skill-matched{
   overflow:hidden;
   text-overflow:ellipsis;
   white-space:nowrap;
-  background:rgba(201,168,106,.14) !important;
-  color:#f0e2c0 !important;
-  border:1px solid rgba(201,168,106,.28);
+  background:rgba(168,139,78,.12) !important;
+  color:#5C4A28 !important;
+  border:1px solid rgba(168,139,78,.28);
 }
 body[data-page="map"] #talent-detail-job .talent-job-detail-skills{
   display:flex;
@@ -2984,3 +2987,29 @@ body[data-page="map"] #talent-detail-job .talent-job-detail-skills .skill-matche
   white-space:nowrap;
 }
 
+
+
+/* map lead under title */
+.talent-map-lead{
+  display:block;
+  margin:10px 0 2px;
+  max-width:46rem;
+  padding:10px 14px 10px 16px;
+  border-left:3px solid #A88B4E;
+  background:rgba(255,255,255,.72);
+  border-radius:0 10px 10px 0;
+  font-size:14.5px;
+  line-height:1.7;
+  color:#2F3747;
+}
+body[data-page="map"] .page-header{
+  align-items:flex-start;
+  margin-bottom:14px;
+}
+body[data-page="map"] .page-title-block{
+  flex:1;
+  min-width:0;
+}
+body[data-page="map"] .page-title-block .subtitle{
+  color:#2F3747;
+}

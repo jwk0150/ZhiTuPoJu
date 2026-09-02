@@ -12,10 +12,11 @@ load_dotenv(override=True)
 DATABASE_URL = os.getenv("DATABASE_URL")
 if not DATABASE_URL:
     # 从 PG_HOST/PG_PORT/PG_USER/PG_PASSWORD/PG_DB 拼装
+    # 默认走云库 SSH 隧道：127.0.0.1:5433 → 远端 Postgres
     _host = os.getenv("PG_HOST", "127.0.0.1")
     _port = os.getenv("PG_PORT", "5433")
     _user = os.getenv("PG_USER", "postgres")
-    _pwd = os.getenv("PG_PASSWORD", "20051122")
+    _pwd = os.getenv("PG_PASSWORD", "")
     _db = os.getenv("PG_DB", "zhitu_crawl_db")
     DATABASE_URL = f"postgresql://{_user}:{quote_plus(_pwd)}@{_host}:{_port}/{_db}"
 

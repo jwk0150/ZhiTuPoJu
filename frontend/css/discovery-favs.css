@@ -152,7 +152,7 @@
   flex-shrink: 0;
   font-family: var(--font-mono, monospace);
   font-size: 9px;
-  color: rgba(232, 201, 136, 0.72);
+  color: #8B7340;
 }
 
 .dd-fav-chip-rm {

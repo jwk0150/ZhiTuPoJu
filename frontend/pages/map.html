@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="../css/tokens.css?v=lightfix1" />
   <link rel="stylesheet" href="../css/shell.css?v=lightfix1" />
   <link rel="stylesheet" href="../css/components.css?v=20260824a" />
-  <link rel="stylesheet" href="../css/legacy-views.css?v=lightfix1" />
+  <link rel="stylesheet" href="../css/legacy-views.css?v=mapfix3" />
   <link rel="preload" href="../assets/china-geo.json" as="fetch" crossorigin />
   <link rel="preload" href="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js" as="script" />
   <script>
@@ -32,7 +32,7 @@
     })();
   </script>
   <!-- echarts / geo 已在上方并行预取 -->
-<link rel="stylesheet" href="../css/news-light-overrides.css?v=typo1" />
+<link rel="stylesheet" href="../css/news-light-overrides.css?v=mapfix3" />
 </head>
 <body class="standalone-view" data-page="map">
   <div id="app-shell"></div>
@@ -42,6 +42,7 @@
 <div class="page-title-block">
 <h1>数字人才地图</h1>
 <div class="subtitle">全国人才分布 · 省份岗位洞察 · 岗位-能力知识图谱 · <span id="talent-stats-text">--</span></div>
+<p class="talent-map-lead" id="talent-map-lead">悬停省份可预览热度与薪资；点击进入城市岗位列表，再打开岗位技术图谱查看技能关联。</p>
 </div>
 <div class="page-actions">
 <button class="btn btn-primary" id="talent-ability-btn" onclick="window.talentOpenAbility()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M5.5 20c.8-3.5 3.5-5.5 6.5-5.5s5.7 2 6.5 5.5"/></svg>我的能力</button>
@@ -224,11 +225,11 @@ onmouseleave="window.gangaZoomHover('澳门',false)">
   </main>
   <script src="../js/api.js?v=20260824fix"></script>
   <script src="../js/runtime-core.js?v=20260824fix"></script>
-  <script src="../js/cinema-bg.js?v=lightfix2"></script>
+  <script src="../js/cinema-bg.js?v=mapfix3"></script>
   <script src="../js/perf-guard.js?v=1"></script>
   <script src="../js/cinema-music.js?v=20260824mem"></script>
   <script src="../js/shell.js?v=20260825c3"></script>
-  <script src="../js/pages/map.js?v=20260826citydetail"></script>
+  <script src="../js/pages/map.js?v=mapfix3"></script>
   <script>
     window.Shell && window.Shell.mount({ pageId: 'map', title: '数字人才地图', subtitle: '区域人才与岗位能力空间洞察' });
     function bootMap() {

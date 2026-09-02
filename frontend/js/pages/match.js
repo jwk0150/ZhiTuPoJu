@@ -1717,17 +1717,43 @@
   }
 
   function diagnoseResume(file) {
-    // Phase 03：Mock → 真实后端 /api/match/diagnose（KnowledgeService + Real Jobs）
+    // Phase 03：真实后端 /api/match/diagnose；失败或空结果时降级演示数据，保证流程可通
     const api = (window.API_BASE || ((location.hostname === '127.0.0.1' || location.hostname === 'localhost') ? 'http://127.0.0.1:5000' : location.origin));
     const fd = new FormData();
     fd.append('file', file);
     return fetch(api + '/api/match/diagnose', { method: 'POST', body: fd })
-      .then((r) => r.json().catch(() => null))
-      .then((p) => {
-        if (!p || p.code !== 0) throw new Error((p && (p.detail || p.message)) || '匹配失败');
-        if (!p.data || !Array.isArray(p.data.matches)) throw new Error('后端返回格式异常');
-        return p.data;
-      });
+      .then((r) => r.json().catch(() => null).then((p) => ({ ok: r.ok, status: r.status, payload: p })))
+      .then((res) => {
+        const p = res.payload;
+        if (p && p.code === 0 && p.data && Array.isArray(p.data.matches) && p.data.matches.length) {
+          const st = window.matchState;
+          if (st) {
+            const mode = (p.data.model && p.data.model.mode) || '';
+            st.mode = (mode === 'demo-jobs') ? 'demo' : 'real';
+          }
+          return p.data;
+        }
+        // 空结果 / 协议异常 → 演示数据
+        return mockDiagnose().then((demo) => {
+          const st = window.matchState;
+          if (st) st.mode = 'demo';
+          if (window.showToast) {
+            const reason = (p && (p.detail || p.message || (p.data && p.data.model && p.data.model.error))) || ('HTTP ' + res.status);
+            window.showToast('真实匹配暂不可用，已切换演示岗位：' + reason, 'amber');
+          }
+          demo.model = Object.assign({}, demo.model || {}, { mode: 'demo-fallback', used: false });
+          return demo;
+        });
+      })
+      .catch((err) => mockDiagnose().then((demo) => {
+        const st = window.matchState;
+        if (st) st.mode = 'demo';
+        if (window.showToast) {
+          window.showToast('匹配服务异常，已使用演示数据：' + (err && err.message ? err.message : '网络错误'), 'amber');
+        }
+        demo.model = Object.assign({}, demo.model || {}, { mode: 'demo-fallback', used: false });
+        return demo;
+      }));
   }
   function mockDiagnose() { return new Promise((resolve) => setTimeout(() => resolve(structuredClone(MOCK_RESULT)), reduceMotion() ? 180 : 900)); }
 

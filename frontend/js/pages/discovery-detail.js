@@ -2615,6 +2615,24 @@
     /* 趋势图仅保留入场动画与 CSS 光效，不做持续数据浮动 */
   }
 
+  /* 浅色纸面图表主题：轴标 / 提示框 / 分割线 */
+  const CHART_LIGHT = {
+    axis: '#374151',
+    axisMuted: '#5C4A28',
+    axisBlue: '#1D5F8A',
+    split: 'rgba(60,45,30,0.1)',
+    axisLine: 'rgba(168,139,78,0.35)',
+    tipBg: 'rgba(255,255,255,0.98)',
+    tipBorder: 'rgba(168,139,78,0.35)',
+    tipText: '#1A1A1A',
+    gold: '#8B7340',
+    goldDeep: '#5C4A28',
+    blue: '#2B7EB8',
+    blueSoft: '#3A8FC4',
+    warn: '#9A5418',
+    pointer: 'rgba(92,74,40,0.35)'
+  };
+
   function renderFoundTrend() {
     const el = document.getElementById('dd-found-trend');
     if (!el || !window.echarts) return;
@@ -2637,20 +2655,21 @@
         trigger: 'axis',
         axisPointer: {
           type: 'cross',
-          crossStyle: { color: 'rgba(212,176,122,0.35)' },
-          lineStyle: { type: 'dashed', color: 'rgba(255,255,255,0.12)' }
+          crossStyle: { color: CHART_LIGHT.pointer },
+          lineStyle: { type: 'dashed', color: 'rgba(60,45,30,0.22)' }
         },
-        backgroundColor: 'rgba(10,14,20,0.94)',
-        borderColor: 'rgba(212,176,122,0.25)',
-        textStyle: { color: '#e8f2f8', fontSize: 11 },
+        backgroundColor: CHART_LIGHT.tipBg,
+        borderColor: CHART_LIGHT.tipBorder,
+        textStyle: { color: CHART_LIGHT.tipText, fontSize: 12 },
+        extraCssText: 'box-shadow:0 8px 24px rgba(60,45,30,0.12);border-radius:8px;',
         formatter(params) {
           if (!params || !params.length) return '';
           const idx = params[0].dataIndex;
           return (
-            labels[idx] +
-            '<br/><span style="color:#e8c988">● 发布量 ' +
+            '<b style="color:#1A1A1A">' + labels[idx] + '</b>' +
+            '<br/><span style="color:' + CHART_LIGHT.goldDeep + '">● 发布量 ' +
             heat[idx] +
-            '</span><br/><span style="color:#7ec8f0">● 搜索热度 ' +
+            '</span><br/><span style="color:' + CHART_LIGHT.blue + '">● 搜索热度 ' +
             demand[idx] +
             '</span>'
           );
@@ -2662,10 +2681,11 @@
         type: 'category',
         data: labels,
         boundaryGap: true,
-        axisLine: { lineStyle: { color: 'rgba(212,176,122,0.22)' } },
+        axisLine: { lineStyle: { color: CHART_LIGHT.axisLine } },
         axisLabel: {
-          color: 'rgba(232,242,248,0.58)',
-          fontSize: 10,
+          color: CHART_LIGHT.axis,
+          fontSize: 11,
+          fontWeight: 500,
           margin: 6,
           formatter(v) {
             return String(v).slice(5);
@@ -2680,10 +2700,11 @@
           min: 0,
           max: yMaxL,
           splitNumber: 3,
-          splitLine: { lineStyle: { color: 'rgba(255,255,255,0.05)', type: 'dashed' } },
+          splitLine: { lineStyle: { color: CHART_LIGHT.split, type: 'dashed' } },
           axisLabel: {
-            color: 'rgba(232,201,136,0.62)',
-            fontSize: 9,
+            color: CHART_LIGHT.axisMuted,
+            fontSize: 10,
+            fontWeight: 600,
             margin: 6,
             formatter: '{value}'
           },
@@ -2698,8 +2719,9 @@
           splitNumber: 3,
           splitLine: { show: false },
           axisLabel: {
-            color: 'rgba(126,200,240,0.62)',
-            fontSize: 9,
+            color: CHART_LIGHT.axisBlue,
+            fontSize: 10,
+            fontWeight: 600,
             margin: 6,
             formatter: '{value}'
           },
@@ -2721,7 +2743,7 @@
           itemStyle: {
             borderRadius: [6, 6, 2, 2],
             borderWidth: 1,
-            borderColor: 'rgba(255,240,200,0.38)',
+            borderColor: 'rgba(139,115,64,0.35)',
             color(p) {
               const isLast = p.dataIndex === lastIdx;
               return {
@@ -2732,14 +2754,14 @@
                 y2: 1,
                 colorStops: isLast
                   ? [
-                      { offset: 0, color: '#fff8dc' },
-                      { offset: 0.45, color: '#f0d080' },
-                      { offset: 1, color: '#a87830' }
+                      { offset: 0, color: '#E8C98A' },
+                      { offset: 0.45, color: '#C4A86B' },
+                      { offset: 1, color: '#8B7340' }
                     ]
                   : [
-                      { offset: 0, color: '#f5e0a8' },
-                      { offset: 0.55, color: '#d4a858' },
-                      { offset: 1, color: '#8a6530' }
+                      { offset: 0, color: '#DCC48A' },
+                      { offset: 0.55, color: '#B8924E' },
+                      { offset: 1, color: '#7A6135' }
                     ]
               };
             },
@@ -2749,9 +2771,9 @@
           },
           emphasis: {
             itemStyle: {
-              borderColor: 'rgba(255,248,220,0.9)',
+              borderColor: 'rgba(92,74,40,0.55)',
               shadowBlur: 8,
-              shadowColor: 'rgba(240,208,128,0.35)'
+              shadowColor: 'rgba(168,139,78,0.28)'
             }
           },
           z: 2
@@ -2771,12 +2793,12 @@
           },
           showSymbol: true,
           lineStyle: {
-            width: 2.2,
-            color: '#7ec8f0'
+            width: 2.4,
+            color: CHART_LIGHT.blue
           },
           itemStyle: {
-            color: '#0c1218',
-            borderColor: '#c8eeff',
+            color: '#FFFFFF',
+            borderColor: CHART_LIGHT.blue,
             borderWidth: 2
           },
           z: 4
@@ -3181,7 +3203,7 @@
           padAngle: 2,
           itemStyle: {
             borderRadius: 3,
-            borderColor: 'rgba(6,10,16,0.95)',
+            borderColor: '#FFFFFF',
             borderWidth: 2
           },
           label: { show: false },
@@ -3895,17 +3917,18 @@
         trigger: 'axis',
         axisPointer: {
           type: 'line',
-          lineStyle: { type: 'dashed', color: 'rgba(255,255,255,0.12)' }
+          lineStyle: { type: 'dashed', color: 'rgba(60,45,30,0.22)' }
         },
-        backgroundColor: 'rgba(10,14,20,0.94)',
-        borderColor: 'rgba(212,176,122,0.25)',
-        textStyle: { color: '#e8f2f8', fontSize: 11 },
+        backgroundColor: CHART_LIGHT.tipBg,
+        borderColor: CHART_LIGHT.tipBorder,
+        textStyle: { color: CHART_LIGHT.tipText, fontSize: 12 },
+        extraCssText: 'box-shadow:0 8px 24px rgba(60,45,30,0.12);border-radius:8px;',
         formatter(params) {
           if (!params || !params.length) return '';
           const idx = params[0].dataIndex;
           return (
-            labels[idx] +
-            '<br/><span style="color:#e8c988">● 出现概率 ' +
+            '<b style="color:#1A1A1A">' + labels[idx] + '</b>' +
+            '<br/><span style="color:' + CHART_LIGHT.goldDeep + '">● 出现概率 ' +
             data[idx] +
             '%</span>'
           );
@@ -3915,8 +3938,8 @@
         type: 'category',
         data: labels,
         boundaryGap: true,
-        axisLabel: { color: 'rgba(232,242,248,0.55)', fontSize: 10 },
-        axisLine: { lineStyle: { color: 'rgba(212,176,122,0.22)' } },
+        axisLabel: { color: CHART_LIGHT.axis, fontSize: 11, fontWeight: 500 },
+        axisLine: { lineStyle: { color: CHART_LIGHT.axisLine } },
         axisTick: { show: false }
       },
       yAxis: {
@@ -3924,11 +3947,12 @@
         max: 100,
         splitNumber: 3,
         axisLabel: {
-          color: 'rgba(232,201,136,0.58)',
-          fontSize: 9,
+          color: CHART_LIGHT.axisMuted,
+          fontSize: 10,
+          fontWeight: 600,
           formatter: '{value}%'
         },
-        splitLine: { lineStyle: { color: 'rgba(255,255,255,0.05)', type: 'dashed' } },
+        splitLine: { lineStyle: { color: CHART_LIGHT.split, type: 'dashed' } },
         axisLine: { show: false },
         axisTick: { show: false }
       },
@@ -3945,7 +3969,7 @@
           itemStyle: {
             borderRadius: [5, 5, 2, 2],
             borderWidth: 1,
-            borderColor: 'rgba(255,240,200,0.32)',
+            borderColor: 'rgba(139,115,64,0.35)',
             color(p) {
               const isLast = p.dataIndex === lastIdx;
               return {
@@ -3956,13 +3980,13 @@
                 y2: 1,
                 colorStops: isLast
                   ? [
-                      { offset: 0, color: '#fff8dc' },
-                      { offset: 0.45, color: '#f0d080' },
-                      { offset: 1, color: '#a87830' }
+                      { offset: 0, color: '#E8C98A' },
+                      { offset: 0.45, color: '#C4A86B' },
+                      { offset: 1, color: '#8B7340' }
                     ]
                   : [
-                      { offset: 0, color: 'rgba(232,201,136,0.88)' },
-                      { offset: 1, color: 'rgba(168,120,48,0.55)' }
+                      { offset: 0, color: '#DCC48A' },
+                      { offset: 1, color: '#8B7340' }
                     ]
               };
             }
@@ -3978,10 +4002,10 @@
             return p.dataIndex === lastIdx ? 7 : 0;
           },
           showSymbol: true,
-          lineStyle: { width: 2, color: '#7ec8f0' },
+          lineStyle: { width: 2.2, color: CHART_LIGHT.blue },
           itemStyle: {
-            color: '#0c1218',
-            borderColor: '#9ad8f5',
+            color: '#FFFFFF',
+            borderColor: CHART_LIGHT.blue,
             borderWidth: 2
           },
           z: 5
@@ -4010,21 +4034,22 @@
         trigger: 'axis',
         axisPointer: {
           type: 'line',
-          lineStyle: { type: 'dashed', color: 'rgba(255,255,255,0.12)' }
+          lineStyle: { type: 'dashed', color: 'rgba(60,45,30,0.22)' }
         },
-        backgroundColor: 'rgba(10,14,20,0.94)',
-        borderColor: 'rgba(212,176,122,0.25)',
-        textStyle: { color: '#e8f2f8', fontSize: 11 },
+        backgroundColor: CHART_LIGHT.tipBg,
+        borderColor: CHART_LIGHT.tipBorder,
+        textStyle: { color: CHART_LIGHT.tipText, fontSize: 12 },
+        extraCssText: 'box-shadow:0 8px 24px rgba(60,45,30,0.12);border-radius:8px;',
         formatter(params) {
           if (!params || !params.length) return '';
           const idx = params[0].dataIndex;
           return (
-            labels[idx] +
-            '<br/><span style="color:#e8c988">● 需求预测 ' +
+            '<b style="color:#1A1A1A">' + labels[idx] + '</b>' +
+            '<br/><span style="color:' + CHART_LIGHT.goldDeep + '">● 需求预测 ' +
             demand[idx] +
-            '</span><br/><span style="color:#7ec8f0">● 供给预测 ' +
+            '</span><br/><span style="color:' + CHART_LIGHT.blue + '">● 供给预测 ' +
             supply[idx] +
-            '</span><br/><span style="color:#f0a35a">△ 缺口 ' +
+            '</span><br/><span style="color:' + CHART_LIGHT.warn + '">△ 缺口 ' +
             (demand[idx] - supply[idx]) +
             '</span>'
           );
@@ -4034,15 +4059,15 @@
         type: 'category',
         data: labels,
         boundaryGap: true,
-        axisLabel: { color: 'rgba(232,242,248,0.55)', fontSize: 10 },
-        axisLine: { lineStyle: { color: 'rgba(212,176,122,0.22)' } },
+        axisLabel: { color: CHART_LIGHT.axis, fontSize: 11, fontWeight: 500 },
+        axisLine: { lineStyle: { color: CHART_LIGHT.axisLine } },
         axisTick: { show: false }
       },
       yAxis: {
         type: 'value',
         splitNumber: 3,
-        axisLabel: { color: 'rgba(232,201,136,0.58)', fontSize: 9 },
-        splitLine: { lineStyle: { color: 'rgba(255,255,255,0.05)', type: 'dashed' } },
+        axisLabel: { color: CHART_LIGHT.axisMuted, fontSize: 10, fontWeight: 600 },
+        splitLine: { lineStyle: { color: CHART_LIGHT.split, type: 'dashed' } },
         axisLine: { show: false },
         axisTick: { show: false }
       },
@@ -4059,7 +4084,7 @@
           itemStyle: {
             borderRadius: [5, 5, 2, 2],
             borderWidth: 1,
-            borderColor: 'rgba(255,240,200,0.28)',
+            borderColor: 'rgba(139,115,64,0.35)',
             color(p) {
               const isLast = p.dataIndex === lastIdx;
               return {
@@ -4070,13 +4095,13 @@
                 y2: 1,
                 colorStops: isLast
                   ? [
-                      { offset: 0, color: '#fff8dc' },
-                      { offset: 0.5, color: '#e8c988' },
-                      { offset: 1, color: '#9a7028' }
+                      { offset: 0, color: '#E8C98A' },
+                      { offset: 0.5, color: '#C4A86B' },
+                      { offset: 1, color: '#8B7340' }
                     ]
                   : [
-                      { offset: 0, color: 'rgba(232,201,136,0.78)' },
-                      { offset: 1, color: 'rgba(154,112,40,0.48)' }
+                      { offset: 0, color: '#DCC48A' },
+                      { offset: 1, color: '#8B7340' }
                     ]
               };
             }
@@ -4090,10 +4115,10 @@
           symbol: 'circle',
           symbolSize: 5,
           showSymbol: true,
-          lineStyle: { width: 2.2, color: '#7ec8f0' },
+          lineStyle: { width: 2.2, color: CHART_LIGHT.blue },
           itemStyle: {
-            color: '#0c1218',
-            borderColor: '#9ad8f5',
+            color: '#FFFFFF',
+            borderColor: CHART_LIGHT.blue,
             borderWidth: 1.5
           },
           markPoint: {
@@ -4102,11 +4127,11 @@
             label: {
               show: true,
               formatter: '缺口 ' + gap,
-              color: '#f0a35a',
-              fontSize: 10,
+              color: CHART_LIGHT.warn,
+              fontSize: 11,
               fontWeight: 700,
-              backgroundColor: 'rgba(10,14,20,0.82)',
-              borderColor: 'rgba(240,163,90,0.35)',
+              backgroundColor: 'rgba(255,255,255,0.95)',
+              borderColor: 'rgba(154,84,24,0.35)',
               borderWidth: 1,
               borderRadius: 4,
               padding: [3, 6]

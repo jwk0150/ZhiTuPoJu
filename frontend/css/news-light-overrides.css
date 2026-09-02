@@ -311,3 +311,178 @@ body[data-page="insight"] #view-evolution .evo-job-title,
 body[data-page="insight"] .page-title-block h1 {
   color: #1A1A1A !important;
 }
+
+/* —— 发现详情：浅金/粉彩字（深色主题遗留）→ 深墨金可读色 —— */
+.dd-bubble-stat em,
+.dd-note-card em,
+.dd-mod-jump-n,
+.dd-insight-sig em,
+.dd-fc-skill-row .idx,
+.dd-ind-side.is-job .lab,
+.dh-daily-kicker,
+.dd-fav-chip .conf {
+  color: #5C4A28 !important;
+}
+
+.dd-bubble-stat span,
+.dd-note-card p,
+.dd-mod-jump-lab span {
+  color: #374151 !important;
+}
+
+.dd-bubble-stat strong,
+.dd-note-card strong,
+.dd-mod-jump-lab strong,
+.dd-insight-sig strong {
+  color: #1A1A1A !important;
+}
+
+.dd-bubble-stat.is-gold strong,
+.dd-insight-sig.is-gold strong,
+.dd-bubble-stat.is-warm strong,
+.dd-ind-kpi strong.is-gold,
+.dd-fc-ind-kpi strong.is-gold {
+  color: #5C4A28 !important;
+}
+
+.dd-bubble-stat.is-up strong,
+.dd-insight-sig.is-up strong {
+  color: #2F6B5A !important;
+}
+
+.dd-bubble-stat.is-hot strong {
+  color: #9A5418 !important;
+}
+
+.dd-bubble-stat.is-warn strong,
+.dd-insight-sig.is-warn strong {
+  color: #9A3412 !important;
+}
+
+/* —— 发现详情图表：去黑底 —— */
+.dd-trend-chart-wrap,
+.dd-graph-chart-wrap,
+.dd-skill-constellation,
+.dd-fc-chart,
+.dd-ind-radar-host {
+  background: #FFFFFF !important;
+  border-color: rgba(168, 139, 78, 0.28) !important;
+  box-shadow: 0 4px 14px rgba(60, 45, 30, 0.06) !important;
+}
+.dd-graph-right {
+  background: #FAF8F5 !important;
+  border-left-color: rgba(168, 139, 78, 0.18) !important;
+}
+.dd-skill-item,
+.dd-share-card {
+  background: #FFFFFF !important;
+}
+.dd-trend-badge.is-surge {
+  color: #5C4A28 !important;
+  background: rgba(168, 139, 78, 0.12) !important;
+}
+
+/* —— 数字人才地图：右侧详情 + 图谱说明 —— */
+body[data-page="map"] .talent-map-lead {
+  display: block !important;
+  margin: 10px 0 2px;
+  max-width: 46rem;
+  padding: 10px 14px 10px 16px;
+  border-left: 3px solid #A88B4E;
+  background: rgba(255, 255, 255, 0.72);
+  border-radius: 0 10px 10px 0;
+  font-size: 14.5px;
+  line-height: 1.7;
+  color: #2F3747 !important;
+}
+body[data-page="map"] .talent-map-lead[hidden] {
+  display: none !important;
+}
+body[data-page="map"] .page-title-block h1 {
+  color: #111111 !important;
+}
+body[data-page="map"] .page-title-block .subtitle {
+  color: #4B5563 !important;
+}
+body[data-page="map"] .graph-detail,
+body[data-page="map"] #talent-detail-panel {
+  background: #FFFFFF !important;
+  color: #1A1A1A !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+}
+body[data-page="map"] .graph-detail .tech-detail-name,
+body[data-page="map"] .graph-detail .talent-job-detail-name,
+body[data-page="map"] #talent-hover-name {
+  color: #111111 !important;
+}
+body[data-page="map"] .graph-detail .tech-detail-text,
+body[data-page="map"] .graph-detail .detail-empty p,
+body[data-page="map"] .graph-detail .detail-stat-label,
+body[data-page="map"] .graph-detail .talent-job-detail-sub {
+  color: #1F2937 !important;
+}
+body[data-page="map"] .graph-detail .tech-detail-section-title,
+body[data-page="map"] .graph-detail .detail-section-title,
+body[data-page="map"] .graph-detail .detail-cat {
+  color: #3D3420 !important;
+}
+body[data-page="map"] .graph-detail .tech-detail-tag,
+body[data-page="map"] .graph-detail .talent-hover-skill {
+  color: #3D3420 !important;
+  background: rgba(168, 139, 78, 0.12) !important;
+  border-color: rgba(168, 139, 78, 0.3) !important;
+}
+body[data-page="map"] .graph-detail .graph-btn,
+body[data-page="map"] #talent-detail-province .graph-btn {
+  color: #5C4A28 !important;
+  background: #fff !important;
+  border-color: rgba(168, 139, 78, 0.4) !important;
+}
+body[data-page="map"] .graph-city-label,
+body[data-page="map"] #talent-layer-graph .graph-city-label {
+  color: #5C4A28 !important;
+  background: #fff !important;
+  text-shadow: none !important;
+}
+body[data-page="map"] .graph-mode-bubble,
+body[data-page="map"] #talent-layer-graph .graph-mode-bubble {
+  color: #5C4A28 !important;
+  background: #fff !important;
+}
+body[data-page="map"] .graph-mode-bubble.active,
+body[data-page="map"] #talent-layer-graph .graph-mode-bubble.active {
+  color: #1A1A1A !important;
+  background: rgba(168, 139, 78, 0.18) !important;
+}
+body[data-page="map"] .talent-province-header h2,
+body[data-page="map"] .talent-job-salary {
+  color: #1A1A1A !important;
+}
+body[data-page="map"] .talent-job-skill,
+body[data-page="map"] .talent-job-category,
+body[data-page="map"] .talent-job-btn {
+  color: #5C4A28 !important;
+}
+body[data-page="map"] #talent-detail-hover .detail-rel-item .name {
+  color: #1A1A1A !important;
+}
+body[data-page="map"] #talent-detail-hover .detail-rel-item .rel {
+  color: #6B7280 !important;
+}
+body[data-page="map"] #talent-hover-name {
+  color: #1A1A1A !important;
+}
+body[data-page="map"] .talent-chip-wrap .skill-matched,
+body[data-page="map"] #talent-prov-top-jobs .skill-matched {
+  color: #5C4A28 !important;
+  background: rgba(168, 139, 78, 0.12) !important;
+}
+body[data-page="map"] #talent-layer-graph .graph-btn {
+  color: #5C4A28 !important;
+  background: #fff !important;
+  border-color: rgba(168, 139, 78, 0.4) !important;
+}
+body[data-page="map"] .page-header {
+  align-items: flex-start !important;
+  margin-bottom: 14px !important;
+}

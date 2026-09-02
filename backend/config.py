@@ -47,8 +47,9 @@ class Config:
     RAG_MIN_RELEVANCE: float = float(os.getenv("RAG_MIN_RELEVANCE", "0.25"))
 
     # ============ PostgreSQL ============
+    # 默认经 SSH 隧道连远端云库（start_db_tunnel.cmd → 本机 5433）
     PG_HOST: str = os.getenv("PG_HOST", "127.0.0.1")
-    PG_PORT: int = int(os.getenv("PG_PORT", "5432"))  # 标准PostgreSQL端口
+    PG_PORT: int = int(os.getenv("PG_PORT", "5433"))
     PG_USER: str = os.getenv("PG_USER", "postgres")
     PG_PASSWORD: str = os.getenv("PG_PASSWORD", "")
     PG_DB: str = os.getenv("PG_DB", "zhitu_crawl_db")

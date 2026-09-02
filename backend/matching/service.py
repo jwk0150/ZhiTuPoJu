@@ -366,11 +366,14 @@ def _semantic_review(profile: dict[str, Any], jobs: list[dict[str, Any]]) -> tup
         timeout=60.0,
     )
     payload = _json_from_text(content) if content else {}
-    allowed_job_ids = {job["id"] for job in jobs}
+    allowed_job_ids = {str(job["id"]) for job in jobs}
     candidate_skills = {canonical_skill(item.get("name", "")) for item in profile.get("skills", [])}
     reviews: dict[str, dict[str, Any]] = {}
     for item in payload.get("items", []) if isinstance(payload.get("items"), list) else []:
-        if not isinstance(item, dict) or item.get("job_id") not in allowed_job_ids:
+        if not isinstance(item, dict):
+            continue
+        raw_id = item.get("job_id")
+        if raw_id is None or str(raw_id) not in allowed_job_ids:
             continue
         transfers = []
         for transfer in item.get("transferable_skills", []) if isinstance(item.get("transferable_skills"), list) else []:
@@ -390,12 +393,18 @@ def _semantic_review(profile: dict[str, Any], jobs: list[dict[str, Any]]) -> tup
                 "reason": str(transfer.get("reason") or "语义能力迁移")[:80],
                 "confidence": round(confidence, 2),
             })
-        reviews[item["job_id"]] = {
+        review_body = {
             "semantic_score": _score_value(item.get("semantic_score"), 55),
             "project_score": _score_value(item.get("project_score"), 50),
             "transferable_skills": transfers,
             "reason": str(item.get("reason") or "")[:100],
         }
+        reviews[str(raw_id)] = review_body
+        reviews[raw_id] = review_body
+        try:
+            reviews[int(raw_id)] = review_body
+        except (TypeError, ValueError):
+            pass
     return reviews, meta
 
 
@@ -444,7 +453,7 @@ def score_matches(
         preferred = [canonical_skill(skill) for skill in job.get("preferred_skills", [])]
         matched = [skill for skill in required if skill in candidate_skills]
         missing = [skill for skill in required if skill not in candidate_skills]
-        review = reviews.get(job["id"], {})
+        review = reviews.get(job["id"]) or reviews.get(str(job["id"]), {}) or {}
 
         transfers_by_target: dict[str, dict[str, Any]] = {}
         for target in missing:
@@ -677,8 +686,8 @@ def compare_with_perfect(profile: dict[str, Any], perfect: dict[str, Any], targe
         skill_coverage * 0.45 + experience_score * 0.15 + summary_score * 0.20 + education_match * 0.10
         + (10 if len(matched_skills) >= len(ideal_skills_raw) / 2 else 0), 1)
 
-    strengths = [s for s in matched_skills] if matched_skills else ["具备基础学习能力"]
-    weakness_list = [s for s in missing_skills] if missing_skills else ["建议强化岗位核心技能"]
+    strengths = list(matched_skills) if matched_skills else ["具备基础学习能力"]
+    weakness_list = list(missing_skills) if missing_skills else ["建议强化岗位核心技能"]
 
     skill_comparison = []
     for ideal in perfect.get("ideal_skills", [])[:12]:
@@ -700,14 +709,16 @@ def compare_with_perfect(profile: dict[str, Any], perfect: dict[str, Any], targe
 
     # Improvement suggestions
     suggestions = []
-    for skill in missing_skills[:5]:
+    missing_list = list(missing_skills)
+    matched_list = list(matched_skills)
+    for skill in missing_list[:5]:
         suggestions.append({
             "skill": skill,
-            "priority": "high" if len(missing_skills) <= 3 else "medium",
+            "priority": "high" if len(missing_list) <= 3 else "medium",
             "action": f"通过系统学习和项目实践掌握{skill}",
-            "effort_weeks": 3 if len(missing_skills) > 3 else 2,
+            "effort_weeks": 3 if len(missing_list) > 3 else 2,
         })
-    for i, skill in enumerate(matched_skills):
+    for i, skill in enumerate(matched_list):
         if i >= 3: break
         suggestions.append({
             "skill": skill,
@@ -876,8 +887,11 @@ def retrieve_candidate_jobs(
 ) -> list[dict[str, Any]]:
     """召回真实候选岗位并转换为 MatchingService 输入。
 
-    - target_job_id 指定时：只取该真实岗位（数值 job_id）
-    - 否则：KnowledgeService.hybrid_search 召回 top_k，附 Evidence chunk 信息
+    优先级：
+    1) target_job_id → 精确拉取
+    2) KnowledgeService.hybrid_search（需 document_chunks）
+    3) job_postings SQL 技能/标题粗排（无知识库表时也能通）
+    4) data.JOBS 演示岗位（库不可用时保证流程可演示）
     """
     from backend.knowledge.ingestion import fetch_jobs
     from backend.knowledge.service import KnowledgeService
@@ -887,43 +901,201 @@ def retrieve_candidate_jobs(
             rows = fetch_jobs(job_ids=[int(target_job_id)], limit=1)
         except (TypeError, ValueError):
             rows = []
+        except Exception:
+            rows = []
         jobs = [to_match_job_dict(r) for r in rows]
-        return jobs
+        if jobs:
+            for j in jobs:
+                j["_retrieval"] = "target"
+            return jobs
 
-    query, filters = build_retrieval_query(profile)
-    svc = KnowledgeService()
-    res = svc.hybrid_search(query, filters=filters, top_k=top_k)
-    if res.get("status") != "OK" or not res.get("results"):
+    # 2) 知识库 Hybrid（表缺失 / 未入库时安全降级）
+    try:
+        query, filters = build_retrieval_query(profile)
+        svc = KnowledgeService()
+        res = svc.hybrid_search(query, filters=filters, top_k=top_k)
+        if res.get("status") == "OK" and res.get("results"):
+            hits_by_job: dict[int, list[dict[str, Any]]] = {}
+            for hit in res["results"]:
+                job_id = hit.get("job_id")
+                if job_id is None:
+                    continue
+                base = {
+                    "job_id": job_id,
+                    "doc_id": hit.get("doc_id"),
+                    "source_name": hit.get("source_name"),
+                    "source_url": hit.get("source_url"),
+                    "score": hit.get("final_score"),
+                }
+                chunks = hit.get("chunks") or [{"chunk_id": hit.get("chunk_id"), "snippet": hit.get("snippet")}]
+                for c in chunks:
+                    hits_by_job.setdefault(job_id, []).append({
+                        **base,
+                        "chunk_id": c.get("chunk_id"),
+                        "snippet": c.get("snippet"),
+                    })
+
+            ids = [h["job_id"] for h in res["results"] if h.get("job_id")]
+            rows = fetch_jobs(job_ids=ids, limit=len(ids) or 1) if ids else []
+            jobs = []
+            for row in rows:
+                job = to_match_job_dict(row)
+                job["_evidence"] = hits_by_job.get(row["id"], [])
+                job["_retrieval"] = "hybrid"
+                jobs.append(job)
+            if jobs:
+                return jobs
+    except Exception:
+        pass
+
+    # 3) 直接从招聘表按画像粗排
+    try:
+        sql_jobs = _retrieve_jobs_from_postings(profile, top_k=top_k)
+        if sql_jobs:
+            return sql_jobs
+    except Exception:
+        pass
+
+    # 4) 演示岗位，保证全流程可通
+    demo = []
+    for raw in data.JOBS:
+        job = dict(raw)
+        job["_evidence"] = [{
+            "snippet": (job.get("description") or "")[:180],
+            "source_name": job.get("source") or "演示数据",
+            "source_url": None,
+        }]
+        job["_retrieval"] = "demo"
+        demo.append(job)
+    return demo[: max(1, min(top_k, len(demo)))]
+
+
+def _profile_skill_names(profile: dict[str, Any]) -> list[str]:
+    names: list[str] = []
+    for item in profile.get("skills") or []:
+        if isinstance(item, dict):
+            n = (item.get("name") or "").strip()
+        else:
+            n = str(item or "").strip()
+        if n:
+            names.append(n)
+    return names
+
+
+def _retrieve_jobs_from_postings(profile: dict[str, Any], top_k: int = 50) -> list[dict[str, Any]]:
+    """无 RAG 表时：从 job_postings 拉一批真实岗位，按技能/意向标题粗排。"""
+    from backend.knowledge.ingestion import fetch_jobs
+
+    skills = [s for s in _profile_skill_names(profile) if s]
+    target = (profile.get("target_role") or "").strip()
+    pool = fetch_jobs(limit=max(top_k * 6, 120))
+
+    # 额外按技能/意向关键词捞一批（近期表可能全是无关行业）
+    try:
+        keyed = _fetch_jobs_by_keywords(
+            [target] + skills[:6],
+            limit=max(top_k * 2, 40),
+        )
+        seen = {r.get("id") for r in pool}
+        for r in keyed:
+            if r.get("id") not in seen:
+                pool.append(r)
+                seen.add(r.get("id"))
+    except Exception:
+        pass
+
+    if not pool:
         return []
 
-    hits_by_job: dict[int, list[dict[str, Any]]] = {}
-    for hit in res["results"]:
-        job_id = hit.get("job_id")
-        if job_id is None:
-            continue
-        base = {
-            "job_id": job_id,
-            "doc_id": hit.get("doc_id"),
-            "source_name": hit.get("source_name"),
-            "source_url": hit.get("source_url"),
-            "score": hit.get("final_score"),
-        }
-        chunks = hit.get("chunks") or [{"chunk_id": hit.get("chunk_id"), "snippet": hit.get("snippet")}]
-        for c in chunks:
-            hits_by_job.setdefault(job_id, []).append({
-                **base,
-                "chunk_id": c.get("chunk_id"),
-                "snippet": c.get("snippet"),
-            })
+    skills_l = [s.lower() for s in skills]
+    target_l = target.lower()
+    city = (profile.get("city") or "").strip()
+    if city in ("未识别", "未知", ""):
+        city = ""
 
-    ids = [h["job_id"] for h in res["results"] if h.get("job_id")]
-    rows = fetch_jobs(job_ids=ids, limit=len(ids) or 1) if ids else []
-    jobs = []
-    for row in rows:
+    scored: list[tuple[float, dict[str, Any]]] = []
+    for row in pool:
         job = to_match_job_dict(row)
-        job["_evidence"] = hits_by_job.get(row["id"], [])
-        jobs.append(job)
-    return jobs
+        title = (job.get("title") or "").lower()
+        desc = (job.get("description") or "").lower()
+        req = [str(s).lower() for s in (job.get("required_skills") or [])]
+        blob = " ".join([title, desc, " ".join(req)])
+        score = 0.0
+        if target_l and target_l in title:
+            score += 12.0
+        elif target_l:
+            for token in target_l.replace("/", " ").replace("工程师", " ").split():
+                if len(token) >= 2 and token in title:
+                    score += 4.0
+        skill_hits = 0
+        for sk in skills_l:
+            if not sk:
+                continue
+            if sk in req or sk in title:
+                score += 4.0
+                skill_hits += 1
+            elif sk in blob:
+                score += 1.5
+                skill_hits += 1
+        job_city = job.get("city") or ""
+        if city and city in job_city:
+            score += 2.5
+        if skills_l and skill_hits == 0:
+            score *= 0.15
+        snippet = (job.get("description") or job.get("title") or "")[:180]
+        job["_evidence"] = [{
+            "snippet": snippet,
+            "source_name": job.get("source") or "招聘库",
+            "source_url": job.get("source_url"),
+            "job_id": job.get("id"),
+        }]
+        job["_retrieval"] = "sql"
+        scored.append((score, job))
+
+    scored.sort(key=lambda x: x[0], reverse=True)
+    best = scored[0][0] if scored else 0.0
+    if best < 3.5:
+        return []
+    return [j for _, j in scored[:top_k]]
+
+
+def _fetch_jobs_by_keywords(keywords: list[str], limit: int = 40) -> list[dict[str, Any]]:
+    """按标题/描述关键词从 job_postings 检索（不依赖 document_chunks）。"""
+    import psycopg2
+    from backend.config import config
+
+    keys = [k.strip() for k in keywords if k and len(str(k).strip()) >= 2][:8]
+    if not keys:
+        return []
+    wheres = []
+    params: list[Any] = []
+    for k in keys:
+        wheres.append("(jp.job_title ILIKE %s OR COALESCE(jpd.job_description,'') ILIKE %s OR COALESCE(jpd.job_requirement,'') ILIKE %s)")
+        like = f"%{k}%"
+        params.extend([like, like, like])
+    sql = f"""
+        SELECT jp.id, jp.source_name, jp.source_id, jp.job_title, jp.company_name,
+               jp.city, jp.district, jp.salary_min, jp.salary_max, jp.salary_unit,
+               jp.experience, jp.education, jp.job_type, jp.publish_time, jp.crawl_time,
+               jp.status, jpd.company_industry, jpd.company_size, jpd.company_nature,
+               jpd.job_description, jpd.job_requirement, jpd.job_highlights,
+               jpd.job_labels, jpd.skills, jpd.keywords, jpd.salary_description,
+               jpd.job_category_l1, jpd.job_category_l2, jpd.source_url
+        FROM job_postings jp
+        LEFT JOIN job_posting_details jpd ON jpd.job_id = jp.id
+        WHERE jp.status = 0 AND ({' OR '.join(wheres)})
+        ORDER BY jp.crawl_time DESC
+        LIMIT %s
+    """
+    params.append(limit)
+    with psycopg2.connect(
+        host=config.PG_HOST, port=config.PG_PORT, user=config.PG_USER,
+        password=config.PG_PASSWORD, dbname=config.PG_DB,
+    ) as conn:
+        with conn.cursor() as cur:
+            cur.execute(sql, params)
+            cols = [d[0] for d in cur.description]
+            return [dict(zip(cols, row)) for row in cur.fetchall()]
 
 
 def _empty_diagnose_result(
@@ -1041,7 +1213,8 @@ def diagnose_from_profile(
     if not jobs:
         return _empty_diagnose_result(profile, document, parse_meta)
 
-    reviews, review_meta = _semantic_review(profile, jobs)
+    # 语义审查只送前 12 个，避免超时；评分仍覆盖全部候选
+    reviews, review_meta = _semantic_review(profile, jobs[:12])
     matches = score_matches(profile, reviews, jobs=jobs)
     # Evidence 挂到每个匹配结果（供前端溯源）
     for m in matches:
@@ -1087,6 +1260,18 @@ def diagnose_from_profile(
     if review_meta.get("error"):
         errors.append(review_meta["error"])
 
+    retrieval_modes = {(j.get("_retrieval") or "unknown") for j in jobs}
+    if "hybrid" in retrieval_modes:
+        retrieve_mode = "hybrid"
+    elif "sql" in retrieval_modes:
+        retrieve_mode = "sql-fallback"
+    elif "demo" in retrieval_modes:
+        retrieve_mode = "demo-jobs"
+    elif "target" in retrieval_modes:
+        retrieve_mode = "target"
+    else:
+        retrieve_mode = "deepseek-semantic" if llm_used else "local-fallback"
+
     # Perfect Resume + Comparison + Job Analysis
     perfect_resume: dict[str, Any] = {}
     competitiveness: dict[str, Any] = {}
@@ -1123,7 +1308,7 @@ def diagnose_from_profile(
         "model": {
             "used": llm_used,
             "name": model_name,
-            "mode": "deepseek-semantic" if llm_used else "local-fallback",
+            "mode": retrieve_mode if retrieve_mode in ("hybrid", "sql-fallback", "demo-jobs", "target") else ("deepseek-semantic" if llm_used else "local-fallback"),
             "error": "；".join(errors)[:300] if errors else None,
             "compare_error": compare_error,
         },
@@ -1131,7 +1316,7 @@ def diagnose_from_profile(
             {"key": "upload", "label": "文件校验", "status": "done"},
             {"key": "extract", "label": "版面解析", "status": "done"},
             {"key": "profile", "label": "DeepSeek画像", "status": "done" if profile.get("source") == "deepseek" else "fallback"},
-            {"key": "retrieve", "label": "候选岗位召回", "status": "done"},
+            {"key": "retrieve", "label": "候选岗位召回", "status": "done" if jobs else "empty"},
             {"key": "semantic", "label": "语义匹配", "status": "done" if reviews else "fallback"},
             {"key": "graph", "label": "图谱推理", "status": "done"},
             {"key": "plan", "label": "路径规划", "status": "done"},

@@ -55,8 +55,8 @@ async def diagnose_resume(
         document = service.extract_document(filename, content)
         profile, parse_meta = service.parse_resume(document["text"], filename)
 
-        # 2) 候选岗位召回（KnowledgeService Hybrid；target_job_id 时只取该岗位）
-        jobs = service.retrieve_candidate_jobs(profile, top_k=50, target_job_id=target_job_id)
+        # 2) 候选岗位召回（Hybrid → SQL → Demo）
+        jobs = service.retrieve_candidate_jobs(profile, top_k=20, target_job_id=target_job_id)
 
         # 3) 评分 + Evidence + DeepSeek 解释
         result = service.diagnose_from_profile(

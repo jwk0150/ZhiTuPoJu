@@ -517,7 +517,7 @@ function talentFormatSalary(val) {
 function talentProvinceHotLabel(hotIndex) {
     var h = Number(hotIndex) || 0;
     if (h >= 80) return { text: '热门高地', tone: '#f0a8a8', bg: 'rgba(244,63,94,.18)' };
-    if (h >= 60) return { text: '活跃增长', tone: '#e4cfa0', bg: 'rgba(201,168,106,.18)' };
+    if (h >= 60) return { text: '活跃增长', tone: '#5C4A28', bg: 'rgba(201,168,106,.18)' };
     return { text: '蓄势上升', tone: '#9aada5', bg: 'rgba(154,173,165,.14)' };
 }
 
@@ -535,11 +535,11 @@ function talentMapProvinceTooltipHtml(p) {
     };
     return '<div style="min-width:220px;max-width:280px;padding:14px 16px 12px">'
         + '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px">'
-        + '<div style="font-size:16px;font-weight:700;color:#e4cfa0;letter-spacing:.02em">' + (p.name || '') + '</div>'
+        + '<div style="font-size:16px;font-weight:700;color:#1A1A1A;letter-spacing:.02em">' + (p.name || '') + '</div>'
         + '<span style="flex-shrink:0;font-size:10px;font-weight:600;padding:3px 8px;border-radius:999px;background:' + badge.bg + ';color:' + badge.tone + ';border:1px solid rgba(201,168,106,.22)">' + badge.text + '</span>'
         + '</div>'
         + '<div style="font-size:10px;color:#6f837b;margin:-4px 0 10px;letter-spacing:.08em;text-transform:uppercase">数字人才 · 省份速览</div>'
-        + row('岗位数量', (p.jobCount || 0).toLocaleString(), '#e4cfa0')
+        + row('岗位数量', (p.jobCount || 0).toLocaleString(), '#5C4A28')
         + row('热门指数', (p.hotIndex != null ? p.hotIndex : '--'), '#d5e0db')
         + row('增长率', growthText, growthColor)
         + row('平均薪资', talentFormatSalary(p.avgSalary), '#d5e0db')
@@ -563,10 +563,10 @@ function talentMapCityTooltipHtml(city) {
     };
     return '<div style="min-width:200px;max-width:260px;padding:14px 16px 12px">'
         + '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px">'
-        + '<div style="font-size:15px;font-weight:700;color:#e4cfa0">' + name + '</div>'
-        + '<span style="font-size:10px;font-weight:600;padding:3px 8px;border-radius:999px;background:rgba(201,168,106,.16);color:#e4cfa0;border:1px solid rgba(201,168,106,.22)">地区</span>'
+        + '<div style="font-size:15px;font-weight:700;color:#1A1A1A">' + name + '</div>'
+        + '<span style="font-size:10px;font-weight:600;padding:3px 8px;border-radius:999px;background:rgba(201,168,106,.16);color:#1A1A1A;border:1px solid rgba(201,168,106,.22)">地区</span>'
         + '</div>'
-        + row('岗位数量', (city.jobCount || 0).toLocaleString(), '#e4cfa0')
+        + row('岗位数量', (city.jobCount || 0).toLocaleString(), '#5C4A28')
         + row('平均薪资', talentFormatSalary(city.avgSalary), '#d5e0db')
         + '<div style="margin-top:10px;padding-top:8px;font-size:11px;color:rgba(228,207,160,.72)">悬停查看地区概览</div>'
         + '</div>';
@@ -1472,8 +1472,21 @@ window.talentMapSelect = function(province) {
     return renderPromise;
 };
 
+window.talentSetMapLead = function(text) {
+    var lead = document.getElementById('talent-map-lead');
+    if (!lead) return;
+    var t = (text || '').trim();
+    lead.textContent = t;
+    if (t) {
+        lead.removeAttribute('hidden');
+        lead.hidden = false;
+    } else {
+        lead.setAttribute('hidden', '');
+        lead.hidden = true;
+    }
+};
 // 动态更新页面标题
-window.talentUpdatePageTitle = function(name) {
+window.talentUpdatePageTitle = function(name, leadText) {
     var h1 = document.querySelector('#view-map .page-title-block h1');
     var sub = document.querySelector('#view-map .page-title-block .subtitle');
     if (h1) {
@@ -1484,12 +1497,14 @@ window.talentUpdatePageTitle = function(name) {
         h1.style.maxWidth = 'min(720px, 70vw)';
     }
     if (sub) sub.textContent = '岗位分布 · 技能需求 · 人才画像';
+    window.talentSetMapLead(leadText || ((name || '') + '地区岗位与技能需求概览：先浏览热门岗位，再进入技术图谱查看能力关联。'));
 };
 window.talentRestorePageTitle = function() {
     var h1 = document.querySelector('#view-map .page-title-block h1');
     var sub = document.querySelector('#view-map .page-title-block .subtitle');
     if (h1) h1.textContent = '数字人才地图';
     if (sub) sub.textContent = '全国人才分布 · 省份岗位洞察 · 岗位-能力知识图谱 · ';
+    window.talentSetMapLead('悬停省份可预览热度与薪资；点击进入城市岗位列表，再打开岗位技术图谱查看技能关联。');
 };
 // 地图聚焦到省份（平滑缩放 + 高亮）
 window.talentFocusProvince = function(province) {
@@ -1715,7 +1730,7 @@ window.talentRenderCityMap = function(provinceName) {
                 var badge = document.getElementById('talent-hover-badge');
                 badge.textContent = '地区';
                 badge.style.background = 'rgba(201,168,106,.16)';
-                badge.style.color = '#e4cfa0';
+                badge.style.color = '#5C4A28';
                 document.getElementById('talent-hover-hot-wrap').style.display = 'none';
                 document.getElementById('talent-hover-growth-wrap').style.display = 'none';
                 document.getElementById('talent-hover-city-block').style.display = 'block';
@@ -1773,7 +1788,7 @@ window.talentRenderCityMap = function(provinceName) {
         var badge = document.getElementById('talent-hover-badge');
         badge.textContent = '地区';
         badge.style.background = 'rgba(201,168,106,.16)';
-        badge.style.color = '#e4cfa0';
+        badge.style.color = '#5C4A28';
         document.getElementById('talent-hover-hot-wrap').style.display = 'none';
         document.getElementById('talent-hover-growth-wrap').style.display = 'none';
         document.getElementById('talent-hover-city-block').style.display = 'block';
@@ -2115,7 +2130,7 @@ window.talentMapApplyFilter = async function() {
             if (badge) {
                 badge.textContent = '地区';
                 badge.style.background = 'rgba(201,168,106,.16)';
-                badge.style.color = '#e4cfa0';
+                badge.style.color = '#5C4A28';
             }
             document.getElementById('talent-hover-hot-wrap').style.display = 'none';
             document.getElementById('talent-hover-growth-wrap').style.display = 'none';
@@ -3817,31 +3832,37 @@ window.renderTechDetail = async function(techName, frequency, ratio) {
         if (techDetailState.currentCity) url += '?city_name=' + encodeURIComponent(techDetailState.currentCity);
         var res = await fetch(url);
         var json = await res.json();
-        techDetail = (json.data || json);
+        var payload = (json && (json.data !== undefined ? json.data : json)) || null;
+        if (res.ok && payload && (payload.intro || payload.scenarios || payload.uses || payload.name || payload.techName)) {
+            techDetail = payload;
+        }
     } catch(e) {
         console.warn('[TechDetail] API失败', e);
     }
     
     if (!techDetail) {
-        talentSwapDetailHTML(panel, '<div class="detail-content"><div class="tech-detail-header"><span class="tech-detail-name">' + techName + '</span></div>'
-            + '<div class="tech-detail-section"><div class="tech-detail-section-title">技术简介</div><div class="tech-detail-text">' + _generateTechIntro(techName) + '</div></div>'
-            + '<div class="tech-detail-section"><div class="tech-detail-section-title">应用场景</div><div class="tech-detail-text">' + _generateTechScenario(techName) + '</div></div>'
-            + '<button class="graph-btn" style="margin-top:16px;width:100%;justify-content:center;border-color:rgba(212,175,55,.4);color:rgba(184,134,11,.95)" onclick="window.talentRestoreProvincePanel()">← 返回岗位分析</button></div>');
+        var fbTitle = 'color:#3D3420';
+        var fbText = 'color:#1F2937';
+        talentSwapDetailHTML(panel, '<div class="detail-content tech-detail-ink"><button class="graph-btn" style="margin-bottom:12px;font-size:11px" onclick="window.talentRestoreProvincePanel()">← 返回岗位分析</button>'
+            + '<div class="tech-detail-header"><span class="tech-detail-name" style="color:#1A1A1A">' + techName + '</span></div>'
+            + '<div class="tech-detail-section"><div class="tech-detail-section-title" style="' + fbTitle + '">技术简介</div><div class="tech-detail-text" style="' + fbText + '">' + _generateTechIntro(techName) + '</div></div>'
+            + '<div class="tech-detail-section"><div class="tech-detail-section-title" style="' + fbTitle + '">应用场景</div><div class="tech-detail-text" style="' + fbText + '">' + _generateTechScenario(techName) + '</div></div>'
+            + '</div>');
         return;
     }
     
     // 构建详情HTML（墨金高对比：内联色，避免旧 CSS / 缓存导致紫青低可读）
     var hotStars = '';
     var hl = techDetail.hotLevel || 3;
-    for (var i = 0; i < 5; i++) hotStars += '<span class="tech-detail-hot-star" style="color:' + (i < hl ? '#e4cfa0' : 'rgba(255,255,255,.18)') + '">★</span>';
-    var tagGold = 'background:rgba(201,168,106,.16);color:#f0e2c0;border:1px solid rgba(201,168,106,.4)';
-    var tagMint = 'background:rgba(143,168,148,.24);color:#eef3ef;border:1px solid rgba(168,184,154,.45)';
-    var titleC = 'color:#c9a86a';
-    var textC = 'color:#d8e2dc';
+    for (var i = 0; i < 5; i++) hotStars += '<span class="tech-detail-hot-star" style="color:' + (i < hl ? '#8B7340' : 'rgba(0,0,0,.18)') + '">★</span>';
+    var tagGold = 'background:rgba(168,139,78,.12);color:#3D3420;border:1px solid rgba(168,139,78,.35)';
+    var tagMint = 'background:rgba(47,107,90,.1);color:#1F5C4C;border:1px solid rgba(47,107,90,.28)';
+    var titleC = 'color:#3D3420';
+    var textC = 'color:#1F2937';
 
     var html = '<div class="detail-content tech-detail-ink">';
-    html += '<button class="graph-btn" style="margin-bottom:12px;font-size:11px;border-color:rgba(201,168,106,.4);color:#e4cfa0;background:rgba(201,168,106,.1)" onclick="window.talentRestoreProvincePanel()">← 返回岗位分析</button>';
-    html += '<div class="tech-detail-header"><span class="tech-detail-name" style="color:#eef3ef">' + techName + '</span><div class="tech-detail-hot">' + hotStars + '</div></div>';
+    html += '<button class="graph-btn" style="margin-bottom:12px;font-size:11px" onclick="window.talentRestoreProvincePanel()">← 返回岗位分析</button>';
+    html += '<div class="tech-detail-header"><span class="tech-detail-name" style="color:#1A1A1A">' + techName + '</span><div class="tech-detail-hot">' + hotStars + '</div></div>';
     html += '<div class="tech-detail-section"><div class="tech-detail-section-title" style="' + titleC + '">技术简介</div><div class="tech-detail-text" style="' + textC + '">' + (techDetail.intro || _generateTechIntro(techName)) + '</div></div>';
     html += '<div class="tech-detail-section"><div class="tech-detail-section-title" style="' + titleC + '">技术用途</div><div class="tech-detail-tag-list">';
     var uses = techDetail.uses && techDetail.uses.length ? techDetail.uses : ['开发', '调试', '部署', '维护', '优化'];
@@ -3854,7 +3875,7 @@ window.renderTechDetail = async function(techName, frequency, ratio) {
     html += '</div></div>';
     html += '<div class="tech-detail-section"><div class="tech-detail-section-title" style="' + titleC + '">学习路径建议</div><div class="tech-detail-path">';
     (techDetail.learningPath || ['入门基础', '核心应用', '项目实战', '原理深入', '架构设计']).forEach(function(p, i) {
-        if (i > 0) html += '<span class="tech-detail-path-arrow" style="color:rgba(228,207,160,.7)">→</span>';
+        if (i > 0) html += '<span class="tech-detail-path-arrow" style="color:#8B7340">→</span>';
         html += '<span class="tech-detail-path-item" style="' + tagMint + ';padding:4px 10px;border-radius:6px">' + p + '</span>';
     });
     html += '</div></div>';
@@ -3867,10 +3888,10 @@ window.renderTechDetail = async function(techName, frequency, ratio) {
     }
     if (techDetail.stats) {
         var st = techDetail.stats;
-        html += '<div class="tech-detail-stats" style="background:rgba(8,16,14,.55);border:1px solid rgba(201,168,106,.28);border-radius:10px;padding:12px;margin-top:16px"><div class="tech-detail-section-title" style="' + titleC + '">数据统计</div>';
+        html += '<div class="tech-detail-stats" style="background:#FAF8F5;border:1px solid rgba(168,139,78,.28);border-radius:10px;padding:12px;margin-top:16px"><div class="tech-detail-section-title" style="' + titleC + '">数据统计</div>';
         if (st.jobCount > 0) {
-            html += '<div class="tech-detail-stat-row" style="display:flex;justify-content:space-between;gap:12px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.08)"><span style="color:rgba(213,224,219,.68)">需求岗位数</span><span style="color:#e4cfa0">' + st.jobCount + '</span></div>';
-            html += '<div class="tech-detail-stat-row" style="display:flex;justify-content:space-between;gap:12px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.08)"><span style="color:rgba(213,224,219,.68)">需求占比</span><span style="color:#e4cfa0">' + (st.jobRatio || '--') + '</span></div>';
+            html += '<div class="tech-detail-stat-row" style="display:flex;justify-content:space-between;gap:12px;padding:6px 0;border-bottom:1px solid rgba(0,0,0,.06)"><span style="color:#4B5563">需求岗位数</span><span style="color:#5C4A28;font-weight:600">' + st.jobCount + '</span></div>';
+            html += '<div class="tech-detail-stat-row" style="display:flex;justify-content:space-between;gap:12px;padding:6px 0;border-bottom:1px solid rgba(0,0,0,.06)"><span style="color:#4B5563">需求占比</span><span style="color:#5C4A28;font-weight:600">' + (st.jobRatio || '--') + '</span></div>';
         }
         if (st.relatedCities && st.relatedCities.length) {
             var cities = st.relatedCities.map(function(c) {
@@ -3879,11 +3900,11 @@ window.renderTechDetail = async function(techName, frequency, ratio) {
             var seenC = {};
             cities = cities.filter(function(c) { if (seenC[c]) return false; seenC[c] = 1; return true; }).slice(0, 6);
             if (cities.length) {
-                html += '<div class="tech-detail-stat-row" style="display:flex;justify-content:space-between;gap:12px;padding:6px 0;align-items:flex-start"><span style="color:rgba(213,224,219,.68);flex-shrink:0">关联城市</span><span style="color:#e4cfa0;text-align:right;line-height:1.55;word-break:break-word">' + cities.join('、') + '</span></div>';
+                html += '<div class="tech-detail-stat-row" style="display:flex;justify-content:space-between;gap:12px;padding:6px 0;align-items:flex-start"><span style="color:#4B5563;flex-shrink:0">关联城市</span><span style="color:#1A1A1A;text-align:right;line-height:1.55;word-break:break-word">' + cities.join('、') + '</span></div>';
             }
         }
         if (st.relatedJobs && st.relatedJobs.length) {
-            html += '<div class="tech-detail-stat-row" style="display:flex;justify-content:space-between;gap:12px;padding:6px 0;align-items:flex-start"><span style="color:rgba(213,224,219,.68);flex-shrink:0">关联岗位</span><span style="color:#d8e2dc;font-size:12px;text-align:right;line-height:1.55;word-break:break-word">' + st.relatedJobs.slice(0,5).map(function(j) { return j.name; }).join('、') + '</span></div>';
+            html += '<div class="tech-detail-stat-row" style="display:flex;justify-content:space-between;gap:12px;padding:6px 0;align-items:flex-start"><span style="color:#4B5563;flex-shrink:0">关联岗位</span><span style="color:#374151;font-size:12px;text-align:right;line-height:1.55;word-break:break-word">' + st.relatedJobs.slice(0,5).map(function(j) { return j.name; }).join('、') + '</span></div>';
         }
         html += '</div>';
     }
@@ -3994,11 +4015,18 @@ window.talentMapEnterGraph = function(jobNameOverride) {
     talentSyncGraphToggle();
     talentGraphChromeEnter();
 
-    // 设置右侧面板显示提示（软切入）
+    // 设置右侧面板显示提示（浅色可读）
     if (provPanel) {
-        var hint = '<div class="detail-content" style="padding:20px"><div class="detail-empty" style="color:#d5e0db"><svg viewBox="0 0 80 80" fill="none" stroke="#c9a86a" stroke-width="1.5" width="64" height="64"><circle cx="40" cy="40" r="30"/><path d="M40 20v20l14 7"/><circle cx="40" cy="40" r="6" fill="#c9a86a"/></svg><p style="color:#e4cfa0;font-weight:650;margin:16px 0 4px;font-size:15px">' + jobName + ' · 岗位能力图谱</p><p style="color:#c5d2cb;font-size:13px;line-height:1.7">展示' + jobName + '的<br>核心技术需求分布<br><br>点击脑图技术节点<br>查看详细分析</p></div></div>';
+        var hint = '<div class="detail-content" style="padding:20px"><div class="detail-empty">'
+            + '<svg viewBox="0 0 80 80" fill="none" stroke="#8B7340" stroke-width="1.5" width="64" height="64"><circle cx="40" cy="40" r="30"/><path d="M40 20v20l14 7"/><circle cx="40" cy="40" r="6" fill="#8B7340"/></svg>'
+            + '<p style="color:#1A1A1A;font-weight:650;margin:16px 0 4px;font-size:15px">' + jobName + ' · 岗位能力图谱</p>'
+            + '<p style="color:#374151;font-size:13px;line-height:1.7">中心节点为岗位，周围为关联技术。<br>点击技术节点，右侧可查看简介、场景与学习路径。</p>'
+            + '</div></div>';
         provPanel.style.display = 'block';
         talentSwapDetailHTML(provPanel, hint);
+    }
+    if (window.talentSetMapLead) {
+        window.talentSetMapLead('「' + jobName + '」技术图谱：中心是岗位，周围是本地区招聘中高频出现的技能。点选节点可在右侧阅读简介与学习建议。');
     }
 
     var graphWrap = document.getElementById('talent-graph-container');
