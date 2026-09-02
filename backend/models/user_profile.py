@@ -10,6 +10,7 @@ from sqlalchemy import (
     SmallInteger,
     String,
     Text,
+    UniqueConstraint,
 )
 from sqlalchemy.dialects.postgresql import ARRAY, JSONB
 from sqlalchemy.orm import Mapped, mapped_column
@@ -49,6 +50,7 @@ class Resume(Base):
     filepath: Mapped[Optional[str]] = mapped_column(String(1024))
     file_type: Mapped[Optional[str]] = mapped_column(String(16))
     content: Mapped[Optional[str]] = mapped_column(Text)
+    extra_metadata: Mapped[Optional[dict]] = mapped_column("metadata", JSONB)
     status: Mapped[Optional[str]] = mapped_column(String(32), default="uploaded")
     created_at: Mapped[Optional[datetime]] = mapped_column(DateTime)
     updated_at: Mapped[Optional[datetime]] = mapped_column(DateTime)
@@ -87,3 +89,21 @@ class CareerReport(Base):
     match_jobs: Mapped[Optional[dict]] = mapped_column(JSONB)
     raw_analysis: Mapped[Optional[dict]] = mapped_column(JSONB)
     created_at: Mapped[Optional[datetime]] = mapped_column(DateTime)
+
+
+class UserFavorite(Base):
+    """用户收藏（新闻 / 发现 / 预测 / 人岗匹配统一记录）。"""
+    __tablename__ = "user_favorites"
+    __table_args__ = (
+        UniqueConstraint("user_id", "source", "item_id", name="uq_user_favorite_item"),
+        {"schema": "user_center"},
+    )
+
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
+    user_id: Mapped[str] = mapped_column(String(64), index=True)
+    source: Mapped[str] = mapped_column(String(32))
+    item_id: Mapped[str] = mapped_column(String(256))
+    title: Mapped[Optional[str]] = mapped_column(String(512))
+    payload: Mapped[Optional[dict]] = mapped_column(JSONB)
+    created_at: Mapped[Optional[datetime]] = mapped_column(DateTime)
+    updated_at: Mapped[Optional[datetime]] = mapped_column(DateTime)

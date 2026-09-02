@@ -147,6 +147,20 @@ def login(req: LoginRequest):
     if not user or user["password"] != password:
         return error(40101, "用户名或密码错误")
 
+    # 兼容历史 JSON 账号：首次登录时补建用户中心主档。
+    try:
+        from backend.db import SessionLocal
+        from backend.models.user_profile import UserProfile
+        db = SessionLocal()
+        try:
+            if not db.query(UserProfile).filter(UserProfile.user_id == username).first():
+                db.add(UserProfile(user_id=username, name=username, completion=20))
+                db.commit()
+        finally:
+            db.close()
+    except Exception:
+        pass
+
     token = create_token(user["username"], user["role"])
     return ok({
         "token": token,
@@ -178,6 +192,21 @@ def register(req: RegisterRequest):
         "role": "user",
     }
     save_users()
+
+    # 注册即初始化用户中心资料，后续简历/收藏均可关联到该账号。
+    try:
+        from backend.db import SessionLocal
+        from backend.models.user_profile import UserProfile
+        db = SessionLocal()
+        try:
+            if not db.query(UserProfile).filter(UserProfile.user_id == username).first():
+                db.add(UserProfile(user_id=username, name=username, completion=20))
+                db.commit()
+        finally:
+            db.close()
+    except Exception:
+        # 数据库暂不可用时不影响已有 JSON 认证流程，首次访问用户中心时再创建资料。
+        pass
 
     return ok({"username": username, "role": "user"})
 

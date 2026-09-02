@@ -223,7 +223,7 @@ window.openSourceDetail = function(sourceName, tab) {
     const detail = window.sourceDetailData[sourceName];
     if (!detail) return;
     const data = window.sourceDetailData[sourceName];
-    const stats = window.Store.state.activities.filter(a => a.title.includes(sourceName)).length || Math.floor(Math.random()*50+10);
+    const stats = window.Store.state.activities.filter(a => a.title.includes(sourceName)).length;
     const detailPage = document.getElementById('collection-detail-page');
     const listPage = document.getElementById('collection-list-page');
     if (!detailPage || !listPage) return;
@@ -274,10 +274,10 @@ window.openSourceDetail = function(sourceName, tab) {
                 </div>
             </div>
             <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px">
-                <div class="detail-stat"><div class="detail-stat-label">今日采集</div><div class="detail-stat-value">${(2000 + Math.floor(Math.random()*3000)).toLocaleString()}</div></div>
-                <div class="detail-stat"><div class="detail-stat-label">成功率</div><div class="detail-stat-value">${(88 + Math.random()*10).toFixed(1)}%</div></div>
-                <div class="detail-stat"><div class="detail-stat-label">平均延迟</div><div class="detail-stat-value">${(1 + Math.random()*3).toFixed(1)}s</div></div>
-                <div class="detail-stat"><div class="detail-stat-label">最近活跃</div><div class="detail-stat-value">${Math.floor(Math.random()*5+1)}分钟前</div></div>
+                <div class="detail-stat"><div class="detail-stat-label">今日采集</div><div class="detail-stat-value">${stats ? stats.toLocaleString() : '—'}</div></div>
+                <div class="detail-stat"><div class="detail-stat-label">成功率</div><div class="detail-stat-value">—</div></div>
+                <div class="detail-stat"><div class="detail-stat-label">平均延迟</div><div class="detail-stat-value">—</div></div>
+                <div class="detail-stat"><div class="detail-stat-label">最近活跃</div><div class="detail-stat-value">${stats ? '有记录' : '暂无记录'}</div></div>
             </div>
             <div class="source-detail-tabs">
                 <div class="source-tab ${tab === 'overview' ? 'active' : ''}" onclick="window.switchSourceTab('overview')">概览</div>
@@ -308,7 +308,8 @@ window.openSourceDetail = function(sourceName, tab) {
                     tooltip:{trigger:'axis', backgroundColor:'rgba(10,14,39,.95)', borderWidth:0, textStyle:{color:'#fff'}},
                     xAxis:{type:'category',data:['7/13','7/14','7/15','7/16','7/17','7/18','7/19'],axisLabel:{color:'#475569', fontSize:11},axisLine:{lineStyle:{color:'#e2e8f0'}}},
                     yAxis:{type:'value',axisLabel:{color:'#475569', fontSize:11},splitLine:{lineStyle:{color:'#f1f3f9'}}},
-                    series:[{type:'line',smooth:true,symbolSize:8,lineStyle:{width:3, color:data.color},itemStyle:{color:data.color},areaStyle:{color:{type:'linear',x:0,y:0,x2:0,y2:1,colorStops:[{offset:0,color:data.color+'66'},{offset:1,color:data.color+'00'}]}},data:Array.from({length:7}, () => 2000 + Math.floor(Math.random()*2500))}]
+                    series:[{type:'line',smooth:true,symbolSize:8,lineStyle:{width:3, color:data.color},itemStyle:{color:data.color},data:[]}],
+                    graphic: [{type:'text', left:'center', top:'middle', style:{text:'暂无可用采集趋势', fill:'#94a3b8', fontSize:13}}]
                 });
             }
             const statusEl = document.getElementById('chart-source-status');
@@ -318,11 +319,8 @@ window.openSourceDetail = function(sourceName, tab) {
                     textStyle:{fontFamily:'DM Sans', color:'#475569'},
                     tooltip:{trigger:'item', backgroundColor:'rgba(10,14,39,.95)', borderWidth:0, textStyle:{color:'#fff'}},
                     legend:{orient:'vertical', right:0, top:'center', textStyle:{color:'#475569', fontSize:11}},
-                    series:[{type:'pie',radius:['45%','75%'],center:['35%','50%'],itemStyle:{borderRadius:6,borderColor:'#fff',borderWidth:3},label:{show:false},data:[
-                        {value: Math.floor(Math.random()*500+3500), name:'成功', itemStyle:{color:'#10b981'}},
-                        {value: Math.floor(Math.random()*150+150), name:'反爬触发', itemStyle:{color:'#f59e0b'}},
-                        {value: Math.floor(Math.random()*50+30), name:'失败', itemStyle:{color:'#ef4444'}}
-                    ]}]
+                    series:[{type:'pie',radius:['45%','75%'],center:['35%','50%'],itemStyle:{borderRadius:6,borderColor:'#fff',borderWidth:3},label:{show:false},data:[]}],
+                    graphic: [{type:'text', left:'center', top:'middle', style:{text:'暂无状态统计', fill:'#94a3b8', fontSize:13}}]
                 });
             }
         }, 80);

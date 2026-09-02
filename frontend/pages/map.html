@@ -1,38 +1,19 @@
-﻿shou<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <title>执图破局 · 数字人才地图</title>
-  <link rel="stylesheet" href="../css/tokens.css?v=lightfix1" />
-  <link rel="stylesheet" href="../css/shell.css?v=lightfix1" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <link rel="stylesheet" href="../css/tokens.css?v=20260823d" />
+  <link rel="stylesheet" href="../css/shell.css?v=20260824a" />
   <link rel="stylesheet" href="../css/components.css?v=20260824a" />
-  <link rel="stylesheet" href="../css/legacy-views.css?v=mapfix3" />
-  <link rel="preload" href="../assets/china-geo.json" as="fetch" crossorigin />
-  <link rel="preload" href="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js" as="script" />
-  <script>
-    /* 尽早并行拉 echarts + 中国地图 GeoJSON，缩短首屏空白 */
-    (function () {
-      if (!window.__echartsLoading && !window.echarts) {
-        window.__echartsLoading = new Promise(function (resolve, reject) {
-          var s = document.createElement('script');
-          s.src = 'https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js';
-          s.async = true;
-          s.onload = function () { resolve(window.echarts); };
-          s.onerror = function () { reject(new Error('echarts load failed')); };
-          document.head.appendChild(s);
-        });
-      }
-      if (!window.__chinaGeoPrefetch) {
-        window.__chinaGeoPrefetch = fetch('../assets/china-geo.json')
-          .then(function (r) { return r.json(); })
-          .catch(function () { return null; });
-      }
-    })();
-  </script>
-  <!-- echarts / geo 已在上方并行预取 -->
-<link rel="stylesheet" href="../css/news-light-overrides.css?v=mapfix3" />
+  <link rel="stylesheet" href="../css/legacy-views.css?v=20260828b" />
+  <link rel="stylesheet" href="../css/news-light-overrides.css?v=global-theme2" />
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@antv/g6@4.8.24/dist/g6.min.js"></script>
 </head>
 <body class="standalone-view" data-page="map">
   <div id="app-shell"></div>
@@ -42,9 +23,10 @@
 <div class="page-title-block">
 <h1>数字人才地图</h1>
 <div class="subtitle">全国人才分布 · 省份岗位洞察 · 岗位-能力知识图谱 · <span id="talent-stats-text">--</span></div>
-<p class="talent-map-lead" id="talent-map-lead">悬停省份可预览热度与薪资；点击进入城市岗位列表，再打开岗位技术图谱查看技能关联。</p>
 </div>
 <div class="page-actions">
+<button class="btn btn-primary" id="talent-update-graph-btn" title="重新统计后台数据并更新当前岗位技术图谱" onclick="window.talentUpdateTechGraph()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><polyline points="21 3 21 9 15 9"/></svg>更新图谱</button>
+<button class="btn btn-primary" id="talent-rollback-graph-btn" title="回退到更新前的技术图谱" onclick="window.talentRollbackTechGraph()" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 3-6.7"/><polyline points="3 4 3 10 9 10"/></svg>回退</button>
 <button class="btn btn-primary" id="talent-ability-btn" onclick="window.talentOpenAbility()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M5.5 20c.8-3.5 3.5-5.5 6.5-5.5s5.7 2 6.5 5.5"/></svg>我的能力</button>
 </div>
 </div>
@@ -55,9 +37,9 @@
 
 <!-- 统一返回操作区（地图左上角） -->
 <div id="talent-back-zone">
-<button class="btn" onclick="window.talentMapBack()" id="talent-back-btn" style="display:none" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>返回</button>
-<button class="btn" id="talent-province-back-btn" onclick="window.talentMapBackToNational()" style="display:none" type="button">← 返回全国总览</button>
-<button class="btn" id="talent-detail-back-btn" onclick="window.talentMapBack()" style="display:none" type="button">← 返回地图</button>
+<button class="btn" onclick="window.talentMapBack()" id="talent-back-btn" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>返回</button>
+<button class="btn" id="talent-province-back-btn" onclick="window.talentMapBack()" style="display:none">← 返回全国总览</button>
+<button class="btn" id="talent-detail-back-btn" onclick="window.talentMapBack()" style="display:none">← 返回地图</button>
 </div>
 
 <!-- 左侧边缘筛选触发标签 -->
@@ -127,23 +109,77 @@ onmouseleave="window.gangaZoomHover('澳门',false)">
 <path id="ganga-path-mo" d=""/>
 <circle class="ganga-dot" id="ganga-dot-mo" cx="0" cy="0" r="3"/>
 </svg>
-<!-- Layer 2: 省份岗位列表 -->
-<div class="talent-map-layer" id="talent-layer-province" style="display:none;width:100%;height:100%;overflow-y:auto;padding:68px 28px 24px 36px;box-sizing:border-box">
+<!-- Layer 2: 省份/市级岗位分析（市级=左侧筛选 + 中间岗位列表，右侧数据分析面板为公共 graph-detail） -->
+<div class="talent-map-layer" id="talent-layer-province" style="display:none;width:100%;height:100%;overflow:hidden;padding:0">
+<div class="city-analysis-wrap">
+<!-- 左侧固定筛选面板（仅市级岗位分析显示） -->
+<aside class="analysis-filter-panel" id="talent-city-filter-panel">
+<div class="analysis-filter-inner">
+<div class="filter-panel-title"><span>筛选条件</span></div>
+<div class="filter-group-vert">
+<label>省份</label>
+<select id="talent-city-filter-province" onchange="window.talentOnProvinceChange()"><option value="">全部省份</option></select>
+</div>
+<div class="filter-group-vert">
+<label>地区</label>
+<select id="talent-city-filter-city" onchange="window.talentOnCityChange()"><option value="">全部地区</option></select>
+</div>
+<div class="filter-group-vert">
+<label>岗位</label>
+<select id="talent-city-filter-job"><option value="">全部岗位</option></select>
+</div>
+<div class="filter-group-vert">
+<label>学历要求</label>
+<select id="talent-city-filter-edu"><option value="">不限学历</option><option>本科</option><option>硕士</option><option>博士</option><option>大专</option></select>
+</div>
+<div class="filter-group-vert">
+<label>经验要求</label>
+<select id="talent-city-filter-exp"><option value="">不限经验</option><option>应届生</option><option>1-3年</option><option>3-5年</option><option>5-10年</option><option>10年以上</option></select>
+</div>
+<div class="filter-group-vert">
+<label>薪资范围（元 / 月）</label>
+<div class="salary-range-wrap">
+<input id="talent-city-filter-salary-min" type="number" min="0" step="1000" placeholder="最低" />
+<span class="salary-range-sep">—</span>
+<input id="talent-city-filter-salary-max" type="number" min="0" step="1000" placeholder="最高" />
+</div>
+</div>
+<div class="filter-panel-actions">
+<button class="btn" onclick="window.talentCityResetFilter()">重置筛选</button>
+<button class="btn btn-primary" onclick="window.talentCityApplyFilter()">应用筛选</button>
+</div>
+<div class="filter-hint">应用筛选后仍停留本页 · 不跳转地图</div>
+</div>
+</aside>
+<!-- 中间岗位列表 -->
+<section class="analysis-job-list">
 <div class="talent-province-header">
 <h2 id="talent-province-title"></h2>
+<div class="talent-province-sub" id="talent-province-sub">岗位分布 · 技能需求 · 人才画像</div>
+</div>
+<div class="job-list-toolbar">
+<span class="job-found-label" id="talent-job-found-label">共找到 <b>--</b> 个岗位</span>
+<div class="job-sort-wrap">
+<span class="job-sort-label">排序</span>
+<select id="talent-job-sort" onchange="window.talentCityChangeSort(this.value)">
+<option value="default">默认排序</option>
+<option value="salary">薪资从高到低</option>
+<option value="hot">热度从高到低</option>
+<option value="count">岗位数从高到低</option>
+</select>
+</div>
 </div>
 <div class="talent-province-stats" id="talent-province-stats"></div>
 <div id="talent-province-jobs"></div>
+</section>
+</div>
 </div>
 <!-- Layer 3: 岗位能力知识图谱（脑图） -->
 <div class="talent-map-layer" id="talent-layer-graph" style="display:none">
 <div style="width:100%;height:100%;position:relative;display:flex;flex-direction:column;min-width:0">
 <div class="graph-toolbar">
 <div class="graph-toolbar-left">
-<button class="graph-btn talent-graph-back-inbar" id="talent-graph-back-btn" title="返回岗位分析" onclick="window.talentGraphBack()" type="button" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button>
-<div class="graph-city-label" id="talent-graph-city-label">--</div>
-<div class="graph-mode-toggle" id="talent-graph-mode-toggle" data-active="overview" style="display:none">
-<span class="graph-mode-pill" id="talent-graph-mode-pill" aria-hidden="true"></span>
+<div class="graph-mode-toggle" id="talent-graph-mode-toggle" style="display:none">
 <button class="graph-mode-bubble active" id="talent-graph-view-overview" title="当前岗位 → 所需技术 → 技术关联" onclick="window.talentSetJobGraphView('overview')">岗位技术图谱</button>
 <button class="graph-mode-bubble" id="talent-graph-view-stack" title="技术分类 → 层级归属关系" onclick="window.talentSetJobGraphView('stack')">技术栈</button>
 <button class="graph-mode-bubble" id="talent-graph-view-level" title="岗位级别 → 所需技术" onclick="window.talentSetJobGraphView('level')">级别</button>
@@ -154,12 +190,17 @@ onmouseleave="window.gangaZoomHover('澳门',false)">
 </div>
 </div>
 <div id="talent-graph-container" style="flex:1;overflow:hidden;position:relative"></div>
+<!-- 更新图谱加载遮罩（覆盖整个图谱画布） -->
+<div id="talent-graph-loading" style="display:none;position:absolute;inset:0;z-index:40;align-items:center;justify-content:center;flex-direction:column;gap:16px;background:rgba(10,14,32,.6);backdrop-filter:blur(3px)">
+<div class="talent-update-spinner"></div>
+<div class="talent-update-loading-text">正在重新统计后台数据…</div>
+</div>
 <div class="graph-legend">
-<div class="legend-item"><span class="legend-dot" style="background:#C9A86A"></span>编程语言</div>
-<div class="legend-item"><span class="legend-dot" style="background:#8FA894"></span>框架与开发</div>
-<div class="legend-item"><span class="legend-dot" style="background:#D4B87A"></span>数据存储</div>
-<div class="legend-item"><span class="legend-dot" style="background:#6B8F7A"></span>工程化运维</div>
-<div class="legend-item"><span class="legend-dot" style="background:#E4CFA0"></span>AI与算法</div>
+<div class="legend-item"><span class="legend-dot" style="background:#D9A92E"></span>编程语言</div>
+<div class="legend-item"><span class="legend-dot" style="background:#C9A24B"></span>框架与开发</div>
+<div class="legend-item"><span class="legend-dot" style="background:#E8C868"></span>数据存储</div>
+<div class="legend-item"><span class="legend-dot" style="background:#B8965F"></span>工程化运维</div>
+<div class="legend-item"><span class="legend-dot" style="background:#F0D89A"></span>AI与算法</div>
 </div>
 </div>
 </div>
@@ -169,8 +210,8 @@ onmouseleave="window.gangaZoomHover('澳门',false)">
 <div class="graph-detail" id="talent-detail-panel">
 <div class="detail-empty" id="talent-detail-empty">
 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-<h4>从省份开始读图</h4>
-<p>悬停预览热度与薪资<br>点击下钻城市与岗位技术图谱</p>
+<h4>悬停省份预览数据</h4>
+<p>将鼠标移到地图上的省份<br>查看实时人才数据概览</p>
 </div>
 <div id="talent-detail-hover" style="display:none;padding:20px">
 <h3 style="color:var(--text-dark);margin-bottom:6px" id="talent-hover-name"></h3>
@@ -223,54 +264,38 @@ onmouseleave="window.gangaZoomHover('澳门',false)">
 </div>
 </div>
   </main>
-  <script src="../js/api.js?v=20260824fix"></script>
-  <script src="../js/runtime-core.js?v=20260824fix"></script>
-  <script src="../js/cinema-bg.js?v=mapfix3"></script>
-  <script src="../js/perf-guard.js?v=1"></script>
-  <script src="../js/cinema-music.js?v=20260824mem"></script>
-  <script src="../js/shell.js?v=20260825c3"></script>
-  <script src="../js/pages/map.js?v=mapfix3"></script>
+  <script src="../js/api.js?v=20260823c"></script>
+  <script src="../js/runtime-core.js?v=20260823c"></script>
+  <script src="../js/cinema-bg.js?v=20260823c"></script>
+  <script src="../js/cinema-music.js?v=20260823c"></script>
+  <script src="../js/shell.js?v=20260823c"></script>
+  <script src="../js/pages/map.js?v=20260828e"></script>
   <script>
     window.Shell && window.Shell.mount({ pageId: 'map', title: '数字人才地图', subtitle: '区域人才与岗位能力空间洞察' });
-    function bootMap() {
-      if (typeof window.initTalentMap === 'function') window.initTalentMap();
-    }
-    function whenEcharts(cb) {
-      if (window.echarts) { cb(); return; }
-      var p = window.__echartsLoading;
-      if (p && typeof p.then === 'function') {
-        p.then(function () { cb(); }).catch(function () { cb(); });
-        return;
-      }
-      window.__echartsLoading = new Promise(function (resolve, reject) {
-        var s = document.createElement('script');
-        s.src = 'https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js';
-        s.async = true;
-        s.onload = function () { resolve(window.echarts); cb(); };
-        s.onerror = function () { reject(new Error('echarts load failed')); };
-        document.head.appendChild(s);
-      });
-    }
-    function startBoot() { whenEcharts(bootMap); }
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', startBoot);
-    } else {
-      startBoot();
-    }
+    if (typeof window.initTalentMap === 'function') window.initTalentMap();
   </script>
   <script>
-    // 「我的能力」兜底：仅提示，不再强制整页 nocache 刷新（避免二次加载卡顿）
+    // 「我的能力」按钮兜底：防止浏览器缓存旧版 map.js 导致 window.talentOpenAbility 缺失、点击无反应。
+    // 若页面加载后仍未找到能力入口函数，说明可能命中了旧缓存；此时用带时间戳的 URL
+    // 强制重新加载整个页面（绕过 HTML/JS/CSS 缓存），若二次加载仍缺失则明确提示。
     (function () {
+      function hasAbilityHandler() {
+        return typeof window.talentOpenAbility === 'function';
+      }
       function bootAbilityGuard() {
-        if (typeof window.talentOpenAbility === 'function') return;
-        console.warn('[ability] window.talentOpenAbility 缺失，请硬刷新后重试');
+        if (hasAbilityHandler()) return;
+        var already = /[?&]nocache=\d+/.test(location.search);
+        console.warn('[ability] window.talentOpenAbility 缺失（可能为旧缓存），正在强制刷新页面加载最新功能脚本');
+        if (already) {
+          alert('「我的能力」功能脚本未能加载，请按 Ctrl+Shift+R 强制刷新后重试。');
+          return;
+        }
+        location.replace(location.pathname + '?nocache=' + Date.now());
       }
       if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', function () {
-          setTimeout(bootAbilityGuard, 800);
-        });
+        document.addEventListener('DOMContentLoaded', bootAbilityGuard);
       } else {
-        setTimeout(bootAbilityGuard, 800);
+        setTimeout(bootAbilityGuard, 400);
       }
     })();
   </script>

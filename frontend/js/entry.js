@@ -891,6 +891,15 @@
       role: data.role || 'user',
       loginTime: Date.now()
     }));
+    // 新登录用户首次进入先打开简历探索，引导建立个人画像。
+    try {
+      const uid = String(data.username || data.user?.username || '');
+      const seenKey = 'zhitu_resume_onboarding_seen:' + uid;
+      if (uid && localStorage.getItem(seenKey) !== '1') {
+        sessionStorage.setItem('zhitu_open_resume', '1');
+        localStorage.setItem(seenKey, '1');
+      }
+    } catch (_) {}
     const dest = 'pages/news/index.html';
     if (window.ZhituAuthTransit && window.ZhituAuthTransit.go) {
       window.ZhituAuthTransit.go(dest);
@@ -976,6 +985,7 @@
   });
 
   const devSkip = document.getElementById('entryDevSkip');
+  const adminSkip = document.getElementById('entryAdminSkip');
   if (devSkip && isLocalHost()) {
     devSkip.hidden = false;
     devSkip.addEventListener('click', async (event) => {
@@ -1002,6 +1012,14 @@
       } finally {
         devSkip.disabled = false;
       }
+    });
+  }
+  if (adminSkip && isLocalHost()) {
+    adminSkip.hidden = false;
+    adminSkip.addEventListener('click', (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      window.location.href = 'pages/admin.html';
     });
   }
 

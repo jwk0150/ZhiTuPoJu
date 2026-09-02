@@ -123,6 +123,18 @@
 
     writeFavs(list);
     writeMetaMap(map);
+    try {
+      const token = window.zhituGetToken && window.zhituGetToken();
+      const base = window.resolveApiBase && window.resolveApiBase();
+      if (token && base) {
+        const snap = meta || lookupJob(key);
+        fetch(base + '/api/profile/favorites/toggle', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+          body: JSON.stringify({ source: snap && snap.lane === 'forecast' ? 'forecast' : 'discovery', item_id: key, title: (snap && snap.title) || '', payload: snap || {} })
+        }).catch(() => {});
+      }
+    } catch (_) {}
     notifyChange();
     return !on;
   }

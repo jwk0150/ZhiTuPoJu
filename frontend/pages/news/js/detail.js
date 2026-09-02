@@ -327,7 +327,7 @@
     sync();
     btn.addEventListener('click', function (e) {
       e.stopPropagation();
-      JN.toggleFav(a.id);
+      JN.toggleFav(a.id, { title: a.title, source: a.source || '' });
       sync();
       JN.toast(JN.isFav(a.id) ? '已收藏' : '已取消收藏', 'success');
     });

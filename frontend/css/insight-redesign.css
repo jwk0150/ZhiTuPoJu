@@ -496,6 +496,302 @@ body[data-page="insight"] #page-main {
 /* 滚动条 */
 .ir-job-list::-webkit-scrollbar { width: 6px; }
 .ir-job-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.14); border-radius: 4px; }
+.ir-job-cats::-webkit-scrollbar { height: 4px; }
+.ir-job-cats::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.16); border-radius: 2px; }
+
+/* ============================================================
+   左栏 · 搜索 + 分类筛选 chips（升级）
+   ============================================================ */
+.ir-search-block {
+  display: flex; flex-direction: column; gap: 8px;
+  padding-bottom: 10px;
+}
+.ir-job-search {
+  position: relative;
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 10px 6px 12px; background: var(--ir-panel-2);
+  border: 1px solid var(--ir-border); border-radius: 10px;
+  color: var(--ir-text-2); font-size: 12.5px;
+  transition: border-color .15s, background .15s;
+}
+.ir-job-search:focus-within {
+  border-color: var(--ir-signal);
+  background: rgba(31,200,217,0.06);
+}
+.ir-search-ic { font-size: 12px; opacity: 0.85; }
+.ir-job-search input {
+  flex: 1; min-width: 0; background: transparent; border: none; outline: none;
+  color: var(--ir-text); font-size: 13px; font-family: inherit;
+  padding: 4px 0;
+}
+.ir-job-search input::placeholder { color: var(--ir-text-3); }
+.ir-search-clear {
+  display: none; align-items: center; justify-content: center;
+  width: 18px; height: 18px; border-radius: 50%;
+  background: rgba(255,255,255,0.10); color: var(--ir-text-2);
+  font-size: 13px; line-height: 1; cursor: pointer; user-select: none;
+  transition: background .15s;
+}
+.ir-search-clear:hover { background: rgba(231,76,60,0.40); color: #fff; }
+
+/* 分类 chips 横向滚动行 */
+.ir-job-cats {
+  display: flex; gap: 6px;
+  overflow-x: auto; overflow-y: hidden;
+  padding: 4px 0 4px;
+  scrollbar-width: thin;
+}
+.ir-cat-chip {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 9px 4px 10px; border-radius: 999px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--ir-border);
+  color: var(--ir-text-2);
+  font-size: 11.5px; font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer; user-select: none;
+  transition: all .15s;
+  font-family: inherit;
+}
+.ir-cat-chip:hover {
+  background: rgba(31,200,217,0.10);
+  border-color: rgba(31,200,217,0.45);
+  color: var(--ir-text);
+}
+.ir-cat-chip.active {
+  background: rgba(31,200,217,0.18);
+  border-color: var(--ir-signal);
+  color: var(--ir-signal);
+  font-weight: 600;
+  box-shadow: 0 0 0 3px rgba(31,200,217,0.10);
+}
+.ir-cat-chip-name { letter-spacing: .2px; }
+.ir-cat-chip-count {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 16px; height: 15px; padding: 0 4px;
+  font-size: 10px; font-weight: 700;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.08);
+  color: var(--ir-text-3);
+  font-family: var(--font-mono, monospace);
+}
+.ir-cat-chip.active .ir-cat-chip-count {
+  background: rgba(31,200,217,0.30);
+  color: var(--ir-signal);
+}
+
+/* 岗位列表头部 */
+.ir-job-list-wrap {
+  display: flex; flex-direction: column; flex: 1; min-height: 0;
+}
+.ir-job-list-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 4px 4px 6px;
+  font-size: 12px;
+}
+.ir-job-list-title {
+  color: var(--ir-text-2); font-weight: 600; letter-spacing: .3px;
+}
+.ir-job-list-title::before {
+  content: ''; display: inline-block;
+  width: 3px; height: 11px; border-radius: 2px;
+  background: linear-gradient(180deg, var(--ir-signal), var(--ir-signal-deep));
+  margin-right: 6px; vertical-align: -1px;
+}
+.ir-job-list-count {
+  color: var(--ir-text-3); font-family: var(--font-mono, monospace);
+  font-size: 11px;
+}
+
+/* 单个岗位卡（增强：可显示增长率） */
+.ir-job-card {
+  position: relative; padding: 9px 12px 9px;
+  background: var(--ir-panel-2);
+  border: 1px solid transparent;
+  border-radius: 10px; cursor: pointer;
+  transition: border-color .15s, background .15s, transform .15s;
+}
+.ir-job-card:hover {
+  background: rgba(31,200,217,0.10);
+  transform: translateX(2px);
+}
+.ir-job-card.active {
+  border-color: var(--ir-signal);
+  background: rgba(31,200,217,0.14);
+  box-shadow: 0 0 0 3px rgba(31,200,217,0.06);
+}
+.ir-job-card-row1 {
+  display: flex; align-items: center; gap: 6px;
+}
+.ir-job-name {
+  font-size: 13px; font-weight: 600; color: var(--ir-text);
+}
+.ir-tag {
+  font-size: 9.5px; padding: 1.5px 6px; border-radius: 8px;
+  font-weight: 700; letter-spacing: .3px;
+}
+.ir-tag-hot {
+  background: rgba(255,107,107,0.20); color: #FF7676;
+}
+.ir-tag-new {
+  background: rgba(74,222,128,0.18); color: var(--ir-green);
+}
+.ir-job-cat {
+  font-size: 11px; color: var(--ir-text-3);
+  margin-top: 3px;
+  display: inline-block;
+  padding: 1px 7px;
+  background: rgba(255,255,255,0.04);
+  border-radius: 6px;
+}
+.ir-job-growth {
+  font-size: 10.5px; margin-top: 5px;
+  display: inline-flex; align-items: center; gap: 4px;
+  color: var(--ir-green); font-weight: 600;
+  font-family: var(--font-mono, monospace);
+}
+.ir-job-growth-lbl {
+  color: var(--ir-text-3); font-weight: 500; font-size: 10px;
+  font-family: inherit;
+}
+/* 空状态 */
+.ir-job-empty {
+  padding: 26px 12px;
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  background: rgba(255,255,255,0.02);
+  border: 1px dashed var(--ir-border);
+  border-radius: 10px;
+}
+.ir-job-empty-ic {
+  width: 40px; height: 40px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(31,200,217,0.10);
+  font-size: 18px;
+}
+.ir-job-empty-tip {
+  font-size: 12.5px; color: var(--ir-text-2); text-align: center; line-height: 1.6;
+}
+.ir-job-empty-tip span {
+  font-size: 11px; color: var(--ir-text-3);
+}
+
+/* ============================================================
+   中央图谱 · 4 象限 + 节点 + 关联线（新样式）
+   ============================================================ */
+.ir-pano-stage {
+  position: relative;
+  flex: 1;
+  min-height: 360px;
+  background:
+    radial-gradient(ellipse 45% 50% at 50% 50%, rgba(124,58,237,0.14) 0%, rgba(59,130,246,0.06) 45%, transparent 75%),
+    linear-gradient(180deg, #08101e 0%, #050a14 100%);
+  border: 1px solid rgba(31,200,217,0.10);
+  border-radius: 10px;
+  overflow: hidden;
+}
+/* 隐藏旧的星点背景，让 4 象限主导视觉 */
+.ir-pano-stage::before { display: none; }
+.ir-pano-svg { width: 100%; height: 100%; display: block; overflow: visible; }
+
+/* 4 象限标题（胶囊样式） */
+.ir-pano-quad-title rect { transition: filter .2s; }
+.ir-pano-quad-title:hover rect { filter: brightness(1.2); }
+
+/* 节点 */
+.ir-pano-node { transition: opacity .15s, transform .15s; cursor: pointer; transform-box: fill-box; transform-origin: center; }
+.ir-pano-node:hover { opacity: 0.88; transform: scale(1.04); }
+.ir-pano-node-ring { transition: stroke-width .2s, filter .2s; }
+.ir-pano-node:hover .ir-pano-node-ring {
+  stroke-width: 2.6;
+  filter: drop-shadow(0 0 6px currentColor);
+}
+/* 不同掌握度色环强调 */
+.ir-pano-node-ring.mastery-excellent { /* 优秀 - 加柔光 */ }
+.ir-pano-node-ring.mastery-weak {
+  /* 薄弱 - 轻微脉冲 */
+  animation: irWeakPulse 2s ease-in-out infinite;
+}
+@keyframes irWeakPulse {
+  0%, 100% { stroke-opacity: 1; }
+  50% { stroke-opacity: 0.6; }
+}
+.ir-pano-node-ring.mastery-new { /* 待学习 - 灰色 */ }
+.ir-pano-node-halo { transition: opacity .2s, transform .2s; transform-box: fill-box; transform-origin: center; }
+.ir-pano-node:hover .ir-pano-node-halo { opacity: 0.45; transform: scale(1.2); }
+
+/* 节点百分比徽章 */
+.ir-pano-node-pct rect { transition: filter .2s; }
+.ir-pano-node:hover .ir-pano-node-pct rect { filter: brightness(1.18); }
+
+/* 核心 */
+.ir-pano-core {
+  z-index: 5;
+}
+.ir-pano-core .tt { max-width: 90%; line-height: 1.15; }
+.ir-pano-core .pct {
+  margin-top: 4px;
+  font-size: clamp(11px, calc(var(--pano-core-r, 112px) * 0.105), 13px);
+  font-weight: 700; color: var(--ir-signal);
+  font-family: var(--font-mono, monospace);
+  letter-spacing: 0.5px;
+}
+
+/* 旧式 ir-pano-skill 兼容（如需兼容旧选择器，保留空样式） */
+.ir-pano-skill { cursor: pointer; }
+
+/* ============================================================
+   能力图谱 · 底部图例区
+   ============================================================ */
+.ir-pano-legend {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 14px;
+  padding: 11px 16px;
+  margin-top: 10px;
+  background: rgba(255,255,255,0.025);
+  border: 1px solid var(--ir-border);
+  border-radius: 10px;
+  font-size: 11.5px;
+}
+.ir-legend-group {
+  display: flex; align-items: center; gap: 12px;
+  flex-wrap: wrap;
+}
+.ir-legend-label {
+  color: var(--ir-text-3); font-size: 11px; font-weight: 600;
+  letter-spacing: .5px;
+  padding: 1px 8px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 6px;
+}
+.ir-legend-item {
+  display: inline-flex; align-items: center; gap: 6px;
+  color: var(--ir-text-2);
+  white-space: nowrap;
+}
+.ir-legend-item .dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  display: inline-block;
+  border: 2px solid currentColor;
+  background: transparent;
+}
+.ir-legend-item .dot.mastery-excellent { color: var(--ir-green); }
+.ir-legend-item .dot.mastery-medium    { color: #F39C12; }
+.ir-legend-item .dot.mastery-weak      { color: #E74C3C; }
+.ir-legend-item .dot.mastery-new       { color: #BDC3C7; }
+.ir-legend-item .line {
+  display: inline-block;
+  width: 22px; height: 0;
+  border-top: 2px solid currentColor;
+  border-radius: 1px;
+}
+.ir-legend-item .line.line-strong { border-top-style: solid; color: #E74C3C; }
+.ir-legend-item .line.line-medium { border-top-style: dashed; color: var(--ir-core, #7C3AED); }
+.ir-legend-item .line.line-weak   {
+  border-top-style: dotted; border-top-width: 2.5px; color: var(--ir-text-3);
+}
+.ir-legend-sep {
+  width: 1px; height: 18px;
+  background: linear-gradient(180deg, transparent, var(--ir-border), transparent);
+}
 
 /* ---------- 技能变化详情弹层（屏幕中心 1/2）---------- */
 .ir-modal {

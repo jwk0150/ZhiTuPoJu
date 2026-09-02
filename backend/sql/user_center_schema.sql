@@ -43,11 +43,13 @@ CREATE TABLE IF NOT EXISTS user_center.resumes (
     filepath    VARCHAR(1024),
     file_type   VARCHAR(16),          -- pdf / doc / docx / txt
     content     TEXT,                 -- 提取后的纯文本
+    metadata    JSONB,                -- 简历来源、分段、版本等扩展信息
     status      VARCHAR(32)  DEFAULT 'uploaded',  -- uploaded / parsed / analyzed / error
     created_at  TIMESTAMP    DEFAULT NOW(),
     updated_at  TIMESTAMP    DEFAULT NOW()
 );
 CREATE INDEX IF NOT EXISTS idx_resumes_user ON user_center.resumes(user_id);
+ALTER TABLE user_center.resumes ADD COLUMN IF NOT EXISTS metadata JSONB;
 
 -- 4. 技能画像表
 CREATE TABLE IF NOT EXISTS user_center.user_skills (
@@ -84,7 +86,21 @@ CREATE TABLE IF NOT EXISTS user_center.career_reports (
 );
 CREATE INDEX IF NOT EXISTS idx_career_reports_user ON user_center.career_reports(user_id);
 
--- 6. 系统技术能力主表（由岗位真实技术数据聚合生成，供用户能力统一关联）
+-- 6. 用户收藏：统一承载新闻、发现、预测、人岗匹配岗位
+CREATE TABLE IF NOT EXISTS user_center.user_favorites (
+    id          BIGSERIAL PRIMARY KEY,
+    user_id     VARCHAR(64) NOT NULL,
+    source      VARCHAR(32) NOT NULL,          -- news / discovery / forecast / match
+    item_id     VARCHAR(256) NOT NULL,
+    title       VARCHAR(512),
+    payload     JSONB,
+    created_at  TIMESTAMP DEFAULT NOW(),
+    updated_at  TIMESTAMP DEFAULT NOW(),
+    CONSTRAINT uq_user_favorite_item UNIQUE (user_id, source, item_id)
+);
+CREATE INDEX IF NOT EXISTS idx_user_favorites_user ON user_center.user_favorites(user_id);
+
+-- 7. 系统技术能力主表（由岗位真实技术数据聚合生成，供用户能力统一关联）
 --    与岗位技术图谱共用同一技术体系，为后续"岗位要求 -> 能力匹配"预留。
 CREATE TABLE IF NOT EXISTS user_center.tech_abilities (
     id          BIGSERIAL PRIMARY KEY,
@@ -96,7 +112,7 @@ CREATE TABLE IF NOT EXISTS user_center.tech_abilities (
     updated_at  TIMESTAMP DEFAULT NOW()
 );
 
--- 7. 用户能力关联表（user_id -> tech_abilities.id）
+-- 8. 用户能力关联表（user_id -> tech_abilities.id）
 CREATE TABLE IF NOT EXISTS user_center.user_abilities (
     id          BIGSERIAL PRIMARY KEY,
     user_id     VARCHAR(64) NOT NULL,

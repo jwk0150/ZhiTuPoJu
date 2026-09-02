@@ -34,6 +34,8 @@ class EmbeddingService:
         self.device = device or config.EMBEDDING_DEVICE
         self._dimension = int(dimension or config.EMBEDDING_DIM)
         self._model: Any | None = None
+        # Avoid repeating a slow/failed model download on every retrieval request.
+        self._load_error: Exception | None = None
         self._lock = threading.Lock()
 
     # ------------------------------------------------------------
@@ -41,28 +43,38 @@ class EmbeddingService:
     # ------------------------------------------------------------
     def _load(self) -> Any:
         if self._model is None:
+            if self._load_error is not None:
+                raise self._load_error
             with self._lock:
                 if self._model is None:
+                    if self._load_error is not None:
+                        raise self._load_error
                     try:
                         from sentence_transformers import SentenceTransformer
                     except ImportError as exc:
-                        raise RuntimeError(
+                        self._load_error = RuntimeError(
                             f"Embedding model '{self.model_name}' 需要 sentence-transformers 包；"
                             f"请在运行环境中执行 `pip install sentence-transformers` 后重启服务。"
                             f"（当前 Python 环境未安装该包 — {exc}）"
-                        ) from exc
-
-                    model = SentenceTransformer(self.model_name, device=self.device)
-                    if hasattr(model, "get_embedding_dimension"):
-                        dim = int(model.get_embedding_dimension())
-                    else:
-                        dim = int(model.get_sentence_embedding_dimension())
-                    if dim != self._dimension:
-                        raise RuntimeError(
-                            f"模型 {self.model_name} 实际维度 {dim} "
-                            f"与配置维度 {self._dimension} 不一致，请修正 EMBEDDING_DIM"
                         )
-                    self._model = model
+                        raise self._load_error from exc
+                    try:
+                        model = SentenceTransformer(self.model_name, device=self.device)
+                        if hasattr(model, "get_embedding_dimension"):
+                            dim = int(model.get_embedding_dimension())
+                        else:
+                            dim = int(model.get_sentence_embedding_dimension())
+                        if dim != self._dimension:
+                            raise RuntimeError(
+                                f"模型 {self.model_name} 实际维度 {dim} "
+                                f"与配置维度 {self._dimension} 不一致，请修正 EMBEDDING_DIM"
+                            )
+                        self._model = model
+                    except Exception as exc:
+                        self._load_error = RuntimeError(
+                            f"Embedding model '{self.model_name}' unavailable: {exc}"
+                        )
+                        raise self._load_error from exc
         return self._model
 
     @property

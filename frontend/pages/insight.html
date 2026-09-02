@@ -22,7 +22,7 @@
   <link rel="stylesheet" href="../css/components.css" />
   <link rel="stylesheet" href="../css/legacy-views.css" />
   <link rel="stylesheet" href="../css/page-polish.css?v=2026082822" />
-  <link rel="stylesheet" href="../css/insight-redesign.css?v=2026083113" />
+  <link rel="stylesheet" href="../css/insight-redesign.css?v=2026090202" />
   <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@antv/g6@4.8.24/dist/g6.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
@@ -35,13 +35,23 @@
     <div class="hub-panel active" data-hub-panel="evolution">
 <section class="view active" id="view-evolution">
   <div id="ir-root">
-    <!-- 左栏：岗位列表 -->
+    <!-- 左栏：岗位列表（带搜索 + 分类筛选） -->
     <aside class="ir-left">
-      <div class="ir-job-search">
-        <span>🔍</span>
-        <input id="ir-job-search-input" type="text" placeholder="搜索岗位…" />
+      <div class="ir-search-block">
+        <div class="ir-job-search">
+          <span class="ir-search-ic">🔍</span>
+          <input id="ir-job-search-input" type="text" placeholder="搜索岗位名 / 分类…" />
+          <span class="ir-search-clear" id="ir-job-search-clear" title="清空">×</span>
+        </div>
+        <div class="ir-job-cats" id="ir-job-cats"></div>
       </div>
-      <div class="ir-job-list" id="ir-job-list"></div>
+      <div class="ir-job-list-wrap">
+        <div class="ir-job-list-head">
+          <span class="ir-job-list-title">岗位列表</span>
+          <span class="ir-job-list-count" id="ir-job-list-count">0</span>
+        </div>
+        <div class="ir-job-list" id="ir-job-list"></div>
+      </div>
     </aside>
 
     <!-- 中栏：主区 -->
@@ -58,11 +68,11 @@
       </div>
 
       <div class="ir-grid">
-        <!-- 能力变化全景（占满整行） -->
         <!-- 时间轴图 -->
         <div class="ir-panel ir-grid-item span-2">
           <div class="ir-panel-h">
             <span class="t">能力变化全景</span>
+            <span class="sub" id="ir-pano-snapshot">点击节点查看技能详情 · 拖动时间轴查看不同月份能力结构</span>
           </div>
           <div class="ir-pano-timeline" id="ir-pano-timeline">
             <div class="ir-pano-timeline-head">
@@ -84,8 +94,26 @@
             <div class="ir-pano-core" id="ir-pano-core">
               <div class="halo"></div>
               <div class="ic">👤</div>
-              <div class="tt">Java 开发工程师</div>
+              <div class="tt" id="ir-pano-core-name">Java 开发工程师</div>
               <div class="sub">岗位能力基线</div>
+              <div class="pct" id="ir-pano-core-pct">0%</div>
+            </div>
+          </div>
+          <!-- 图例区：掌握程度 + 关联强度 -->
+          <div class="ir-pano-legend">
+            <div class="ir-legend-group">
+              <span class="ir-legend-label">掌握程度</span>
+              <span class="ir-legend-item"><i class="dot mastery-excellent"></i>优秀 80%+</span>
+              <span class="ir-legend-item"><i class="dot mastery-medium"></i>中等 40-79%</span>
+              <span class="ir-legend-item"><i class="dot mastery-weak"></i>薄弱 &lt;40%</span>
+              <span class="ir-legend-item"><i class="dot mastery-new"></i>待学习</span>
+            </div>
+            <div class="ir-legend-sep"></div>
+            <div class="ir-legend-group">
+              <span class="ir-legend-label">关联强度</span>
+              <span class="ir-legend-item"><span class="line line-strong"></span>强关联</span>
+              <span class="ir-legend-item"><span class="line line-medium"></span>中关联</span>
+              <span class="ir-legend-item"><span class="line line-weak"></span>弱关联</span>
             </div>
           </div>
         </div>
@@ -186,7 +214,7 @@
   <script src="../js/cinema-music.js"></script>
   <script src="../js/shell.js"></script>
   <script src="../js/pages/evolution.js?v=2026082816"></script>
-  <script src="../js/pages/insight-redesign.js?v=2026083151"></script>
+  <script src="../js/pages/insight-redesign.js?v=2026090202"></script>
   <script>
     window.Shell && window.Shell.mount({ pageId: 'insight', title: '岗位洞察', subtitle: '能力动态演化' });
     // 页面加载后初始化重设计视图

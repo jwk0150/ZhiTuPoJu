@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="../css/tokens.css?v=lightfix1" />
   <link rel="stylesheet" href="../css/shell.css?v=lightfix1" />
   <link rel="stylesheet" href="../css/components.css?v=newsbg2" />
-  <link rel="stylesheet" href="../css/evolution-git.css?v=newsbg2" />
+  <link rel="stylesheet" href="../css/evolution-git.css?v=2026090302" />
 <link rel="stylesheet" href="../css/news-light-overrides.css?v=typo1" />
 </head>
 <body class="standalone-view" data-page="evolution">
@@ -65,7 +65,7 @@
         </div>
       </section>
 
-      <!-- ====================== 状态摘要（5个胶囊,与节点颜色一致） ====================== -->
+      <!-- 状态摘要胶囊 - 等同于参考图的5个状态标签，放在图谱上方居中 -->
       <section class="git-tiers" id="git-tiers">
         <div class="tier add" data-status="add">
           <span class="t-sym">+</span>
@@ -94,10 +94,28 @@
         </div>
       </section>
 
-      <!-- ====================== 主体:图谱 + 右侧 ====================== -->
+      <!-- ====================== 主体:左 job picker | 中 图谱 | 右 详情 ====================== -->
       <section class="git-layout">
 
-        <!-- 左侧:图谱 -->
+        <!-- 左:岗位筛选(紧凑) -->
+        <aside class="git-job-picker" aria-label="岗位筛选">
+          <div class="git-job-picker-head">
+            <div>
+              <span class="gs-en">ROLE EXPLORER</span>
+              <span class="git-job-picker-title">选择岗位</span>
+            </div>
+            <span class="git-job-picker-count" id="git-job-picker-count">0 个岗位</span>
+          </div>
+          <div class="git-job-search">
+            <span aria-hidden="true">⌕</span>
+            <input id="git-job-search" type="search" placeholder="搜索岗位…" autocomplete="off" />
+            <span class="git-job-search-clear" id="git-job-search-clear" title="清空">×</span>
+          </div>
+          <div class="git-job-cats" id="git-job-cats"></div>
+          <div class="git-job-list" id="git-job-list" role="listbox" aria-label="岗位列表"></div>
+        </aside>
+
+        <!-- 中:图谱(主区域) -->
         <div class="git-graph-side" id="git-graph-side">
           <div class="gg-canvas-wrap">
             <!-- 分组标签(分类 layer) -->
@@ -121,22 +139,21 @@
             <div class="gg-tooltip" id="gg-tooltip" aria-hidden="true"></div>
           </div>
 
-          <!-- 底部图例 -->
+          <!-- 底部图例(参考图风格:掌握程度 + 关联强度) -->
           <div class="gg-legend">
-            <div class="gg-legend-status">
-              <span><i class="dot add"></i>新增能力</span>
-              <span><i class="dot del"></i>移除能力</span>
-              <span><i class="dot mod"></i>能力调整</span>
-              <span><i class="dot pred"></i>未来预测</span>
-              <span><i class="dot stable"></i>稳定能力</span>
+            <div class="gg-legend-group">
+              <span class="gg-legend-label">掌握程度</span>
+              <span class="gg-legend-item"><i class="gg-legend-ring mastery-excellent"></i>优秀 80%+</span>
+              <span class="gg-legend-item"><i class="gg-legend-ring mastery-medium"></i>中等 40-79%</span>
+              <span class="gg-legend-item"><i class="gg-legend-ring mastery-weak"></i>薄弱 &lt;40%</span>
+              <span class="gg-legend-item"><i class="gg-legend-ring mastery-new"></i>待学习</span>
             </div>
-            <div class="gg-legend-edge">
-              <span><i class="line strong"></i>强关联</span>
-              <span><i class="line mid"></i>中等关联</span>
-              <span><i class="line weak"></i>弱关联</span>
-            </div>
-            <div class="gg-legend-hint">
-              拖动时间滑块查看不同版本 · 点击节点查看详情
+            <div class="gg-legend-sep"></div>
+            <div class="gg-legend-group">
+              <span class="gg-legend-label">关联强度</span>
+              <span class="gg-legend-item"><span class="gg-legend-line line-strong"></span>强关联</span>
+              <span class="gg-legend-item"><span class="gg-legend-line line-medium"></span>中关联</span>
+              <span class="gg-legend-item"><span class="gg-legend-line line-weak"></span>弱关联</span>
             </div>
           </div>
         </div>
@@ -290,9 +307,10 @@
   <script src="../js/api.js"></script>
   <script src="../js/runtime-core.js"></script>
   <script src="../js/shell.js"></script>
-  <script src="../js/pages/ev-data.js?v=2026090210"></script>
-  <script src="../js/pages/ev-app.js?v=2026090210"></script>
-  <script src="../js/pages/ev-views.js?v=20260901sprint"></script>
+  <script src="../js/pages/evolution.js?v=2026090216"></script>
+  <script src="../js/pages/ev-data.js?v=2026090302"></script>
+  <script src="../js/pages/ev-app.js?v=2026090302"></script>
+  <script src="../js/pages/ev-views.js?v=2026090302"></script>
   <script src="../js/cinema-bg.js?v=lightfix2"></script>
   <script>
     window.Shell && window.Shell.mount({

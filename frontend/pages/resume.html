@@ -134,8 +134,8 @@
 
               <div class="rb-ai-bar">
                 <div class="rb-ai-bar-info">
-                  <b>补全空缺</b>
-                  <span>未填字段可一键写入示例，生成后请核对</span>
+                  <b>检查空缺</b>
+                  <span>仅检查已填写内容，不会编造学校、联系方式或日期</span>
                 </div>
                 <button class="rb-btn rb-btn-ai" id="rb-ai-basic" type="button">
                   <span class="rb-ai-icon">↻</span><span class="rb-ai-label">补全空缺</span>
@@ -153,7 +153,7 @@
 
             <div class="rb-profile-card">
               <div class="rb-profile-card-eyebrow">方向建议</div>
-              <p id="rb-persona-text">就读于 <em>某高校 软件工程专业</em> 本科。按常见课程结构，更适合工程实现类岗位，可优先考虑开发或测试方向。</p>
+              <p id="rb-persona-text">补充教育经历和项目内容后，系统会结合真实输入生成岗位方向建议。</p>
             </div>
 
             <div class="rb-section-title">
@@ -210,7 +210,7 @@
                 <div class="rb-soft-row-head">
                   <label>自我评价</label>
                   <button class="rb-btn rb-btn-ai" id="rb-ai-self" type="button">
-                    <span class="rb-ai-icon">↻</span><span class="rb-ai-label">生成一稿</span>
+                    <span class="rb-ai-icon">↻</span><span class="rb-ai-label">整理一稿</span>
                   </button>
                 </div>
                 <div class="rb-field-texarea-wrap">
@@ -241,7 +241,7 @@
             </div>
 
             <div class="rb-ai-input-block" id="rb-ai-input-block">
-              <textarea data-bind="ai.expHint" placeholder="例如：参加数学建模竞赛，负责数据处理；或某项目的后端接口开发。"></textarea>
+              <textarea data-bind="ai.expHint" placeholder="例如：参加数学建模竞赛，负责数据处理；或一个项目的后端接口开发。"></textarea>
               <div class="rb-ai-input-actions">
                 <button class="rb-btn rb-btn-link" id="rb-ai-input-cancel" type="button">取消</button>
                 <button class="rb-btn rb-btn-ai" id="rb-ai-input-go" type="button">

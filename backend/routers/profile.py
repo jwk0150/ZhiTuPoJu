@@ -10,11 +10,12 @@ from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
-from fastapi import APIRouter, File, Form, HTTPException, UploadFile
+from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 from pydantic import BaseModel
 
 from backend.db import SessionLocal
-from backend.models.user_profile import CareerReport, Resume, UserProfile, UserSkill
+from backend.models.user_profile import CareerReport, Resume, UserFavorite, UserProfile, UserSkill
+from backend.routers.auth import get_current_user
 from backend import profile_service
 
 router = APIRouter(tags=["user-profile"])
@@ -49,6 +50,20 @@ class InterviewRequest(BaseModel):
 
 class InterviewStartRequest(BaseModel):
     user_id: str
+
+
+class ResumeSyncRequest(BaseModel):
+    filename: Optional[str] = None
+    source: str = "resume-builder"
+    content: str = ""
+    metadata: dict = {}
+
+
+class FavoriteToggleRequest(BaseModel):
+    source: str
+    item_id: str
+    title: Optional[str] = None
+    payload: dict = {}
 
 
 # ============================================================
@@ -540,6 +555,88 @@ def get_resumes(user_id: str):
                 ]
             },
         }
+    finally:
+        db.close()
+
+
+@router.get("/resumes")
+def get_my_resumes(current_user: dict = Depends(get_current_user)):
+    """读取当前登录用户的简历，避免由前端传入 user_id 越权。"""
+    return get_resumes(current_user["username"])
+
+
+@router.post("/resumes/sync")
+def sync_resume(body: ResumeSyncRequest, current_user: dict = Depends(get_current_user)):
+    """将简历探索结果同步到个人仓库数据库。每个文件名保留最新版本。"""
+    content = (body.content or "")[:100000]
+    if not content.strip():
+        raise HTTPException(400, "简历内容不能为空")
+    user_id = current_user["username"]
+    filename = body.filename or "未命名简历.txt"
+    db = SessionLocal()
+    try:
+        resume = (
+            db.query(Resume)
+            .filter(Resume.user_id == user_id, Resume.filename == filename)
+            .order_by(Resume.id.desc())
+            .first()
+        )
+        if resume is None:
+            resume = Resume(user_id=user_id, filename=filename, file_type="txt")
+            db.add(resume)
+        resume.content = content
+        resume.extra_metadata = body.metadata or {"source": body.source}
+        resume.filepath = ""
+        resume.file_type = (filename.rsplit(".", 1)[-1] if "." in filename else "txt")[:16]
+        resume.status = "generated" if body.source == "resume-builder" else "synced"
+        resume.updated_at = datetime.now()
+        if resume.created_at is None:
+            resume.created_at = datetime.now()
+        db.commit()
+        db.refresh(resume)
+        return {"code": 0, "message": "简历已入库", "data": {"resume_id": resume.id, "filename": resume.filename}}
+    finally:
+        db.close()
+
+
+@router.get("/favorites")
+def get_my_favorites(source: Optional[str] = None, current_user: dict = Depends(get_current_user)):
+    db = SessionLocal()
+    try:
+        q = db.query(UserFavorite).filter(UserFavorite.user_id == current_user["username"])
+        if source:
+            q = q.filter(UserFavorite.source == source)
+        rows = q.order_by(UserFavorite.created_at.desc(), UserFavorite.id.desc()).all()
+        return {"code": 0, "message": "success", "data": {"favorites": [
+            {"id": r.item_id, "source": r.source, "title": r.title, "payload": r.payload,
+             "created_at": r.created_at.isoformat() if r.created_at else None}
+            for r in rows
+        ]}}
+    finally:
+        db.close()
+
+
+@router.post("/favorites/toggle")
+def toggle_favorite(body: FavoriteToggleRequest, current_user: dict = Depends(get_current_user)):
+    if body.source not in {"news", "discovery", "forecast", "match"}:
+        raise HTTPException(400, "不支持的收藏类型")
+    db = SessionLocal()
+    try:
+        user_id = current_user["username"]
+        row = db.query(UserFavorite).filter(
+            UserFavorite.user_id == user_id,
+            UserFavorite.source == body.source,
+            UserFavorite.item_id == str(body.item_id),
+        ).first()
+        if row:
+            db.delete(row)
+            db.commit()
+            return {"code": 0, "message": "已取消收藏", "data": {"added": False}}
+        row = UserFavorite(user_id=user_id, source=body.source, item_id=str(body.item_id),
+                           title=body.title, payload=body.payload or {}, created_at=datetime.now(), updated_at=datetime.now())
+        db.add(row)
+        db.commit()
+        return {"code": 0, "message": "已收藏", "data": {"added": True}}
     finally:
         db.close()
 

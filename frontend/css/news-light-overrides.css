@@ -486,3 +486,379 @@ body[data-page="map"] .page-header {
   align-items: flex-start !important;
   margin-bottom: 14px !important;
 }
+
+/* =======================================================================
+   全站新闻页视觉主题（最后加载）
+   所有模块共享岗位大新闻的纸感背景、字体、赭金强调与高质感卡片。
+   ======================================================================= */
+:root {
+  --site-bg: #F5F2ED;
+  --site-paper: #FFFFFF;
+  --site-paper-soft: #FAF8F5;
+  --site-ink: #1A1A1A;
+  --site-muted: #4B5563;
+  --site-gold: #A88B4E;
+  --site-gold-deep: #8B7340;
+  --site-line: rgba(60, 45, 30, .12);
+  --site-shadow: 0 12px 30px rgba(60, 45, 30, .09), 0 2px 8px rgba(60, 45, 30, .04);
+  --site-radius: 14px;
+}
+
+html, body {
+  background-color: var(--site-bg) !important;
+  color: var(--site-ink) !important;
+  font-family: 'DM Sans', 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif !important;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* 新闻页同源的全屏氛围图，所有非新闻模块也保持同一张底图 */
+body:not(:has(.jn-page)) {
+  background-image: url('../assets/news/bg-atmosphere-light.png') !important;
+  background-size: cover !important;
+  background-position: center top !important;
+  background-attachment: fixed !important;
+  background-repeat: no-repeat !important;
+}
+
+body:not(:has(.jn-page))::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(120% 90% at 50% 30%, transparent 42%, rgba(245,242,237,.5) 100%);
+}
+
+body:not(:has(.jn-page)) .app-frame,
+body:not(:has(.jn-page)) .app-stage,
+body:not(:has(.jn-page)) .page-main,
+body:not(:has(.jn-page)) #page-main,
+body:not(:has(.jn-page)) .main,
+body:not(:has(.jn-page)) .content,
+body:not(:has(.jn-page)) .view,
+body:not(:has(.jn-page)) .graph-layout,
+body:not(:has(.jn-page)) .match-hall,
+body:not(:has(.jn-page)) #match-hall {
+  background: transparent !important;
+}
+
+body:not(:has(.jn-page)) .topnav,
+body:not(:has(.jn-page)) .topbar,
+body:not(:has(.jn-page)) .app-topbar {
+  background: rgba(255,255,255,.86) !important;
+  border-bottom: 1px solid var(--site-line) !important;
+  box-shadow: 0 4px 18px rgba(60,45,30,.06) !important;
+  backdrop-filter: blur(18px) saturate(1.08) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(1.08) !important;
+}
+
+body:not(:has(.jn-page)) .topnav-brand-title,
+body:not(:has(.jn-page)) .brand-name,
+body:not(:has(.jn-page)) .logo-text {
+  color: var(--site-gold-deep) !important;
+  text-shadow: none !important;
+  font-family: 'Noto Serif SC', 'Songti SC', serif !important;
+}
+
+body:not(:has(.jn-page)) .nav-item,
+body:not(:has(.jn-page)) .shell-nav a,
+body:not(:has(.jn-page)) .topnav a,
+body:not(:has(.jn-page)) .topnav button {
+  color: var(--site-muted) !important;
+  font-size: 14px !important;
+}
+
+body:not(:has(.jn-page)) .nav-item:hover,
+body:not(:has(.jn-page)) .shell-nav a:hover,
+body:not(:has(.jn-page)) .nav-item.active,
+body:not(:has(.jn-page)) .nav-item.is-active,
+body:not(:has(.jn-page)) .shell-nav a.is-active {
+  color: var(--site-ink) !important;
+  background: rgba(168,139,78,.13) !important;
+  border-color: rgba(168,139,78,.38) !important;
+}
+
+/* 通用面板/卡片：白纸面、细边框、柔和层次 */
+body:not(:has(.jn-page)) .card,
+body:not(:has(.jn-page)) .panel,
+body:not(:has(.jn-page)) .kpi-card,
+body:not(:has(.jn-page)) .job-card,
+body:not(:has(.jn-page)) .match-job-card,
+body:not(:has(.jn-page)) .module-card,
+body:not(:has(.jn-page)) .home-panel,
+body:not(:has(.jn-page)) .trend-hero,
+body:not(:has(.jn-page)) .graph-detail,
+body:not(:has(.jn-page)) .graph-legend,
+body:not(:has(.jn-page)) .graph-stats,
+body:not(:has(.jn-page)) .filter-panel,
+body:not(:has(.jn-page)) .analysis-filter-panel,
+body:not(:has(.jn-page)) .vault-card,
+body:not(:has(.jn-page)) .vault-item,
+body:not(:has(.jn-page)) .vault-stat,
+body:not(:has(.jn-page)) .vault-quick-card,
+body:not(:has(.jn-page)) .rb-card,
+body:not(:has(.jn-page)) .rb-panel,
+body:not(:has(.jn-page)) .rb-job-card,
+body:not(:has(.jn-page)) .rb-skill-card {
+  background: rgba(255,255,255,.94) !important;
+  color: var(--site-ink) !important;
+  border: 1px solid rgba(60,45,30,.11) !important;
+  border-radius: var(--site-radius) !important;
+  box-shadow: var(--site-shadow) !important;
+}
+
+body:not(:has(.jn-page)) .card:hover,
+body:not(:has(.jn-page)) .job-card:hover,
+body:not(:has(.jn-page)) .match-job-card:hover,
+body:not(:has(.jn-page)) .module-card:hover {
+  border-color: rgba(168,139,78,.38) !important;
+  box-shadow: 0 16px 34px rgba(60,45,30,.13) !important;
+  transform: translateY(-1px);
+}
+
+body:not(:has(.jn-page)) .btn,
+body:not(:has(.jn-page)) button.btn,
+body:not(:has(.jn-page)) .vault-btn,
+body:not(:has(.jn-page)) .filter-pill,
+body:not(:has(.jn-page)) .hub-tab {
+  border-radius: 8px !important;
+  border: 1px solid rgba(60,45,30,.16) !important;
+  background: rgba(255,255,255,.92) !important;
+  color: var(--site-ink) !important;
+  box-shadow: 0 2px 6px rgba(60,45,30,.05) !important;
+}
+
+body:not(:has(.jn-page)) .btn-primary,
+body:not(:has(.jn-page)) .vault-btn.primary,
+body:not(:has(.jn-page)) .btn.is-primary {
+  background: linear-gradient(135deg, #C4A86B, #A88B4E) !important;
+  color: #241B0D !important;
+  border-color: transparent !important;
+  box-shadow: 0 6px 14px rgba(168,139,78,.24) !important;
+}
+
+body:not(:has(.jn-page)) input,
+body:not(:has(.jn-page)) select,
+body:not(:has(.jn-page)) textarea {
+  background: rgba(255,255,255,.92) !important;
+  color: var(--site-ink) !important;
+  border: 1px solid rgba(60,45,30,.16) !important;
+  border-radius: 8px !important;
+}
+
+body:not(:has(.jn-page)) h1,
+body:not(:has(.jn-page)) h2,
+body:not(:has(.jn-page)) h3,
+body:not(:has(.jn-page)) h4,
+body:not(:has(.jn-page)) .page-title {
+  color: var(--site-ink) !important;
+  font-family: 'Sora', 'Noto Sans SC', sans-serif !important;
+  letter-spacing: .01em;
+}
+
+body:not(:has(.jn-page)) .subtitle,
+body:not(:has(.jn-page)) .page-subtitle,
+body:not(:has(.jn-page)) .hint,
+body:not(:has(.jn-page)) .meta,
+body:not(:has(.jn-page)) .micro,
+body:not(:has(.jn-page)) small,
+body:not(:has(.jn-page)) label {
+  color: var(--site-muted) !important;
+}
+
+body:not(:has(.jn-page)) .graph-canvas,
+body:not(:has(.jn-page)) #talent-map-canvas {
+  background: rgba(255,255,255,.5) !important;
+  border: 1px solid rgba(60,45,30,.1) !important;
+  border-radius: 16px !important;
+  box-shadow: var(--site-shadow) !important;
+}
+
+/* 入口与登录页组件重做为新闻页纸感体系 */
+body:not(:has(.jn-page)) .video-stage,
+body:not(:has(.jn-page)) .bg-photo {
+  background-image: url('../assets/news/bg-atmosphere-light.png') !important;
+  background-size: cover !important;
+  background-position: center top !important;
+}
+body:not(:has(.jn-page)) .video-stage .bg-video,
+body:not(:has(.jn-page)) .bg-orb,
+body:not(:has(.jn-page)) .bg-waves,
+body:not(:has(.jn-page)) .bg-swirl,
+body:not(:has(.jn-page)) .bg-shimmer,
+body:not(:has(.jn-page)) .bg-veil { display: none !important; }
+body:not(:has(.jn-page)) .site-shell { background: transparent !important; }
+body:not(:has(.jn-page)) .login-card,
+body:not(:has(.jn-page)) .auth,
+body:not(:has(.jn-page)) .project-modal-card {
+  background: rgba(255,255,255,.92) !important;
+  color: var(--site-ink) !important;
+  border: 1px solid rgba(60,45,30,.12) !important;
+  border-radius: 18px !important;
+  box-shadow: var(--site-shadow) !important;
+  backdrop-filter: blur(14px) !important;
+}
+body:not(:has(.jn-page)) .login-card h2,
+body:not(:has(.jn-page)) .auth h1,
+body:not(:has(.jn-page)) .auth h2,
+body:not(:has(.jn-page)) .brand-headline,
+body:not(:has(.jn-page)) .welcome-brand {
+  color: var(--site-ink) !important;
+  font-family: 'Noto Serif SC','Songti SC',serif !important;
+}
+body:not(:has(.jn-page)) .login-submit,
+body:not(:has(.jn-page)) .project-modal-cta,
+body:not(:has(.jn-page)) .platform-enter {
+  background: linear-gradient(135deg,#C4A86B,#A88B4E) !important;
+  color: #241B0D !important;
+  border: 0 !important;
+  border-radius: 9px !important;
+  box-shadow: 0 7px 16px rgba(168,139,78,.22) !important;
+}
+body:not(:has(.jn-page)) .login-tab,
+body:not(:has(.jn-page)) .btn-ghost,
+body:not(:has(.jn-page)) .platform-link {
+  color: var(--site-muted) !important;
+  border-color: rgba(60,45,30,.14) !important;
+  background: rgba(255,255,255,.72) !important;
+}
+
+/* 人岗匹配：拆掉遮挡背景的整页白色外壳，只保留内容卡片 */
+body[data-page="match"] .wks,
+body[data-page="match"] .wks-center,
+body[data-page="match"] .wks-view,
+body[data-page="match"] .rw-grid {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+body[data-page="match"] .wks-center {
+  padding: 24px clamp(16px, 2.6vw, 38px) 36px !important;
+}
+body[data-page="match"] .wks-view.is-active {
+  background: transparent !important;
+}
+body[data-page="match"] .rw-col--nav,
+body[data-page="match"] .rw-col--editor {
+  background: rgba(255,255,255,.78) !important;
+  border: 1px solid rgba(60,45,30,.12) !important;
+  border-radius: 16px !important;
+  box-shadow: var(--site-shadow) !important;
+  backdrop-filter: blur(9px) saturate(1.05) !important;
+}
+body[data-page="match"] .rw-col--nav { padding: 16px 14px !important; }
+body[data-page="match"] .rw-col--editor { padding: 18px !important; }
+body[data-page="match"] .rw-toolbar,
+body[data-page="match"] .wks-steps,
+body[data-page="match"] .match-page-head,
+body[data-page="match"] .mod-upload,
+body[data-page="match"] .mod,
+body[data-page="match"] .rw-preview {
+  background: rgba(255,255,255,.86) !important;
+  border-color: rgba(60,45,30,.12) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 6px 18px rgba(60,45,30,.06) !important;
+  backdrop-filter: blur(6px) !important;
+}
+body[data-page="match"] .agent-shell {
+  background: rgba(255,255,255,.97) !important;
+  color: var(--site-ink) !important;
+  border: 1px solid rgba(60,45,30,.14) !important;
+  box-shadow: 0 24px 70px rgba(60,45,30,.2) !important;
+}
+body[data-page="match"] .agent-head,
+body[data-page="match"] .agent-side,
+body[data-page="match"] .agent-evidence {
+  background: rgba(250,248,245,.96) !important;
+  color: var(--site-ink) !important;
+  border-color: rgba(60,45,30,.1) !important;
+}
+body[data-page="match"] .agent-head-title b,
+body[data-page="match"] .agent-conv-item,
+body[data-page="match"] .agent-main,
+body[data-page="match"] .agent-chat {
+  color: var(--site-ink) !important;
+}
+body[data-page="match"] .agent-head-title small,
+body[data-page="match"] .agent-side-title,
+body[data-page="match"] .agent-evidence-title {
+  color: var(--site-muted) !important;
+}
+body[data-page="match"] .agent-input,
+body[data-page="match"] .agent-chat-input,
+body[data-page="match"] .agent-shell input,
+body[data-page="match"] .agent-shell textarea {
+  background: #fff !important;
+  color: var(--site-ink) !important;
+  border-color: rgba(60,45,30,.16) !important;
+}
+body[data-page="match"] .agent-send,
+body[data-page="match"] .agent-shell .btn-primary {
+  background: linear-gradient(135deg,#C4A86B,#A88B4E) !important;
+  color: #241B0D !important;
+}
+
+/* 个人资料/简历页的根容器同样保持背景可见 */
+body.profile-page .app,
+body[data-page="profile"] .app,
+body[data-page="warehouse"] .vault,
+body[data-page="resume"] .resume-app,
+body[data-page="resumeLibrary"] .resume-app {
+  background: transparent !important;
+}
+body.profile-page .hero,
+body.profile-page .panel,
+body.profile-page .section,
+body[data-page="profile"] .hero,
+body[data-page="profile"] .panel {
+  background: rgba(255,255,255,.9) !important;
+  border-color: rgba(60,45,30,.12) !important;
+  box-shadow: var(--site-shadow) !important;
+  color: var(--site-ink) !important;
+}
+
+/* 智能问答嵌入页：覆盖旧深色聊天皮肤 */
+body:not(:has(.jn-page)) .qa-panel,
+body:not(:has(.jn-page)) #view-qa {
+  background: transparent !important;
+  color: var(--site-ink) !important;
+}
+body:not(:has(.jn-page)) .qa-panel-tools,
+body:not(:has(.jn-page)) .qa-suggest-wrap,
+body:not(:has(.jn-page)) .qa-chat-card {
+  background: rgba(255,255,255,.9) !important;
+  border-color: var(--site-line) !important;
+  color: var(--site-ink) !important;
+  box-shadow: var(--site-shadow) !important;
+}
+body:not(:has(.jn-page)) .qa-suggest,
+body:not(:has(.jn-page)) .chat-bubble,
+body:not(:has(.jn-page)) .qa-message {
+  background: var(--site-paper-soft) !important;
+  border: 1px solid rgba(168,139,78,.2) !important;
+  color: var(--site-ink) !important;
+}
+body:not(:has(.jn-page)) .qa-suggest-label,
+body:not(:has(.jn-page)) .qa-muted,
+body:not(:has(.jn-page)) .chat-meta,
+body:not(:has(.jn-page)) .thinking-label {
+  color: var(--site-muted) !important;
+}
+body:not(:has(.jn-page)) .chat-input,
+body:not(:has(.jn-page)) .qa-panel input {
+  background: #fff !important;
+  color: var(--site-ink) !important;
+  border-color: rgba(60,45,30,.16) !important;
+}
+body:not(:has(.jn-page)) .chat-send,
+body:not(:has(.jn-page)) .qa-panel .btn-primary {
+  background: linear-gradient(135deg, #C4A86B, #A88B4E) !important;
+  color: #241B0D !important;
+  border-color: transparent !important;
+}
+
+@media (max-width: 768px) {
+  body:not(:has(.jn-page)) .topnav { padding-inline: 14px !important; }
+  body:not(:has(.jn-page)) .card,
+  body:not(:has(.jn-page)) .panel { border-radius: 12px !important; }
+}

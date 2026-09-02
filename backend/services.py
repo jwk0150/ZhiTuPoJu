@@ -71,7 +71,7 @@ async def fetch_provinces_summary(
           count(*)::int AS cnt,
           avg((salary_min + salary_max) / 2.0) AS avg_salary,
           count(DISTINCT job_title)::int AS distinct_titles
-        FROM map_data_table
+        FROM the_total_table
         WHERE city IS NOT NULL AND city <> '' AND ({filter_where})
         GROUP BY city
     """
@@ -102,7 +102,7 @@ async def fetch_provinces_summary(
     # 2) distinct titles（带过滤）
     distinct_sql = f"""
         SELECT city, job_title
-        FROM map_data_table
+        FROM the_total_table
         WHERE city IS NOT NULL AND city <> '' AND ({filter_where})
     """
     distinct_rows = await conn.fetch(distinct_sql, *filter_params)
@@ -118,11 +118,11 @@ async def fetch_provinces_summary(
         province_map[prov]["distinctTitles"] = len(s)
 
     # 3) 总数据统计（带过滤）
-    total_sql = f"SELECT count(*) FROM map_data_table WHERE ({filter_where})"
+    total_sql = f"SELECT count(*) FROM the_total_table WHERE ({filter_where})"
     total = await conn.fetchval(total_sql, *filter_params) or 0
-    distinct_sql_tot = f"SELECT count(DISTINCT job_title) FROM map_data_table WHERE ({filter_where})"
+    distinct_sql_tot = f"SELECT count(DISTINCT job_title) FROM the_total_table WHERE ({filter_where})"
     distinct_jobs = await conn.fetchval(distinct_sql_tot, *filter_params) or 0
-    upd_sql = f"SELECT max(crawl_time)::text FROM map_data_table WHERE ({filter_where})"
+    upd_sql = f"SELECT max(crawl_time)::text FROM the_total_table WHERE ({filter_where})"
     update_time = await conn.fetchval(upd_sql, *filter_params) or ""
 
     # 4) 构建省份列表（34 省全补齐，没数据的给 0）
@@ -159,7 +159,7 @@ async def fetch_provinces_summary(
     regions = list(PROVINCE_CODE.keys())
 
     # 行业方向：从 industry_tags 字段提取
-    ind_rows = await conn.fetch("SELECT DISTINCT industry_tags FROM map_data_table WHERE industry_tags IS NOT NULL AND industry_tags != ''")
+    ind_rows = await conn.fetch("SELECT DISTINCT industry_tags FROM the_total_table WHERE industry_tags IS NOT NULL AND industry_tags != ''")
     industries_set = set()
     for r in ind_rows:
         for tag in (r['industry_tags'] or '').split(','):
@@ -169,7 +169,7 @@ async def fetch_provinces_summary(
     industries = sorted(industries_set) if industries_set else ['互联网', '人工智能', '金融', '制造', '医疗', '教育']
 
     # 岗位方向：distinct job titles (取top200)
-    jobs_rows = await conn.fetch("SELECT DISTINCT job_title FROM map_data_table WHERE job_title IS NOT NULL AND job_title != '' ORDER BY job_title LIMIT 200")
+    jobs_rows = await conn.fetch("SELECT DISTINCT job_title FROM the_total_table WHERE job_title IS NOT NULL AND job_title != '' ORDER BY job_title LIMIT 200")
     jobs = [r['job_title'] for r in jobs_rows]
 
     return {
@@ -226,7 +226,7 @@ async def fetch_province_detail(
     title_rows = await conn.fetch(f"""
         SELECT job_title, count(*)::int AS cnt,
                avg((salary_min + salary_max)/2.0) AS avg_sal
-        FROM map_data_table
+        FROM the_total_table
         WHERE city = ANY(ARRAY[{c_holders}])
           AND job_title IS NOT NULL AND job_title <> ''
           AND ({where_shifted})
@@ -256,7 +256,7 @@ async def fetch_province_detail(
     trend_rows = await conn.fetch(f"""
         SELECT crawl_time::date AS d,
                count(*)::int AS cnt
-        FROM map_data_table
+        FROM the_total_table
         WHERE city = ANY(ARRAY[{c_holders}])
           AND crawl_time IS NOT NULL
           AND ({where_shifted})
@@ -265,7 +265,7 @@ async def fetch_province_detail(
     """, *all_params)
     # 补齐最近 7 天
     latest_row = await conn.fetchval(f"""
-        SELECT max(crawl_time)::date FROM map_data_table
+        SELECT max(crawl_time)::date FROM the_total_table
         WHERE city = ANY(ARRAY[{c_holders}]) AND crawl_time IS NOT NULL AND ({where_shifted})
     """, *all_params)
     end_date = latest_row if latest_row else date.today()
@@ -443,7 +443,7 @@ async def fetch_cities_summary(
     SELECT city, count(*)::int AS job_count,
            avg((salary_min + salary_max) / 2.0)::int AS avg_salary,
            count(DISTINCT job_title)::int AS distinct_titles
-    FROM map_data_table
+    FROM the_total_table
     WHERE split_part(city, '·', 1) = ANY(ARRAY[{pholders}]) AND ({where_shifted})
     GROUP BY city
     ORDER BY job_count DESC
@@ -632,7 +632,7 @@ async def fetch_city_detail(
         title_rows = await conn.fetch(f"""
             SELECT job_title, count(*)::int AS cnt,
                    avg((salary_min + salary_max)/2.0) AS avg_sal
-            FROM map_data_table
+            FROM the_total_table
             WHERE {city_match} AND job_title IS NOT NULL AND job_title <> ''{extra_where}
             GROUP BY job_title
         """, *all_params)
@@ -642,14 +642,27 @@ async def fetch_city_detail(
         max_demand = max(demand_map.values(), default=0)
         title_rows.sort(key=lambda r: _city_order_score(city_short, r["job_title"], demand_map[r["job_title"]], max_demand))
         title_rows = title_rows[:20]
+        # 每个岗位类型的常见学历/经验要求（真实数据聚合，供岗位卡片"基本信息"展示）
+        ee_rows = await conn.fetch(f"""
+            SELECT job_title,
+                   COALESCE(NULLIF(TRIM(mode() WITHIN GROUP (ORDER BY COALESCE(NULLIF(TRIM(education), ''), '不限'))), ''), '不限') AS edu,
+                   COALESCE(NULLIF(TRIM(mode() WITHIN GROUP (ORDER BY COALESCE(NULLIF(TRIM(experience), ''), '不限'))), ''), '不限') AS exp
+            FROM the_total_table
+            WHERE {city_match} AND job_title IS NOT NULL AND job_title <> ''{extra_where}
+            GROUP BY job_title
+        """, *all_params)
+        ee_map = {r["job_title"]: (r["edu"], r["exp"]) for r in ee_rows}
         top_jobs = []
         for i, r in enumerate(title_rows):
             avg_s = float(r["avg_sal"]) if r["avg_sal"] else 0
             _, caps = _infer_capabilities(r["job_title"])
+            ee = ee_map.get(r["job_title"], ("不限", "不限"))
             top_jobs.append({
                 "id": i + 1, "name": r["job_title"], "count": demand_map[r["job_title"]],
                 "avgSalary": round(avg_s, 0), "category": categorize_job(r["job_title"]),
                 "skills": caps[:8],
+                "education": ee[0] or "不限",
+                "experience": ee[1] or "不限",
             })
         if top_jobs:
             max_cnt = top_jobs[0]["count"]
@@ -658,7 +671,7 @@ async def fetch_city_detail(
 
         # 岗位总数 = 该城市数据库真实记录总数（不因 TOP20 截断而低估）
         total_jobs = await conn.fetchval(
-            f"SELECT count(*) FROM map_data_table WHERE {city_match}",
+            f"SELECT count(*) FROM the_total_table WHERE {city_match}",
             city_short,
         ) or 0
         avg_salaries = [j["avgSalary"] for j in top_jobs if j["avgSalary"] > 0]
@@ -666,7 +679,7 @@ async def fetch_city_detail(
 
         # 学历分布
         edu_rows = await conn.fetch(f"""
-            SELECT education, count(*)::int AS cnt FROM map_data_table
+            SELECT education, count(*)::int AS cnt FROM the_total_table
             WHERE {city_match} AND education IS NOT NULL AND education != ''
             GROUP BY education ORDER BY cnt DESC LIMIT 10
         """, city_short)
@@ -674,7 +687,7 @@ async def fetch_city_detail(
 
         # 经验分布
         exp_rows = await conn.fetch(f"""
-            SELECT experience, count(*)::int AS cnt FROM map_data_table
+            SELECT experience, count(*)::int AS cnt FROM the_total_table
             WHERE {city_match} AND experience IS NOT NULL AND experience != ''
             GROUP BY experience ORDER BY cnt DESC LIMIT 10
         """, city_short)
@@ -752,7 +765,7 @@ async def fetch_filter_options(conn: asyncpg.Connection) -> Dict[str, Any]:
 
     # 行业方向：从 industry_tags 字段提取
     ind_rows = await conn.fetch(
-        "SELECT DISTINCT industry_tags FROM map_data_table "
+        "SELECT DISTINCT industry_tags FROM the_total_table "
         "WHERE industry_tags IS NOT NULL AND industry_tags != ''"
     )
     industries_set: set = set()
@@ -765,7 +778,7 @@ async def fetch_filter_options(conn: asyncpg.Connection) -> Dict[str, Any]:
 
     # 岗位方向：distinct job titles（取 top200）
     jobs_rows = await conn.fetch(
-        "SELECT DISTINCT job_title FROM map_data_table "
+        "SELECT DISTINCT job_title FROM the_total_table "
         "WHERE job_title IS NOT NULL AND job_title != '' "
         "ORDER BY job_title LIMIT 200"
     )
@@ -1278,7 +1291,7 @@ async def fetch_city_tech_graph(
     
     job_rows = await conn.fetch(f"""
         SELECT job_title, count(*)::int AS cnt
-        FROM map_data_table
+        FROM the_total_table
         WHERE {city_match} AND job_title IS NOT NULL AND job_title <> ''{extra_where}
         GROUP BY job_title ORDER BY cnt DESC LIMIT 40
     """, *all_params)
@@ -1467,7 +1480,7 @@ async def fetch_job_tech_graph(
 ) -> Optional[dict]:
     """构建岗位级技术知识图谱真实数据（中心岗位→技术分类→技术 / 岗位级别→技术）。
 
-    数据完全来自 map_data_table 的 skills（结构化技能字段）与 experience 字段，
+    数据完全来自 the_total_table 的 skills（结构化技能字段）与 experience 字段，
     不做城市级聚合，避免混入其他岗位/城市的技术数据。
     """
     # 1. 取该岗位全部真实记录（含 skills、experience）
@@ -1486,7 +1499,7 @@ async def fetch_job_tech_graph(
 
     rows = await conn.fetch(f"""
         SELECT skills, experience
-        FROM map_data_table
+        FROM the_total_table
         WHERE skills IS NOT NULL AND skills <> ''{extra_where}
     """, *all_params)
 
@@ -1597,6 +1610,176 @@ async def fetch_job_tech_graph(
     }
 
 
+# ========== 更新图谱（挑战杯演示）：动态重选技术并写入 new_skill_table ==========
+
+# 通用补充技术池（演示用，与前端兜底池对齐）
+_UPDATE_TECH_POOL = [
+    "Python", "Java", "JavaScript", "TypeScript", "Go", "C", "C++", "C#", "PHP", "Ruby",
+    "Swift", "Kotlin", "Rust", "SQL", "Scala", "Shell",
+    "Django", "Flask", "Spring Boot", "Spring Cloud", "MyBatis", "Hibernate", "FastAPI",
+    "Express", "Laravel", "Node.js", "Netty", "Dubbo", "gRPC", "WebSocket", "JWT", "Celery",
+    "MySQL", "PostgreSQL", "MongoDB", "Redis", "Oracle", "SQLite", "Elasticsearch",
+    "HBase", "ClickHouse", "Hive", "Doris", "Redis Cluster",
+    "Docker", "Kubernetes", "K8s", "Git", "GitLab CI", "Jenkins", "Nginx", "Linux",
+    "Ansible", "Helm", "Prometheus", "Grafana", "Docker Compose", "ZooKeeper", "Terraform",
+    "TensorFlow", "PyTorch", "Keras", "Scikit-learn", "Pandas", "NumPy", "OpenCV",
+    "XGBoost", "LightGBM", "LangChain", "PaddlePaddle",
+    "Spark", "Hadoop", "Kafka", "Flink", "Airflow", "DataX", "Flume", "ETL", "OLAP", "Presto",
+    "Vue", "React", "Angular", "Next.js", "Vite", "Webpack", "HTML5", "CSS3", "ECharts", "Uni-app",
+    "微服务", "分布式架构", "消息队列", "高并发", "负载均衡", "云原生",
+    "数据结构与算法", "操作系统", "计算机网络", "数据库原理", "设计模式", "并发编程",
+    "Selenium", "JMeter", "Postman", "Jest", "Cypress", "Playwright", "Pytest",
+]
+
+
+async def update_job_tech_graph(
+    conn: asyncpg.Connection,
+    job_title: str,
+    round_no: int = 1,
+) -> Optional[dict]:
+    """动态更新岗位技术图谱（挑战杯演示）：
+
+    1) 从 the_total_table（视图，指向 the_total_table_copy1）提取该岗位真实技术池；
+    2) 与通用补充池合并；
+    3) 按"轮次"确定性策略重新选择一批技术（数量随轮次明显变化、核心技术保留、边缘技术轮换）；
+    4) 将本次结果写入 new_skill_table（同一数据库，数据版本 = 轮次）；
+    5) 返回与 fetch_job_tech_graph 相同结构的 categories + levels。
+    """
+    from collections import Counter
+
+    # 0. 确保 new_skill_table 存在（与 the_total_table_copy1 同一数据库/schema）
+    await conn.execute("""
+        CREATE TABLE IF NOT EXISTS public.new_skill_table (
+            id BIGSERIAL PRIMARY KEY,
+            tech_name VARCHAR(200) NOT NULL,
+            category VARCHAR(100) NOT NULL DEFAULT '其他',
+            job_title VARCHAR(200) NOT NULL,
+            weight INTEGER NOT NULL DEFAULT 50,
+            is_visible BOOLEAN NOT NULL DEFAULT TRUE,
+            data_version INTEGER NOT NULL DEFAULT 1,
+            updated_at TIMESTAMP NOT NULL DEFAULT now()
+        )
+    """)
+
+    # 1. 该岗位真实技术池（来自 the_total_table_copy1 的数据）
+    rows = await conn.fetch("""
+        SELECT skills FROM the_total_table
+        WHERE skills IS NOT NULL AND skills <> '' AND job_title = $1
+        LIMIT 3000
+    """, job_title)
+    counter: Counter = Counter()
+    for r in rows:
+        for raw in (r["skills"] or "").split(","):
+            name = raw.strip()
+            if name:
+                counter[name] += 1
+    existing = [{"name": n, "cat": _classify_job_tech(n), "freq": f}
+                for n, f in counter.most_common(200)]
+    # 无真实数据时退化为通用池
+    if not existing:
+        existing = [{"name": t, "cat": _classify_job_tech(t), "freq": 1}
+                    for t in _UPDATE_TECH_POOL]
+
+    # 2. 合并通用池（去重）
+    used = {e["name"] for e in existing}
+    pool = list(existing)
+    for t in _UPDATE_TECH_POOL:
+        if t not in used:
+            used.add(t)
+            pool.append({"name": t, "cat": _classify_job_tech(t), "freq": 1})
+
+    # 3. 确定性轮次选择：数量随轮次变化（18~37），相邻轮次明显不同
+    count = 18 + ((round_no * 7) % 20)
+    count = min(count, len(pool))
+    # 核心技术（高频 TOP8 保留，保证每轮都有岗位核心技术）
+    core_count = min(8, max(3, len(existing) * 4 // 10))
+    core = [{"name": e["name"], "cat": e["cat"]} for e in existing[:core_count]]
+    core_used = {c["name"] for c in core}
+    rest = [p for p in pool if p["name"] not in core_used]
+
+    # 确定性洗牌（同一轮次结果稳定，不同轮次结果变化）
+    seed = round_no * 99991 + 7
+    s = seed
+    shuffled = list(rest)
+    for i in range(len(shuffled) - 1, 0, -1):
+        s = (s * 1103515245 + 12345) % 2147483648
+        j = s % (i + 1)
+        shuffled[i], shuffled[j] = shuffled[j], shuffled[i]
+
+    picked = list(core)
+    for p in shuffled:
+        if len(picked) >= count:
+            break
+        picked.append({"name": p["name"], "cat": p["cat"]})
+    k = 0
+    while len(picked) < count and rest:
+        picked.append({"name": rest[k % len(rest)]["name"], "cat": rest[k % len(rest)]["cat"]})
+        k += 1
+    picked = picked[:count]
+
+    # 4. 写入 new_skill_table（覆盖该岗位上一版本）
+    await conn.execute(
+        "DELETE FROM public.new_skill_table WHERE job_title = $1", job_title
+    )
+    for i, p in enumerate(picked):
+        weight = 92 - min(72, i * 78 // max(1, len(picked)))
+        await conn.execute(
+            """INSERT INTO public.new_skill_table
+               (tech_name, category, job_title, weight, is_visible, data_version)
+               VALUES ($1, $2, $3, $4, TRUE, $5)""",
+            p["name"], p["cat"], job_title, weight, round_no,
+        )
+
+    # 5. 构建返回数据（结构同 fetch_job_tech_graph）
+    cat_map: Dict[str, list] = {}
+    for i, p in enumerate(picked):
+        weight = 92 - min(72, i * 78 // max(1, len(picked)))
+        cat_map.setdefault(p["cat"], []).append({
+            "name": p["name"],
+            "type": "technology",
+            "frequency": weight,
+            # size 与原图谱一致归一化到 14~42：平方映射让多数节点偏小、核心节点突出
+            "size": max(14, min(42, 14 + int(28 * (weight / 92) ** 2))),
+            "ratio": round(min(0.98, weight / 100), 2),
+        })
+    categories = [
+        {"name": cat, "type": "category", "technologies": techs}
+        for cat, techs in cat_map.items()
+        if techs
+    ]
+    categories.sort(key=lambda c: -sum(t["frequency"] for t in c["technologies"]))
+
+    # 级别视图：初级/中级/高级 均衡分配
+    level_names = ["初级", "中级", "高级"]
+    levels = []
+    for li, lv in enumerate(level_names):
+        start = len(picked) * li // 3
+        end = len(picked) * (li + 1) // 3
+        techs = []
+        for j, p in enumerate(picked[start:end]):
+            techs.append({
+                "name": p["name"],
+                "type": "technology",
+                "frequency": 60 + ((j * 13 + li * 7) % 30),
+                "size": 14 + ((j * 7 + li * 5) % 29),
+                "ratio": round(min(0.95, 0.4 + ((j * 11 + li * 9) % 50) / 100), 2),
+            })
+        if techs:
+            levels.append({"name": lv, "type": "level", "technologies": techs})
+
+    return {
+        "jobTitle": job_title,
+        "centerJob": job_title,
+        "skillCount": sum(t["frequency"] for c in categories for t in c["technologies"]),
+        "uniqueSkills": len(picked),
+        "categories": categories,
+        "levels": levels,
+        "maxFrequency": max((t["frequency"] for c in categories for t in c["technologies"]), default=1),
+        "dataVersion": round_no,
+        "sourceTable": "new_skill_table",
+    }
+
+
 async def fetch_tech_detail(
     conn: asyncpg.Connection,
     tech_name: str,
@@ -1628,7 +1811,7 @@ async def fetch_tech_detail(
         matched_count = 0
         for key, techs in JOB_TECH_MAPPING.items():
             rows = await conn.fetch("""
-                SELECT count(*)::int AS cnt FROM map_data_table
+                SELECT count(*)::int AS cnt FROM the_total_table
                 WHERE city = $1 AND job_title ILIKE '%' || $2 || '%'
             """, city_name, key)
             if rows and rows[0]["cnt"] > 0:
@@ -1638,7 +1821,7 @@ async def fetch_tech_detail(
         
         # 总岗位数
         total_row = await conn.fetchrow(
-            "SELECT count(*)::int AS cnt FROM map_data_table WHERE city = $1", city_name)
+            "SELECT count(*)::int AS cnt FROM the_total_table WHERE city = $1", city_name)
         total_cnt = total_row["cnt"] if total_row else 1
         job_count = matched_count
         job_ratio = round(matched_count / total_cnt * 100, 1) if total_cnt > 0 else 0
@@ -1646,7 +1829,7 @@ async def fetch_tech_detail(
         # 相关城市（规范化：去掉「市·区」后缀，去重）
         city_rows = await conn.fetch("""
             SELECT split_part(city, '·', 1) AS city_short, count(*)::int AS cnt
-            FROM map_data_table
+            FROM the_total_table
             WHERE city IS NOT NULL AND city <> ''
             GROUP BY split_part(city, '·', 1)
             ORDER BY cnt DESC LIMIT 20
@@ -1665,7 +1848,7 @@ async def fetch_tech_detail(
 
         # 相关岗位
         job_rows = await conn.fetch("""
-            SELECT job_title, count(*)::int AS cnt FROM map_data_table
+            SELECT job_title, count(*)::int AS cnt FROM the_total_table
             WHERE city = $1 AND job_title IS NOT NULL AND job_title <> ''
             GROUP BY job_title ORDER BY cnt DESC LIMIT 15
         """, city_name)
@@ -1711,7 +1894,7 @@ async def fetch_city_jobs_full(
                    avg((salary_min + salary_max)/2.0)::float AS avg_sal,
                    string_agg(DISTINCT industry_tags, ',') AS industries,
                    bool_or(source_name <> 'ai_seed') AS is_real
-            FROM map_data_table
+            FROM the_total_table
             WHERE {city_match} AND job_title IS NOT NULL AND job_title <> ''
             GROUP BY job_title
         """, city_short)
@@ -1722,7 +1905,7 @@ async def fetch_city_jobs_full(
         rows.sort(key=lambda r: _city_order_score(city_short, r["job_title"], demand_map[r["job_title"]], max_demand))
         rows = rows[:100]
         total = await conn.fetchval(
-            f"SELECT count(*) FROM map_data_table WHERE {city_match}", city_short
+            f"SELECT count(*) FROM the_total_table WHERE {city_match}", city_short
         ) or 0
         jobs = []
         industry_set = set()
@@ -1771,12 +1954,12 @@ async def fetch_city_preview(
         title_rows = await conn.fetch(f"""
             SELECT job_title, count(*)::int AS cnt,
                    avg((salary_min + salary_max)/2.0)::float AS avg_sal
-            FROM map_data_table
+            FROM the_total_table
             WHERE {city_match} AND job_title IS NOT NULL AND job_title <> ''
             GROUP BY job_title
         """, city_short)
         total_jobs = await conn.fetchval(
-            f"SELECT count(*) FROM map_data_table WHERE {city_match}", city_short
+            f"SELECT count(*) FROM the_total_table WHERE {city_match}", city_short
         ) or 0
         # 展示需求数量：真实数据优先，不足时按城市规模/岗位热度/城市画像稳定补充（每个岗位类型 ≥ 20）
         demand_map = {r["job_title"]: _city_job_demand(city_short, r["job_title"], r["cnt"]) for r in title_rows}
@@ -1814,7 +1997,7 @@ async def fetch_city_preview(
 
     # 学历占比
     edu_rows = await conn.fetch(f"""
-        SELECT education, count(*)::int AS cnt FROM map_data_table
+        SELECT education, count(*)::int AS cnt FROM the_total_table
         WHERE {city_match} AND education IS NOT NULL AND education != ''
         GROUP BY education ORDER BY cnt DESC LIMIT 6
     """, city_short)
@@ -1826,7 +2009,7 @@ async def fetch_city_preview(
 
     # 行业占比：industry_tags 逗号分隔拆开累加
     ind_rows = await conn.fetch(f"""
-        SELECT industry_tags, count(*)::int AS cnt FROM map_data_table
+        SELECT industry_tags, count(*)::int AS cnt FROM the_total_table
         WHERE {city_match} AND industry_tags IS NOT NULL AND industry_tags != ''
         GROUP BY industry_tags ORDER BY cnt DESC LIMIT 8
     """, city_short)

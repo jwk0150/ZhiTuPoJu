@@ -41,6 +41,20 @@ def evidence_confidence(count: int) -> tuple[str, float, float]:
     return "low", 0.3, 0.7
 
 
+def _doc_id_for_chunk(chunk_id: int) -> int | None:
+    """Resolve the required document foreign key for a chunk evidence row."""
+    try:
+        with _connect() as conn:
+            with conn.cursor() as cur:
+                cur.execute("SELECT doc_id FROM document_chunks WHERE chunk_id = %s", (chunk_id,))
+                row = cur.fetchone()
+        return int(row[0]) if row and row[0] is not None else None
+    except Exception:
+        # Evidence persistence must never make matching fail when the optional
+        # provenance tables are unavailable.
+        return None
+
+
 def _upsert_evidence(
     job_id: int | None,
     chunk_id: int | None,
@@ -97,14 +111,26 @@ def persist_match_evidence(match: dict[str, Any], confidence: float, uncertainty
     }
     ids: list[int] = []
     for ev in match.get("evidence") or []:
-        chunk_id = ev.get("chunk_id")
+        try:
+            chunk_id = int(ev.get("chunk_id")) if ev.get("chunk_id") is not None else None
+        except (TypeError, ValueError):
+            chunk_id = None
+        try:
+            doc_id = int(ev.get("doc_id")) if ev.get("doc_id") is not None else None
+        except (TypeError, ValueError):
+            doc_id = None
+        if chunk_id is not None and doc_id is None:
+            doc_id = _doc_id_for_chunk(chunk_id)
         snippet = (ev.get("snippet") or "").strip()
-        if not chunk_id and not snippet:
+        # evidence_items.doc_id is NOT NULL in the deployed schema. SQL/demo
+        # fallback evidence has no chunk/document identity, so keep it in the
+        # response but do not attempt an invalid database insert.
+        if not chunk_id or not doc_id or not snippet:
             continue
         evidence_id = _upsert_evidence(
             job_id=job_id,
             chunk_id=chunk_id,
-            doc_id=ev.get("doc_id"),
+            doc_id=doc_id,
             source_url=ev.get("source_url"),
             evidence_text=snippet,
             confidence=confidence,

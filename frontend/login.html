@@ -1070,6 +1070,7 @@
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21h18"/><path d="M5 21V8l7-4 7 4v13"/><path d="M9 21v-6h6v6"/></svg>
               <span>开发者入口</span>
             </button>
+            <a class="btn-ghost admin-entry-link" href="pages/admin.html" aria-label="打开管理端">管理端入口</a>
           </div>
           <p class="legal">登录即代表同意<a href="#" onclick="return false;">《用户协议》</a>和<a href="#" onclick="return false;">《隐私政策》</a></p>
         </div>
@@ -1318,7 +1319,15 @@
     }
 
         function goResume() {
-          try { sessionStorage.setItem('zhitu_open_resume', '1'); } catch (e) {}
+          try {
+            const u = JSON.parse(localStorage.getItem('zhitu_user') || '{}');
+            const uid = String(u.username || u.user?.username || '');
+            const key = uid ? 'zhitu_resume_onboarding_seen:' + uid : '';
+            if (uid && localStorage.getItem(key) !== '1') {
+              sessionStorage.setItem('zhitu_open_resume', '1');
+              localStorage.setItem(key, '1');
+            }
+          } catch (e) {}
           const dest = 'pages/news/index.html';
           if (window.ZhituAuthTransit && window.ZhituAuthTransit.go) {
             window.ZhituAuthTransit.go(dest);

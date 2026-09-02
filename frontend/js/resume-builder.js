@@ -442,22 +442,16 @@
     btn.classList.add('is-loading');
     btn.querySelector('.rb-ai-icon').textContent = '⟳';
     btn.querySelector('.rb-ai-label').textContent = '补全中…';
-    await fakeDelay(1400);
     const seed = state.basicInfo;
-    if (!seed.major) seed.major = '软件工程';
-    if (!seed.school) seed.school = '某 211 高校';
-    if (!seed.degree) seed.degree = '本科';
-    if (!seed.city) seed.city = '上海';
-    if (!seed.graduate) seed.graduate = '2025.06';
-    if (!seed.email) seed.email = 'name_' + Math.floor(Math.random() * 9999) + '@example.com';
-    if (!seed.phone) seed.phone = '138 ' + Math.floor(1000 + Math.random() * 8999) + ' ' + Math.floor(1000 + Math.random() * 8999);
+    // 自动补全只整理已有输入，不编造学校、联系方式或日期。
+    const missing = ['name', 'major', 'school', 'degree', 'city', 'graduate', 'email', 'phone'].filter((k) => !String(seed[k] || '').trim());
     saveState();
     renderBasic();
     btn.classList.remove('is-loading');
     btn.classList.add('is-done');
     btn.querySelector('.rb-ai-icon').textContent = '✓';
     btn.querySelector('.rb-ai-label').textContent = '已补全';
-    toast('✓ 空缺字段已填入示例，可自行修改');
+    toast(missing.length ? '请补充空缺字段；系统不会代填虚构信息' : '已检查基础信息');
   }
 
   /* ============== 7. 步骤 02 - 求职方向 ============== */
@@ -613,7 +607,7 @@
       // 与 HTML 默认文案同构：就读于 <em>学校 专业名专业</em> 学历。
       parts.push(
         '就读于 <em>' +
-          (b.school || '某高校') + ' ' +
+          (b.school || '未填写学校') + ' ' +
           (b.major || '软件工程') + '专业</em> ' +
           (b.degree || '本科') + '。'
       );
@@ -755,7 +749,7 @@
     const brief = keywords.length > 1
       ? `在${keywords[0] || '校园项目'}中负责${keywords.slice(1).join('、')}等工作，与团队一起完成从需求拆解、接口设计到上线验证的完整链路。`
       : '在校园项目中负责核心模块开发，参与从需求分析到上线验证的全流程，并与前端 / 测试协作完成功能交付。';
-    const result = '沉淀出一份可复用的' + (keywords[0] || '项目') + '模板，为后续团队迭代减少 30% 的重复工作量；过程中熟悉了工程规范、版本管理与上线节奏。';
+    const result = '请补充可核验的项目结果（如性能、效率或用户规模），系统不会替你虚构量化指标。';
 
     const newExp = {
       id: Date.now(),
@@ -944,7 +938,7 @@
       ? state.jobDirection.positions.map(id => (findPosition(id) || {}).name).filter(Boolean).join('、')
       : '互联网开发';
     const personality = state.profile.personality || '沉稳细致、注重细节、善于协作';
-    const summary = `${seed.name || '本人'}就读于${seed.school || '某高校'}${seed.major || '软件工程'}专业${seed.degree || '本科'}，${personality.split(/[，。]/)[0] || '具备基本工程实践能力'}。课程与项目中接触过${pos}相关内容，希望从事节奏清晰、有成长空间的技术岗位。`;
+    const summary = `${seed.name || '本人'}${seed.school ? `就读于${seed.school}` : ''}${seed.major ? `${seed.major}专业` : ''}${seed.degree ? `（${seed.degree}）` : ''}，${personality.split(/[，。]/)[0] || '具备工程实践能力'}。${pos ? `希望从事${pos}相关岗位。` : '请补充目标岗位后生成更准确的自我评价。'}`;
     state.profile.summary = summary;
     saveState();
     ta.value = summary;
@@ -1223,9 +1217,11 @@
       phone: b.phone || null,
       email: b.email || null
     };
+    var headers = { 'Content-Type': 'application/json' };
+    if (window.zhituGetToken && window.zhituGetToken()) headers.Authorization = 'Bearer ' + window.zhituGetToken();
     var res = await fetch(apiBase() + '/api/profile/profile/update', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: headers,
       body: JSON.stringify(body)
     });
     if (!res.ok) throw new Error('profile sync failed');
@@ -1249,7 +1245,7 @@
     ].filter(Boolean);
 
     const edu = [
-      [b.school || '某高校', b.major || '相关专业', b.degree || '本科'].filter(Boolean).join(' · '),
+      [b.school || '未填写学校', b.major || '相关专业', b.degree || '本科'].filter(Boolean).join(' · '),
       b.graduate ? (b.graduate + ' 毕业') : ''
     ].filter(Boolean).join('\n');
 
@@ -1300,6 +1296,14 @@
         window.ZhituVault.saveMatchResume(payload);
       } else {
         localStorage.setItem(MATCH_RESUME_KEY, JSON.stringify(payload));
+      }
+      // 登录用户同步到后端个人仓库，保留本地缓存以支持离线访问。
+      if (window.zhituGetToken && window.zhituGetToken()) {
+        fetch(apiBase() + '/api/profile/resumes/sync', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + window.zhituGetToken() },
+          body: JSON.stringify({ filename: payload.fileName, source: payload.source, content: payload.text, metadata: { sections: payload.sections, versionLabel: payload.versionLabel } })
+        }).catch(function () {});
       }
     } catch (err) {
       console.warn('saveMatchResume fail:', err);
@@ -1372,7 +1376,7 @@
           </div>
           <div class="rb-paper-section">
             <h5>教育背景</h5>
-            <p><b style="color:#1B1B16">${b.school || '某高校'}</b>　${b.degree || '本科'}　${b.major || '—'}</p>
+            <p><b style="color:#1B1B16">${b.school || '未填写学校'}</b>　${b.degree || '本科'}　${b.major || '—'}</p>
             <p style="color:#5A5042;font-size:10px">${b.graduate || '—'} 毕业</p>
           </div>
           ${state.starExperiences.map((s, i) => `

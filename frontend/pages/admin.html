@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>执图破局 · 管理端</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/admin.css?v=1" />
+</head>
+<body>
+  <div class="admin-app">
+    <aside class="admin-sidebar">
+      <a class="admin-brand" href="../index.html"><span class="brand-glyph">执</span><span><b>执图破局</b><small>OPERATIONS CONSOLE</small></span></a>
+      <div class="admin-badge"><span class="pulse"></span> Developer workspace <em>v2.4.1</em></div>
+      <nav class="admin-nav" aria-label="管理端导航">
+        <a class="active" href="#overview">总览 <span>⌂</span></a>
+        <a href="#crawler">数据爬取 <span>↗</span></a>
+        <a href="#rag">RAG 知识库 <span>⌘</span></a>
+        <a href="#evaluation">效果评估 <span>◒</span></a>
+        <a href="#guard">幻觉防控 <span>◈</span></a>
+        <a href="#users">用户与权限 <span>♙</span></a>
+      </nav>
+      <div class="sidebar-foot"><span class="status-dot"></span>服务运行正常<small>上次同步 2 分钟前</small></div>
+    </aside>
+
+    <main class="admin-main">
+      <header class="admin-topbar"><div><span class="eyebrow">ADMIN / SYSTEM OVERVIEW</span><h1>智能招聘数据控制台</h1></div><div class="top-actions"><button class="ghost-btn" id="refreshBtn">↻ 刷新数据</button><button class="user-chip">开发者 <span>DEV</span></button></div></header>
+
+      <section id="overview" class="section-block"><div class="section-heading"><div><span class="eyebrow">LIVE SNAPSHOT</span><h2>系统总览</h2></div><span class="updated">数据截至 2026-09-02 19:20</span></div>
+        <div class="metric-grid">
+          <article class="metric-card accent-cyan"><span>招聘数据总量</span><strong>12,804,216</strong><small>较昨日 <i>+2.8%</i></small><div class="spark"><b style="height:36%"></b><b style="height:48%"></b><b style="height:42%"></b><b style="height:65%"></b><b style="height:58%"></b><b style="height:78%"></b><b style="height:92%"></b></div></article>
+          <article class="metric-card accent-violet"><span>知识库 Chunk</span><strong>1,842,609</strong><small>向量化覆盖率 <i>98.6%</i></small><div class="ring"><span>98.6%</span></div></article>
+          <article class="metric-card accent-amber"><span>图谱实体 / 关系</span><strong>18,529 <small>/ 64,210</small></strong><small>本周新增关系 <i>+1,204</i></small><div class="mini-bars"><b style="height:32%"></b><b style="height:56%"></b><b style="height:44%"></b><b style="height:72%"></b><b style="height:64%"></b><b style="height:88%"></b></div></article>
+          <article class="metric-card accent-green"><span>幻觉拦截率</span><strong>96.4%</strong><small>验证通过 <i>12,084 / 12,536</i></small><div class="progress"><i style="width:96.4%"></i></div></article>
+        </div>
+        <div class="overview-grid"><article class="panel trend-panel"><div class="panel-head"><div><h3>数据与问答吞吐</h3><small>近 7 日 · 每日完成任务数</small></div><span class="legend"><i></i>爬取 <i></i>问答</span></div><div class="chart"><div class="y-labels"><span>8k</span><span>6k</span><span>4k</span><span>2k</span><span>0</span></div><div class="chart-area"><div class="grid-lines"><i></i><i></i><i></i><i></i><i></i></div><svg viewBox="0 0 700 220" preserveAspectRatio="none" aria-label="吞吐折线图"><polyline class="line crawl" points="0,154 110,128 220,142 330,92 440,108 550,68 700,42"/><polyline class="line qa" points="0,188 110,174 220,181 330,152 440,160 550,126 700,116"/><circle cx="700" cy="42" r="4"/><circle cx="700" cy="116" r="4"/></svg><div class="x-labels"><span>08/27</span><span>08/28</span><span>08/29</span><span>08/30</span><span>08/31</span><span>09/01</span><span>09/02</span></div></div></div></article><article class="panel health-panel"><div class="panel-head"><div><h3>服务健康度</h3><small>实时探针 · 过去 24 小时</small></div><span class="healthy">● Healthy</span></div><div class="health-row"><span>API P95 延迟</span><strong>184 <small>ms</small></strong><em class="good">-12%</em></div><div class="health-row"><span>向量检索命中率</span><strong>91.8<small>%</small></strong><em class="good">+4.6%</em></div><div class="health-row"><span>任务队列积压</span><strong>23 <small>jobs</small></strong><em class="warn">可接受</em></div><div class="health-row"><span>模型可用性</span><strong>99.97<small>%</small></strong><em class="good">SLA</em></div></article></div>
+      </section>
+
+      <section id="crawler" class="section-block"><div class="section-heading"><div><span class="eyebrow">INGESTION PIPELINE</span><h2>爬取数据</h2></div><button class="outline-btn">查看全部任务 →</button></div><div class="pipeline"><div><b>01</b><strong>采集</strong><small>站点调度 / 频控</small></div><i>→</i><div><b>02</b><strong>清洗</strong><small>去重 / 结构化</small></div><i>→</i><div><b>03</b><strong>图谱抽取</strong><small>实体与关系</small></div><i>→</i><div><b>04</b><strong>入库</strong><small>文档 / 向量</small></div></div><article class="panel table-panel"><div class="panel-head"><div><h3>最近采集批次</h3><small>展示真实管线运行状态与质量分</small></div><span class="table-filter">全部来源 ▾</span></div><div class="table-wrap"><table><thead><tr><th>来源</th><th>批次 / 时间</th><th>抓取量</th><th>有效率</th><th>状态</th></tr></thead><tbody><tr><td><b class="source-dot zhilian"></b>智联招聘</td><td><code>crawl_20260902_07</code><small>今天 18:42</small></td><td>46,820</td><td><strong class="text-green">98.9%</strong></td><td><span class="tag success">已完成</span></td></tr><tr><td><b class="source-dot boss"></b>BOSS直聘</td><td><code>crawl_20260902_06</code><small>今天 17:10</small></td><td>31,406</td><td><strong class="text-green">97.6%</strong></td><td><span class="tag success">已完成</span></td></tr><tr><td><b class="source-dot liepin"></b>猎聘</td><td><code>crawl_20260902_05</code><small>今天 16:25</small></td><td>28,114</td><td><strong class="text-amber">94.2%</strong></td><td><span class="tag running">清洗中</span></td></tr></tbody></table></div></article></section>
+
+      <section id="rag" class="section-block split-section"><div class="section-heading"><div><span class="eyebrow">KNOWLEDGE BASE</span><h2>RAG 知识库</h2></div></div><div class="rag-grid"><article class="panel rag-card"><div class="rag-icon">⌘</div><h3>文档处理状态</h3><div class="big-number">2,364 <small>份文档</small></div><div class="bar-row"><span>已解析</span><b><i style="width:94%"></i></b><strong>94%</strong></div><div class="bar-row"><span>已切分</span><b><i style="width:91%"></i></b><strong>91%</strong></div><div class="bar-row"><span>已向量化</span><b><i style="width:88%"></i></b><strong>88%</strong></div></article><article class="panel rag-card"><div class="rag-icon violet">∿</div><h3>检索质量</h3><div class="big-number">0.918 <small>Recall@10</small></div><div class="quality-grid"><div><span>平均相似度</span><b>0.84</b></div><div><span>空结果率</span><b>2.1%</b></div><div><span>重排提升</span><b>+13.6%</b></div><div><span>平均耗时</span><b>126ms</b></div></div></article><article class="panel rag-card"><div class="rag-icon amber">◈</div><h3>知识分布</h3><div class="donut"><div><b>招聘岗位</b><strong>72%</strong></div><div><b>企业官网</b><strong>18%</strong></div><div><b>行业政策</b><strong>10%</strong></div></div><small class="muted">按 source_type 聚合 · 可增量扩展</small></article></div></section>
+
+      <section id="evaluation" class="section-block"><div class="section-heading"><div><span class="eyebrow">OFFLINE EVALUATION</span><h2>效果评估 · 用数据证明系统效果</h2></div><span class="updated">基准集 v2026.08 · 1,200 条人工标注</span></div><div class="eval-grid"><article class="panel eval-score"><span>综合检索得分</span><strong>92.4<small>/100</small></strong><div class="score-track"><i style="width:92.4%"></i></div><small>较基线 BM25 <em>+18.7 分</em></small></article><article class="panel eval-bars"><div class="eval-line"><span>Precision@5</span><b><i style="width:94%"></i></b><strong>0.94</strong></div><div class="eval-line"><span>Recall@10</span><b><i style="width:91.8%"></i></b><strong>0.918</strong></div><div class="eval-line"><span>MRR</span><b><i style="width:89%"></i></b><strong>0.89</strong></div><div class="eval-line"><span>Answer groundedness</span><b><i style="width:96.4%"></i></b><strong>0.964</strong></div></article><article class="panel eval-note"><span class="eyebrow">A/B TEST</span><h3>人岗匹配命中率</h3><div class="ab-row"><span>图谱 + RAG</span><strong>78.6%</strong><em>↑ 21.3%</em></div><div class="ab-row muted-row"><span>仅关键词</span><strong>57.3%</strong><em>基线</em></div><p>评估口径：Top-10 推荐中，专家标注“适合”的职位占比。</p></article></div></section>
+
+      <section id="guard" class="section-block"><div class="section-heading"><div><span class="eyebrow">TRUST &amp; SAFETY</span><h2>大模型幻觉防控</h2></div><span class="guard-status">● 图谱事实校验已开启</span></div><div class="guard-grid"><article class="panel guard-flow"><h3>基于图谱事实的校验链</h3><div class="flow-step"><b>1</b><div><strong>Claim 抽取</strong><small>将模型回答拆为可验证事实单元</small></div></div><div class="flow-step"><b>2</b><div><strong>Evidence 对齐</strong><small>回溯 Chunk → Document → source_url</small></div></div><div class="flow-step"><b>3</b><div><strong>图谱一致性</strong><small>校验实体、关系与时间版本是否冲突</small></div></div><div class="flow-step"><b>4</b><div><strong>置信度门控</strong><small>低于 0.78 自动降级为“需人工确认”</small></div></div></article><article class="panel guard-metrics"><h3>今日拦截明细</h3><div class="guard-kpi"><strong>452</strong><span>待核验 Claims</span><em>↓ 32%</em></div><div class="guard-kpi"><strong>96.4%</strong><span>事实一致率</span><em>+2.1%</em></div><div class="guard-kpi"><strong>0.78</strong><span>最低放行阈值</span><em>策略锁定</em></div><div class="guard-alert">最近一次拦截：薪资区间与来源页面版本不一致，已阻断回答并返回证据链接。</div></article></div></section>
+
+      <section id="users" class="section-block"><div class="section-heading"><div><span class="eyebrow">IDENTITY &amp; ACCESS</span><h2>用户与权限</h2></div><button class="outline-btn">导出审计日志 ↓</button></div><article class="panel table-panel"><div class="table-wrap"><table><thead><tr><th>用户</th><th>角色</th><th>最近活动</th><th>匹配次数</th><th>状态</th></tr></thead><tbody><tr><td><span class="avatar">A</span>演示账户 A</td><td><span class="role user">求职者</span></td><td>演示记录 · 人岗匹配</td><td>—</td><td><span class="tag success">演示</span></td></tr><tr><td><span class="avatar violet">B</span>演示账户 B</td><td><span class="role user">求职者</span></td><td>演示记录 · 简历解析</td><td>—</td><td><span class="tag success">演示</span></td></tr><tr><td><span class="avatar amber">D</span>开发环境账户</td><td><span class="role admin">开发者</span></td><td>本地环境 · 管理端</td><td>—</td><td><span class="tag admin-tag">管理员</span></td></tr></tbody></table></div></article></section>
+      <footer class="admin-footer">执图破局管理端 · 数据仅供系统运营与评估使用 <span>Build 2026.09.02</span></footer>
+    </main>
+  </div>
+  <script src="../js/admin.js?v=1"></script>
+</body>
+</html>

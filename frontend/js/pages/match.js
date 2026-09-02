@@ -3,7 +3,7 @@
  * 布局：左导航 + 中央工作区 + 右侧 AI 面板
  * 状态：resume → match → analysis → jobs → detail → learn → interview → report
  * 删除：旧 aurora/portal 沉浸式入口、巨大卡片 Dashboard
- * 数据契约保留：MOCK_RESULT / mockDiagnose / 面试 / 报告
+ * 数据契约保留：MOCK_RESULT / mockDiagnose；面试与报告使用当前匹配结果
  * ============================================================ */
 (function () {
   'use strict';
@@ -21,12 +21,12 @@
   function currentResult() {
     const st = window.matchState;
     if (!st) return null;
-    const base = st.result || MOCK_RESULT;
+    const base = st.mode === 'demo' ? (st.result || MOCK_RESULT) : st.result;
     if (!base) return null;
     // 兜底:如果当前 result 没有 matches,但 MOCK_RESULT 有,借用 mock 的 matches
     // 避免真实接口部分失败时 view-jobs 右侧详情空白
     const noMatches = !base.matches || !base.matches.length;
-    if (noMatches && MOCK_RESULT && MOCK_RESULT.matches && MOCK_RESULT.matches.length) {
+    if (st.mode === 'demo' && noMatches && MOCK_RESULT && MOCK_RESULT.matches && MOCK_RESULT.matches.length) {
       return Object.assign({}, base, { matches: MOCK_RESULT.matches });
     }
     return base;
@@ -127,7 +127,7 @@
     },
     matches: [
       {
-        job: { id: 'java-be', title: 'Java 后端开发', company: '某互联网大厂', city: '北京', salary: '25-45K', type: '全职',
+        job: { id: 'java-be', title: 'Java 后端开发（演示岗位）', company: '未提供公司信息', city: '北京', salary: '25-45K', type: '全职',
           required_skills: ['Java', 'Spring Boot', 'MySQL', 'Redis', 'Docker', '微服务', '系统设计'], preferred_skills: ['Kubernetes', '消息队列'], exp: '0-3年' },
         score: 88, tab: 'now', quick_days: 7, potential_after: 95,
         matched: ['核心技能匹配', '项目经历匹配', '教育背景符合', '岗位发展方向一致'],
@@ -146,21 +146,21 @@
         }
       },
       {
-        job: { id: 'java-dev', title: 'Java 开发', company: '某科技公司', city: '上海', salary: '20-35K', type: '全职', required_skills: ['Java', 'Spring Boot', 'MySQL'], preferred_skills: ['Redis'], exp: '0-3年' },
+        job: { id: 'java-dev', title: 'Java 开发（演示岗位）', company: '未提供公司信息', city: '上海', salary: '20-35K', type: '全职', required_skills: ['Java', 'Spring Boot', 'MySQL'], preferred_skills: ['Redis'], exp: '0-3年' },
         score: 84, tab: 'now',
         matched: ['Java 基础扎实', '框架熟练'], missing: ['高并发经验不足'],
         gaps: [{ skill: 'Java', readiness: 92 }, { skill: 'Spring Boot', readiness: 85 }, { skill: 'MySQL', readiness: 82 }, { skill: 'Redis', readiness: 70 }],
         dimensions: { skills: 84, semantics: 80, projects: 82, experience: 78, graph: 81 }, evidences: { matched: [{ t: 'Java 基础扎实', d: '主导项目验证工程能力。' }], missing: [{ t: '高并发经验不足', d: '缺少大流量场景设计。' }] }
       },
       {
-        job: { id: 'data-dev', title: '数据开发', company: '某数据公司', city: '杭州', salary: '22-40K', type: '全职', required_skills: ['Java', 'Python', 'SQL', 'Hadoop'], preferred_skills: ['Spark'], exp: '0-3年' },
+        job: { id: 'data-dev', title: '数据开发（演示岗位）', company: '未提供公司信息', city: '杭州', salary: '22-40K', type: '全职', required_skills: ['Java', 'Python', 'SQL', 'Hadoop'], preferred_skills: ['Spark'], exp: '0-3年' },
         score: 78, tab: 'now', quick_days: 14, potential_after: 90,
         matched: ['Java 背景可迁移'], missing: ['数据技术栈不足'],
         gaps: [{ skill: 'Java', readiness: 88 }, { skill: 'Python', readiness: 50 }, { skill: 'SQL', readiness: 65 }, { skill: 'Hadoop', readiness: 30 }],
         dimensions: { skills: 78, semantics: 74, projects: 75, experience: 72, graph: 70 }, evidences: { matched: [{ t: 'Java 背景可迁移', d: '工程基础可迁移至数据处理。' }], missing: [{ t: '数据技术栈不足', d: 'Python/Hadoop 缺失。' }] }
       },
       {
-        job: { id: 'ai-app', title: 'AI 应用开发', company: '某 AI 公司', city: '深圳', salary: '28-50K', type: '全职', required_skills: ['Python', 'LLM', 'RAG', '向量数据库'], preferred_skills: ['Agent'], exp: '0-3年' },
+        job: { id: 'ai-app', title: 'AI 应用开发（演示岗位）', company: '未提供公司信息', city: '深圳', salary: '28-50K', type: '全职', required_skills: ['Python', 'LLM', 'RAG', '向量数据库'], preferred_skills: ['Agent'], exp: '0-3年' },
         score: 72, tab: 'future', quick_days: 21, potential_after: 84,
         matched: ['工程基础尚可'], missing: ['AI 技术栈缺失'],
         gaps: [{ skill: 'Python', readiness: 55 }, { skill: 'LLM', readiness: 30 }, { skill: 'RAG', readiness: 25 }, { skill: '向量数据库', readiness: 20 }],
@@ -169,14 +169,14 @@
         evidences: { matched: [{ t: '工程基础尚可', d: 'Java 工程经验对 AI 应用落地有帮助。' }], missing: [{ t: 'AI 技术栈缺失', d: 'Python/RAG/Agent 需补齐。' }] }
       },
       {
-        job: { id: 'test-dev', title: '测试开发', company: '某软件公司', city: '成都', salary: '18-30K', type: '全职', required_skills: ['Java', '自动化测试', 'Python'], preferred_skills: ['性能测试'], exp: '0-3年' },
+        job: { id: 'test-dev', title: '测试开发（演示岗位）', company: '未提供公司信息', city: '成都', salary: '18-30K', type: '全职', required_skills: ['Java', '自动化测试', 'Python'], preferred_skills: ['性能测试'], exp: '0-3年' },
         score: 69, tab: 'now', quick_days: 3, potential_after: 85,
         matched: ['Java 可用'], missing: ['测试框架不足'],
         gaps: [{ skill: 'Java', readiness: 85 }, { skill: '自动化测试', readiness: 40 }, { skill: 'Python', readiness: 50 }],
         dimensions: { skills: 69, semantics: 66, projects: 64, experience: 62, graph: 60 }, evidences: { matched: [{ t: 'Java 可用', d: '可承担自动化脚本编写。' }], missing: [{ t: '测试框架不足', d: '缺乏 pytest/JUnit 深度使用。' }] }
       },
       {
-        job: { id: 'cloud-arch', title: '云原生架构', company: '某云厂商', city: '北京', salary: '35-60K', type: '全职', required_skills: ['Kubernetes', 'Docker', '微服务', 'Go'], preferred_skills: ['Istio'], exp: '3-5年' },
+        job: { id: 'cloud-arch', title: '云原生架构（演示岗位）', company: '未提供公司信息', city: '北京', salary: '35-60K', type: '全职', required_skills: ['Kubernetes', 'Docker', '微服务', 'Go'], preferred_skills: ['Istio'], exp: '3-5年' },
         score: 58, tab: 'future', quick_days: 28, potential_after: 76,
         matched: ['系统设计了解'], missing: ['云原生栈缺失'],
         gaps: [{ skill: 'Kubernetes', readiness: 20 }, { skill: 'Docker', readiness: 41 }, { skill: '微服务', readiness: 45 }, { skill: 'Go', readiness: 25 }],
@@ -293,13 +293,13 @@
       suggestTerms: ['Java', 'Spring Boot', '高并发', '性能优化', '杭州', '微服务']
     }
   };
-  // 默认示例简历分块（对应 samples/张三简历.txt）
+  // 默认示例简历分块（仅用于未上传简历时的演示）
   function buildDefaultResumeSections() {
     return [
-      { id: 'basic', label: '个人信息', content: '张三\nJava 后端开发工程师\n电话：138-0000-0000\n邮箱：zhangsan@example.com', ai_suggestion: '补充求职城市与到岗时间，便于系统匹配地域条件；建议将邮箱改为更正式的企业邮箱前缀。' },
-      { id: 'education', label: '教育经历', content: '某大学 · 计算机科学与技术 · 本科\n2019.09 - 2023.06', ai_suggestion: '可补充 GPA、主修课程（如数据结构、操作系统、数据库）与获奖情况，强化科班背景可信度。' },
+      { id: 'basic', label: '个人信息', content: '请填写姓名\n目标岗位\n电话：请填写\n邮箱：请填写', ai_suggestion: '补充真实的求职城市、到岗时间和联系方式。' },
+      { id: 'education', label: '教育经历', content: '请填写学校 · 专业 · 学历\n入学年份 - 毕业年份', ai_suggestion: '补充真实学校、专业、学历和时间。' },
       { id: 'projects', label: '项目经历', content: '1. Java 高并发订单系统：主导核心交易链路开发，接口响应时间下降 40%，支撑日均 500w+ 调用。\n2. Spring Boot 营销平台：独立搭建活动配置与发放服务，负责核心表设计与慢查询优化。\n3. MySQL 慢查询优化专项：梳理慢 SQL、建立复合索引，QPS 提升 3 倍。', ai_suggestion: '建议采用「背景 - 行动 - 结果」结构，把量化指标前置，并明确个人角色（主导/独立/协作），突出技术难点。' },
-      { id: 'work', label: '工作经历', content: '暂无正式工作经历\n（示例简历未包含，可在简历中补充实习或全职经历）', ai_suggestion: '若确有实习经历，务必补全公司名称、起止时间、职责与可量化产出；应届生可用校园项目与竞赛成果替代。' },
+      { id: 'work', label: '工作经历', content: '暂无工作经历\n（如有实习或全职经历，请补充真实信息）', ai_suggestion: '请补全真实单位、起止时间、职责与可量化产出。' },
       { id: 'skills', label: '专业技能', content: 'Java（精通）、Spring Boot（熟练）、MySQL（熟练）、Redis（了解）、系统设计（熟悉）\nDocker、微服务：暂无项目实践', ai_suggestion: '将「精通/熟练」与具体使用场景绑定，如「Java：主导 3 个后端项目」；对 Redis/Docker 等薄弱项补充学习进展，避免被判定为完全缺失。' },
       { id: 'summary', label: '自我评价', content: '3 年 Java 后端开发经验，工程基础扎实，具备一定的高并发与性能优化意识，希望在容器化、微服务方向进一步深入。', ai_suggestion: '自我评价宜精炼为 2-3 句，突出「经验年限 + 核心技术 + 差异化优势 + 明确职业目标」，避免空泛形容词。' }
     ];
@@ -310,17 +310,17 @@
     basic: {
       title: '强化联系信息与求职定位',
       versions: {
-        quant: '张三\nJava 后端开发工程师（杭州 / 期望 25-35K）\n电话：138-0000-0000（微信同号）\n邮箱：zhangsan.dev@gmail.com',
-        impact: '张三 · Java 后端开发工程师\n3 年高并发后端经验，主导日均 500w+ 请求的订单系统重构。\n电话：138-0000-0000\n邮箱：zhangsan.dev@gmail.com',
-        dense: '张三 / Java 后端开发 · 期望杭州 25-35K\n138-0000-0000 / zhangsan.dev@gmail.com'
+        quant: '演示候选人A\nJava 后端开发工程师（杭州 / 期望 25-35K）\n联系方式：未提供',
+        impact: '演示候选人A · Java 后端开发工程师\n3 年高并发后端经验，主导订单系统重构。\n联系方式：未提供',
+        dense: '演示候选人A / Java 后端开发 · 期望杭州 25-35K\n联系方式：未提供'
       }
     },
     education: {
       title: '突出科班背景与核心课程',
       versions: {
-        quant: '某 985 大学 · 计算机科学与技术 · 本科（GPA 3.7/4.0）\n2019.09 - 2023.06\n主修课程：数据结构、操作系统、数据库系统、计算机网络\n荣誉：校级一等奖学金、蓝桥杯国赛二等奖',
-        impact: '某 985 · 计算机科学与技术 · 本科\nGPA 3.7/4.0（年级前 5%），蓝桥杯国赛二等奖。\n2019.09 - 2023.06\n主修：数据结构、操作系统、数据库',
-        dense: '某 985 计算机本科 · GPA 3.7\n2019.09 - 2023.06'
+        quant: '脱敏教育经历 · 计算机科学与技术 · 本科（GPA 3.7/4.0）\n2019.09 - 2023.06\n主修课程：数据结构、操作系统、数据库系统、计算机网络\n荣誉：校级一等奖学金、蓝桥杯国赛二等奖',
+        impact: '脱敏教育经历 · 计算机科学与技术 · 本科\nGPA 3.7/4.0（年级前 5%），蓝桥杯国赛二等奖。\n2019.09 - 2023.06\n主修：数据结构、操作系统、数据库',
+        dense: '脱敏计算机本科 · GPA 3.7\n2019.09 - 2023.06'
       }
     },
     projects: {
@@ -605,16 +605,40 @@
   function initMatch() {
     if (window.__matchInit) return;
     window.__matchInit = true;
-    // Phase 08-D + 兜底增强：默认进入 Real Mode；同时预填 MOCK_RESULT 到 st.result，
-    // 确保所有视图（岗位/学习/面试/对比）初次进入都有数据渲染，避免空白。
-    // 真实 diagnose 接口完成后会用真实 result 覆盖 mock；mock 同时作为 AI 不可用时的兜底。
+    // 默认进入 Real Mode；未完成匹配前保持空态，演示数据只能通过显式 Demo 入口加载。
     const st = window.matchState;
     st.mode = 'real';
     st.file = null; st.fileName = ''; st.fileSize = 0;
-    if (!st.result) st.result = structuredClone(MOCK_RESULT);
-    st.selectedJobId = st.selectedJobId || (MOCK_RESULT.matches && MOCK_RESULT.matches[0] && MOCK_RESULT.matches[0].job && MOCK_RESULT.matches[0].job.id) || null;
-    st.resumeSections = null; st.activeSection = 'basic';
-    st.whatif = {}; st.favJobs = {};
+    // 从个人仓库恢复最近选中的简历。仓库选择通过 localStorage 保存，
+    // 返回本页后需要重新构造 File，否则入口会一直显示“请先上传简历”。
+    try {
+      const saved = window.ZhituVault && typeof window.ZhituVault.loadMatchResume === 'function'
+        ? window.ZhituVault.loadMatchResume()
+        : null;
+      if (saved && (saved.text || saved.fileName || saved.name)) {
+        const text = String(saved.text || '');
+        const fileName = String(saved.fileName || saved.name || '个人仓库简历.txt');
+        st.file = new File([text], fileName, { type: 'text/plain' });
+        st.fileName = fileName;
+        st.fileSize = Number(saved.size) || text.length;
+        st.resumeSections = Array.isArray(saved.sections) && saved.sections.length
+          ? saved.sections
+          : (text ? parseResumeText(text) : buildDefaultResumeSections());
+        st.activeSection = 'basic';
+      }
+    } catch (_) {
+      // 本地存储损坏时保留空入口，不阻断匹配页其它功能。
+    }
+    if (!st.result) st.result = null;
+    st.selectedJobId = st.selectedJobId || null;
+    // 没有已保存简历时显示空入口，不注入虚构个人信息。
+    if (!st.resumeSections) { st.resumeSections = []; st.activeSection = 'basic'; }
+    if (st.file && st.fileName && window.ZhituVault && typeof window.ZhituVault.loadMatchResume === 'function') {
+      const saved = window.ZhituVault.loadMatchResume();
+      if (saved && saved.text) st.result = buildLocalResumeResult(String(saved.text), st.result);
+    }
+    st.whatif = {};
+    st.favJobs = (window.ZhituVault && window.ZhituVault.loadMatchFavs) ? window.ZhituVault.loadMatchFavs() : {};
     bindGlobal();
     bindEntry();
     bindMatchCond();
@@ -639,8 +663,8 @@
   function loadMatchDemo() {
     const st = window.matchState;
     st.mode = 'demo';
-    st.file = { name: '张三_Java后端开发.txt', size: 18642, type: 'text/plain' };
-    st.fileName = '张三_Java后端开发.txt';
+    st.file = { name: '演示候选人A_Java后端开发.txt', size: 18642, type: 'text/plain' };
+    st.fileName = '演示候选人A_Java后端开发.txt';
     st.fileSize = 18642;
     st.result = structuredClone(MOCK_RESULT);
     st.selectedJobId = MOCK_RESULT.matches[0].job.id;
@@ -767,6 +791,15 @@
     }
     const sample = $('md-sample-resume');
     if (sample) sample.addEventListener('click', (e) => { e.stopPropagation(); loadSample(); });
+    const pickResume = $('md-pick-resume');
+    if (pickResume) pickResume.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (window.Shell && typeof window.Shell.openVault === 'function') {
+        window.Shell.openVault({ mode: 'pick', tab: 'resumes' });
+      } else {
+        window.location.href = '../pages/warehouse.html?pick=1';
+      }
+    });
     const start = $('md-start-match');
     if (start) start.addEventListener('click', () => {
       if (!window.matchState.file) { window.showToast('请先上传简历', 'amber'); $('resume-file-input').click(); return; }
@@ -781,7 +814,30 @@
     const view = $('md-view-resume');
     if (view) view.addEventListener('click', viewResume);
     const change = $('md-change-resume');
-    if (change) change.addEventListener('click', () => $('resume-file-input').click());
+    if (change) change.addEventListener('click', openResumeSourceModal);
+    const sourceModal = $('resume-source-modal');
+    const sourceMask = $('resume-source-mask');
+    const sourceClose = $('resume-source-close');
+    const sourceLocal = $('resume-source-local');
+    const sourceVault = $('resume-source-vault');
+    if (sourceMask) sourceMask.addEventListener('click', closeResumeSourceModal);
+    if (sourceClose) sourceClose.addEventListener('click', closeResumeSourceModal);
+    if (sourceLocal) sourceLocal.addEventListener('click', () => {
+      closeResumeSourceModal();
+      const fileInput = $('resume-file-input');
+      if (fileInput) fileInput.click();
+    });
+    if (sourceVault) sourceVault.addEventListener('click', () => {
+      closeResumeSourceModal();
+      if (window.Shell && typeof window.Shell.openVault === 'function') {
+        window.Shell.openVault({ mode: 'pick', tab: 'resumes' });
+      } else {
+        window.location.href = 'warehouse.html?pick=1';
+      }
+    });
+    if (sourceModal) document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !sourceModal.hidden) closeResumeSourceModal();
+    });
     bindResumeAnalyze();
     bindDiffModal();
   }
@@ -1061,10 +1117,12 @@
     window.matchState.file = file;
     window.matchState.fileName = file.name;
     window.matchState.fileSize = file.size;
+    window.matchState.result = buildLocalResumeResult('', window.matchState.result);
     // TXT 可做简单分块解析；其他格式回退为默认分块（待接真实解析）
     if (ext === 'txt') {
       const reader = new FileReader();
       reader.onload = () => {
+        window.matchState.result = buildLocalResumeResult(String(reader.result || ''), window.matchState.result);
         window.matchState.resumeSections = parseResumeText(String(reader.result || ''));
         window.matchState.activeSection = 'basic';
         renderResume();
@@ -1111,7 +1169,7 @@
   function loadSample() {
     fetch('../samples/张三简历.txt').then((r) => r.text()).then((text) => {
       const blob = new Blob([text], { type: 'text/plain' });
-      loadFile(new File([blob], '张三_Java后端开发.txt', { type: 'text/plain' }));
+      loadFile(new File([blob], '演示候选人A_Java后端开发.txt', { type: 'text/plain' }));
     }).catch(() => window.showToast('示例简历加载失败', 'amber'));
   }
   function viewResume() {
@@ -1433,7 +1491,7 @@
     const reqRows = (list, cls) => list.map((s) => `<div class="cond-skill-req"><span>${escapeHtml(s)}</span><div class="cond-skill-req-bar"><i data-w="${reqVal(s)}"></i></div><b>${reqVal(s)}</b></div>`).join('');
     box.innerHTML = `
       <div class="cond-target-name">${escapeHtml(pref.direction || '目标岗位')}</div>
-      <div class="cond-target-co">某科技公司 · 校招优先</div>
+      <div class="cond-target-co">公司信息以岗位接口返回为准 · 校招优先</div>
       <div class="cond-target-meta">
         <span>${escapeHtml(cityTxt)}</span><span>${escapeHtml(salaryTxt)}</span><span>${escapeHtml(typeTxt)}</span>
       </div>
@@ -2082,10 +2140,11 @@
   /* ---- 岗位卡片：精简版 · 仅岗位名称与基础信息 ---- */
   function renderJobCard(m, pref) {
     const job = m.job || {};
-    const isFav = !!window.matchState.favJobs[job.id];
+    const vaultFavs = window.ZhituVault && window.ZhituVault.loadMatchFavs ? window.ZhituVault.loadMatchFavs() : {};
+    const isFav = !!window.matchState.favJobs[job.id] || !!vaultFavs[String(job.id)];
     const score = m.score || 0;
     return `<div class="job-card job-card--simple" data-job="${job.id}">
-      <div class="job-card-logo">${escapeHtml((job.company || '某').charAt(0))}</div>
+      <div class="job-card-logo">${escapeHtml((job.company || '岗').charAt(0))}</div>
       <div class="job-card-main">
         <b class="job-card-title-name">${escapeHtml(job.title || '')}</b>
         <span class="job-card-meta">${escapeHtml(job.company || '')} · ${escapeHtml(job.city || '')}</span>
@@ -2138,9 +2197,16 @@
     qsa('.job-fav', list).forEach((f) => f.addEventListener('click', (e) => {
       e.stopPropagation();
       const id = f.dataset.fav;
-      window.matchState.favJobs[id] = !window.matchState.favJobs[id];
-      f.classList.toggle('is-fav', window.matchState.favJobs[id]);
-      f.textContent = window.matchState.favJobs[id] ? '★' : '☆';
+      const row = f.closest('.job-card');
+      const match = jobs.find((m) => String(m.job && m.job.id) === String(id));
+      const job = (match && match.job) || { id: id, title: row && row.querySelector('.job-card-title-name')?.textContent || '' };
+      const added = window.ZhituVault && window.ZhituVault.toggleMatchFav
+        ? window.ZhituVault.toggleMatchFav({ id: job.id, title: job.title, company: job.company, city: job.city, salary: job.salary, match_score: match && match.score })
+        : toggleMatchFavFallback(job, match && match.score);
+      window.matchState.favJobs[id] = added;
+      f.classList.toggle('is-fav', added);
+      f.textContent = added ? '★' : '☆';
+      if (window.showToast) window.showToast(added ? '已收藏，已加入个人仓库' : '已取消收藏', added ? 'teal' : 'amber');
     }));
     // 按 selectedJobId 高亮（若在当前过滤列表中）
     const targetId = window.matchState.selectedJobId;
@@ -2150,6 +2216,40 @@
     }
     renderAIPanelJobs(jobs[0]);
     if (typeof renderDetail === 'function') renderDetail();
+  }
+
+  function buildLocalResumeResult(text, base) {
+    const source = String(text || '');
+    const names = ['Java', 'Spring Boot', 'MySQL', 'Redis', 'Docker', 'Python', 'Go', 'React', 'Vue', 'Linux', 'Git', 'Kubernetes', 'RAG', 'Agent'];
+    const found = names.filter((name) => source.toLowerCase().includes(name.toLowerCase()));
+    const skills = (found.length ? found : ['待从简历中识别技能']).map((name) => ({ name, level: found.length ? '已识别' : '待识别', readiness: found.length ? 72 : 35 }));
+    const result = Object.assign({}, base || MOCK_RESULT);
+    result.profile = Object.assign({}, (base && base.profile) || {}, { skills, summary: source.slice(0, 180) });
+    return result;
+  }
+
+  function openResumeSourceModal() {
+    const modal = $('resume-source-modal');
+    if (!modal) return;
+    modal.hidden = false;
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeResumeSourceModal() {
+    const modal = $('resume-source-modal');
+    if (modal) modal.hidden = true;
+    document.body.style.overflow = '';
+  }
+
+  function toggleMatchFavFallback(job, score) {
+    const key = 'zhitu_match_favs_v1';
+    let map = {};
+    try { map = JSON.parse(localStorage.getItem(key) || '{}') || {}; } catch (_) {}
+    const id = String(job.id);
+    if (map[id]) { delete map[id]; try { localStorage.setItem(key, JSON.stringify(map)); } catch (_) {} return false; }
+    map[id] = { id, title: job.title || '收藏岗位', company: job.company || '', city: job.city || '', salary: job.salary || '', match: score || null, savedAt: Date.now(), source: 'match' };
+    try { localStorage.setItem(key, JSON.stringify(map)); window.dispatchEvent(new CustomEvent('zhitu-vault-changed', { detail: { type: 'match-fav', id, added: true } })); } catch (_) {}
+    return true;
   }
 
   /* ---- 左栏顶部：你的画像 ---- */
@@ -2242,7 +2342,7 @@
     const job = m.job || {};
     const score = m.score || 0;
     el.innerHTML = `
-      <div class="jd-header-logo">${escapeHtml((job.company || '某').charAt(0))}</div>
+      <div class="jd-header-logo">${escapeHtml((job.company || '岗').charAt(0))}</div>
       <div class="jd-header-main">
         <div class="jd-header-title-row">
           <h2>${escapeHtml(job.title || '')}</h2>
@@ -3054,19 +3154,32 @@
     // 真实后端 build_learning_path 输出含 resource 字段；Mock MOCK_RESULT 无
     return Array.isArray(lp) && lp.length > 0 && lp[0].resource !== undefined;
   }
+  function learningProgressKey(res) {
+    const m = (res && res.matches || [])[0] || {};
+    const jobId = m.job && m.job.id || window.matchState.selectedJobId || 'unknown';
+    const userId = (window.currentUser && (window.currentUser.id || window.currentUser.user_id)) || 'local';
+    return `match-learning-progress:${userId}:${jobId}`;
+  }
+  function loadLearningProgress(res) {
+    try { return JSON.parse(localStorage.getItem(learningProgressKey(res)) || '{}') || {}; } catch (_) { return {}; }
+  }
+  function saveLearningProgress(res, progress) {
+    try { localStorage.setItem(learningProgressKey(res), JSON.stringify(progress || {})); } catch (_) {}
+  }
   function getLearnOS(res) {
     res = res || window.matchState.result;
     if (!isRealLearningPath(res)) return LEARN_OS; // demo / 无真实结果
     const lp = res.learning_path;
+    const completed = loadLearningProgress(res);
     const skills = lp.map((l, i) => ({
       id: 'lp-' + i,
       name: l.skill || l.title || ('学习步骤' + (i + 1)),
       icon: '📘',
       stage: 's1',
       tags: ['学习路径', '能力缺口'],
-      status: 'gap',
-      from: typeof l.from === 'number' ? l.from : 30,
-      to: typeof l.to === 'number' ? l.to : 70,
+      status: completed['lp-' + i] ? 'mastered' : 'gap',
+      from: completed['lp-' + i] ? 100 : (typeof l.from === 'number' ? l.from : 30),
+      to: completed['lp-' + i] ? 100 : (typeof l.to === 'number' ? l.to : 70),
       hours: Math.max(1, Math.round((l.weeks || 1) * 8)),
       level: l.level || '入门',
       impact: '+匹配度',
@@ -3093,7 +3206,7 @@
         advice: ((m.match_reasons || [])[0]) || (m.reason || '基于真实匹配结果生成学习建议。'),
         tags: skills.slice(0, 3).map((s) => s.name)
       },
-      stages: [{ id: 's1', name: '学习路径', en: 'LEARNING PATH', progress: 30, count: skills.length, value: '按需学习' }],
+      stages: [{ id: 's1', name: '学习路径', en: 'LEARNING PATH', progress: skills.length ? Math.round(skills.filter((s) => s.status === 'mastered').length / skills.length * 100) : 0, count: skills.length, value: '按需学习' }],
       skills: skills
     };
   }
@@ -3109,7 +3222,7 @@
       <div class="los-hero-left los-glass los-glow">
         <div class="los-hero-title-row">
           <h2 class="los-hero-title">${escapeHtml(title)}</h2>
-          <span class="los-hero-live"><i></i>AI 实时分析</span>
+          <span class="los-hero-live"><i></i>基于本次匹配</span>
         </div>
         <div class="los-level">
           <div class="los-level-tag"><small>当前等级</small><b>${escapeHtml(c.levelFrom)}</b></div>
@@ -3151,13 +3264,13 @@
         <div class="los-advice-head">
           <div class="los-ai-orb">AI</div>
           <div class="los-advice-title"><b>AI 职业建议</b><small>基于岗位差距生成</small></div>
-          <span class="los-advice-state"><i></i>已生成</span>
+          <span class="los-advice-state"><i></i>已生成 · ${isRealLearningPath(res) ? '真实结果' : '演示'}</span>
         </div>
         <p class="los-advice-text">"${escapeHtml(c.advice)}"</p>
         <div class="los-advice-tags">
           ${c.tags.map((t) => `<span class="los-tag los-tag--gap">${escapeHtml(t)}</span>`).join('')}
         </div>
-        <button class="los-btn los-btn--gold" id="los-plan-btn" type="button">生成专属学习计划 →</button>
+        <button class="los-btn los-btn--gold" id="los-plan-btn" type="button">查看学习路径 →</button>
       </div>`;
 
     // 数字动画
@@ -3323,26 +3436,13 @@
   }
 
   function startLearnSkill(card) {
-    if (!card || card.classList.contains('is-mastered') || card.classList.contains('is-complete') || card.classList.contains('is-learning')) return;
-    const from = parseInt(card.dataset.from, 10) || 0;
-    const to = parseInt(card.dataset.to, 10) || 85;
-    card.classList.add('is-learning');
-    const btn = card.querySelector('[data-action="start"]');
-    if (btn) btn.textContent = '学习中…';
-    const bar = card.querySelector('.los-progress-bar i');
-    if (bar) { bar.style.width = from + '%'; requestAnimationFrame(() => { bar.style.width = to + '%'; }); }
-    const ring = card.querySelector('.los-ring-bar');
-    if (ring) { ring.style.strokeDashoffset = (LOS_RING_CIRC * (1 - from / 100)).toFixed(1); requestAnimationFrame(() => { ring.style.strokeDashoffset = (LOS_RING_CIRC * (1 - to / 100)).toFixed(1); }); }
-    const num = card.querySelector('.los-ring-val');
-    if (num) animateNumber(num, to, 1500, '', '', from);
-    setTimeout(() => {
-      card.classList.remove('is-learning');
-      card.classList.add('is-complete');
-      if (btn) btn.textContent = '已完成 ✓';
-      burstUnlock(card);
-      unlockNextSkill(card.dataset.skill);
-      if (window.showToast) window.showToast('学习完成 · ' + (card.dataset.name || '技能') + ' 能力已解锁', 'ok');
-    }, 1600);
+    if (!card || card.classList.contains('is-mastered')) return;
+    const res = currentResult();
+    const progress = loadLearningProgress(res);
+    progress[card.dataset.skill] = { completed: true, completedAt: new Date().toISOString() };
+    saveLearningProgress(res, progress);
+    if (window.showToast) window.showToast('已标记完成 · ' + (card.dataset.name || '技能'), 'ok');
+    renderLearning();
   }
 
   function burstUnlock(card) {
@@ -3562,7 +3662,7 @@
       <div class="los-coach-head">
         <div class="los-coach-orb">AI</div>
         <div class="los-coach-title"><b>AI Career Coach</b><small>职业教练 · ${escapeHtml(jobName)}</small></div>
-        <span class="los-coach-live"><i></i>ONLINE</span>
+        <span class="los-coach-live"><i></i>基于当前路径</span>
       </div>
       <div class="los-coach-body">
         <div class="los-coach-task-label">TODAY'S TASK · 今日任务</div>
@@ -4405,10 +4505,10 @@
 
   function buildGoodResumeSections() {
     return [
-      { id: 'basic', label: '个人信息', content: '张三\n高级 Java 后端开发工程师\n电话：138-0000-0000 · 邮箱：zhangsan@corp.com · 现居上海 · 可一周内到岗' },
-      { id: 'education', label: '教育经历', content: '某大学 · 计算机科学与技术 · 本科（GPA 3.7/4.0）\n2019.09 - 2023.06\n主修：数据结构、操作系统、数据库、计算机网络；连续三年一等奖学金' },
+      { id: 'basic', label: '个人信息', content: '标杆样例候选人\n高级 Java 后端开发工程师\n联系方式：未提供 · 现居城市：未提供' },
+      { id: 'education', label: '教育经历', content: '教育经历（脱敏样例） · 计算机科学与技术 · 本科（GPA 3.7/4.0）\n2019.09 - 2023.06\n主修：数据结构、操作系统、数据库、计算机网络；连续三年一等奖学金' },
       { id: 'projects', label: '项目经历', content: '1. 亿级流量交易中台（Java/Spring Boot/Docker/Kubernetes）：主导核心链路开发，完成微服务拆分与容器化上线，支撑日均千万级调用。\n2. Redis 缓存架构改造：设计多级缓存与热点探测，QPS 提升 5 倍，接口 P99 延迟下降 60%。\n3. 分布式任务调度系统：基于分布式锁与消息队列实现海量任务调度，并发处理 10w+ 任务/分钟，月度 0 事故。' },
-      { id: 'work', label: '工作经历', content: '某互联网大厂 · Java 后端开发工程师\n2023.07 - 至今\n主导 Docker 容器化与 Kubernetes 编排落地，推动 CI/CD 流水线建设；负责高并发接口性能优化，推动多项 SRE 指标达标。' },
+      { id: 'work', label: '工作经历', content: '互联网业务团队（脱敏样例） · Java 后端开发工程师\n2023.07 - 至今\n主导 Docker 容器化与 Kubernetes 编排落地，推动 CI/CD 流水线建设；负责高并发接口性能优化，推动多项 SRE 指标达标。' },
       { id: 'skills', label: '专业技能', content: 'Java（精通）、Spring Boot（精通）、MySQL（熟练）、Redis（熟练）、Docker（熟练）、Kubernetes（熟练）、微服务（熟练）、分布式（熟悉）、并发编程（熟练）' },
       { id: 'summary', label: '自我评价', content: '4 年 Java 后端开发经验，深耕高并发、分布式与微服务架构；主导多个千万级流量系统性能优化与容器化落地，具备从 0 到 1 的分布式系统设计能力。' }
     ];
@@ -4633,8 +4733,11 @@
     const next = $('int-next'); if (next) next.addEventListener('click', () => {
       const st = window.matchState.interview;
       if (!st) return;
-      if (st.index + 1 >= INTERVIEW_Q.length) { closeInterview(); return; }
-      askQuestion(st.index + 1);
+      submitInterviewAnswer().then((submitted) => {
+        if (!submitted) return;
+        if (st.index + 1 >= st.questions.length) { closeInterview(); return; }
+        askQuestion(st.index + 1);
+      });
     });
     const mic = $('btn-mic'), cam = $('btn-cam'), spk = $('btn-speaker');
     if (mic) mic.addEventListener('click', () => toggleCtrl(mic));
@@ -4647,6 +4750,11 @@
     if (tog) tog.addEventListener('click', () => toggleIntDrawer());
     const dc = $('int-drawer-close');
     if (dc) dc.addEventListener('click', () => toggleIntDrawer(false));
+    const answer = $('int-answer');
+    if (answer) answer.addEventListener('input', () => {
+      const count = $('int-answer-count'); if (count) count.textContent = String(answer.value.length);
+      const state = $('int-answer-state'); if (state) state.textContent = '未提交';
+    });
   }
   function toggleCtrl(btn) {
     const on = btn.getAttribute('aria-pressed') === 'true';
@@ -4688,7 +4796,8 @@
   /* ---- 面试进度步骤条 ---- */
   function renderIntSteps() {
     const box = $('int-steps'); if (!box) return;
-    box.innerHTML = INTERVIEW_Q.map((it, i) => `<span class="md-int-step" data-step="${i}">${i + 1}</span>`).join('');
+    const questions = (window.matchState.interview || {}).questions || [];
+    box.innerHTML = questions.map((it, i) => `<span class="md-int-step" data-step="${i}">${i + 1}</span>`).join('');
   }
   function setIntStep(idx) {
     const box = $('int-steps'); if (!box) return;
@@ -4715,8 +4824,9 @@
   function renderIntAnalysis(item) {
     const kw = $('int-keywords'); if (kw) kw.innerHTML = (item.keywords || []).map((k) => `<span>${escapeHtml(k)}</span>`).join('');
     const det = $('int-detect'); if (det) det.innerHTML = (item.detect || []).map((d) => `<span>✓ ${escapeHtml(d)}</span>`).join('');
-    const sc = $('int-analysis-score'); if (sc) animateNumber(sc, item.score || 0, 800);
-    const gauge = $('int-analysis-gauge'); if (gauge) requestAnimationFrame(() => requestAnimationFrame(() => { gauge.style.width = (item.score || 0) + '%'; }));
+    const score = item.evaluation ? item.evaluation.score : 0;
+    const sc = $('int-analysis-score'); if (sc) animateNumber(sc, score, 500);
+    const gauge = $('int-analysis-gauge'); if (gauge) requestAnimationFrame(() => requestAnimationFrame(() => { gauge.style.width = score + '%'; }));
   }
 
   /* ---- AI 面试助手抽屉内容 ---- */
@@ -4725,42 +4835,26 @@
     body.innerHTML = `
       <div class="md-int-drawer-sec">
         <div class="md-int-drawer-sec-label ok">优势</div>
-        ${(item.good || []).map((g) => `<div class="md-int-drawer-li"><i class="ai-ok">✓</i>${escapeHtml(g)}</div>`).join('')}
+        ${(item.evaluation && item.evaluation.strengths || []).map((g) => `<div class="md-int-drawer-li"><i class="ai-ok">✓</i>${escapeHtml(g)}</div>`).join('') || '<div class="md-int-drawer-li">提交回答后生成</div>'}
       </div>
       <div class="md-int-drawer-sec">
         <div class="md-int-drawer-sec-label warn">不足</div>
-        ${(item.bad || []).map((g) => `<div class="md-int-drawer-li"><i class="ai-warn">⚠</i>${escapeHtml(g)}</div>`).join('')}
+        ${(item.evaluation && item.evaluation.gaps || []).map((g) => `<div class="md-int-drawer-li"><i class="ai-warn">⚠</i>${escapeHtml(g)}</div>`).join('') || '<div class="md-int-drawer-li">暂无评估</div>'}
       </div>
       <div class="md-int-drawer-sec">
         <div class="md-int-drawer-sec-label">建议</div>
-        <div class="md-int-drawer-li"><i class="ai-gold">↗</i>${escapeHtml(item.advise || '')}</div>
+        <div class="md-int-drawer-li"><i class="ai-gold">↗</i>${escapeHtml(item.evaluation && item.evaluation.next_action || '提交回答后生成建议')}</div>
       </div>
-      <div class="md-int-drawer-hint">回答完成后点击「下一题」，AI 将刷新评估。</div>`;
+      <div class="md-int-drawer-hint">分数来自规则评估；AI 仅生成文字点评。</div>`;
   }
 
   /* ---- 模拟 AI 实时分析：评分滚动 / 字幕 / 状态流转 ---- */
   function startIntAnalysis(item) {
     stopIntAnalysis();
-    const st = window.matchState.interview;
-    let tick = 0;
-    const liveEl = $('int-live-score');
-    const stateEl = $('int-live-state');
-    const capEl = $('int-live-caption');
-    const captions = ['正在识别回答内容...', '检测到关键词：' + (item.keywords || []).join(' / '), '正在评估表达能力与逻辑结构...', '分析完成 · 已生成回答建议'];
-    const score = item.score || 0;
-    st._liveScore = Math.max(30, score - 8);
-    if (liveEl) liveEl.textContent = st._liveScore;
-    st._intTimer = setInterval(() => {
-      tick++;
-      if (tick % 2 === 0 && st._liveScore < score + 1) st._liveScore = Math.min(96, st._liveScore + 1);
-      if (liveEl) animateNumber(liveEl, st._liveScore, 500);
-      if (stateEl) {
-        if (tick < 6) stateEl.innerHTML = '<i></i>AI 分析中...';
-        else if (tick < 10) stateEl.innerHTML = '<i></i>评估完成';
-        else stateEl.innerHTML = '<i></i>等待下一题';
-      }
-      if (capEl) capEl.textContent = captions[Math.min(captions.length - 1, Math.floor(tick / 3))];
-    }, 900);
+    const score = item.evaluation ? item.evaluation.score : 0;
+    const liveEl = $('int-live-score'); if (liveEl) liveEl.textContent = String(score);
+    const stateEl = $('int-live-state'); if (stateEl) stateEl.innerHTML = item.evaluation ? '<i></i>已评估' : '<i></i>等待回答';
+    const capEl = $('int-live-caption'); if (capEl) capEl.textContent = item.evaluation ? (item.evaluation.feedback || '已生成回答点评') : '请在下方输入回答，提交后生成评估';
   }
   function stopIntAnalysis() {
     const st = window.matchState.interview;
@@ -4771,7 +4865,7 @@
     const m = getSelectedJob();
     const jobLabel = $('int-job-text'); if (jobLabel) jobLabel.textContent = m ? (m.job.title + ' · 模拟面试') : '模拟面试';
     const inter = $('md-interview'); if (inter) inter.hidden = false;
-    window.matchState.interview = { index: 0, answers: [], questions: [], _liveScore: 60, _intTimer: null };
+    window.matchState.interview = { index: 0, answers: [], questions: buildInterviewQuestions(m), _liveScore: 0, _intTimer: null };
     renderIntSteps();
     toggleIntDrawer(false);
     startCamera();
@@ -4786,22 +4880,70 @@
   }
   function askQuestion(idx) {
     const st = window.matchState.interview;
-    const item = INTERVIEW_Q[idx];
+    const item = st.questions[idx];
     if (!item) { closeInterview(); return; }
     st.index = idx;
-    const prog = $('int-progress'); if (prog) prog.textContent = String(idx + 1).padStart(2, '0') + ' / ' + String(INTERVIEW_Q.length).padStart(2, '0');
+    const prog = $('int-progress'); if (prog) prog.textContent = String(idx + 1).padStart(2, '0') + ' / ' + String(st.questions.length).padStart(2, '0');
     const label = $('int-q-label'); if (label) label.textContent = 'AI 正在提问 · 第 ' + (idx + 1) + ' 题';
     const qt = $('int-question-text'); if (qt) qt.textContent = item.q;
     st.questions[idx] = item;
     setIntStep(idx);
-    renderIntMetrics(item.metric);
+    const answer = st.answers[idx];
+    const input = $('int-answer'); if (input) { input.value = answer ? answer.text : ''; input.dispatchEvent(new Event('input')); }
+    renderIntMetrics(answer && answer.evaluation ? { tech: answer.evaluation.metrics.technical, expr: answer.evaluation.metrics.structure, proj: answer.evaluation.metrics.evidence } : null);
     renderIntAnalysis(item);
     renderIntDrawerContent(item);
     startIntAnalysis(item);
     // 最后一题按钮文案切换为"查看报告"
-    const next = $('int-next'); if (next) next.textContent = (idx + 1 >= INTERVIEW_Q.length) ? '查看报告 →' : '下一题 →';
+    const next = $('int-next'); if (next) next.textContent = (idx + 1 >= st.questions.length) ? '查看报告 →' : '提交并下一题 →';
     // 模拟 AI 语音波
     setTimeout(() => { const w = $('int-ai-wave'); if (w) w.style.opacity = '1'; }, 300);
+  }
+
+  function buildInterviewQuestions(match) {
+    const job = match && match.job || {};
+    const skills = (job.required_skills || job.requiredSkills || []).slice(0, 6);
+    const gaps = ((match && match.gaps) || []).map((g) => g.skill).filter(Boolean).slice(0, 3);
+    const focus = skills.length ? skills : ['项目实践', '问题分析'];
+    const questions = [
+      { topic: '项目经历', q: '请介绍一个与你目标岗位最相关的项目，并说明你的技术角色和结果。', keywords: ['项目', '负责', '结果'] },
+      ...focus.slice(0, 4).map((skill) => ({ topic: skill, q: `请结合项目说明你如何使用或理解 ${skill}，遇到过什么问题？`, keywords: [skill, '项目', '问题'] })),
+      { topic: '岗位差距', q: gaps.length ? `针对 ${gaps.join('、')} 等岗位要求，你准备如何补齐？` : '回顾这次面试，你认为自己最需要在哪方面补强？', keywords: [...gaps, '计划', '实践'] }
+    ];
+    return questions.slice(0, 8);
+  }
+
+  function evaluateInterviewAnswerLocal(answer, keywords) {
+    const text = String(answer || '').trim();
+    const compact = text.replace(/\s/g, '');
+    const completeness = compact ? Math.min(100, Math.round(compact.length / 180 * 100)) : 0;
+    const matched = (keywords || []).filter((k) => k && text.toLowerCase().includes(String(k).toLowerCase()));
+    const technical = Math.round(matched.length / Math.max(1, (keywords || []).length) * 100);
+    const evidence = Math.min(100, ['项目','负责','实现','优化','提升','%','结果'].filter((x) => text.includes(x)).length * 14);
+    const structure = Math.min(100, ['背景','目标','行动','结果','STAR'].filter((x) => text.toLowerCase().includes(x.toLowerCase())).length * 20);
+    return { score: Math.round(completeness * .3 + technical * .3 + evidence * .25 + structure * .15), metrics: { completeness, technical, evidence, structure }, matched_keywords: matched, strengths: [], gaps: [] };
+  }
+
+  async function submitInterviewAnswer() {
+    const st = window.matchState.interview; if (!st) return null;
+    const item = st.questions[st.index]; const input = $('int-answer'); const text = input ? input.value.trim() : '';
+    if (!text) { if (window.showToast) window.showToast('请先输入回答，再继续', 'amber'); if (input) input.focus(); return null; }
+    const local = evaluateInterviewAnswerLocal(text, item.keywords);
+    const answer = { text, evaluation: local };
+    st.answers[st.index] = answer;
+    const state = $('int-answer-state'); if (state) state.textContent = '已提交 · 规则评估';
+    renderIntMetrics({ tech: local.metrics.technical, expr: local.metrics.structure, proj: local.metrics.evidence });
+    try {
+      const api = window.API_BASE || ((location.hostname === '127.0.0.1' || location.hostname === 'localhost') ? 'http://127.0.0.1:5000' : location.origin);
+      const m = getSelectedJob();
+      const r = await fetch(api + '/api/match/interview/evaluate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ question: item.q, answer: text, keywords: item.keywords, job_title: m && m.job && m.job.title || '', resume_context: (currentResult() || {}).profile && JSON.stringify((currentResult() || {}).profile) || '' }) });
+      const payload = await r.json(); const remote = payload && payload.data;
+      if (remote) answer.evaluation = Object.assign(local, remote);
+    } catch (_) { /* 规则评估已完成，网络失败不阻断面试 */ }
+    item.evaluation = answer.evaluation;
+    renderIntAnalysis(item); renderIntDrawerContent(item);
+    const live = $('int-live-score'); if (live) animateNumber(live, answer.evaluation.score, 450);
+    return answer;
   }
   function startCamera() {
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return;
@@ -4854,19 +4996,26 @@
   }
 
   function showReport() {
-    const score = 78;
+    const st = window.matchState.interview || {};
+    const answers = (st.answers || []).filter(Boolean);
+    const scores = answers.map((a) => Number(a.evaluation && a.evaluation.score) || 0);
+    const score = scores.length ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : 0;
+    const match = Math.round((((getSelectedJob() || {}).score) || 0));
+    const summary = answers.length ? `已完成 ${answers.length} 题，综合得分基于回答完整度、关键词覆盖、项目证据和结构化表达。` : '尚未提交有效回答，暂无面试评估结果。';
     // 先显示报告容器，再渲染图表（确保 echarts 读取到正确的容器尺寸）
     const r = $('md-report'); if (r) r.hidden = false;
     const sc = $('report-score'); if (sc) animateNumber(sc, score, 1100);
-    const mt = $('report-match'); if (mt) animateNumber(mt, 82, 1100, '%');
-    const lvl = $('report-level'); if (lvl) lvl.textContent = '中级 Java 工程师';
-    renderReportRadar();
-    renderReportSkills();
-    renderReportInsights();
+    const mt = $('report-match'); if (mt) animateNumber(mt, match, 1100, '%');
+    const lvl = $('report-level'); if (lvl) lvl.textContent = ((getSelectedJob() || {}).job || {}).title || '目标岗位';
+    const tag = $('report-score-tag'); if (tag) tag.textContent = answers.length ? '规则评估 · 基于已提交回答' : '暂无数据';
+    const sum = $('report-summary'); if (sum) sum.textContent = summary;
+    renderReportRadar(answers);
+    renderReportSkills(answers);
+    renderReportInsights(answers);
     renderReportCareer();
   }
 
-  function renderReportRadar() {
+  function renderReportRadar(answers) {
     const cont = $('report-radar'); if (!cont) return;
     if (reportRadarChart) { reportRadarChart.dispose(); reportRadarChart = null; }
     if (typeof echarts === 'undefined') return;
@@ -4875,7 +5024,7 @@
       reportRadarChart = chart;
       chart.setOption({
         radar: {
-          indicator: REPORT_RADAR.dims.map((d) => ({ name: d, max: 100 })),
+          indicator: ['完整度', '技术关键词', '项目证据', '结构表达'].map((d) => ({ name: d, max: 100 })),
           radius: '66%', center: ['50%', '52%'], splitNumber: 4,
           axisName: { color: 'rgba(169,189,203,.85)', fontSize: 11 },
           splitLine: { lineStyle: { color: 'rgba(255,255,255,.10)' } },
@@ -4885,7 +5034,7 @@
         series: [{
           type: 'radar', symbolSize: 4,
           data: [{
-            value: REPORT_RADAR.vals, name: '当前能力',
+            value: [0, 1, 2, 3].map((i) => answers.length ? Math.round(answers.reduce((sum, a) => sum + Number(a.evaluation && a.evaluation.metrics && Object.values(a.evaluation.metrics)[i] || 0), 0) / answers.length) : 0), name: '当前能力',
             lineStyle: { color: '#1FC8D9', width: 2 },
             itemStyle: { color: '#1FC8D9' },
             areaStyle: { color: 'rgba(31,200,217,.22)' }
@@ -4896,9 +5045,10 @@
     } catch (e) { /* 雷达失败不影响报告展示 */ }
   }
 
-  function renderReportSkills() {
+  function renderReportSkills(answers) {
     const box = $('report-skills'); if (!box) return;
-    box.innerHTML = REPORT_SKILLS.map((s) => `
+    const rows = answers.length ? answers.map((a, i) => ({ idx: i + 1, name: (window.matchState.interview.questions[i] || {}).topic || `问题 ${i + 1}`, score: Number(a.evaluation && a.evaluation.score) || 0, status: Number(a.evaluation && a.evaluation.score) >= 70 ? '达标' : '需提升', cls: Number(a.evaluation && a.evaluation.score) >= 70 ? 'ok' : 'warn', ev: a.evaluation && a.evaluation.feedback || '规则评估已完成', detail: a.evaluation && a.evaluation.next_action || '' })) : [];
+    box.innerHTML = rows.map((s) => `
       <div class="rpt-skill is-${s.cls}" data-idx="${s.idx}">
         <div class="rpt-skill-top">
           <span class="rpt-skill-idx">${String(s.idx).padStart(2, '0')}</span>
@@ -4921,39 +5071,47 @@
     }));
   }
 
-  function renderReportInsights() {
+  function renderReportInsights(answers) {
     const box = $('report-insights'); if (!box) return;
+    const strong = answers.flatMap((a) => a.evaluation && a.evaluation.strengths || []).slice(0, 4);
+    const risk = answers.flatMap((a) => a.evaluation && a.evaluation.gaps || []).slice(0, 4);
+    const learn = risk.length ? risk.slice(0, 3) : ['继续补充项目量化结果'];
     box.innerHTML = `
       <div class="rpt-insight is-strong">
         <div class="rpt-insight-head"><span>★★★★★</span>优势能力</div>
-        <div class="rpt-insight-tags">${REPORT_INSIGHT.strong.map((t) => `<span>${escapeHtml(t)}</span>`).join('')}</div>
+        <div class="rpt-insight-tags">${strong.map((t) => `<span>${escapeHtml(t)}</span>`).join('') || '<span>提交回答后显示</span>'}</div>
       </div>
       <div class="rpt-insight is-risk">
         <div class="rpt-insight-head"><span>⚠</span>风险项</div>
-        <div class="rpt-insight-tags">${REPORT_INSIGHT.risk.map((t) => `<span>${escapeHtml(t)}</span>`).join('')}</div>
+        <div class="rpt-insight-tags">${risk.map((t) => `<span>${escapeHtml(t)}</span>`).join('') || '<span>暂无风险项</span>'}</div>
       </div>
       <div class="rpt-insight is-learn">
         <div class="rpt-insight-head"><span>↗</span>提升建议</div>
-        <div class="rpt-insight-tags">${REPORT_INSIGHT.learn.map((t) => `<span>${escapeHtml(t)}</span>`).join('')}</div>
-        <div class="rpt-insight-up"><span>预计提升</span><b>${REPORT_INSIGHT.from}% → ${REPORT_INSIGHT.to}%</b><small>岗位匹配度</small></div>
+        <div class="rpt-insight-tags">${learn.map((t) => `<span>${escapeHtml(t)}</span>`).join('')}</div>
+        <div class="rpt-insight-up"><span>评估来源</span><b>规则</b><small>分数不由 AI 生成</small></div>
       </div>`;
   }
 
   function renderReportCareer() {
     const box = $('report-career'); if (!box) return;
+    const m = getSelectedJob() || {};
+    const title = m.job && m.job.title || '目标岗位';
+    const gaps = (m.gaps || []).map((g) => g.skill).filter(Boolean).slice(0, 4);
+    const current = ((currentResult() || {}).profile || {}).target_role || '当前求职方向';
+    const next = title + ' · 可持续提升';
     box.innerHTML = `
       <div class="rpt-career-step is-cur">
         <span class="rpt-career-dot"></span>
-        <div class="rpt-career-card"><b>${escapeHtml(REPORT_CAREER.current)}</b><small>当前定位</small></div>
+        <div class="rpt-career-card"><b>${escapeHtml(current)}</b><small>当前定位</small></div>
       </div>
       <span class="rpt-career-arrow">→</span>
       <div class="rpt-career-step is-next">
         <span class="rpt-career-dot"></span>
-        <div class="rpt-career-card"><b>${escapeHtml(REPORT_CAREER.next)}</b><small>下一阶段</small></div>
+        <div class="rpt-career-card"><b>${escapeHtml(next)}</b><small>下一阶段</small></div>
       </div>
       <div class="rpt-career-need">
         <span class="rpt-career-need-lbl">需要补齐</span>
-        <div class="rpt-career-tags">${REPORT_CAREER.need.map((t) => `<span>${escapeHtml(t)}</span>`).join('')}</div>
+        <div class="rpt-career-tags">${(gaps.length ? gaps : ['根据面试回答补充项目证据']).map((t) => `<span>${escapeHtml(t)}</span>`).join('')}</div>
       </div>`;
   }
 

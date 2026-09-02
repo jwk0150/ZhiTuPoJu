@@ -120,7 +120,7 @@
             </div>
             <div class="rb-paper-section">
               <h5>教育背景</h5>
-              <p><b style="color:#1B1B16">${esc(b.school || '某高校')}</b>　${esc(b.degree || '本科')}　${esc(b.major || '—')}</p>
+              <p><b style="color:#1B1B16">${esc(b.school || '未填写学校')}</b>　${esc(b.degree || '本科')}　${esc(b.major || '—')}</p>
             </div>
             ${expList.map((s, i) => `
               <div class="rb-paper-section">

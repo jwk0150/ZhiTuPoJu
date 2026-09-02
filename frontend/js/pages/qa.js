@@ -166,7 +166,9 @@ window.renderAIAnswer = function(a, time) {
     } else {
         body = `${a.text}<div style="margin-top:10px;padding:12px;background:var(--bg-page);border-radius:10px;line-height:1.7">${a.content}</div><div class="chat-source"><div class="chat-source-title">📚 参考来源</div>${a.sources.map(s => `<div class="chat-source-item">${s}</div>`).join('')}</div>`;
     }
-    return `<div class="chat-msg ai anim-fade-up"><div class="chat-bubble"><div class="chat-answer">${body}</div><div style="margin-top:14px;padding-top:12px;border-top:1px dashed var(--border-dark);font-size:11px;color:var(--text-muted);display:flex;justify-content:space-between"><span>⚡ 讯飞星火 X2 · 引用可靠度 ${(Math.random()*4+95).toFixed(1)}%</span><span>幻觉率 ${(Math.random()*3+1).toFixed(1)}% ✓</span></div></div><div class="chat-time">${time} · AI Assistant</div></div>`;
+    const sourceLabel = a.source || '本地规则/知识库';
+    const sourceNote = a.source ? '引用来源由接口返回' : '本地规则示例，非实时统计';
+    return `<div class="chat-msg ai anim-fade-up"><div class="chat-bubble"><div class="chat-answer">${body}</div><div style="margin-top:14px;padding-top:12px;border-top:1px dashed var(--border-dark);font-size:11px;color:var(--text-muted)"><span>来源：${sourceLabel} · ${sourceNote}</span></div></div><div class="chat-time">${time} · AI Assistant</div></div>`;
 };
 
 window.clearChat = function () {

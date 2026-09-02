@@ -358,6 +358,18 @@
     emit('match-fav');
   }
 
+  function syncFavorite(source, item) {
+    try {
+      var token = window.zhituGetToken && window.zhituGetToken();
+      if (!token || !window.resolveApiBase || !item || item.id == null) return;
+      fetch(window.resolveApiBase() + '/api/profile/favorites/toggle', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+        body: JSON.stringify({ source: source, item_id: String(item.id), title: item.title || item.name || '', payload: item })
+      }).catch(function () {});
+    } catch (_) {}
+  }
+
   function toggleMatchFav(job) {
     if (!job || !job.id) return false;
     var map = loadMatchFavs();
@@ -365,6 +377,7 @@
     if (map[id]) {
       delete map[id];
       saveMatchFavs(map);
+      syncFavorite('match', job);
       return false;
     }
     map[id] = {
@@ -378,7 +391,40 @@
       source: 'match'
     };
     saveMatchFavs(map);
+    syncFavorite('match', job);
     return true;
+  }
+
+  /* 岗位大新闻收藏：与发现/匹配共用个人仓库事件流 */
+  function toggleNewsFav(item) {
+    item = item || {};
+    var id = item.id == null ? '' : String(item.id);
+    if (!id) return false;
+    var list = readJson(scoped(KEYS.newsFavs), null);
+    if (!Array.isArray(list)) list = readJson(KEYS.newsFavs, []);
+    if (!Array.isArray(list)) list = [];
+    list = list.map(String);
+    var idx = list.indexOf(id);
+    var meta = readJson(KEYS.newsMeta, {}) || {};
+    var added = idx < 0;
+    if (added) {
+      list.push(id);
+      meta[id] = Object.assign({}, meta[id] || {}, {
+        id: id,
+        title: item.title || (meta[id] && meta[id].title) || '新闻收藏',
+        source: item.source || (meta[id] && meta[id].source) || '',
+        savedAt: Date.now()
+      });
+    } else {
+      list.splice(idx, 1);
+      delete meta[id];
+    }
+    writeJson(scoped(KEYS.newsFavs), list);
+    writeJson(KEYS.newsFavs, list);
+    writeJson(KEYS.newsMeta, meta);
+    emit('news-fav', { id: id, added: added });
+    syncFavorite('news', item);
+    return added;
   }
 
   function listNewsFavs() {
@@ -432,6 +478,30 @@
         href: 'match.html?v=vault&job=' + encodeURIComponent(j.id)
       };
     }).sort(function (a, b) { return (b.savedAt || 0) - (a.savedAt || 0); });
+  }
+
+  async function hydrateFromBackend() {
+    try {
+      var token = window.zhituGetToken && window.zhituGetToken();
+      var base = window.resolveApiBase && window.resolveApiBase();
+      if (!token || !base) return false;
+      var res = await fetch(base + '/api/profile/favorites', { headers: { Authorization: 'Bearer ' + token } });
+      if (!res.ok) return false;
+      var body = await res.json();
+      var rows = body && body.data && body.data.favorites || [];
+      rows.forEach(function (row) {
+        var src = row.source || 'match'; var id = String(row.id || ''); if (!id) return;
+        if (src === 'match') {
+          var mm = loadMatchFavs(); mm[id] = Object.assign({}, row.payload || {}, { id: id, title: row.title || (row.payload || {}).title || '收藏岗位', source: 'match' }); saveMatchFavs(mm);
+        } else if (src === 'news') {
+          var nl = readJson(scoped(KEYS.newsFavs), []) || []; if (nl.indexOf(id) < 0) nl.push(id); writeJson(scoped(KEYS.newsFavs), nl);
+          var nm = readJson(KEYS.newsMeta, {}) || {}; nm[id] = Object.assign({}, nm[id] || {}, row.payload || {}, { id: id, title: row.title || nm[id] && nm[id].title || '新闻收藏' }); writeJson(KEYS.newsMeta, nm);
+        } else {
+          var dl = readJson(KEYS.discFavs, []) || []; if (dl.indexOf(id) < 0) dl.push(id); writeJson(KEYS.discFavs, dl);
+        }
+      });
+      emit('backend-hydrate'); return true;
+    } catch (_) { return false; }
   }
 
   function snapshot() {
@@ -496,6 +566,14 @@
 
   /* 演示用测试简历（每人仓只种一次） */
   function ensureDemoResumes() {
+    // 演示稿仅提供给访客/开发账号；真实注册用户的个人仓库必须保持为空。
+    var uid = currentUserId();
+    if (uid !== 'guest' && uid !== 'demo_user' && uid !== 'developer') {
+      var own = listVaultResumes();
+      var cleaned = own.filter(function (r) { return r && r.source !== 'demo' && String(r.id).indexOf('VR-demo-') !== 0; });
+      if (cleaned.length !== own.length) writeVaultResumes(cleaned);
+      return cleaned;
+    }
     var flagKey = scoped('zhitu_vault_demo_seeded_v2');
     if (localStorage.getItem(flagKey) === '1') {
       // 仍保证 Java 演示稿存在
@@ -506,9 +584,9 @@
     list.forEach(function (r) { byId[r.id] = r; });
     var now = Date.now();
     var demos = [
-      mkDemo('VR-demo-java', '张三_Java后端开发.txt', 'demo', now - 86400000 * 5, [
-        { id: 'basic', label: '个人信息', content: '张三\nJava 后端开发工程师\n电话：138-0000-0000\n邮箱：zhangsan@example.com', ai_suggestion: '' },
-        { id: 'education', label: '教育经历', content: '某大学 · 计算机科学与技术 · 本科\n2019.09 - 2023.06', ai_suggestion: '' },
+      mkDemo('VR-demo-java', '演示简历A_Java后端开发.txt', 'demo', now - 86400000 * 5, [
+        { id: 'basic', label: '个人信息', content: '演示候选人 A\nJava 后端开发工程师\n联系方式：未提供', ai_suggestion: '' },
+        { id: 'education', label: '教育经历', content: '教育经历（演示） · 计算机科学与技术 · 本科\n2019.09 - 2023.06', ai_suggestion: '' },
         { id: 'projects', label: '项目经历', content: '1. Java 高并发订单系统：主导核心交易链路，响应下降 40%，日均 500w+。\n2. Spring Boot 营销平台：独立搭建活动配置与发放服务。\n3. MySQL 慢查询优化专项：QPS 提升 3 倍。', ai_suggestion: '' },
         { id: 'work', label: '工作经历', content: '暂无正式工作经历', ai_suggestion: '' },
         { id: 'skills', label: '专业技能', content: 'Java（精通）、Spring Boot（熟练）、MySQL（熟练）、Redis（了解）、系统设计（熟悉）', ai_suggestion: '' },
@@ -516,33 +594,33 @@
       ], [{
         label: '修订稿 · 个人信息',
         sections: [
-          { id: 'basic', label: '个人信息', content: '张三\nJava 后端开发工程师（杭州 / 期望 25-35K）\n电话：138-0000-0000\n邮箱：zhangsan.dev@gmail.com', ai_suggestion: '' },
-          { id: 'education', label: '教育经历', content: '某大学 · 计算机科学与技术 · 本科\n2019.09 - 2023.06', ai_suggestion: '' },
+          { id: 'basic', label: '个人信息', content: '演示候选人 A\nJava 后端开发工程师（杭州 / 期望 25-35K）\n联系方式：未提供', ai_suggestion: '' },
+          { id: 'education', label: '教育经历', content: '教育经历（演示） · 计算机科学与技术 · 本科\n2019.09 - 2023.06', ai_suggestion: '' },
           { id: 'projects', label: '项目经历', content: '1. Java 高并发订单系统：主导核心交易链路，响应下降 40%，日均 500w+。\n2. Spring Boot 营销平台：独立搭建活动配置与发放服务。\n3. MySQL 慢查询优化专项：QPS 提升 3 倍。', ai_suggestion: '' },
           { id: 'work', label: '工作经历', content: '暂无正式工作经历', ai_suggestion: '' },
           { id: 'skills', label: '专业技能', content: 'Java（精通）、Spring Boot（熟练）、MySQL（熟练）、Redis（了解）、系统设计（熟悉）', ai_suggestion: '' },
           { id: 'summary', label: '自我评价', content: '3 年 Java 后端开发经验，工程基础扎实，希望在容器化、微服务方向进一步深入。', ai_suggestion: '' }
         ]
       }]),
-      mkDemo('VR-demo-fe', '李四_前端开发.txt', 'resume-builder', now - 86400000 * 3, [
-        { id: 'basic', label: '个人信息', content: '李四\n前端开发工程师\n电话：139-1111-2222\n邮箱：lisi@example.com', ai_suggestion: '' },
-        { id: 'education', label: '教育经历', content: '某高校 · 软件工程 · 本科\n2020.09 - 2024.06', ai_suggestion: '' },
+      mkDemo('VR-demo-fe', '演示简历B_前端开发.txt', 'resume-builder', now - 86400000 * 3, [
+        { id: 'basic', label: '个人信息', content: '演示候选人 B\n前端开发工程师\n联系方式：未提供', ai_suggestion: '' },
+        { id: 'education', label: '教育经历', content: '教育经历（演示） · 软件工程 · 本科\n2020.09 - 2024.06', ai_suggestion: '' },
         { id: 'projects', label: '项目经历', content: '1. 数据看板：React + ECharts，首屏 1.2s。\n2. 组件库：封装 20+ 业务组件，覆盖 3 条产品线。', ai_suggestion: '' },
-        { id: 'work', label: '工作经历', content: '某互联网公司 · 前端实习 · 2023.07-2023.12', ai_suggestion: '' },
+        { id: 'work', label: '工作经历', content: '互联网产品实习（演示） · 2023.07-2023.12', ai_suggestion: '' },
         { id: 'skills', label: '专业技能', content: 'JavaScript、TypeScript、React、Vue、CSS', ai_suggestion: '' },
         { id: 'summary', label: '自我评价', content: '关注体验与工程化，熟悉中后台与可视化场景。', ai_suggestion: '' }
       ]),
-      mkDemo('VR-demo-data', '王五_数据分析.txt', 'upload', now - 86400000 * 2, [
-        { id: 'basic', label: '个人信息', content: '王五\n数据分析师\n电话：137-3333-4444', ai_suggestion: '' },
-        { id: 'education', label: '教育经历', content: '某大学 · 统计学 · 硕士', ai_suggestion: '' },
+      mkDemo('VR-demo-data', '演示简历C_数据分析.txt', 'upload', now - 86400000 * 2, [
+        { id: 'basic', label: '个人信息', content: '演示候选人 C\n数据分析师\n联系方式：未提供', ai_suggestion: '' },
+        { id: 'education', label: '教育经历', content: '教育经历（演示） · 统计学 · 硕士', ai_suggestion: '' },
         { id: 'projects', label: '项目经历', content: '用户增长漏斗分析：定位流失节点，转化 +12%。', ai_suggestion: '' },
-        { id: 'work', label: '工作经历', content: '某零售集团 · 数据分析 · 2022-至今', ai_suggestion: '' },
+        { id: 'work', label: '工作经历', content: '零售业务分析（演示） · 2022-至今', ai_suggestion: '' },
         { id: 'skills', label: '专业技能', content: 'SQL、Python、Tableau、A/B Test', ai_suggestion: '' },
         { id: 'summary', label: '自我评价', content: '擅长用数据讲故事，推动业务决策。', ai_suggestion: '' }
       ]),
-      mkDemo('VR-demo-app', '赵六_应用开发.txt', 'resume-builder', now - 86400000, [
-        { id: 'basic', label: '个人信息', content: '赵六\n应用开发工程师\n电话：136-5555-6666', ai_suggestion: '' },
-        { id: 'education', label: '教育经历', content: '某高校 · 软件工程 · 本科', ai_suggestion: '' },
+      mkDemo('VR-demo-app', '演示简历D_应用开发.txt', 'resume-builder', now - 86400000, [
+        { id: 'basic', label: '个人信息', content: '演示候选人 D\n应用开发工程师\n联系方式：未提供', ai_suggestion: '' },
+        { id: 'education', label: '教育经历', content: '教育经历（演示） · 软件工程 · 本科', ai_suggestion: '' },
         { id: 'projects', label: '项目经历', content: '企业知识库助手：检索准确率 86%，客服响应效率提升 30%。', ai_suggestion: '' },
         { id: 'work', label: '工作经历', content: '暂无正式工作经历', ai_suggestion: '' },
         { id: 'skills', label: '专业技能', content: 'Python、后端开发、Prompt 工程、FastAPI', ai_suggestion: '' },
@@ -583,10 +661,16 @@
     loadMatchFavs: loadMatchFavs,
     saveMatchFavs: saveMatchFavs,
     toggleMatchFav: toggleMatchFav,
+    toggleNewsFav: toggleNewsFav,
     listNewsFavs: listNewsFavs,
     listDiscoveryFavs: listDiscoveryFavs,
     listMatchFavItems: listMatchFavItems,
     snapshot: snapshot,
+    hydrateFromBackend: hydrateFromBackend,
     KEYS: KEYS
   };
+  // 登录后从数据库恢复跨设备收藏（失败时继续使用本地缓存）。
+  if (global.zhituGetToken && global.zhituGetToken()) {
+    global.ZhituVault.hydrateFromBackend();
+  }
 })(window);

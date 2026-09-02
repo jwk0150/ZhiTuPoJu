@@ -59,35 +59,26 @@
   // -----------------------------------------------------
   var DEFAULTS = {
     userProfile: {
-      name: '张三',
-      gender: '男',
-      phone: '13800005678',
-      email: 'zhangsan@example.com',
-      city: '上海市',
-      currentStatus: '学生 · 正在寻找实习',
+      name: '',
+      gender: '',
+      phone: '',
+      email: '',
+      city: '',
+      currentStatus: '待完善',
       avatar: '' // 空字符串使用首字占位
     },
-    education: [
-      {
-        id: 'edu-1',
-        school: 'XXX 大学',
-        major: '计算机科学与技术',
-        degree: '本科',
-        startYear: 2023,
-        graduateYear: 2027
-      }
-    ],
+    education: [],
     careerPreference: {
       currentStatus: '学生（在读）',
-      desiredJobs: ['AI 产品经理', '数据分析师', '大模型算法工程师'],
-      desiredCities: ['北京', '上海', '杭州'],
-      desiredIndustries: ['人工智能', '互联网', '大数据']
+      desiredJobs: [],
+      desiredCities: [],
+      desiredIndustries: []
     },
     resume: {
-      exists: true,
-      updatedAt: '2026.08.26',
-      status: '已完成',
-      completion: 82
+      exists: false,
+      updatedAt: '',
+      status: '未上传',
+      completion: 0
     }
   };
 

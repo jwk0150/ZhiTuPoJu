@@ -1649,6 +1649,10 @@ body.standalone-view {
 .md-int-live { font-size: 13px; color: #a9acba; min-height: 18px; }
 .md-int-rec { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: #665F55; margin-top: 8px; }
 .md-int-rec-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--rose); animation: pulse 1.2s infinite; }
+.md-int-answer-label { display: block; margin-top: 12px; font-size: 11px; color: var(--ink-faint); letter-spacing: .04em; }
+.md-int-answer { width: 100%; min-height: 104px; margin-top: 6px; padding: 10px 12px; resize: vertical; border: 1px solid rgba(120,100,75,.18); border-radius: 7px; background: rgba(255,255,255,.72); color: var(--ink); font: inherit; line-height: 1.55; box-sizing: border-box; }
+.md-int-answer:focus { outline: none; border-color: var(--signal); box-shadow: 0 0 0 3px rgba(31,200,217,.12); }
+.md-int-answer-meta { display: flex; justify-content: space-between; margin-top: 5px; font-size: 11px; color: var(--ink-faint); }
 .md-int-controls { display: flex; justify-content: center; gap: 14px; margin-top: 16px; }
 .md-int-ctrl { display: flex; flex-direction: column; align-items: center; gap: 5px; border: 1px solid #C9BEA9; background: #EFE8DA; color: #665F55; padding: 10px 18px; border-radius: 9px; cursor: pointer; font-size: 11px; }
 .md-int-ctrl[aria-pressed="false"] { opacity: .45; }
@@ -4021,3 +4025,22 @@ body.standalone-view .cond-strict-dot {
   border-color: #C83F32;
   background: #FFF9EE;
 }
+/* 简历来源选择弹窗 */
+.resume-source-modal { position: fixed; inset: 0; z-index: 1500; display: flex; align-items: center; justify-content: center; padding: 20px; }
+.resume-source-modal[hidden] { display: none !important; }
+.resume-source-mask { position: absolute; inset: 0; background: rgba(24, 20, 16, .48); backdrop-filter: blur(3px); animation: fade .18s ease; }
+.resume-source-card { position: relative; width: min(460px, 100%); padding: 30px; border: 1px solid rgba(120, 100, 75, .2); border-radius: 18px; background: var(--paper, #fffdf8); box-shadow: 0 24px 70px rgba(34, 26, 18, .25); animation: resume-source-in .2s ease; }
+.resume-source-close { position: absolute; top: 12px; right: 14px; width: 30px; height: 30px; border: 0; border-radius: 8px; background: transparent; color: var(--ink-faint, #897d70); font-size: 24px; line-height: 1; cursor: pointer; }
+.resume-source-close:hover { background: rgba(120, 100, 75, .08); color: var(--ink, #2c2925); }
+.resume-source-kicker { color: var(--signal, #c84738); font-size: 10px; letter-spacing: 1.8px; font-weight: 700; }
+.resume-source-card h3 { margin: 8px 0 6px; color: var(--ink, #2c2925); font-size: 22px; font-weight: 600; }
+.resume-source-card p { margin: 0 0 20px; color: var(--ink-soft, #70675e); font-size: 13px; line-height: 1.6; }
+.resume-source-actions { display: grid; gap: 10px; }
+.resume-source-btn { display: flex; align-items: center; gap: 13px; width: 100%; padding: 14px 15px; border: 1px solid rgba(120, 100, 75, .18); border-radius: 12px; background: rgba(255, 255, 255, .56); color: var(--ink, #2c2925); text-align: left; cursor: pointer; transition: border-color .16s, transform .16s, background .16s; }
+.resume-source-btn:hover { border-color: var(--signal, #c84738); background: rgba(200, 71, 56, .05); transform: translateY(-1px); }
+.resume-source-btn--primary { border-color: rgba(200, 71, 56, .35); background: rgba(200, 71, 56, .06); }
+.resume-source-icon { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 9px; background: rgba(200, 71, 56, .12); color: var(--signal, #c84738); font-size: 19px; }
+.resume-source-btn b, .resume-source-btn small { display: block; }
+.resume-source-btn b { font-size: 13px; font-weight: 600; }
+.resume-source-btn small { margin-top: 3px; color: var(--ink-faint, #897d70); font-size: 11px; }
+@keyframes resume-source-in { from { opacity: 0; transform: translateY(8px) scale(.98); } to { opacity: 1; transform: none; } }

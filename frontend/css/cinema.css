@@ -1791,6 +1791,9 @@ body.project-detail-open .content-track { pointer-events: none; }
   display: none !important;
 }
 
+.login-dev-actions { display:flex; gap:10px; justify-content:center; align-items:center; flex-wrap:wrap; }
+.login-admin { border-color: rgba(236,201,132,.55); color:#f1d79d; }
+
 .login-form label {
   display: grid;
   gap: 8px;

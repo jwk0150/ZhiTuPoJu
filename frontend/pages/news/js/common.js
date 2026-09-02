@@ -93,13 +93,23 @@
     } catch (e) { return []; }
   }
   function isFav(id) { return getFavs().indexOf(id) >= 0; }
-  function toggleFav(id) {
+  function toggleFav(id, meta) {
+    if (window.ZhituVault && window.ZhituVault.toggleNewsFav) {
+      return window.ZhituVault.toggleNewsFav(Object.assign({ id: id }, meta || {}));
+    }
     var favs = getFavs();
     var idx = favs.indexOf(id);
     var added = false;
     if (idx >= 0) { favs.splice(idx, 1); }
     else { favs.push(id); added = true; }
-    try { localStorage.setItem(FAV_KEY, JSON.stringify(favs)); } catch (e) {}
+    try {
+      localStorage.setItem(FAV_KEY, JSON.stringify(favs));
+      var mm = JSON.parse(localStorage.getItem('jobnews_fav_meta') || '{}');
+      if (added) mm[String(id)] = { id: String(id), title: (meta && meta.title) || '新闻收藏', source: (meta && meta.source) || '', savedAt: Date.now() };
+      else delete mm[String(id)];
+      localStorage.setItem('jobnews_fav_meta', JSON.stringify(mm));
+      window.dispatchEvent(new CustomEvent('zhitu-vault-changed', { detail: { type: 'news-fav', id: String(id), added: added } }));
+    } catch (e) {}
     return added;
   }
 
@@ -121,7 +131,11 @@
     if (!btn) return;
     e.stopPropagation();
     var id = btn.getAttribute('data-id');
-    var added = toggleFav(id);
+    var titleEl = btn.closest && btn.closest('.jn-news-row, .jn-feature-card, article')
+      ? btn.closest('.jn-news-row, .jn-feature-card, article').querySelector('.jn-news-title, h1, h2, h3') : null;
+    var sourceEl = btn.closest && btn.closest('.jn-news-row, .jn-feature-card, article')
+      ? btn.closest('.jn-news-row, .jn-feature-card, article').querySelector('.jn-news-source') : null;
+    var added = toggleFav(id, { title: titleEl ? titleEl.textContent.trim() : '', source: sourceEl ? sourceEl.textContent.trim() : '' });
     btn.classList.toggle('is-on', added);
     toast(added ? '已收藏' : '已取消收藏', 'success');
   });
@@ -349,11 +363,13 @@
       open = '<article class="jn-news-row" data-go="' + n.id + '">';
       close = '</article>';
     }
-    var fav = isExt
+    var fav = (!isExt && n.id != null && typeof JN.favButton === 'function')
+      ? JN.favButton(n.id, 'jn-fav--row') : '';
+    var favMeta = isExt
       ? '<img class="jn-news-favicon" src="https://api.iowen.cn/favicon/' + esc(n.host || '') + '.png" alt="" loading="lazy" onerror="this.remove()">'
       : '';
     var meta =
-      fav +
+      favMeta +
       (n.source ? '<span class="jn-news-source">' + esc(n.source) + '</span>' : '') +
       (n.date ? '<span>' + esc(n.date) + '</span>' : '') +
       (isExt
@@ -361,6 +377,7 @@
         : '<span class="jn-news-read">' + fmtRead(n.readCount) + '阅读</span>');
     return (
       open +
+        fav +
         (rank ? '<span class="jn-news-rank">' + (rank < 10 ? '0' + rank : rank) + '</span>' : '') +
         '<div class="jn-news-body">' +
           catTag(n.category) +

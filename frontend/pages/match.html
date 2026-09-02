@@ -103,7 +103,10 @@
                   <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
                   <div class="upload-compact-text">拖入或点击上传简历</div>
                   <div class="upload-compact-fmt"><span>PDF</span><span>DOC</span><span>TXT</span></div>
-                  <button class="btn-sm btn-sm--ghost" id="md-sample-resume" type="button">使用示例简历</button>
+                  <div class="resume-entry-actions">
+                    <button class="btn-sm btn-sm--primary" id="md-pick-resume" type="button">从个人仓库选择</button>
+                    <button class="btn-sm btn-sm--ghost" id="md-sample-resume" type="button">使用内置示例</button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -432,10 +435,10 @@
           </div>
 
           <div class="md-int-live">
-            <span class="md-int-live-lbl"><i></i>AI 面试评分实时计算</span>
+            <span class="md-int-live-lbl"><i></i>回答提交后计算</span>
             <div class="md-int-live-row">
               <b class="md-int-live-score" id="int-live-score">0</b>
-              <span class="md-int-live-state" id="int-live-state"><i></i>AI 分析中...</span>
+              <span class="md-int-live-state" id="int-live-state"><i></i>等待回答</span>
             </div>
           </div>
         </div>
@@ -477,24 +480,24 @@
           <!-- 中 · AI 实时分析层 -->
           <div class="md-int-analysis">
             <div class="md-int-analysis-card">
-              <div class="md-int-analysis-head"><span class="ai-orb sm">AI</span><b>实时分析</b><span class="md-int-analysis-live"><i></i>LIVE</span></div>
+              <div class="md-int-analysis-head"><span class="ai-orb sm">AI</span><b>回答评估</b><span class="md-int-analysis-live"><i></i>规则</span></div>
 
               <div class="md-int-analysis-sec">
-                <span class="md-int-analysis-label">正在分析 · 关键词</span>
+                <span class="md-int-analysis-label">题目关注点</span>
                 <div class="md-int-keywords" id="int-keywords">
                   <span>Spring Boot</span><span>Redis</span><span>微服务</span>
                 </div>
               </div>
 
               <div class="md-int-analysis-sec">
-                <span class="md-int-analysis-label">检测能力</span>
+                <span class="md-int-analysis-label">已覆盖能力</span>
                 <div class="md-int-detect" id="int-detect">
                   <span>✓ 技术表达</span><span>✓ 项目真实性</span><span>✓ 架构理解</span>
                 </div>
               </div>
 
               <div class="md-int-analysis-score">
-                <span>实时评分</span>
+                <span>本题得分</span>
                 <div class="md-int-analysis-score-num"><b id="int-analysis-score">0</b><small>/ 100</small></div>
                 <div class="md-int-analysis-gauge"><i data-w="78" id="int-analysis-gauge"></i></div>
               </div>
@@ -508,7 +511,7 @@
                 <b>候选人</b>
                 <small>Candidate · 正在回答</small>
               </div>
-              <span class="md-int-role-state is-user"><i></i>AI 识别中</span>
+              <span class="md-int-role-state is-user"><i></i>等待提交</span>
             </div>
 
             <div class="md-int-user-stage">
@@ -523,9 +526,11 @@
 
             <div class="md-int-caption">
               <span class="md-int-caption-dot"></span>
-              <span id="int-live-caption">正在识别回答内容...</span>
+              <span id="int-live-caption">请在下方输入回答，提交后生成评估</span>
             </div>
-            <div class="md-int-rec" id="int-rec-state"><span class="md-int-rec-dot"></span>正在录音</div>
+            <label class="md-int-answer-label" for="int-answer">你的回答</label>
+            <textarea class="md-int-answer" id="int-answer" rows="5" maxlength="3000" placeholder="输入你对当前问题的回答（建议包含项目背景、你的行动和结果）"></textarea>
+            <div class="md-int-answer-meta"><span id="int-answer-state">未提交</span><span><b id="int-answer-count">0</b> / 3000</span></div>
           </div>
         </div>
 
@@ -840,15 +845,35 @@
       </div>
     </div>
 
+    <div class="resume-source-modal" id="resume-source-modal" hidden role="dialog" aria-modal="true" aria-labelledby="resume-source-title">
+      <div class="resume-source-mask" id="resume-source-mask"></div>
+      <div class="resume-source-card">
+        <button class="resume-source-close" id="resume-source-close" type="button" aria-label="关闭">×</button>
+        <div class="resume-source-kicker">CHANGE RESUME</div>
+        <h3 id="resume-source-title">选择简历来源</h3>
+        <p>可以上传本地文件，也可以从个人仓库中选择已有简历。</p>
+        <div class="resume-source-actions">
+          <button class="resume-source-btn resume-source-btn--primary" id="resume-source-local" type="button">
+            <span class="resume-source-icon">↑</span>
+            <span><b>从本地上传</b><small>PDF、DOC、DOCX 或 TXT</small></span>
+          </button>
+          <button class="resume-source-btn" id="resume-source-vault" type="button">
+            <span class="resume-source-icon">▣</span>
+            <span><b>从个人仓库选择</b><small>使用已保存的简历版本</small></span>
+          </button>
+        </div>
+      </div>
+    </div>
     <input type="file" id="resume-file-input" accept=".pdf,.doc,.docx,.txt" hidden />
   </main>
 
   <script src="../js/api.js"></script>
   <script src="../js/runtime-core.js"></script>
+  <script src="../js/user-vault.js?v=match-fav1"></script>
   <script src="../js/cinema-bg.js?v=lightfix2"></script>
   <script src="../js/cinema-music.js"></script>
   <script src="../js/shell.js"></script>
-  <script src="../js/pages/match.js?v=matchfix1"></script>
+  <script src="../js/pages/match.js?v=matchfix3"></script>
   <script>
     window.Shell && window.Shell.mount({ pageId: 'match', title: '人岗匹配诊断', subtitle: '简历 → 匹配 → 岗位 → 学习 → 面试' });
     window.initMatch && window.initMatch();

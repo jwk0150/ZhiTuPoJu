@@ -3,6 +3,7 @@ from __future__ import annotations
 import html
 import io
 import json
+import logging
 import math
 import re
 import zipfile
@@ -205,6 +206,13 @@ def canonical_skill(value: str) -> str:
     return SKILL_ALIASES.get(clean.lower(), clean)
 
 
+def _skill_name(value: Any) -> str:
+    """Return a skill name from either the normal object form or a string."""
+    if isinstance(value, dict):
+        return str(value.get("name") or "")
+    return str(value or "")
+
+
 def _known_skills() -> list[str]:
     values: set[str] = set()
     for job in data.JOBS:
@@ -348,7 +356,7 @@ def _semantic_review(profile: dict[str, Any], jobs: list[dict[str, Any]]) -> tup
         "target_role": profile.get("target_role"),
         "experience_years": profile.get("experience_years"),
         "summary": profile.get("summary"),
-        "skills": [item.get("name") for item in profile.get("skills", [])],
+        "skills": [_skill_name(item) for item in profile.get("skills", [])],
         "projects": profile.get("projects", []),
     }
     system = """你是人岗语义审查器。不得仅按关键词判断，也不得编造候选人经历。
@@ -367,7 +375,7 @@ def _semantic_review(profile: dict[str, Any], jobs: list[dict[str, Any]]) -> tup
     )
     payload = _json_from_text(content) if content else {}
     allowed_job_ids = {str(job["id"]) for job in jobs}
-    candidate_skills = {canonical_skill(item.get("name", "")) for item in profile.get("skills", [])}
+    candidate_skills = {canonical_skill(_skill_name(item)) for item in profile.get("skills", [])}
     reviews: dict[str, dict[str, Any]] = {}
     for item in payload.get("items", []) if isinstance(payload.get("items"), list) else []:
         if not isinstance(item, dict):
@@ -444,7 +452,7 @@ def score_matches(
     jobs：候选岗位列表（Phase 03 起支持真实岗位；缺省回退 data.JOBS Mock）。
     评分算法保持原样，不重写。
     """
-    candidate_skills = {canonical_skill(item.get("name", "")) for item in profile.get("skills", [])}
+    candidate_skills = {canonical_skill(_skill_name(item)) for item in profile.get("skills", [])}
     candidate_skills.discard("")
     results: list[dict[str, Any]] = []
 
@@ -631,7 +639,7 @@ def generate_perfect_resume(target_job: dict[str, Any], profile: dict[str, Any])
     }, ensure_ascii=False)
     content, _meta = deepseek.chat_completions(
         [{"role": "system", "content": system},
-         {"role": "user", "content": f"目标岗位：\n{job_text}\n\n候选人当前画像（仅供参考）：\n{json.dumps({'target_role': profile.get('target_role'), 'experience_years': profile.get('experience_years'), 'skills': [s.get('name') for s in profile.get('skills', [])]}, ensure_ascii=False)}"}],
+         {"role": "user", "content": f"目标岗位：\n{job_text}\n\n候选人当前画像（仅供参考）：\n{json.dumps({'target_role': profile.get('target_role'), 'experience_years': profile.get('experience_years'), 'skills': [_skill_name(s) for s in profile.get('skills', [])]}, ensure_ascii=False)}"}],
         temperature=0.2, timeout=45.0
     )
     parsed = _json_from_text(content) if content else {}
@@ -656,9 +664,9 @@ def generate_perfect_resume(target_job: dict[str, Any], profile: dict[str, Any])
 
 def compare_with_perfect(profile: dict[str, Any], perfect: dict[str, Any], target_job: dict[str, Any]) -> dict[str, Any]:
     """Compare user resume against the AI-generated perfect resume benchmark."""
-    user_skills_raw = {canonical_skill(s.get("name", "")) for s in profile.get("skills", [])}
+    user_skills_raw = {canonical_skill(_skill_name(s)) for s in profile.get("skills", [])}
     user_skills_raw.discard("")
-    ideal_skills_raw = {canonical_skill(s.get("name", "")) for s in perfect.get("ideal_skills", [])}
+    ideal_skills_raw = {canonical_skill(_skill_name(s)) for s in perfect.get("ideal_skills", [])}
     ideal_skills_raw.discard("")
 
     matched_skills = user_skills_raw & ideal_skills_raw
@@ -691,20 +699,20 @@ def compare_with_perfect(profile: dict[str, Any], perfect: dict[str, Any], targe
 
     skill_comparison = []
     for ideal in perfect.get("ideal_skills", [])[:12]:
-        name = canonical_skill(ideal.get("name", ""))
+        name = canonical_skill(_skill_name(ideal))
         if not name:
             continue
         user_level = "未掌握"
         for us in profile.get("skills", []):
-            if canonical_skill(us.get("name", "")) == name:
-                user_level = us.get("level", "了解")
+            if canonical_skill(_skill_name(us)) == name:
+                user_level = us.get("level", "了解") if isinstance(us, dict) else "了解"
                 break
         skill_comparison.append({
             "skill": name,
-            "ideal_level": ideal.get("level", "熟练"),
+            "ideal_level": ideal.get("level", "熟练") if isinstance(ideal, dict) else "熟练",
             "user_level": user_level,
             "gap": "matched" if name in matched_skills else "missing",
-            "why_important": ideal.get("why", "岗位核心要求"),
+            "why_important": ideal.get("why", "岗位核心要求") if isinstance(ideal, dict) else "岗位核心要求",
         })
 
     # Improvement suggestions
@@ -783,6 +791,23 @@ def analyze_job_requirement(target_job: dict[str, Any]) -> dict[str, Any]:
 # ============================================================
 # Phase 03 — 真实岗位接入（Mock → Real）
 # ============================================================
+def _split_skill_values(values: Any) -> list[str]:
+    """Normalize DB skill arrays, including legacy pipe-delimited entries."""
+    if isinstance(values, str):
+        values = [values]
+    if not isinstance(values, (list, tuple, set)):
+        return []
+    out: list[str] = []
+    seen: set[str] = set()
+    for value in values:
+        for part in re.split(r"[|｜,，;；]", str(value or "")):
+            skill = part.strip()
+            if skill and skill not in seen:
+                seen.add(skill)
+                out.append(skill)
+    return out
+
+
 def to_match_job_dict(row: dict[str, Any]) -> dict[str, Any]:
     """把真实岗位行（job_postings+details join）转成 MatchingService 需要的结构。
 
@@ -793,12 +818,12 @@ def to_match_job_dict(row: dict[str, Any]) -> dict[str, Any]:
     from backend.knowledge.cleaner import extract_skills
 
     raw_skills = row.get("skills") or []
-    skills = list(dict.fromkeys(str(s) for s in raw_skills if s)) if isinstance(raw_skills, list) else []
+    skills = _split_skill_values(raw_skills)
     if not skills:
         skills = extract_skills(row)
-    keywords = row.get("keywords") or []
-    labels = row.get("job_labels") or []
-    preferred = list(dict.fromkeys(str(s) for s in (list(keywords) + list(labels)) if s))
+    keywords = _split_skill_values(row.get("keywords") or [])
+    labels = _split_skill_values(row.get("job_labels") or [])
+    preferred = list(dict.fromkeys(keywords + labels))
 
     salary: str | None = None
     lo, hi = row.get("salary_min"), row.get("salary_max")
@@ -846,7 +871,7 @@ def build_retrieval_query(profile: dict[str, Any]) -> tuple[str, dict[str, Any]]
     """由 Candidate Profile 生成 KnowledgeService 检索 query 与结构化 filters。"""
     parts: list[str] = []
     target = (profile.get("target_role") or "").strip()
-    skills = [s.get("name", "") for s in (profile.get("skills") or []) if s.get("name")][:8]
+    skills = [_skill_name(s) for s in (profile.get("skills") or []) if _skill_name(s)][:8]
     summary = (profile.get("summary") or "").strip()
     if target:
         parts.append(target)
@@ -914,6 +939,11 @@ def retrieve_candidate_jobs(
         query, filters = build_retrieval_query(profile)
         svc = KnowledgeService()
         res = svc.hybrid_search(query, filters=filters, top_k=top_k)
+        # Resume metadata is often incomplete or uses labels that do not exactly
+        # match the job table. Retry without metadata filters before falling back
+        # to the coarse SQL retriever so a valid keyword/vector hit is not lost.
+        if (not res.get("results")) and filters:
+            res = svc.hybrid_search(query, filters={}, top_k=top_k)
         if res.get("status") == "OK" and res.get("results"):
             hits_by_job: dict[int, list[dict[str, Any]]] = {}
             for hit in res["results"]:
@@ -945,16 +975,16 @@ def retrieve_candidate_jobs(
                 jobs.append(job)
             if jobs:
                 return jobs
-    except Exception:
-        pass
+    except Exception as exc:
+        logging.warning("candidate hybrid retrieval failed; using SQL fallback: %s", exc)
 
     # 3) 直接从招聘表按画像粗排
     try:
         sql_jobs = _retrieve_jobs_from_postings(profile, top_k=top_k)
         if sql_jobs:
             return sql_jobs
-    except Exception:
-        pass
+    except Exception as exc:
+        logging.warning("candidate SQL retrieval failed; using demo fallback: %s", exc)
 
     # 4) 演示岗位，保证全流程可通
     demo = []
@@ -1053,9 +1083,9 @@ def _retrieve_jobs_from_postings(profile: dict[str, Any], top_k: int = 50) -> li
         scored.append((score, job))
 
     scored.sort(key=lambda x: x[0], reverse=True)
-    best = scored[0][0] if scored else 0.0
-    if best < 3.5:
-        return []
+    # A low lexical score still represents a real, usable job candidate. The
+    # previous cutoff turned an otherwise healthy database into a false
+    # "no-jobs" response whenever the resume had sparse/translated skills.
     return [j for _, j in scored[:top_k]]
 
 
@@ -1174,7 +1204,7 @@ def _generate_explanations(
     user = json.dumps({
         "candidate": {
             "target_role": profile.get("target_role"),
-            "skills": [s.get("name") for s in (profile.get("skills") or [])][:10],
+            "skills": [_skill_name(s) for s in (profile.get("skills") or [])][:10],
             "experience_years": profile.get("experience_years"),
             "education": profile.get("education"),
             "summary": (profile.get("summary") or "")[:150],

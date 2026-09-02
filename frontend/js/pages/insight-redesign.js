@@ -307,11 +307,20 @@
     text: '#E8F2F8',
     textDim: '#8aa0b4',
     accent: '#1FC8D9',
-    up: '#1FC8D9',
-    mod: '#22C55E',
-    down: '#EF4444',
-    weak: '#F59E0B',
-    core: '#7C3AED'
+    up: '#1FC8D9',      // 基础概念 - 青色
+    mod: '#22C55E',     // 核心方法 - 绿色
+    down: '#EF4444',    // 综合与迁移 - 红色（强调/迁移）
+    weak: '#F59E0B',    // 练习与辨析 - 黄色
+    core: '#7C3AED',
+    // 节点掌握度色环（用于节点圆环边框颜色）
+    masteryExcellent: '#27AE60',  // 优秀 80%+ 绿色
+    masteryMedium:    '#F39C12',  // 中等 40-79% 黄色
+    masteryWeak:      '#E74C3C',  // 薄弱 <40% 红色
+    masteryNew:       '#BDC3C7',  // 待学习 灰色
+    // 关联强度色
+    linkStrong: '#E74C3C',
+    linkMedium: '#7C3AED',
+    linkWeak:   '#8aa0b4'
   };
 
   // ===== 时间轴节点 (0..7 对应 2026-01..2026-08) =====
@@ -342,8 +351,16 @@
     timelineIdx: 7,
     filter: 'all',   // all | up | stable | down
     search: '',
+    cat: 'all',      // 岗位分类筛选：'all' | '后端开发' | '前端开发' | ...
     jobList: JOBS.slice()
   };
+
+  // ===== 从 JOBS 提取所有不重复的分类，用于 chips 渲染 =====
+  const JOB_CATEGORIES = (function () {
+    const s = new Set();
+    JOBS.forEach(j => { if (j.cat) s.add(j.cat); });
+    return ['全部', ...Array.from(s)];
+  })();
 
   // ===== 各岗位的能力画像 =====
   const PROFILES = {
@@ -1493,12 +1510,58 @@
     return res;
   }
 
+  // ===== 渲染：分类筛选 chips =====
+  function renderCatChips() {
+    const root = document.getElementById('ir-job-cats');
+    if (!root) return;
+    const current = STATE.cat || 'all';
+    const html = JOB_CATEGORIES.map(cat => {
+      const key = cat === '全部' ? 'all' : cat;
+      const active = key === current ? 'active' : '';
+      // 统计每个分类下的岗位数
+      let count = 0;
+      if (key === 'all') count = JOBS.length;
+      else count = JOBS.filter(j => j.cat === key).length;
+      return `<button class="ir-cat-chip ${active}" type="button" data-cat="${escape(key)}">
+        <span class="ir-cat-chip-name">${escape(cat)}</span>
+        <span class="ir-cat-chip-count">${count}</span>
+      </button>`;
+    }).join('');
+    root.innerHTML = html;
+    root.querySelectorAll('.ir-cat-chip').forEach(el => {
+      el.addEventListener('click', () => {
+        STATE.cat = el.dataset.cat;
+        renderCatChips();
+        renderJobList();
+      });
+    });
+  }
+
   // ===== 渲染：岗位列表 =====
   function renderJobList() {
     const root = document.getElementById('ir-job-list');
+    const countEl = document.getElementById('ir-job-list-count');
     if (!root) return;
     const q = (STATE.search || '').trim().toLowerCase();
-    const list = STATE.jobList.filter(j => !q || j.name.toLowerCase().includes(q) || j.cat.toLowerCase().includes(q));
+    const cat = STATE.cat || 'all';
+    const list = STATE.jobList.filter(j => {
+      // 文本搜索（岗位名或分类）
+      if (q && !(j.name.toLowerCase().includes(q) || j.cat.toLowerCase().includes(q))) return false;
+      // 分类筛选
+      if (cat !== 'all' && j.cat !== cat) return false;
+      return true;
+    });
+    // 同步右上角计数
+    if (countEl) {
+      countEl.textContent = `${list.length} / ${JOBS.length}`;
+    }
+    if (list.length === 0) {
+      root.innerHTML = `<div class="ir-job-empty">
+        <div class="ir-job-empty-ic">🔍</div>
+        <div class="ir-job-empty-tip">没有匹配的岗位<br/><span>试试调整关键词或分类筛选</span></div>
+      </div>`;
+      return;
+    }
     root.innerHTML = list.map(j => `
       <div class="ir-job-card ${j.id === STATE.jobId ? 'active' : ''}" data-job="${escape(j.id)}">
         <div class="ir-job-card-row1">
@@ -1507,6 +1570,7 @@
           ${!j.hot && j.growth && j.growth.startsWith('+') && parseInt(j.growth) >= 30 ? '<span class="ir-tag ir-tag-new">新增</span>' : ''}
         </div>
         <div class="ir-job-cat">${escape(j.cat)}</div>
+        ${j.growth ? `<div class="ir-job-growth">${escape(j.growth)} <span class="ir-job-growth-lbl">需求增长</span></div>` : ''}
       </div>
     `).join('');
     root.querySelectorAll('.ir-job-card').forEach(el => {
@@ -1594,7 +1658,9 @@
     }
   }
 
-  // ===== 渲染：能力变化全景（中央辐射图） =====
+  // ===== 渲染：能力变化全景（4 象限 · 模仿"知识掌握图谱"） =====
+  // 四象限：左上=基础概念（up）、右上=核心方法（mod）、左下=练习与辨析（weak）、右下=综合与迁移（down）
+  // 节点 = 技能 + 掌握度；连线 = 强/中/弱关联；时间轴联动：节点数与掌握度随时间变化
   function renderPanorama() {
     const stage = document.querySelector('.ir-pano-stage');
     const svg = document.getElementById('ir-pano-svg');
@@ -1603,277 +1669,333 @@
     const cs = getComputedStyle(stage);
     const padX = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight);
     const padY = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom);
-    const VW = Math.max(360, rect.width - padX);
-    const VH = Math.max(280, rect.height - padY);
+    const VW = Math.max(420, rect.width - padX);
+    const VH = Math.max(320, rect.height - padY);
 
-    // 严格居中：SVG 容器已是 Grid 中栏，其中心即中栏中心，无需额外偏移
-    const cx = VW / 2, cy = VH / 2;
+    const cx = VW / 2;
+    const cy = VH / 2;
     const minSide = Math.min(VW, VH);
 
-    // 4 个分类扇区（菱形分布：上 / 右 / 下 / 左 各占 70° 弧）
-    const cats = [
-      { key: 'up',   label: '新增能力', centerAngle: -90, color: COLORS.up   },
-      { key: 'mod',  label: '能力增强', centerAngle:   0, color: COLORS.mod  },
-      { key: 'down', label: '淘汰能力', centerAngle:  90, color: COLORS.down },
-      { key: 'weak', label: '能力弱化', centerAngle: 180, color: COLORS.weak }
+    // ===== 4 个分类象限（模仿参考图：左上/右上/左下/右下） =====
+    const QUADS = [
+      { key: 'up',   label: '基础概念',    desc: '近 1-2 年新增', icon: '📘', color: COLORS.up   },
+      { key: 'mod',  label: '核心方法',    desc: '岗位核心能力',    icon: '⚙️', color: COLORS.mod  },
+      { key: 'weak', label: '练习与辨析', desc: '需巩固弱项',     icon: '✏️', color: COLORS.weak },
+      { key: 'down', label: '综合与迁移', desc: '综合 / 已淘汰',  icon: '🚀', color: COLORS.down }
     ];
-    const arcDeg = 70; // 每区域扇形角度
+    // 中央安全边距（防止节点进圆心与边沿）
+    const CORE_GAP = Math.max(80, Math.min(minSide * 0.18, 130));
 
-    // 核心半径（受可视区约束）
-    const coreR = Math.max(40, Math.min(minSide * 0.14, 56));
+    // ===== 时间距离驱动：每个象限显示 1~3 个节点 =====
+    const tRatio = timeDistanceRatio();   // 0（最近） ~ 1（最远）
+    const perQuad = Math.min(1 + Math.round(tRatio * 2), 3);
 
-    // 节点轨道半径（保证四方向不超出可视区并预留标题空间）
-    // 让辐射半径尽可能撑满左右两侧：
-    // 横向用 0.5 比例，让扇形 + 标签矩形基本覆盖中栏宽度；
-    // 纵向仍受 VH 约束，避免下方溢出。
-    const R = Math.max(95, Math.min(VW * 0.5, VH * 0.46) - 18);
+    // 核心圆半径
+    const coreR = Math.max(38, Math.min(minSide * 0.10, 52));
 
-    // 节点圆半径 / 文字外移距离
-    const nodeR = 11;
-    const labelGap = 7;
+    // ===== 为每个象限构造技能 + 掌握度 =====
+    function quadSkillList(key) {
+      const arr = [];
+      for (let i = 0; i < perQuad; i++) {
+        const full = getFullSkillName(key, i);
+        const short = shortenName(full);
+        // 掌握度：基于 hash 稳定生成 5~95
+        let pct = 5 + (nameHash(full) % 91);
+        // 时间轴联动：距离当下越远，掌握度越低（模拟"早期还未掌握"）
+        // 当下（tRatio=0）：基本满掌握；最远（tRatio=1）：早期掌握度低
+        pct = Math.round(pct * (1 - tRatio * 0.55));
+        pct = Math.max(0, Math.min(99, pct));
+        arr.push({ name: full, short, pct, idx: i });
+      }
+      return arr;
+    }
+    const quadData = {};
+    QUADS.forEach(q => { quadData[q.key] = quadSkillList(q.key); });
 
-    // 技能数（距当下越远越多）—— 1 ~ 3 个/分类
-    const r = timeDistanceRatio();
-    const perCat = Math.min(1 + Math.round(r * 2), 3);
+    // ===== 为每个象限计算节点位置（矩形均匀分布） =====
+    // 象限的可用区域 = 整个画布减去核心占位 + 象限标题占位
+    const TITLE_H = 26;     // 标题高度预留
+    const EDGE = 14;        // 边缘留白
+    function quadBounds(key) {
+      // 根据 key 决定象限的可用矩形
+      switch (key) {
+        case 'up':   return { x0: EDGE, y0: EDGE + TITLE_H,
+                              x1: cx - CORE_GAP, y1: cy - CORE_GAP };
+        case 'mod':  return { x0: cx + CORE_GAP, y0: EDGE + TITLE_H,
+                              x1: VW - EDGE, y1: cy - CORE_GAP };
+        case 'weak': return { x0: EDGE, y0: cy + CORE_GAP,
+                              x1: cx - CORE_GAP, y1: VH - EDGE };
+        case 'down': return { x0: cx + CORE_GAP, y0: cy + CORE_GAP,
+                              x1: VW - EDGE, y1: VH - EDGE };
+      }
+    }
+    const NODE_R = 22; // 节点外圆半径（视觉）
 
-    // 每分类对应的技能 label
-    const catSkills = {};
-    cats.forEach(c => {
-      const items = [];
-      for (let i = 0; i < perCat; i++) items.push(skillLabel(c.key, i));
-      catSkills[c.key] = items;
+    // 给每个象限的节点计算位置
+    const positions = {}; // key -> [{x, y, item, isLink}]
+    QUADS.forEach(q => {
+      const items = quadData[q.key];
+      const b = quadBounds(q.key);
+      const w = b.x1 - b.x0;
+      const h = b.y1 - b.y0;
+      const pos = [];
+      if (items.length === 1) {
+        pos.push({ x: (b.x0 + b.x1) / 2, y: (b.y0 + b.y1) / 2, item: items[0] });
+      } else if (items.length === 2) {
+        pos.push({ x: b.x0 + w * 0.30, y: (b.y0 + b.y1) / 2,                item: items[0] });
+        pos.push({ x: b.x0 + w * 0.70, y: (b.y0 + b.y1) / 2,                item: items[1] });
+      } else {
+        pos.push({ x: b.x0 + w * 0.25, y: b.y0 + h * 0.30,                 item: items[0] });
+        pos.push({ x: b.x0 + w * 0.75, y: b.y0 + h * 0.30,                 item: items[1] });
+        pos.push({ x: b.x0 + w * 0.50, y: b.y0 + h * 0.78,                 item: items[2] });
+      }
+      positions[q.key] = pos;
     });
-
-    // 筛选：保留 STATE.filter 兼容
-    const filt = STATE.filter;
-    const visCats = filt === 'all' ? cats : cats.filter(c =>
-      c.key === filt || (filt === 'stable' && c.key === 'mod'));
 
     svg.setAttribute('viewBox', `0 0 ${VW} ${VH}`);
     svg.setAttribute('width', VW);
     svg.setAttribute('height', VH);
 
-    // ---- 渐变 / 滤镜定义 ----
-    let dom2 = `
+    // ===== 工具：按掌握度返回颜色 & 类名 =====
+    function masteryStyle(pct) {
+      if (pct >= 80) return { color: COLORS.masteryExcellent, cls: 'mastery-excellent', label: '优秀' };
+      if (pct >= 40) return { color: COLORS.masteryMedium,    cls: 'mastery-medium',    label: '中等' };
+      if (pct >= 1)  return { color: COLORS.masteryWeak,      cls: 'mastery-weak',      label: '薄弱' };
+      return           { color: COLORS.masteryNew,         cls: 'mastery-new',       label: '待学习' };
+    }
+
+    // ===== 工具：按 hash 决定关联强度 =====
+    function linkKind(a, b) {
+      const aKey = a.item.name + a.item.idx + '-' + b.item.name + b.item.idx;
+      const h = nameHash(aKey);
+      const r = h % 3;
+      if (r === 0) return 'strong';
+      if (r === 1) return 'medium';
+      return 'weak';
+    }
+    function linkStyle(kind) {
+      if (kind === 'strong') return { color: COLORS.linkStrong, dash: 'none',    width: 1.6 };
+      if (kind === 'medium') return { color: COLORS.linkMedium, dash: '5 4',    width: 1.2 };
+      return                       { color: COLORS.linkWeak,   dash: '1 4',    width: 1 };
+    }
+
+    // ===== 组装 SVG =====
+    let dom = `
       <defs>
-        ${cats.map(c => `
-          <radialGradient id="grad-node-${c.key}" cx="35%" cy="35%" r="65%">
-            <stop offset="0%" stop-color="${c.color}" stop-opacity="0.55"/>
-            <stop offset="55%" stop-color="#0d1525" stop-opacity="0.95"/>
-            <stop offset="100%" stop-color="${c.color}" stop-opacity="0.35"/>
-          </radialGradient>
-          <linearGradient id="grad-arc-${c.key}" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="${c.color}" stop-opacity="0"/>
-            <stop offset="50%" stop-color="${c.color}" stop-opacity="0.45"/>
-            <stop offset="100%" stop-color="${c.color}" stop-opacity="0"/>
-          </linearGradient>
-          <radialGradient id="grad-sector-glow-${c.key}" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stop-color="${c.color}" stop-opacity="0.22"/>
-            <stop offset="100%" stop-color="${c.color}" stop-opacity="0"/>
-          </radialGradient>
-          <marker id="arrow-${c.key}" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="5" markerHeight="5" orient="auto">
-            <path d="M0,1 L9,5 L0,9 z" fill="${c.color}"/>
-          </marker>
-        `).join('')}
-        <linearGradient id="grad-core-ring" x1="0%" y1="0%" x2="100%" y2="100%">
+        <linearGradient id="gp-core-ring" x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stop-color="#7C3AED"/>
-          <stop offset="50%" stop-color="#3B82F6"/>
+          <stop offset="55%" stop-color="#3B82F6"/>
           <stop offset="100%" stop-color="#1FC8D9"/>
         </linearGradient>
-        <radialGradient id="grad-core-halo" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stop-color="${COLORS.core}" stop-opacity="0.45"/>
-          <stop offset="35%" stop-color="#7C3AED" stop-opacity="0.22"/>
-          <stop offset="65%" stop-color="#3B82F6" stop-opacity="0.08"/>
+        <radialGradient id="gp-core-halo" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="${COLORS.core}" stop-opacity="0.40"/>
+          <stop offset="40%" stop-color="#7C3AED" stop-opacity="0.18"/>
           <stop offset="100%" stop-color="${COLORS.core}" stop-opacity="0"/>
         </radialGradient>
-        <radialGradient id="grad-nebula" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stop-color="#1FC8D9" stop-opacity="0.08"/>
-          <stop offset="60%" stop-color="#3B82F6" stop-opacity="0.04"/>
+        <radialGradient id="gp-node-bg" cx="35%" cy="32%" r="75%">
+          <stop offset="0%" stop-color="#1a2336" stop-opacity="0.95"/>
+          <stop offset="100%" stop-color="#070b13" stop-opacity="0.95"/>
+        </radialGradient>
+        <radialGradient id="gp-nebula" cx="50%" cy="50%" r="65%">
+          <stop offset="0%" stop-color="#1FC8D9" stop-opacity="0.06"/>
+          <stop offset="60%" stop-color="#3B82F6" stop-opacity="0.03"/>
           <stop offset="100%" stop-color="#7C3AED" stop-opacity="0"/>
         </radialGradient>
+        ${QUADS.map(q => `
+          <radialGradient id="gp-quad-${q.key}" cx="50%" cy="50%" r="80%">
+            <stop offset="0%" stop-color="${q.color}" stop-opacity="0.10"/>
+            <stop offset="100%" stop-color="${q.color}" stop-opacity="0"/>
+          </radialGradient>
+        `).join('')}
       </defs>
+
+      <!-- 远景底色 -->
+      <rect x="0" y="0" width="${VW}" height="${VH}" fill="url(#gp-nebula)"/>
+
+      <!-- 4 象限背景柔光 -->
+      ${QUADS.map(q => {
+        const b = quadBounds(q.key);
+        return `<rect x="${b.x0}" y="${b.y0 - TITLE_H}"
+          width="${b.x1 - b.x0}" height="${(b.y1 - b.y0) + TITLE_H}"
+          fill="url(#gp-quad-${q.key})" opacity="0.6"/>`;
+      }).join('')}
     `;
 
-    // ---- 远景星云（覆盖整个 SVG，营造空间纵深） ----
-    dom2 += `<rect x="0" y="0" width="${VW}" height="${VH}" fill="url(#grad-nebula)"/>`;
+    // ---- 中央分隔虚线（十字辅助线）----
+    dom += `
+      <line x1="${cx}" y1="${TITLE_H + 6}" x2="${cx}" y2="${VH - TITLE_H - 6}"
+        stroke="rgba(31,200,217,0.10)" stroke-width="0.8" stroke-dasharray="2 6"/>
+      <line x1="${14}" y1="${cy}" x2="${VW - 14}" y2="${cy}"
+        stroke="rgba(31,200,217,0.10)" stroke-width="0.8" stroke-dasharray="2 6"/>
+    `;
 
-    // ---- SVG 散布星点（背景 CSS 星点的补充，更靠近中心区域） ----
-    const starSeed = [
-      [0.15,0.20,0.6],[0.28,0.35,0.4],[0.42,0.18,0.7],[0.62,0.30,0.5],
-      [0.78,0.22,0.6],[0.85,0.42,0.4],[0.18,0.55,0.5],[0.35,0.65,0.6],
-      [0.65,0.62,0.4],[0.82,0.72,0.5],[0.22,0.78,0.7],[0.48,0.85,0.4],
-      [0.68,0.82,0.6],[0.92,0.55,0.5]
-    ];
-    starSeed.forEach(([fx, fy, sz]) => {
-      dom2 += `<circle cx="${(fx*VW).toFixed(0)}" cy="${(fy*VH).toFixed(0)}" r="${sz}"
-        fill="#cfe8ff" opacity="0.55"/>`;
-    });
-
-    // ---- 4 扇区角向光带（每区域一条大弧形渐变光带，从核心向对应方向延伸） ----
-    const bandInner = coreR + 6;
-    const bandOuter = R + 12;
-    visCats.forEach(sec => {
-      const a1 = (sec.centerAngle - arcDeg / 2) * Math.PI / 180;
-      const a2 = (sec.centerAngle + arcDeg / 2) * Math.PI / 180;
-      const x1i = cx + bandInner * Math.cos(a1), y1i = cy + bandInner * Math.sin(a1);
-      const x2i = cx + bandInner * Math.cos(a2), y2i = cy + bandInner * Math.sin(a2);
-      const x1o = cx + bandOuter * Math.cos(a1), y1o = cy + bandOuter * Math.sin(a1);
-      const x2o = cx + bandOuter * Math.cos(a2), y2o = cy + bandOuter * Math.sin(a2);
-      // path: 内弧 + 外弧 + 闭合
-      const path = `M ${x1i.toFixed(1)} ${y1i.toFixed(1)}
-        A ${bandInner} ${bandInner} 0 0 1 ${x2i.toFixed(1)} ${y2i.toFixed(1)}
-        L ${x2o.toFixed(1)} ${y2o.toFixed(1)}
-        A ${bandOuter} ${bandOuter} 0 0 0 ${x1o.toFixed(1)} ${y1o.toFixed(1)} Z`;
-      dom2 += `<path d="${path}" fill="url(#grad-arc-${sec.key})" opacity="0.35"/>`;
-      // 区域内柔光圆
-      const midA = sec.centerAngle * Math.PI / 180;
-      const mx = cx + (bandInner + bandOuter) / 2 * Math.cos(midA);
-      const my = cy + (bandInner + bandOuter) / 2 * Math.sin(midA);
-      dom2 += `<circle cx="${mx.toFixed(1)}" cy="${my.toFixed(1)}" r="${((bandOuter-bandInner)*0.7).toFixed(1)}" fill="url(#grad-sector-glow-${sec.key})"/>`;
-    });
-
-    // ---- 外层大光圈（核心周围两圈淡光，营造"轨道场"感） ----
-    dom2 += `<circle cx="${cx}" cy="${cy}" r="${(R+18).toFixed(0)}" fill="none"
-      stroke="rgba(124,58,237,0.10)" stroke-width="1" stroke-dasharray="2 8"/>`;
-    dom2 += `<circle cx="${cx}" cy="${cy}" r="${(R+38).toFixed(0)}" fill="none"
-      stroke="rgba(31,200,217,0.08)" stroke-width="0.8" stroke-dasharray="1 12"/>`;
-
-    // ---- 核心柔和光晕（克制的多层光晕） ----
-    dom2 += `<circle cx="${cx}" cy="${cy}" r="${(coreR * 2.2).toFixed(0)}" fill="url(#grad-core-halo)"/>`;
-
-    // ---- 4 扇区绘制：区域主干连线 + 节点间箭头 + 节点圆 + 技能文字 + 区域标题 ----
-    const rad = d => d * Math.PI / 180;
-    visCats.forEach(sec => {
-      const n = Math.min(perCat, (catSkills[sec.key] || []).length);
-      if (n < 1) return;
-      const step = n > 1 ? arcDeg / (n - 1) : 0;
-      const startA = sec.centerAngle - arcDeg / 2;
-      const nodes = [];
-      for (let i = 0; i < n; i++) {
-        const a = rad(startA + step * i);
-        nodes.push({ a, x: cx + R * Math.cos(a), y: cy + R * Math.sin(a) });
-      }
-      const ca = rad(sec.centerAngle);
-      // 1) 区域主干：核心边缘 -> 首个节点（带粒子流）
-      const ceX = cx + coreR * Math.cos(ca);
-      const ceY = cy + coreR * Math.sin(ca);
-      const fn = nodes[0];
-      dom2 += `
-        <g class="ir-pano-flow">
-          <line x1="${ceX.toFixed(1)}" y1="${ceY.toFixed(1)}" x2="${fn.x.toFixed(1)}" y2="${fn.y.toFixed(1)}"
-            stroke="${sec.color}" stroke-width="1.2" stroke-dasharray="4 5" opacity="0.45"
-            marker-end="url(#arrow-${sec.key})"/>
-          <line x1="${ceX.toFixed(1)}" y1="${ceY.toFixed(1)}" x2="${fn.x.toFixed(1)}" y2="${fn.y.toFixed(1)}"
-            stroke="${sec.color}" stroke-width="2" stroke-dasharray="2 14" opacity="0.35"
-            class="ir-pano-dash-anim"/>
+    // ---- 4 象限标题（顶部 or 左侧）----
+    QUADS.forEach(q => {
+      const b = quadBounds(q.key);
+      let tx, ty, anchor;
+      if (q.key === 'up')   { tx = (b.x0 + b.x1) / 2; ty = EDGE + 14; anchor = 'middle'; }
+      if (q.key === 'mod')  { tx = (b.x0 + b.x1) / 2; ty = EDGE + 14; anchor = 'middle'; }
+      if (q.key === 'weak') { tx = b.x0 + 18;           ty = cy + 18;  anchor = 'start'; }
+      if (q.key === 'down') { tx = b.x1 - 18;           ty = cy + 18;  anchor = 'end'; }
+      const pillW = q.label.length * 14 + 30;
+      const pillH = 22;
+      let rectX = tx - pillW / 2;
+      if (anchor === 'start') rectX = tx - 14;
+      if (anchor === 'end')   rectX = tx - pillW + 14;
+      const rectY = ty - 14;
+      dom += `
+        <g class="ir-pano-quad-title">
+          <rect x="${rectX.toFixed(1)}" y="${rectY.toFixed(1)}" width="${pillW}" height="${pillH}"
+            rx="11" fill="${q.color}" fill-opacity="0.18"
+            stroke="${q.color}" stroke-opacity="0.55" stroke-width="0.8"/>
+          <text x="${tx.toFixed(1)}" y="${(ty + 4).toFixed(1)}" text-anchor="${anchor}"
+            font-size="12.5" font-weight="700" fill="${q.color}" letter-spacing="1">${q.icon} ${escape(q.label)}</text>
         </g>`;
-      // 2) 节点间连接（带箭头，沿区域弧方向）
-      for (let i = 0; i < n - 1; i++) {
-        const a1 = nodes[i], a2 = nodes[i + 1];
-        dom2 += `<line x1="${a1.x.toFixed(1)}" y1="${a1.y.toFixed(1)}" x2="${a2.x.toFixed(1)}" y2="${a2.y.toFixed(1)}"
-          stroke="${sec.color}" stroke-width="1.3" stroke-dasharray="5 5" opacity="0.55"
-          marker-end="url(#arrow-${sec.key})"/>`;
-      }
-      // 3) 节点圆 + 序号 + 技能文字（外侧）—— 整体包成可点击组，点击打开详情弹层
-      // 视觉错位策略：同区域内相邻节点的 label 垂直方向轻微错开（dyOffset），
-      // 避免「左侧两个节点标签挤在同一水平线上」造成的重叠。
-      const dyOffset = i => (i % 2 === 0 ? -7 : 6);
-      nodes.forEach((nd, i) => {
-        const name = (catSkills[sec.key] || [])[i] || '';
-        // 文字外侧（径向外向，自动判断左/右/上/下）
-        let lx = nd.x + Math.cos(nd.a) * (nodeR + labelGap);
-        let ly = nd.y + Math.sin(nd.a) * (nodeR + labelGap);
-        const absCos = Math.abs(Math.cos(nd.a));
-        const absSin = Math.abs(Math.sin(nd.a));
-        // 左右两侧：文字向核心相反方向延伸（start/end），让标签铺满左右两端；
-        // 为防止左端越界，R 已受限，且给 start 侧额外内收（labelGap 含补偿）。
-        let anchor = 'middle', dy = 4;
-        if (absCos > absSin) {
-          anchor = Math.cos(nd.a) > 0 ? 'start' : 'end';
-          // 左侧（end）标签朝核心方向延伸，额外内收一点避免贴左边界
-          if (anchor === 'end') lx -= 4;
-        } else {
-          dy = Math.sin(nd.a) > 0 ? 11 : -3;
-        }
-        // 左右两侧 label 应用错位：第偶数个节点（角度更靠外）抬高或下移
-        if (absCos > absSin) dy += dyOffset(i);
-        // 可点击组：圆 + 序号 + 文字（含背景底）
-        dom2 += `<g class="ir-pano-skill" data-cat="${sec.key}" data-name="${escape(name)}" style="--c:${sec.color}">`;
-        // 圆（径向渐变玻璃感）
-        dom2 += `<circle cx="${nd.x.toFixed(1)}" cy="${nd.y.toFixed(1)}" r="${nodeR}"
-          fill="url(#grad-node-${sec.key})" stroke="${sec.color}" stroke-width="1.4"/>`;
-        // 序号
-        dom2 += `<text x="${nd.x.toFixed(1)}" y="${(nd.y + 3.5).toFixed(1)}" text-anchor="middle"
-          font-size="10" font-weight="700" fill="${sec.color}">${i + 1}</text>`;
-        if (name) {
-          // 半透明深色底提升可读性（更大 padding + 更深色，避免重叠时被穿透）
-          // 中文字符宽 ~13.5px，英文字符宽 ~7px（含空格、符号），按字符类型累加
-          let txtW = 0;
-          for (const ch of name) txtW += /[一-龥　-〿＀-￯]/.test(ch) ? 13.5 : 7;
-          const tw = Math.max(38, txtW + 16);
-          let bgX = lx;
-          if (anchor === 'start') bgX = lx + 2;
-          else if (anchor === 'end') bgX = lx - tw - 4;
-          else bgX = lx - tw / 2;
-          const bgH = 17;
-          const bgY = ly + dy - 13;
-          dom2 += `<rect x="${bgX.toFixed(1)}" y="${bgY.toFixed(1)}" width="${tw.toFixed(1)}" height="${bgH}" rx="3"
-            fill="#06090f" fill-opacity="0.86" stroke="${sec.color}" stroke-opacity="0.55" stroke-width="0.7"/>`;
-          dom2 += `<text x="${lx.toFixed(1)}" y="${(ly + dy).toFixed(1)}" text-anchor="${anchor}"
-            font-size="11" font-weight="500" fill="${COLORS.text}">${escape(name)}</text>`;
-        }
-        dom2 += `</g>`;
-      });
-      // 4) 区域标题 —— 放在扇形弧中心半径处（扇区弧的中点），与外侧节点互不打架
-      const midR = (bandInner + bandOuter) / 2;
-      const txC = cx + Math.cos(ca) * midR;
-      const tyC = cy + Math.sin(ca) * midR;
-      // 标题文本左右两侧加细矩形底（柔和胶囊样式），提升可读性
-      const labelText = sec.label;
-      const tw = labelText.length * 13 + 14;
-      const th = 22;
-      const rectX = txC - tw / 2;
-      const rectY = tyC - th / 2;
-      dom2 += `<g class="ir-pano-sector-title">
-        <rect x="${rectX.toFixed(1)}" y="${rectY.toFixed(1)}" width="${tw.toFixed(1)}" height="${th}"
-          rx="${th / 2}" fill="${sec.color}" fill-opacity="0.16"
-          stroke="${sec.color}" stroke-opacity="0.55" stroke-width="0.8"/>
-        <text x="${txC.toFixed(1)}" y="${(tyC + 4.5).toFixed(1)}" text-anchor="middle"
-          font-size="12.5" font-weight="700" fill="${sec.color}" letter-spacing="1">${escape(labelText)}</text>
-      </g>`;
     });
 
-    // ---- 核心节点（最后绘制，确保不被节点覆盖） ----
-    dom2 += `
+    // ---- 同象限内节点之间的关联线（强/中/弱）----
+    QUADS.forEach(q => {
+      const pos = positions[q.key];
+      if (pos.length < 2) return;
+      // 同象限内：相邻 + 对角线
+      for (let i = 0; i < pos.length - 1; i++) {
+        for (let j = i + 1; j < pos.length; j++) {
+          const a = pos[i], b = pos[j];
+          const kind = linkKind(a, b);
+          const ls = linkStyle(kind);
+          dom += `<line x1="${a.x.toFixed(1)}" y1="${a.y.toFixed(1)}"
+            x2="${b.x.toFixed(1)}" y2="${b.y.toFixed(1)}"
+            stroke="${ls.color}" stroke-width="${ls.width}"
+            stroke-dasharray="${ls.dash}" opacity="0.55"/>`;
+        }
+      }
+    });
+
+    // ---- 跨象限节点关联线（弱关联，点状）----
+    const allPos = [];
+    QUADS.forEach(q => {
+      positions[q.key].forEach(p => allPos.push({ ...p, quadKey: q.key }));
+    });
+    for (let i = 0; i < allPos.length; i++) {
+      for (let j = i + 1; j < allPos.length; j++) {
+        const a = allPos[i], b = allPos[j];
+        if (a.quadKey === b.quadKey) continue; // 同象限已画
+        // 仅画部分跨象限关联线（避免线条过密）
+        if ((nameHash(a.item.name + b.item.name) % 5) !== 0) continue;
+        const ls = linkStyle('weak');
+        dom += `<line x1="${a.x.toFixed(1)}" y1="${a.y.toFixed(1)}"
+          x2="${b.x.toFixed(1)}" y2="${b.y.toFixed(1)}"
+          stroke="${ls.color}" stroke-width="${ls.width}"
+          stroke-dasharray="${ls.dash}" opacity="0.30"/>`;
+      }
+    }
+
+    // ---- 核心 -> 每个节点的"主连线"（强关联，分组按颜色）----
+    QUADS.forEach(q => {
+      positions[q.key].forEach(p => {
+        // 起点：核心圆边缘（指向节点方向）
+        const dx = p.x - cx;
+        const dy = p.y - cy;
+        const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+        const sx = cx + (dx / dist) * coreR;
+        const sy = cy + (dy / dist) * coreR;
+        // 终点：节点圆外边
+        const ex = p.x - (dx / dist) * NODE_R;
+        const ey = p.y - (dy / dist) * NODE_R;
+        dom += `<line x1="${sx.toFixed(1)}" y1="${sy.toFixed(1)}"
+          x2="${ex.toFixed(1)}" y2="${ey.toFixed(1)}"
+          stroke="${q.color}" stroke-width="1.6" opacity="0.85"/>`;
+      });
+    });
+
+    // ---- 核心柔和光晕 ----
+    dom += `<circle cx="${cx}" cy="${cy}" r="${(coreR * 2.4).toFixed(1)}" fill="url(#gp-core-halo)"/>`;
+
+    // ---- 节点：外环（按掌握度颜色）+ 内圆 + 名称 + 百分比 ----
+    function wrapLabel(name, maxPx, fontSize) {
+      // 中文按 0.95em 宽，英文/符号按 0.5em 宽
+      const CN = fontSize * 0.95, EN = fontSize * 0.5;
+      let total = 0, line = '', lines = [];
+      for (const ch of name) {
+        const w = /[一-鿿　-〿＀-￯]/.test(ch) ? CN : EN;
+        if (total + w > maxPx && line) { lines.push(line); line = ch; total = w; }
+        else { line += ch; total += w; }
+      }
+      if (line) lines.push(line);
+      return lines;
+    }
+
+    QUADS.forEach(q => {
+      positions[q.key].forEach(p => {
+        const ms = masteryStyle(p.item.pct);
+        // 多行名称（最多 3 行）
+        const lines = wrapLabel(p.item.short, 78, 11.5).slice(0, 3);
+        // 节点组
+        dom += `<g class="ir-pano-node" data-cat="${q.key}" data-name="${escape(p.item.name)}" data-pct="${p.item.pct}"
+          style="--c:${ms.color}">`;
+        // 外圆（带柔和辉光）
+        dom += `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${NODE_R + 4}"
+          fill="${ms.color}" fill-opacity="0.12" class="ir-pano-node-halo"/>`;
+        // 外环（按掌握度着色）
+        dom += `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${NODE_R}"
+          fill="url(#gp-node-bg)" stroke="${ms.color}" stroke-width="2"
+          class="ir-pano-node-ring ${ms.cls}"/>`;
+        // 内圈（视觉细化）
+        dom += `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${NODE_R - 4}"
+          fill="none" stroke="${ms.color}" stroke-width="0.6" stroke-dasharray="2 4" opacity="0.7"/>`;
+        // 名称（多行）
+        const nameStartY = p.y + 4 - (lines.length - 1) * 6.5;
+        lines.forEach((ln, li) => {
+          dom += `<text x="${p.x.toFixed(1)}" y="${(nameStartY + li * 13).toFixed(1)}"
+            text-anchor="middle" font-size="11" font-weight="600" fill="#E8F2F8">${escape(ln)}</text>`;
+        });
+        // 百分比徽章（节点底部小标签）
+        const pctLabel = `${p.item.pct}%`;
+        const bw = pctLabel.length * 7 + 12;
+        const bx = p.x - bw / 2;
+        const by = p.y + NODE_R + 4;
+        dom += `<g class="ir-pano-node-pct">
+          <rect x="${bx.toFixed(1)}" y="${by.toFixed(1)}" width="${bw}" height="16" rx="8"
+            fill="${ms.color}" fill-opacity="0.18" stroke="${ms.color}" stroke-opacity="0.55" stroke-width="0.7"/>
+          <text x="${p.x.toFixed(1)}" y="${(by + 11).toFixed(1)}" text-anchor="middle"
+            font-size="10.5" font-weight="700" fill="${ms.color}">${pctLabel}</text>
+        </g>`;
+        dom += `</g>`;
+      });
+    });
+
+    // ---- 核心节点（最后绘制） ----
+    dom += `
       <g class="ir-pano-core-svg">
-        <circle cx="${cx}" cy="${cy}" r="${coreR}" fill="#0b1119" fill-opacity="0.62"
-          stroke="url(#grad-core-ring)" stroke-width="1.8"/>
-        <circle cx="${cx}" cy="${cy}" r="${coreR - 4}" fill="none"
-          stroke="${COLORS.core}" stroke-width="0.7" stroke-dasharray="2 5" opacity="0.5"
+        <circle cx="${cx}" cy="${cy}" r="${coreR + 6}" fill="none"
+          stroke="url(#gp-core-ring)" stroke-width="0.8" opacity="0.55"
           class="ir-pano-rot"/>
+        <circle cx="${cx}" cy="${cy}" r="${coreR}"
+          fill="#0b1119" fill-opacity="0.78" stroke="url(#gp-core-ring)" stroke-width="1.8"/>
       </g>`;
 
-    svg.innerHTML = dom2;
+    svg.innerHTML = dom;
 
-    // 中央辐射图技能节点 → 点击打开详情弹层
-    svg.querySelectorAll('g.ir-pano-skill').forEach(g => {
-      const open = () => openSkillModal(STATE.jobId, g.dataset.cat, g.dataset.name);
+    // ===== 节点点击 → 打开详情弹层 =====
+    svg.querySelectorAll('g.ir-pano-node').forEach(g => {
       g.style.cursor = 'pointer';
+      const open = () => openSkillModal(STATE.jobId, g.dataset.cat, g.dataset.name);
       g.addEventListener('click', (e) => { e.stopPropagation(); open(); });
-      g.addEventListener('mouseenter', () => g.setAttribute('opacity', '0.78'));
+      g.addEventListener('mouseenter', () => g.setAttribute('opacity', '0.85'));
       g.addEventListener('mouseleave', () => g.setAttribute('opacity', '1'));
     });
 
-    // 核心尺寸同步到 HTML 覆盖层（与 SVG 圆环完全重合）
+    // ===== 核心尺寸 / 标题 / 百分比同步 =====
     stage.style.setProperty('--pano-core-r', (coreR * 2) + 'px');
-
-    // 同步核心圆上叠加层（HTML 覆盖）的标题
     const core = document.getElementById('ir-pano-core');
     if (core) {
-      const tt = core.querySelector('.tt');
+      const tt = core.querySelector('#ir-pano-core-name') || core.querySelector('.tt');
       if (tt) tt.textContent = STATE.jobId;
       const sub = core.querySelector('.sub');
       if (sub) sub.textContent = '岗位能力基线';
+      // 核心 0%（未掌握时基线为 0）
+      const pctEl = core.querySelector('#ir-pano-core-pct') || core.querySelector('.pct');
+      if (pctEl) pctEl.textContent = `${tRatio === 0 ? '0' : Math.round(20 + (1 - tRatio) * 80)}%`;
     }
   }
 
@@ -1887,12 +2009,20 @@
     return shortenName(item.name);
   }
 
+  // 取分类下的完整技能名（用于详情弹层匹配）
+  function getFullSkillName(catKey, idx) {
+    const pf = getProfile(STATE.jobId);
+    const arr = catKey === 'up' ? pf.up : catKey === 'down' ? pf.down : catKey === 'weak' ? pf.weak : pf.mod;
+    const item = (arr && arr[idx]) || (arr && arr[0]);
+    return item ? item.name : `占位技能 ${catKey}-${idx}`;
+  }
+
   function shortenName(name) {
     // 取中英文括号前的主名（去掉解释性后缀）
     const s = name.split(/[（(]/)[0].trim();
-    // 优先保留完整名称：放宽到 22 字符，覆盖 "JSP / Servlet 原生页面开发" 等
-    if (s.length <= 22) return s;
-    return s.slice(0, 19) + '…';
+    // 节点空间有限，进一步收紧到 14 字符
+    if (s.length <= 14) return s;
+    return s.slice(0, 12) + '…';
   }
 
   // ===== 渲染：岗位介绍（右栏面板）=====
@@ -2094,20 +2224,36 @@
     renderPanorama();
     renderSkillsDetail();
     renderRadar();
+    renderCatChips();  // 同步分类 chips active 态
   }
 
   // ===== 初始化 =====
   function init() {
     if (!document.getElementById('ir-root')) return;
 
-    // 搜索框
+    // 搜索框（输入 + 清空按钮）
     const search = document.getElementById('ir-job-search-input');
     if (search) {
       search.addEventListener('input', e => {
         STATE.search = e.target.value || '';
+        const clr = document.getElementById('ir-job-search-clear');
+        if (clr) clr.style.display = STATE.search ? 'flex' : 'none';
         renderJobList();
       });
     }
+    const clearBtn = document.getElementById('ir-job-search-clear');
+    if (clearBtn) {
+      clearBtn.style.display = STATE.search ? 'flex' : 'none';
+      clearBtn.addEventListener('click', () => {
+        STATE.search = '';
+        if (search) { search.value = ''; search.focus(); }
+        clearBtn.style.display = 'none';
+        renderJobList();
+      });
+    }
+
+    // 初始化分类 chips
+    renderCatChips();
 
     // 时间轴左右箭头
     const prev = document.getElementById('ir-pano-prev');
