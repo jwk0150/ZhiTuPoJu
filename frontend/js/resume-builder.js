@@ -1195,7 +1195,7 @@
     if (window.resolveApiBase) return window.resolveApiBase();
     if (window.API_BASE) return window.API_BASE;
     var host = location.hostname;
-    if (host === '127.0.0.1' || host === 'localhost') return 'http://127.0.0.1:8000';
+    if (host === '127.0.0.1' || host === 'localhost') return 'http://127.0.0.1:5000';
     return location.origin;
   }
 

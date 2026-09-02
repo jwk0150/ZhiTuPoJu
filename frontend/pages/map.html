@@ -1,14 +1,14 @@
-shou<!DOCTYPE html>
+﻿shou<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <title>执图破局 · 数字人才地图</title>
-  <link rel="stylesheet" href="../css/tokens.css?v=20260825soft" />
-  <link rel="stylesheet" href="../css/shell.css?v=20260825soft" />
+  <link rel="stylesheet" href="../css/tokens.css?v=lightfix1" />
+  <link rel="stylesheet" href="../css/shell.css?v=lightfix1" />
   <link rel="stylesheet" href="../css/components.css?v=20260824a" />
-  <link rel="stylesheet" href="../css/legacy-views.css?v=20260826switch" />
+  <link rel="stylesheet" href="../css/legacy-views.css?v=lightfix1" />
   <link rel="preload" href="../assets/china-geo.json" as="fetch" crossorigin />
   <link rel="preload" href="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js" as="script" />
   <script>
@@ -32,6 +32,7 @@ shou<!DOCTYPE html>
     })();
   </script>
   <!-- echarts / geo 已在上方并行预取 -->
+<link rel="stylesheet" href="../css/news-light-overrides.css?v=typo1" />
 </head>
 <body class="standalone-view" data-page="map">
   <div id="app-shell"></div>
@@ -167,8 +168,8 @@ onmouseleave="window.gangaZoomHover('澳门',false)">
 <div class="graph-detail" id="talent-detail-panel">
 <div class="detail-empty" id="talent-detail-empty">
 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-<h4>悬停省份预览数据</h4>
-<p>将鼠标移到地图上的省份<br>查看实时人才数据概览</p>
+<h4>从省份开始读图</h4>
+<p>悬停预览热度与薪资<br>点击下钻城市与岗位技术图谱</p>
 </div>
 <div id="talent-detail-hover" style="display:none;padding:20px">
 <h3 style="color:var(--text-dark);margin-bottom:6px" id="talent-hover-name"></h3>
@@ -223,7 +224,7 @@ onmouseleave="window.gangaZoomHover('澳门',false)">
   </main>
   <script src="../js/api.js?v=20260824fix"></script>
   <script src="../js/runtime-core.js?v=20260824fix"></script>
-  <script src="../js/cinema-bg.js?v=20260831bright"></script>
+  <script src="../js/cinema-bg.js?v=lightfix2"></script>
   <script src="../js/perf-guard.js?v=1"></script>
   <script src="../js/cinema-music.js?v=20260824mem"></script>
   <script src="../js/shell.js?v=20260825c3"></script>

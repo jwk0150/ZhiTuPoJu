@@ -1,10 +1,8 @@
 /* ==========================================================================
-   match-paper.css · 「执图破局」日系纸张招聘档案视觉体系
+   match-paper.css · 人岗匹配视觉层（已对齐全站墨金 Cinema）
    --------------------------------------------------------------------------
-   此文件覆盖 match.css / shell.css / components.css 中与人岗匹配页面
-   相关的所有视觉细节（信息架构 / 交互逻辑 / 内容保持不变）。
-   --------------------------------------------------------------------------
-   核心：去除 SaaS / 玻璃拟态 / 高饱和强调，回归「纸张 + 编辑部 + 报表」。
+   保留工作台信息架构；底色 / 字色 / 纸面改为墨青绿 + 香槟金，
+   避免与新闻 / 地图 / 发现割裂。
    ========================================================================== */
 
 /* ==========================================================================
@@ -19,8 +17,8 @@ body[data-page="match"] *::after {
 }
 
 body[data-page="match"] {
-  background: #F4EFE5;
-  color: #29261F;
+  background: transparent;
+  color: #1A1A1A;
   font-family: "Noto Sans SC", "Source Han Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
@@ -30,11 +28,11 @@ body[data-page="match"]::-webkit-scrollbar,
 body[data-page="match"] *::-webkit-scrollbar { width: 8px; height: 8px; }
 body[data-page="match"]::-webkit-scrollbar-thumb,
 body[data-page="match"] *::-webkit-scrollbar-thumb {
-  background: rgba(105, 85, 60, 0.22); border-radius: 4px;
+  background: rgba(201, 168, 106, 0.28); border-radius: 4px;
 }
 body[data-page="match"]::-webkit-scrollbar-thumb:hover,
 body[data-page="match"] *::-webkit-scrollbar-thumb:hover {
-  background: rgba(105, 85, 60, 0.36);
+  background: rgba(201, 168, 106, 0.42);
 }
 
 /* ==========================================================================
@@ -176,8 +174,8 @@ body[data-page="match"] .wks-center {
 }
 
 /* ===== 视觉氛围层弱化 ===== */
-body[data-page="match"] .match-art-layer { opacity: 0.5; }
-body[data-page="match"] .match-art-illustration { filter: saturate(0.6) opacity(0.6); }
+body[data-page="match"] .match-art-layer { opacity: 0.18; }
+body[data-page="match"] .match-art-illustration { filter: brightness(0.55) saturate(0.65) opacity(0.55); }
 
 /* ==========================================================================
    五、标题体系 · 编辑部标识
@@ -949,3 +947,69 @@ body[data-page="match"] .btn-sm:active,
 body[data-page="match"] .job-row:active {
   transform: scale(0.995);
 }
+
+/* ===== 对齐新闻页浅色纸感 ===== */
+body[data-page="match"] {
+  background: transparent !important;
+  color: #1A1A1A !important;
+}
+body[data-page="match"] .page-main,
+body[data-page="match"] #match-hall,
+body[data-page="match"] .match-hall {
+  background: transparent !important;
+}
+body[data-page="match"] .rw-toolbar,
+body[data-page="match"] .wks-steps,
+body[data-page="match"] .match-page-head,
+body[data-page="match"] .rw-col--nav,
+body[data-page="match"] .rw-col--editor,
+body[data-page="match"] .mod-upload,
+body[data-page="match"] .rw-col,
+body[data-page="match"] .mod,
+body[data-page="match"] .wks-view {
+  background: #FFFFFF !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+  color: #1A1A1A !important;
+}
+body[data-page="match"] .rw-preview {
+  background: #FBF8F1 !important;
+  color: #29261F !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+}
+body[data-page="match"] .mod-label,
+body[data-page="match"] .rw-toolbar,
+body[data-page="match"] h1,
+body[data-page="match"] h2,
+body[data-page="match"] h3 {
+  color: #1A1A1A !important;
+}
+body[data-page="match"] .btn-sm,
+body[data-page="match"] .rw-nav button,
+body[data-page="match"] .rw-nav .rw-nav-item {
+  color: #4B5563 !important;
+  border-color: rgba(0, 0, 0, 0.1) !important;
+  background: #FAF8F5 !important;
+}
+body[data-page="match"] .rw-nav-item.is-on,
+body[data-page="match"] .rw-nav button.is-on {
+  background: rgba(168, 139, 78, 0.12) !important;
+  border-color: rgba(168, 139, 78, 0.4) !important;
+  color: #8B7340 !important;
+}
+body[data-page="match"] .rw-start-match,
+body[data-page="match"] .btn-sm--solid {
+  background: linear-gradient(135deg, #C4A86B, #A88B4E) !important;
+  color: #1a1208 !important;
+  border-color: transparent !important;
+}
+body[data-page="match"] .ring-bg,
+body[data-page="match"] .ring-track {
+  stroke: #E5DDD0 !important;
+}
+body[data-page="match"] .ring-fg,
+body[data-page="match"] .ring-bar {
+  stroke: #C7A86B !important;
+}
+body[data-page="match"] .match-art-layer { opacity: 0.35; }
+body[data-page="match"] .match-art-illustration { filter: saturate(0.7) opacity(0.55); }
+

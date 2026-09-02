@@ -627,13 +627,13 @@ window.talentLoadData = async function() {
     if (results[0].status === 'fulfilled') {
         try {
             const d = results[0].value.data || results[0].value;
-            talentMapState.allProvinces = d.provinces || [];
-            talentMapState.dataLoaded = true;
-            if (d.regions && d.regions.length) window.talentInitProvinceOptions(d.regions);
-            window.updateTalentStats();
-            console.log('[TalentMap] 加载完成：' + talentMapState.allProvinces.length + ' 个省份');
-            provincesOk = true;
-        } catch (e) {
+        talentMapState.allProvinces = d.provinces || [];
+        talentMapState.dataLoaded = true;
+        if (d.regions && d.regions.length) window.talentInitProvinceOptions(d.regions);
+        window.updateTalentStats();
+        console.log('[TalentMap] 加载完成：' + talentMapState.allProvinces.length + ' 个省份');
+        provincesOk = true;
+    } catch (e) {
             console.warn('[TalentMap] 省份数据解析失败，使用Mock', e);
         }
     } else {
@@ -645,7 +645,7 @@ window.talentLoadData = async function() {
     if (results[1].status === 'fulfilled') {
         try {
             var fd = results[1].value.data || results[1].value;
-            if (fd.regions && fd.regions.length) window.talentInitProvinceOptions(fd.regions);
+        if (fd.regions && fd.regions.length) window.talentInitProvinceOptions(fd.regions);
         } catch (e) {
             console.warn('[TalentMap] 筛选选项解析失败', e);
         }
@@ -1205,7 +1205,7 @@ window.talentShowLayer = function(layer, opts) {
     }
     if (layer === 'graph' && talentMapState.jobGraphInstance) {
         setTimeout(function() {
-            var c = document.getElementById('talent-graph-container');
+        var c = document.getElementById('talent-graph-container');
             if (c && c.clientWidth > 10 && talentMapState.jobGraphInstance) {
                 try { talentMapState.jobGraphInstance.changeSize(c.clientWidth, c.clientHeight); } catch (e) {}
             }
@@ -1322,10 +1322,10 @@ window.talentMapBack = function() {
             if (talentMapState.selectedProvince) {
                 try {
                     if (talentMapState.currentProvinceName) {
-                        window.talentRenderCityMap(talentMapState.currentProvinceName);
+                window.talentRenderCityMap(talentMapState.currentProvinceName);
                     }
-                    window.renderProvinceDetail(talentMapState.selectedProvince);
-                    window.talentUpdatePageTitle(talentMapState.selectedProvince.name);
+                window.renderProvinceDetail(talentMapState.selectedProvince);
+                window.talentUpdatePageTitle(talentMapState.selectedProvince.name);
                 } catch (e) {
                     console.warn('[talentMapBack] city→province map', e);
                     window.talentMapBackToNational();
@@ -1343,10 +1343,10 @@ window.talentMapBack = function() {
             if (talentMapState.selectedProvince) {
                 try {
                     if (talentMapState.mapLevel !== 'country' && talentMapState.cityGeoJSON && talentMapState.currentProvinceName) {
-                        window.talentRenderCityMap(talentMapState.currentProvinceName);
-                    }
-                    window.renderProvinceDetail(talentMapState.selectedProvince);
-                    window.talentUpdatePageTitle(talentMapState.selectedProvince.name);
+                    window.talentRenderCityMap(talentMapState.currentProvinceName);
+                }
+                window.renderProvinceDetail(talentMapState.selectedProvince);
+                window.talentUpdatePageTitle(talentMapState.selectedProvince.name);
                     window.talentSetBackBtnVisible(true);
                 } catch (e) {
                     console.warn('[talentMapBack] province map', e);
@@ -1937,8 +1937,8 @@ window.talentMapCityBack = function() {
         if (provName && talentMapState.selectedProvince) {
             try {
                 window.talentRenderCityMap(provName);
-                window.renderProvinceDetail(talentMapState.selectedProvince);
-                window.talentUpdatePageTitle(talentMapState.selectedProvince.name);
+        window.renderProvinceDetail(talentMapState.selectedProvince);
+        window.talentUpdatePageTitle(talentMapState.selectedProvince.name);
             } catch (e) {
                 console.warn('[talentMapCityBack] city→province', e);
                 window.talentMapBackToNational();
@@ -2190,7 +2190,7 @@ window.renderChinaMap = async function() {
     if (!reused) {
         if (mapChart) { try { mapChart.dispose(); } catch (e) {} }
         mapChart = echarts.init(el, null, { devicePixelRatio: talentChartDpr(), renderer: 'canvas' });
-        talentMapState.mapChart = mapChart;
+    talentMapState.mapChart = mapChart;
     }
 
     const data = (talentMapState.allProvinces || []).map(p => ({
@@ -3134,12 +3134,12 @@ window.renderCityTechGraph = async function(cityName, jobName, keepMode, viewMod
         container.innerHTML = '<div class="tm-graph-loading" style="display:flex;align-items:center;justify-content:center;height:100%;color:rgba(228,207,160,.72);font-size:13px;letter-spacing:.3px">正在生成' + labelText + '技术知识图谱...</div>';
         try {
             var apiUrl = API_BASE + '/map/job-tech-graph/?job_title=' + encodeURIComponent(jobName || cityName);
-            var res = await fetch(apiUrl);
-            var json = await res.json();
-            graphData = (json.data || json);
+        var res = await fetch(apiUrl);
+        var json = await res.json();
+        graphData = (json.data || json);
             techDetailState.graphDataCache[cacheKey] = graphData;
-        } catch(e) {
-            console.warn('[TechGraph] API失败', e);
+    } catch(e) {
+        console.warn('[TechGraph] API失败', e);
         }
     }
 
@@ -3173,26 +3173,26 @@ window.renderCityTechGraph = async function(cityName, jobName, keepMode, viewMod
 
     // overview：扁平化所有类别技术，直接连中心
     if (view === 'overview') {
-        graphData.categories.forEach(function(cat) {
-            (cat.technologies || []).forEach(function(tech) {
+    graphData.categories.forEach(function(cat) {
+        (cat.technologies || []).forEach(function(tech) {
                 var catColor = TECH_CATEGORY_COLORS_MAP[cat.name] || '#C9A86A';
-                allTechNodes.push({
-                    name: tech.name,
-                    size: tech.size || 24,
-                    frequency: tech.frequency || 1,
-                    ratio: tech.ratio || 0.5,
-                    catColor: catColor,
+            allTechNodes.push({
+                name: tech.name,
+                size: tech.size || 24,
+                frequency: tech.frequency || 1,
+                ratio: tech.ratio || 0.5,
+                catColor: catColor,
                     catName: cat.name,
                     parentId: 'center'
-                });
             });
         });
-        // 如果技术节点过少，追加通用技术
-        if (allTechNodes.length < 8) {
-            var extraTechs = ['Git', 'Linux', 'Docker', 'MySQL', 'Redis', 'Python', 'Java', 'JavaScript', 'Vue'];
-            for (var ei = 0; ei < extraTechs.length && allTechNodes.length < 15; ei++) {
-                var alreadyExists = allTechNodes.some(function(t) { return t.name === extraTechs[ei]; });
-                if (!alreadyExists) {
+    });
+    // 如果技术节点过少，追加通用技术
+    if (allTechNodes.length < 8) {
+        var extraTechs = ['Git', 'Linux', 'Docker', 'MySQL', 'Redis', 'Python', 'Java', 'JavaScript', 'Vue'];
+        for (var ei = 0; ei < extraTechs.length && allTechNodes.length < 15; ei++) {
+            var alreadyExists = allTechNodes.some(function(t) { return t.name === extraTechs[ei]; });
+            if (!alreadyExists) {
                     allTechNodes.push({ name: extraTechs[ei], size: 20, frequency: 3, ratio: 0.4, catColor: '#C9A86A', catName: '通用技术', parentId: 'center' });
                 }
             }
@@ -3245,64 +3245,64 @@ window.renderCityTechGraph = async function(cityName, jobName, keepMode, viewMod
 
     if (view === 'overview') {
         // ---------- 径向布局（单层级，技术直接挂中心） ----------
-        var maxFreq = 0;
-        allTechNodes.forEach(function(t) { if (t.frequency > maxFreq) maxFreq = t.frequency; });
-        allTechNodes.sort(function(a, b) { return b.frequency - a.frequency; });
-        var totalTechs = allTechNodes.length;
-        var rings = [];
-        if (totalTechs <= 10) {
-            rings = [totalTechs];
-        } else if (totalTechs <= 20) {
-            var inner = Math.ceil(totalTechs * 0.4);
-            rings = [inner, totalTechs - inner];
-        } else {
-            var r1 = Math.ceil(totalTechs * 0.33);
-            var r2 = Math.ceil(totalTechs * 0.33);
-            rings = [r1, r2, totalTechs - r1 - r2];
-        }
-        var ringRadii = [];
-        if (rings.length === 1) {
-            ringRadii = [maxRadius * 0.55];
-        } else if (rings.length === 2) {
-            ringRadii = [maxRadius * 0.42, maxRadius * 0.78];
-        } else {
-            ringRadii = [maxRadius * 0.3, maxRadius * 0.58, maxRadius * 0.82];
-        }
-        var idx = 0;
-        for (var ringIdx = 0; ringIdx < rings.length; ringIdx++) {
-            var countInRing = rings[ringIdx];
-            if (countInRing <= 0) continue;
-            var ringRadius = ringRadii[ringIdx];
+    var maxFreq = 0;
+    allTechNodes.forEach(function(t) { if (t.frequency > maxFreq) maxFreq = t.frequency; });
+    allTechNodes.sort(function(a, b) { return b.frequency - a.frequency; });
+    var totalTechs = allTechNodes.length;
+    var rings = [];
+    if (totalTechs <= 10) {
+        rings = [totalTechs];
+    } else if (totalTechs <= 20) {
+        var inner = Math.ceil(totalTechs * 0.4);
+        rings = [inner, totalTechs - inner];
+    } else {
+        var r1 = Math.ceil(totalTechs * 0.33);
+        var r2 = Math.ceil(totalTechs * 0.33);
+        rings = [r1, r2, totalTechs - r1 - r2];
+    }
+    var ringRadii = [];
+    if (rings.length === 1) {
+        ringRadii = [maxRadius * 0.55];
+    } else if (rings.length === 2) {
+        ringRadii = [maxRadius * 0.42, maxRadius * 0.78];
+    } else {
+        ringRadii = [maxRadius * 0.3, maxRadius * 0.58, maxRadius * 0.82];
+    }
+    var idx = 0;
+    for (var ringIdx = 0; ringIdx < rings.length; ringIdx++) {
+        var countInRing = rings[ringIdx];
+        if (countInRing <= 0) continue;
+        var ringRadius = ringRadii[ringIdx];
             var angleOffset = (ringIdx % 2 === 1) ? Math.PI / countInRing : 0;
-            for (var i = 0; i < countInRing && idx < totalTechs; i++) {
-                var tech = allTechNodes[idx];
-                var angle = angleOffset + (2 * Math.PI * i) / countInRing;
-                tech.calcX = centerX + ringRadius * Math.cos(angle);
-                tech.calcY = centerY + ringRadius * Math.sin(angle);
-                idx++;
-            }
+        for (var i = 0; i < countInRing && idx < totalTechs; i++) {
+            var tech = allTechNodes[idx];
+            var angle = angleOffset + (2 * Math.PI * i) / countInRing;
+            tech.calcX = centerX + ringRadius * Math.cos(angle);
+            tech.calcY = centerY + ringRadius * Math.sin(angle);
+            idx++;
         }
+    }
         // 重叠消除
-        for (var iter = 0; iter < 8; iter++) {
-            for (var i = 0; i < totalTechs; i++) {
-                for (var j = i + 1; j < totalTechs; j++) {
+    for (var iter = 0; iter < 8; iter++) {
+        for (var i = 0; i < totalTechs; i++) {
+            for (var j = i + 1; j < totalTechs; j++) {
                     var a = allTechNodes[i], b = allTechNodes[j];
                     var dx = b.calcX - a.calcX, dy = b.calcY - a.calcY;
-                    var dist = Math.sqrt(dx * dx + dy * dy);
-                    var minD = (a.size + b.size) * 0.48;
-                    if (dist < minD && dist > 0.001) {
-                        var force = (minD - dist) / dist * 0.4;
+                var dist = Math.sqrt(dx * dx + dy * dy);
+                var minD = (a.size + b.size) * 0.48;
+                if (dist < minD && dist > 0.001) {
+                    var force = (minD - dist) / dist * 0.4;
                         a.calcX -= dx * force; a.calcY -= dy * force;
                         b.calcX += dx * force; b.calcY += dy * force;
                     }
                 }
             }
-            for (var i = 0; i < totalTechs; i++) {
-                var t = allTechNodes[i];
+        for (var i = 0; i < totalTechs; i++) {
+            var t = allTechNodes[i];
                 var ddx = t.calcX - centerX, ddy = t.calcY - centerY;
-                var currR = Math.sqrt(ddx * ddx + ddy * ddy);
+            var currR = Math.sqrt(ddx * ddx + ddy * ddy);
                 if (currR < 0.01) { t.calcX = centerX + 1; t.calcY = centerY + 1; currR = 1; }
-                var targetR = Math.max(minRadius, Math.min(maxRadius * 1.05, currR));
+            var targetR = Math.max(minRadius, Math.min(maxRadius * 1.05, currR));
                 t.calcX = centerX + (ddx / currR) * (currR * 0.7 + targetR * 0.3);
                 t.calcY = centerY + (ddy / currR) * (currR * 0.7 + targetR * 0.3);
             }
@@ -3435,7 +3435,7 @@ window.renderCityTechGraph = async function(cityName, jobName, keepMode, viewMod
                 x: g.boxX + g.boxW / 2,
                 y: g.boxY + g.boxH / 2,
                 size: [g.boxW, g.boxH],
-                style: {
+        style: {
                     fill: 'rgba(8,16,28,.42)',
                     stroke: g.catColor,
                     lineWidth: 1.4,
@@ -3466,8 +3466,8 @@ window.renderCityTechGraph = async function(cityName, jobName, keepMode, viewMod
             catName: g.catName,
             style: catStyle,
             baseStyle: catStyle,
-            labelCfg: {
-                position: 'center',
+        labelCfg: {
+            position: 'center',
                 style: { fill: '#fff', fontSize: isCatCard ? 17 : 12, fontWeight: 700, fontFamily: 'var(--font-sans),sans-serif', textShadowColor: 'rgba(0,0,0,.4)', textShadowBlur: 3 }
             }
         });
@@ -4033,15 +4033,15 @@ window.talentGraphBack = function() {
     }
     var go = function() {
         if (graphWrap) graphWrap.classList.remove('graph-fading');
-        if (talentMapState.mapLevel === 'city' && talentMapState.selectedCity) {
-            window.talentShowLayer('province');
-            window.renderProvinceJobList(talentMapState.selectedProvince, talentMapState.selectedCity);
-            window.talentUpdatePageTitle((talentMapState.selectedCity.displayName || talentMapState.selectedCity.name) + ' · 岗位分析');
-        } else if (talentMapState.selectedProvince) {
-            window.talentShowLayer('province');
-            window.renderProvinceJobList(talentMapState.selectedProvince);
-            window.talentUpdatePageTitle(talentMapState.selectedProvince.name);
-        }
+    if (talentMapState.mapLevel === 'city' && talentMapState.selectedCity) {
+        window.talentShowLayer('province');
+        window.renderProvinceJobList(talentMapState.selectedProvince, talentMapState.selectedCity);
+        window.talentUpdatePageTitle((talentMapState.selectedCity.displayName || talentMapState.selectedCity.name) + ' · 岗位分析');
+    } else if (talentMapState.selectedProvince) {
+        window.talentShowLayer('province');
+        window.renderProvinceJobList(talentMapState.selectedProvince);
+        window.talentUpdatePageTitle(talentMapState.selectedProvince.name);
+    }
         var backBtn = document.getElementById('talent-back-btn');
         if (backBtn) backBtn.style.display = '';
     };

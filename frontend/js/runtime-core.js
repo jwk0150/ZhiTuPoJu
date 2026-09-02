@@ -125,7 +125,7 @@ window.switchView = window.switchView || function (viewId) {
   // 学习路径 / 新增技能已拆分为独立页面
   if (viewId === 'learningPath') { location.href = 'learning-path.html'; return; }
   if (viewId === 'newSkill') { location.href = 'new-skill.html'; return; }
-  if (viewId === 'evolution' || viewId === 'insight') { location.href = 'insight.html'; return; }
+  if (viewId === 'evolution' || viewId === 'insight') { location.href = 'evolution.html?v=2'; return; }
   var map = { evolution: 'view-evolution' };
   var target = map[viewId] || ('view-' + viewId);
   document.querySelectorAll('#page-main section.view').forEach(function (v) {

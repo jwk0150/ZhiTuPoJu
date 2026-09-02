@@ -206,6 +206,15 @@
   let prevVisibleSet = new Set();
   let isRendering = false;
 
+  const CAT_LABEL = {
+    'AI':     'AI · 人工智能',
+    '云原生': 'CLOUD · 云原生',
+    '架构':   'ARCH · 架构',
+    '后端':   'BACKEND · 后端',
+    '数据':   'DATA · 数据',
+    '工程化': 'ENG · 工程化',
+  };
+
   function renderGraph() {
     const svg = document.getElementById('gg-svg');
     const wrap = document.getElementById('git-graph-side');
@@ -232,14 +241,6 @@
 
     // 分类分组
     const CAT_ORDER = ['AI', '云原生', '架构', '后端', '数据', '工程化'];
-    const CAT_LABEL = {
-      'AI':     'AI · 人工智能',
-      '云原生': 'CLOUD · 云原生',
-      '架构':   'ARCH · 架构',
-      '后端':   'BACKEND · 后端',
-      '数据':   'DATA · 数据',
-      '工程化': 'ENG · 工程化',
-    };
 
     // 按 category 分组
     const groups = {};

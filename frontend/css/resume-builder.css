@@ -5,56 +5,56 @@
  * ============================================================ */
 
 :root {
-  /* ============== 主背景 ============== */
-  --bg-base: #101c19;
-  --bg-deep: #101c19;
-  --bg-deeper: #0c1614;
+  /* ============== 主背景（新闻浅色纸感） ============== */
+  --bg-base: #F5F2ED;
+  --bg-deep: #EFEAE2;
+  --bg-deeper: #E8E2D8;
 
-  /* ============== 深青绿色系 ============== */
-  --teal-deep: #123337;
-  --teal-mid: #285652;
-  --teal-dark: #10252A;
-  --teal-shadow: #163538;
-  --teal-x: #0C1E23;
+  /* ============== 深青绿色系（降饱和作轻点缀） ============== */
+  --teal-deep: #3D8B7A;
+  --teal-mid: #5F9E90;
+  --teal-dark: #347868;
+  --teal-shadow: #E8EEE7;
+  --teal-x: #FAF8F5;
 
   /* ============== 植物绿 ============== */
-  --leaf-deep: #607C58;
-  --leaf-mid: #7E9D78;
-  --leaf-light: #829C79;
-  --leaf-soft: #98AE78;
+  --leaf-deep: #5F765D;
+  --leaf-mid: #6F8A6C;
+  --leaf-light: #7A9478;
+  --leaf-soft: #8AA688;
 
   /* ============== 暖金 ============== */
-  --gold: #D9B66F;
-  --gold-bright: #E6C982;
-  --gold-dark: #947B4C;
-  --gold-glow: rgba(217, 182, 111, 0.35);
-  --gold-wash: rgba(217, 182, 111, 0.10);
-  --gold-wash-soft: rgba(217, 182, 111, 0.06);
+  --gold: #A88B4E;
+  --gold-bright: #8B7340;
+  --gold-dark: #6f5a32;
+  --gold-glow: rgba(168, 139, 78, 0.22);
+  --gold-wash: rgba(168, 139, 78, 0.10);
+  --gold-wash-soft: rgba(168, 139, 78, 0.06);
 
   /* ============== 环境浅色 ============== */
-  --mist: #D9DDD2;
-  --mist-dim: #AAB5AC;
-  --mist-mid: #C8CFC5;
-  --mist-strong: #E3E5DB;
+  --mist: #4B5563;
+  --mist-dim: #6B7280;
+  --mist-mid: #5B6470;
+  --mist-strong: #1A1A1A;
 
-  /* ============== 深色文字 ============== */
-  --ink-deep: #091316;
-  --ink-paper: #ECE8DE;
-  --ink-paper-warm: #D7DDD4;
+  /* ============== 文字（墨色） ============== */
+  --ink-deep: #1A1A1A;
+  --ink-paper: #1A1A1A;
+  --ink-paper-warm: #2D2A26;
 
   /* ============== 边框 ============== */
-  --line-soft: rgba(213, 220, 211, 0.12);
-  --line-mid: rgba(217, 182, 111, 0.18);
-  --line-strong: rgba(217, 182, 111, 0.35);
-  --line-cool: rgba(180, 205, 190, 0.12);
-  --line-emph: rgba(217, 182, 111, 0.45);
+  --line-soft: rgba(0, 0, 0, 0.08);
+  --line-mid: rgba(168, 139, 78, 0.28);
+  --line-strong: rgba(168, 139, 78, 0.4);
+  --line-cool: rgba(61, 139, 122, 0.18);
+  --line-emph: rgba(168, 139, 78, 0.5);
 
   /* ============== 表层面板 ============== */
-  --surface: rgba(7, 20, 23, 0.56);
-  --surface-deep: rgba(3, 16, 19, 0.78);
-  --surface-warm: rgba(7, 20, 23, 0.42);
-  --surface-input: rgba(3, 16, 19, 0.38);
-  --surface-input-focus: rgba(4, 18, 21, 0.56);
+  --surface: rgba(255, 255, 255, 0.92);
+  --surface-deep: #FFFFFF;
+  --surface-warm: rgba(250, 248, 245, 0.95);
+  --surface-input: #FFFFFF;
+  --surface-input-focus: #FAF8F5;
 
   /* ============== 字号 ============== */
   --fz-h1: 30px;
@@ -125,7 +125,7 @@ body {
   z-index: 0;
   pointer-events: none;
   overflow: hidden;
-  background: #101c19;
+  background: #F5F2ED;
 }
 
 /* 远景 SVG 城市（通过 CSS 内嵌 SVG 模拟） */
@@ -216,7 +216,7 @@ body {
   z-index: 0;
   pointer-events: none;
   overflow: hidden;
-  background: #101c19;
+  background: #F5F2ED;
 }
 
 .rb-app {
@@ -236,7 +236,7 @@ body {
 
 .rb-env {
   z-index: 1;
-  background: #101c19;
+  background: #F5F2ED;
 }
 .rb-env-mist,
 .rb-env-particles,
@@ -262,7 +262,7 @@ body {
   flex-wrap: wrap;
   justify-content: flex-end;
   font-size: 12px;
-  color: rgba(236, 240, 232, 0.72);
+  color: #4B5563;
 }
 .rb-brandbar-step {
   font-family: var(--font-mono);
@@ -270,7 +270,7 @@ body {
   color: var(--gold-bright);
 }
 .rb-brandbar-draft b {
-  color: rgba(248, 244, 230, 0.9);
+  color: #1A1A1A;
   font-weight: 500;
 }
 
@@ -287,7 +287,7 @@ body {
   width: 100%;
   max-width: none;
   margin: 0;
-  background: #101c19;
+  background: #F5F2ED;
   border: 0;
   box-shadow: none;
 }
@@ -432,7 +432,7 @@ body {
 }
 .rb-left-title p {
   font-size: 13.5px;
-  color: rgba(227, 229, 219, 0.85);
+  color: #4B5563;
   line-height: 1.75;
   margin: 0;
   letter-spacing: 0.02em;
@@ -463,7 +463,7 @@ body {
   height: 100vh;
   overflow: hidden;
   width: 100%;
-  background: #101c19;
+  background: #F5F2ED;
   border: 0;
 }
 
@@ -476,7 +476,7 @@ body {
   justify-content: center;
   min-height: 54px;
   padding: 0 24px;
-  background: linear-gradient(180deg, rgba(28, 48, 54, 0.96), rgba(16, 34, 40, 0.94));
+  background: linear-gradient(180deg, #FFFFFF, #FAF8F5);
   border-bottom: 1px solid rgba(236, 210, 150, 0.28);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
@@ -508,7 +508,7 @@ body {
   background: none;
   border: 0;
   cursor: pointer;
-  color: rgba(242, 244, 236, 0.78);
+  color: #4B5563;
   font-size: 13px;
   letter-spacing: 0.04em;
   white-space: nowrap;
@@ -518,36 +518,36 @@ body {
   font-weight: 500;
   flex-shrink: 0;
 }
-.rb-step:hover { color: #fff8e8; background: rgba(236, 210, 150, 0.10); }
+.rb-step:hover { color: #1A1A1A; background: rgba(168, 139, 78, 0.1); }
 .rb-step-num {
   font-family: var(--font-mono);
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.08em;
   font-variant-numeric: tabular-nums;
-  color: rgba(240, 212, 140, 0.88);
+  color: #8B7340;
   opacity: 1;
 }
 .rb-step-label { letter-spacing: 0.06em; }
 
-.rb-step.is-done { color: rgba(196, 228, 186, 0.98); }
-.rb-step.is-done .rb-step-num { color: rgba(196, 228, 186, 0.95); }
-.rb-step.is-done .rb-step-check { font-size: 11px; color: rgba(196, 228, 186, 1); }
+.rb-step.is-done { color: #347868; }
+.rb-step.is-done .rb-step-num { color: #347868; }
+.rb-step.is-done .rb-step-check { font-size: 11px; color: #347868; }
 
 .rb-step.is-active {
-  color: #fff8e8;
-  background: rgba(236, 210, 150, 0.18);
-  box-shadow: inset 0 -2px 0 #ecc984;
+  color: #1A1A1A;
+  background: rgba(168, 139, 78, 0.16);
+  box-shadow: inset 0 -2px 0 #A88B4E;
 }
-.rb-step.is-active .rb-step-num { color: #f5d78a; }
+.rb-step.is-active .rb-step-num { color: #8B7340; }
 
 .rb-step:disabled,
 .rb-step[aria-disabled="true"] {
   cursor: not-allowed;
-  color: rgba(230, 234, 224, 0.42);
+  color: #9CA3AF;
 }
 .rb-step[aria-disabled="true"] .rb-step-num {
-  color: rgba(236, 210, 150, 0.36);
+  color: #9CA3AF;
 }
 
 .rb-topnav-actions {
@@ -571,7 +571,7 @@ body {
 }
 
 .rb-btn-save {
-  background: rgba(7, 20, 23, 0.42);
+  background: rgba(255, 255, 255, 0.9);
   border: 1px solid rgba(217, 182, 111, 0.25);
   color: var(--mist-mid);
   padding: 8px 16px;
@@ -700,9 +700,9 @@ body {
   height: 100%;
 }
 .rb-field-input input::placeholder,
-.rb-field-input textarea::placeholder { color: rgba(217, 221, 210, 0.35); }
+.rb-field-input textarea::placeholder { color: #9CA3AF; }
 .rb-field-input select { cursor: pointer; appearance: none; padding-right: 8px; }
-.rb-field-input select option { background: #0A1B20; color: var(--ink-paper-warm); }
+.rb-field-input select option { background: #FFFFFF; color: #1A1A1A; }
 
 .rb-field-texarea-wrap {
   display: flex;
@@ -737,8 +737,8 @@ body {
   justify-content: space-between;
   margin-top: 28px;
   padding: 14px 16px;
-  background: rgba(4, 18, 21, 0.45);
-  border: 1px solid rgba(217, 182, 111, 0.15);
+  background: #FAF8F5;
+  border: 1px solid rgba(168, 139, 78, 0.28);
   border-radius: var(--r-md);
 }
 .rb-ai-bar-info { display: flex; flex-direction: column; gap: 4px; }
@@ -780,7 +780,7 @@ body {
 }
 
 .rb-btn-ghost {
-  background: rgba(4, 18, 21, 0.36);
+  background: #FFFFFF;
   color: var(--mist-mid);
   border: 1px solid rgba(221, 225, 218, 0.18);
 }
@@ -886,7 +886,7 @@ body {
 }
 .rb-skill-empty {
   font-size: 12.5px;
-  color: rgba(220, 226, 216, 0.45);
+  color: #9CA3AF;
   padding: 8px 2px 4px;
 }
 
@@ -904,7 +904,7 @@ body {
 .rb-skill-chip {
   border: 1px solid rgba(232, 206, 148, 0.22);
   background: rgba(8, 22, 26, 0.45);
-  color: rgba(236, 240, 232, 0.78);
+  color: #4B5563;
   font-size: 12px;
   padding: 5px 11px;
   border-radius: 999px;
@@ -913,7 +913,7 @@ body {
   transition: all 0.2s ease;
 }
 .rb-skill-chip:hover {
-  color: #fff8e8;
+  color: #1A1A1A;
   border-color: rgba(232, 206, 148, 0.5);
 }
 .rb-skill-chip.is-on {
@@ -950,7 +950,7 @@ body {
   background: rgba(8, 22, 26, 0.55);
 }
 .rb-job-search-icon {
-  color: rgba(232, 206, 148, 0.7);
+  color: #8B7340;
   font-size: 14px;
 }
 .rb-job-search input {
@@ -973,7 +973,7 @@ body {
 .rb-job-cat {
   border: 1px solid rgba(232, 206, 148, 0.2);
   background: rgba(8, 22, 26, 0.4);
-  color: rgba(236, 240, 232, 0.72);
+  color: #4B5563;
   font-size: 12px;
   padding: 5px 10px;
   border-radius: 999px;
@@ -981,7 +981,7 @@ body {
   font-family: var(--font-cn);
   transition: all 0.2s ease;
 }
-.rb-job-cat:hover { color: #fff8e8; border-color: rgba(232, 206, 148, 0.45); }
+.rb-job-cat:hover { color: #1A1A1A; border-color: rgba(232, 206, 148, 0.45); }
 .rb-job-cat.is-on {
   color: #1a1510;
   background: rgba(236, 201, 132, 0.92);
@@ -990,14 +990,14 @@ body {
 }
 .rb-job-count {
   font-size: 12px;
-  color: rgba(220, 226, 216, 0.55);
+  color: #6B7280;
   letter-spacing: 0.04em;
 }
 .rb-job-empty {
   grid-column: 1 / -1;
   padding: 28px 16px;
   text-align: center;
-  color: rgba(220, 226, 216, 0.5);
+  color: #6B7280;
   font-size: 13px;
   border: 1px dashed rgba(232, 206, 148, 0.2);
   border-radius: 10px;
@@ -1007,7 +1007,7 @@ body {
   align-items: center;
   gap: 12px;
   padding: 16px 18px;
-  background: rgba(4, 18, 21, 0.36);
+  background: #FFFFFF;
   border: 1px solid var(--line-soft);
   border-radius: var(--r-md);
   cursor: pointer;
@@ -1018,7 +1018,7 @@ body {
 }
 .rb-position:hover {
   border-color: rgba(217, 182, 111, 0.35);
-  background: rgba(4, 18, 21, 0.55);
+  background: #FAF8F5;
 }
 .rb-position.is-on {
   background: rgba(217, 182, 111, 0.08);
@@ -1070,7 +1070,7 @@ body {
   align-items: flex-start;
   gap: 6px;
   padding: 18px 20px;
-  background: rgba(4, 18, 21, 0.36);
+  background: #FFFFFF;
   border: 1px solid rgba(217, 182, 111, 0.20);
   border-radius: var(--r-md);
   cursor: pointer;
@@ -1122,7 +1122,7 @@ body {
   letter-spacing: 0.02em;
   resize: vertical;
 }
-.rb-ai-input-block textarea::placeholder { color: rgba(217, 221, 210, 0.35); }
+.rb-ai-input-block textarea::placeholder { color: #9CA3AF; }
 .rb-ai-input-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px; }
 
 .rb-exp-list {
@@ -1980,8 +1980,8 @@ body {
   align-items: center;
   justify-content: space-between;
   padding: 0 24px;
-  background: rgba(5, 17, 20, 0.82);
-  border-top: 1px solid rgba(217, 182, 111, 0.14);
+  background: rgba(255, 255, 255, 0.96);
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   position: relative;
@@ -2128,7 +2128,7 @@ html.rb-embed body {
   height: 100%;
   min-height: 100%;
   overflow: hidden;
-  background: #101c19 !important;
+  background: #F5F2ED !important;
 }
 html.rb-embed .rb-app,
 html.rb-embed .rb-right {

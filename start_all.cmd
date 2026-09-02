@@ -1,45 +1,48 @@
 @echo off
 REM ============================================================
-REM  One-click launcher for "ZhiTuPoJu / 岗位大新闻" (real discovery crawler)
-REM  Starts the FastAPI backend (:5000) + the static frontend (:8090),
-REM  then opens the news page in your default browser.
-REM  Double-click this file, or run it from a command prompt.
+REM  执图破局 · 一键启动（挑战杯演示）
+REM  后端 :5000  +  前端静态 :8888  +  打开入口页
 REM ============================================================
-SETLOCAL
-SET "ROOT=C:\Users\Dsy\ZhiTuPoJu"
+SETLOCAL EnableExtensions
+cd /d "%~dp0"
+
+SET "ROOT=%~dp0"
+SET "ROOT=%ROOT:~0,-1%"
 SET "BACKEND_PORT=5000"
-SET "FRONTEND_PORT=8090"
+SET "FRONTEND_PORT=8888"
+
+where python >nul 2>nul
+IF ERRORLEVEL 1 (
+  echo [error] 未找到 python，请先安装并加入 PATH
+  pause
+  exit /b 1
+)
 
 REM ---- backend (FastAPI) ----
-netstat -ano 2>nul | findstr ":%BACKEND_PORT%" >nul
+netstat -ano 2>nul | findstr ":%BACKEND_PORT% " >nul
 IF %ERRORLEVEL%==0 (
-  echo [warn] port %BACKEND_PORT% already in use - backend assumed running, skip.
+  echo [warn] 端口 %BACKEND_PORT% 已被占用，假定后端已在运行
 ) ELSE (
-  echo [info] starting backend on :%BACKEND_PORT% ...
-  start "ZhiTuPoJu-Backend" cmd /k "cd /d %ROOT% && .venv\Scripts\python.exe -m uvicorn backend.main:app --host 127.0.0.1 --port %BACKEND_PORT%"
+  echo [info] 启动后端 http://127.0.0.1:%BACKEND_PORT% ...
+  start "ZhiTuPoJu-Backend" cmd /k "cd /d "%ROOT%" && python -m uvicorn backend.main:app --host 127.0.0.1 --port %BACKEND_PORT% --reload"
 )
 
-REM ---- frontend (node static server) ----
-netstat -ano 2>nul | findstr ":%FRONTEND_PORT%" >nul
+REM ---- frontend (python http.server) ----
+netstat -ano 2>nul | findstr ":%FRONTEND_PORT% " >nul
 IF %ERRORLEVEL%==0 (
-  echo [warn] port %FRONTEND_PORT% already in use - frontend assumed running, skip.
+  echo [warn] 端口 %FRONTEND_PORT% 已被占用，假定前端已在运行
 ) ELSE (
-  echo [info] starting frontend on :%FRONTEND_PORT% ...
-  SET "NODE_EXE=node"
-  WHERE node >nul 2>nul
-  IF NOT %ERRORLEVEL%==0 (
-    SET "NODE_EXE=C:\Users\Dsy\.workbuddy\binaries\node\versions\22.22.2-2\node.exe"
-  )
-  start "ZhiTuPoJu-Frontend" cmd /k "%NODE_EXE% C:\Users\Dsy\serve_news.js"
+  echo [info] 启动前端 http://127.0.0.1:%FRONTEND_PORT% ...
+  start "ZhiTuPoJu-Frontend" cmd /k "cd /d "%ROOT%\frontend" && python -m http.server %FRONTEND_PORT%"
 )
 
-echo [info] waiting for backend to be ready ...
-timeout /t 4 >nul
-start "" http://127.0.0.1:%FRONTEND_PORT%/pages/news/index.html
-echo [done] News page opened: http://127.0.0.1:%FRONTEND_PORT%/pages/news/index.html
-echo        Click the "智能发现 / 开始发现" button to pull real multi-source data.
-echo        Backend API: http://127.0.0.1:%BACKEND_PORT%/api/discovery/run
-echo        API docs:    http://127.0.0.1:%BACKEND_PORT%/docs
+echo [info] 等待服务就绪...
+timeout /t 3 >nul
+start "" "http://127.0.0.1:%FRONTEND_PORT%/"
+echo [done] 入口:     http://127.0.0.1:%FRONTEND_PORT%/
+echo        后端 API: http://127.0.0.1:%BACKEND_PORT%/api/health
+echo        文档:     http://127.0.0.1:%BACKEND_PORT%/docs
 echo.
-echo        To stop: close the two "ZhiTuPoJu-*" command windows.
+echo 演示路径: 开发者入口 → 岗位大新闻 → 地图 → 洞察 → 发现 → 匹配 → 仓库
+echo 关闭本窗口不会停服务；请关掉 ZhiTuPoJu-Backend / ZhiTuPoJu-Frontend 窗口以停止。
 pause

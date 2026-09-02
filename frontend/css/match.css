@@ -1,29 +1,29 @@
-﻿/* ============================================================
+/* ============================================================
  * 人岗匹配决策工作台 · 日系学习产品 × 复古纸张 × 温润杂志排版
  * 仅替换配色、UI 框、字体，不改布局
  * ============================================================ */
 
 :root {
-  /* 深色电影风表面 */
-  --bg: #F5F0E6;
-  --bg-2: rgba(120, 100, 75, 0.05);
-  --surface: rgba(120, 100, 75, 0.03);
-  --surface-2: rgba(120, 100, 75, 0.05);
-  --ink: #29251F;
-  --ink-soft: #665F55;
-  --ink-faint: #9B9285;
+  /* 亮色纸感 · 对齐新闻页 */
+  --bg: #F5F2ED;
+  --bg-2: #FAF8F5;
+  --surface: #FFFFFF;
+  --surface-2: #FAF8F5;
+  --ink: #1A1A1A;
+  --ink-soft: #4B5563;
+  --ink-faint: #6B7280;
   --rose: #C83F32;
   --rose-soft: rgba(200, 63, 50, 0.18);
   --rose-wash: rgba(200, 63, 50, 0.08);
-  --line: rgba(120, 100, 75, 0.05);
-  --line-strong: rgba(120, 100, 75, 0.08);
+  --line: rgba(120, 100, 75, 0.1);
+  --line-strong: rgba(120, 100, 75, 0.16);
   --ok: #52745D;
-  --ok-wash: rgba(120, 100, 75, 0.12);
-  --warn: #A97845;
-  --warn-wash: rgba(217, 147, 58, 0.12);
-  --chip: rgba(120, 100, 75, 0.05);
+  --ok-wash: rgba(82, 116, 93, 0.12);
+  --warn: #A88B4E;
+  --warn-wash: rgba(168, 139, 78, 0.12);
+  --chip: rgba(120, 100, 75, 0.06);
   --chip-ink: #665F55;
-  --shadow: 0 1px 2px rgba(70, 50, 30, 0.08), 0 6px 24px rgba(70, 50, 30, 0.08);
+  --shadow: 0 2px 10px rgba(60, 45, 30, 0.06);
   --radius: 10px;
   --radius-sm: 7px;
   --gap: 14px;
@@ -1909,12 +1909,12 @@ body[data-page="match"] .match-page-backdrop {
   position: absolute;
   inset: 0;
   display: block;
-  opacity: .46;
-  filter: opacity(.85);
-  background:
-    linear-gradient(90deg, #FBF8F1, rgba(120, 100, 75, 0.42) 48%, #FBF8F1),
-    linear-gradient(180deg, #FBF8F1, #FBF8F1),
-    
+  opacity: .9;
+  filter: none;
+  background-image: url('../assets/news/bg-atmosphere-light.png');
+  background-size: cover;
+  background-position: center top;
+  background-repeat: no-repeat;
 }
 body[data-page="match"] .match-art-illustration--cat {
   right: 340px;

@@ -1882,19 +1882,37 @@ body.project-detail-open .content-track { pointer-events: none; }
 
 .login-dev {
   margin-top: 22px;
-  padding: 0;
+  padding: 0 0 4px;
   border: 0;
+  border-bottom: 1px solid rgba(236, 201, 132, 0.28);
   background: none;
-  color: rgba(236, 201, 132, 0.42);
+  color: rgba(236, 201, 132, 0.72);
   font-family: var(--font-chart);
   font-size: 13px;
   letter-spacing: 0.16em;
   cursor: pointer;
+  transition: color 280ms ease, border-color 280ms ease;
 }
 
 .login-dev:hover,
 .login-dev:focus-visible {
   color: #ecc984;
+  border-bottom-color: #ecc984;
+}
+
+.login-dev:disabled {
+  opacity: 0.55;
+  cursor: wait;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .login-dev {
+    animation: login-dev-breathe 3.6s ease-in-out infinite;
+  }
+  @keyframes login-dev-breathe {
+    0%, 100% { opacity: 0.78; }
+    50% { opacity: 1; }
+  }
 }
 
 /* ===== Progress UI ===== */

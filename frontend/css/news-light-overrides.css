@@ -1,0 +1,313 @@
+/* ==========================================================================
+   新闻浅色纸感 · 二级页/弹层统一补丁（最后加载）
+   修复 cinema 遗留：深底、浅字、低对比标签
+   ========================================================================== */
+
+/* —— 全局可读性 / 字体清晰度 —— */
+:root {
+  --text-muted: #454545;
+  --text-secondary: #2F3747;
+  --text-tertiary: #404040;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body,
+.page-main,
+.app-stage {
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+.nav-item {
+  font-size: 14.5px !important;
+  font-weight: 500 !important;
+  color: #2F3747 !important;
+}
+
+.nav-item.active {
+  color: #111111 !important;
+  font-weight: 600 !important;
+}
+
+.topnav-brand-title {
+  text-shadow: none !important;
+}
+
+.topnav-user-label,
+.topnav-subtitle,
+.subtitle,
+.page-subtitle,
+.hint,
+.micro,
+.meta,
+.kicker,
+label,
+small {
+  color: #454545 !important;
+}
+
+p, li, dd, dt, span, td, th {
+  font-weight: inherit;
+}
+
+h1, h2, h3, h4, .page-title, .vault-title {
+  color: #111111 !important;
+  letter-spacing: 0.01em;
+}
+
+button, .btn, .vault-btn, .vault-tab {
+  font-weight: 500;
+}
+
+/* —— Shell：AI 抽屉 —— */
+.qa-drawer {
+  background: rgba(255, 255, 255, 0.97) !important;
+  border-left: 1px solid rgba(0, 0, 0, 0.08) !important;
+  box-shadow: -12px 0 40px rgba(60, 45, 30, 0.12) !important;
+  color: #1A1A1A !important;
+}
+.qa-drawer-head {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06) !important;
+  background: #fff !important;
+}
+.qa-drawer-title {
+  color: #1A1A1A !important;
+}
+.qa-drawer-title small {
+  color: #6B7280 !important;
+}
+.qa-drawer-close {
+  border-color: rgba(0, 0, 0, 0.12) !important;
+  background: #FAF8F5 !important;
+  color: #4B5563 !important;
+}
+.qa-drawer-frame {
+  background: #F5F2ED !important;
+}
+
+/* —— 简历探索 iframe —— */
+.rb-brandbar-meta,
+.rb-brandbar-draft,
+.rb-left-meta,
+.rb-left-status {
+  color: #4B5563 !important;
+}
+.rb-brandbar-draft b,
+.rb-left-meta b,
+.rb-left-status b {
+  color: #1A1A1A !important;
+}
+.rb-brandbar-step {
+  color: #8B7340 !important;
+}
+.rb-step {
+  color: #4B5563 !important;
+}
+.rb-step-num {
+  color: #8B7340 !important;
+}
+.rb-step.is-done,
+.rb-step.is-done .rb-step-num,
+.rb-step.is-done .rb-step-check {
+  color: #347868 !important;
+}
+.rb-step.is-active {
+  color: #1A1A1A !important;
+  background: rgba(168, 139, 78, 0.14) !important;
+  box-shadow: inset 0 -2px 0 #A88B4E !important;
+}
+.rb-step.is-active .rb-step-num {
+  color: #8B7340 !important;
+}
+.rb-bottombar {
+  background: rgba(255, 255, 255, 0.96) !important;
+  border-top: 1px solid rgba(0, 0, 0, 0.08) !important;
+}
+.rb-bottombar-info,
+.rb-bottombar-info b {
+  color: #4B5563 !important;
+}
+.rb-bottombar-info b {
+  color: #1A1A1A !important;
+}
+.rb-field label {
+  color: #4B5563 !important;
+}
+.rb-field-input {
+  background: #fff !important;
+  border-color: rgba(0, 0, 0, 0.12) !important;
+}
+.rb-field-input input,
+.rb-field-input select,
+.rb-field-input textarea {
+  color: #1A1A1A !important;
+}
+.rb-btn-secondary,
+.rb-btn-ghost {
+  background: #fff !important;
+  border-color: rgba(0, 0, 0, 0.12) !important;
+  color: #1A1A1A !important;
+}
+.rb-card,
+.rb-panel,
+.rb-job-card,
+.rb-skill-card {
+  background: #fff !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+  color: #1A1A1A !important;
+}
+.rb-job-cat,
+.rb-job-meta,
+.rb-hint,
+.rb-micro {
+  color: #4B5563 !important;
+}
+
+/* —— 新岗位发现 · 首页卡片 —— */
+#view-discovery .dh-card .dh-meta,
+#view-discovery .dh-card .dh-insight-line,
+#view-discovery .dh-card .dh-sub,
+#view-discovery .dh-card .cat {
+  color: #4B5563 !important;
+}
+#view-discovery .dh-card .dh-title,
+#view-discovery .dh-card h3 {
+  color: #1A1A1A !important;
+}
+.dh-insight-line em {
+  color: #6B7280 !important;
+}
+
+/* —— 发现详情 · 模块面板 —— */
+.dd-metrics {
+  box-shadow: 0 8px 24px rgba(60, 45, 30, 0.08) !important;
+}
+.dd-panel-head h2,
+.dd-fc-panel .dd-panel-head h2 {
+  color: #1A1A1A !important;
+}
+.dd-panel-hint,
+.dd-found-kv dt,
+.dd-found-kv dd,
+.dd-fc-meta,
+.dd-fc-meta em,
+.dd-found-meta,
+.dd-verdict-text,
+.dd-mod-insight,
+.dd-mod-insight p,
+.dd-read,
+.dd-chart-note {
+  color: #4B5563 !important;
+}
+.dd-mod-insight {
+  background: #FAF8F5 !important;
+  border-color: rgba(168, 139, 78, 0.22) !important;
+}
+.dd-mod-rail-foot {
+  background: #FAF8F5 !important;
+  border-color: rgba(168, 139, 78, 0.22) !important;
+  box-shadow: none !important;
+}
+.dd-mod-btn-state {
+  color: #6B7280 !important;
+}
+.dd-mod-btn.is-done .dd-mod-btn-state {
+  color: #347868 !important;
+}
+.dd-mod-btn.is-active .dd-mod-btn-state {
+  color: #6f5a32 !important;
+}
+.dd-fc-btn.is-ghost {
+  color: #4B5563 !important;
+  background: #fff !important;
+  border-color: rgba(0, 0, 0, 0.12) !important;
+}
+.dd-fc-btn.is-primary {
+  color: #1a1208 !important;
+}
+
+/* —— 发现演化 / 预测 —— */
+.de-page,
+.df-page {
+  color: #1A1A1A !important;
+}
+.de-chip.is-real,
+.de-lane.is-real {
+  color: #6f5a32 !important;
+  background: rgba(168, 139, 78, 0.12) !important;
+}
+.de-node,
+.df-card,
+.df-path-item {
+  background: #fff !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+  color: #1A1A1A !important;
+}
+
+/* —— 个人仓库 —— */
+.vault,
+.vault-title,
+.vault-section h2,
+.vault-item-title,
+.vault-empty-title,
+.vault-quick-title,
+.vault-resume-name {
+  color: #111111 !important;
+}
+.vault-lead,
+.vault-user,
+.vault-empty-desc,
+.vault-tab,
+.vault-hint,
+.vault-item-m,
+.vault-resume-meta,
+.vault-stat-l,
+.vault-quick-desc {
+  color: #2F3747 !important;
+}
+.vault-stat-n {
+  color: #111111 !important;
+}
+.vault-tabs {
+  border-bottom-color: rgba(0, 0, 0, 0.08) !important;
+}
+.vault-card,
+.vault-item,
+.vault-stat,
+.vault-quick-card,
+.vault-resume,
+.vault-empty-rich {
+  background: #fff !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+}
+.vault-ver {
+  background: #FAF8F5 !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+}
+.vault-ver.is-cur {
+  background: rgba(168, 139, 78, 0.06) !important;
+  border-color: rgba(168, 139, 78, 0.35) !important;
+}
+.vault-link {
+  color: #8B7340 !important;
+}
+body[data-page="warehouse"] .agent-fab {
+  display: none !important;
+}
+
+/* —— 岗位洞察 page-polish 浅字兜底 —— */
+body[data-page="insight"] #view-evolution .evo-job-meta,
+body[data-page="insight"] #view-evolution .evo-item-meta,
+body[data-page="insight"] .hub-tab,
+body[data-page="insight"] .subtitle {
+  color: #4B5563 !important;
+}
+body[data-page="insight"] #view-evolution .evo-job-title,
+body[data-page="insight"] .page-title-block h1 {
+  color: #1A1A1A !important;
+}

@@ -60,9 +60,9 @@
   function sourceLabel(src) {
     if (src === 'resume-builder' || src === 'explore') return '简历探索 · 初稿';
     if (src === 'upload') return '自行上传';
-    if (src === 'optimize' || src === 'match-edit') return '优化版本';
+    if (src === 'optimize' || src === 'match-edit') return '修订版本';
     if (src === 'import') return '导入';
-    if (src === 'demo') return '演示简历';
+    if (src === 'demo') return '示例简历';
     return src || '本地';
   }
 
@@ -91,7 +91,7 @@
     if (!versions || !versions.length) {
       versions = [{
         id: raw.currentVersionId || (raw.id + '-v1') || uid('ver'),
-        label: raw.source === 'optimize' ? '优化稿' : '初稿',
+        label: raw.source === 'optimize' ? '修订稿' : '初稿',
         source: raw.source || 'resume-builder',
         createdAt: created,
         sections: raw.sections || [],
@@ -256,7 +256,7 @@
     var n = versions.filter(function (v) { return v.source === 'optimize' || v.source === 'match-edit'; }).length + 1;
     var ver = {
       id: payload.versionId || uid('ver'),
-      label: payload.versionLabel || ('优化 v' + n),
+      label: payload.versionLabel || ('修订 v' + n),
       source: payload.source || 'optimize',
       createdAt: now,
       sections: payload.sections || [],
@@ -467,7 +467,7 @@
         var t = sec.map(function (s) { return '【' + s.label + '】\n' + s.content; }).join('\n\n');
         var ver = {
           id: id + '-v' + (i + 2),
-          label: ov.label || ('优化 v' + (i + 1)),
+          label: ov.label || ('修订 v' + (i + 1)),
           source: 'optimize',
           createdAt: createdAt + (i + 1) * 3600000,
           sections: sec,
@@ -514,7 +514,7 @@
         { id: 'skills', label: '专业技能', content: 'Java（精通）、Spring Boot（熟练）、MySQL（熟练）、Redis（了解）、系统设计（熟悉）', ai_suggestion: '' },
         { id: 'summary', label: '自我评价', content: '3 年 Java 后端开发经验，工程基础扎实，希望在容器化、微服务方向进一步深入。', ai_suggestion: '' }
       ], [{
-        label: 'AI 优化 · 个人信息',
+        label: '修订稿 · 个人信息',
         sections: [
           { id: 'basic', label: '个人信息', content: '张三\nJava 后端开发工程师（杭州 / 期望 25-35K）\n电话：138-0000-0000\n邮箱：zhangsan.dev@gmail.com', ai_suggestion: '' },
           { id: 'education', label: '教育经历', content: '某大学 · 计算机科学与技术 · 本科\n2019.09 - 2023.06', ai_suggestion: '' },
@@ -540,13 +540,13 @@
         { id: 'skills', label: '专业技能', content: 'SQL、Python、Tableau、A/B Test', ai_suggestion: '' },
         { id: 'summary', label: '自我评价', content: '擅长用数据讲故事，推动业务决策。', ai_suggestion: '' }
       ]),
-      mkDemo('VR-demo-ai', '赵六_AI应用.txt', 'resume-builder', now - 86400000, [
-        { id: 'basic', label: '个人信息', content: '赵六\nAI 应用开发工程师\n电话：136-5555-6666', ai_suggestion: '' },
-        { id: 'education', label: '教育经历', content: '某高校 · 人工智能 · 本科', ai_suggestion: '' },
-        { id: 'projects', label: '项目经历', content: 'RAG 知识库助手：召回准确率 86%，客服人效 +30%。', ai_suggestion: '' },
+      mkDemo('VR-demo-app', '赵六_应用开发.txt', 'resume-builder', now - 86400000, [
+        { id: 'basic', label: '个人信息', content: '赵六\n应用开发工程师\n电话：136-5555-6666', ai_suggestion: '' },
+        { id: 'education', label: '教育经历', content: '某高校 · 软件工程 · 本科', ai_suggestion: '' },
+        { id: 'projects', label: '项目经历', content: '企业知识库助手：检索准确率 86%，客服响应效率提升 30%。', ai_suggestion: '' },
         { id: 'work', label: '工作经历', content: '暂无正式工作经历', ai_suggestion: '' },
-        { id: 'skills', label: '专业技能', content: 'Python、LangChain、Prompt、FastAPI', ai_suggestion: '' },
-        { id: 'summary', label: '自我评价', content: '关注 LLM 落地与评测闭环。', ai_suggestion: '' }
+        { id: 'skills', label: '专业技能', content: 'Python、后端开发、Prompt 工程、FastAPI', ai_suggestion: '' },
+        { id: 'summary', label: '自我评价', content: '关注业务系统落地与效果评估。', ai_suggestion: '' }
       ])
     ];
     demos.forEach(function (d) {

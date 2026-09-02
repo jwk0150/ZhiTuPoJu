@@ -10,9 +10,9 @@
   --de-hist: #6b8cae;
   --de-hist-soft: rgba(107, 140, 174, 0.14);
   --de-hist-line: rgba(107, 140, 174, 0.42);
-  --de-surface: rgba(14, 18, 26, 0.82);
-  --de-line: rgba(255, 255, 255, 0.1);
-  --de-line-soft: rgba(255, 255, 255, 0.06);
+  --de-surface: rgba(255, 255, 255, 0.95);
+  --de-line: rgba(0, 0, 0, 0.1);
+  --de-line-soft: rgba(0, 0, 0, 0.06);
   --de-radius: 12px;
   --de-ease: cubic-bezier(.22, 1, .36, 1);
   max-width: 1480px;
@@ -73,7 +73,7 @@ body.de-cockpit-page .page-main--cockpit {
 }
 
 .de-crumb a {
-  color: rgba(169, 189, 203, 0.95);
+  color: rgba(75, 85, 99, 0.95);
   text-decoration: none;
   font-weight: 600;
 }
@@ -122,7 +122,7 @@ body.de-cockpit-page .page-main--cockpit {
   font-size: clamp(20px, 2vw, 26px);
   font-weight: 700;
   letter-spacing: -0.025em;
-  color: #f2f7fb;
+  color: #1A1A1A;
   line-height: 1.2;
 }
 
@@ -141,7 +141,7 @@ body.de-cockpit-page .page-main--cockpit {
   font-weight: 700;
   letter-spacing: 0.04em;
   color: #042f2c;
-  background: linear-gradient(135deg, #ecc984, #d4b07a);
+  background: linear-gradient(135deg, #8B7340, #d4b07a);
   box-shadow: 0 0 18px rgba(212, 176, 122, 0.25);
 }
 
@@ -152,14 +152,14 @@ body.de-cockpit-page .page-main--cockpit {
 
 .de-tag.is-pred {
   color: #1a1208;
-  background: linear-gradient(135deg, #ecc984, #c4a574);
+  background: linear-gradient(135deg, #8B7340, #c4a574);
   box-shadow: 0 0 18px rgba(212, 176, 122, 0.22);
 }
 
 .de-sub {
   margin: 0 0 8px;
   font-size: 12.5px;
-  color: rgba(169, 189, 203, 0.92);
+  color: rgba(75, 85, 99, 0.95);
   max-width: 48em;
 }
 
@@ -176,13 +176,13 @@ body.de-cockpit-page .page-main--cockpit {
   padding: 4px 9px;
   border-radius: 7px;
   border: 1px solid var(--de-line-soft);
-  background: rgba(255, 255, 255, 0.03);
+  background: #FAF8F5;
   font-size: 11.5px;
   color: var(--text-secondary);
 }
 
 .de-chip b {
-  color: #eef4f8;
+  color: #1A1A1A;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
@@ -201,7 +201,7 @@ body.de-cockpit-page .page-main--cockpit {
   border-radius: 9px;
   border: 1px solid var(--de-real-line);
   background: var(--de-real-soft);
-  color: #d8fff8;
+  color: #347868;
   font-size: 12.5px;
   font-weight: 650;
   text-decoration: none;
@@ -217,7 +217,7 @@ body.de-cockpit-page .page-main--cockpit {
   border: 1px solid var(--de-line);
   border-radius: 9px;
   padding: 7px 12px;
-  background: rgba(255, 255, 255, 0.03);
+  background: #FAF8F5;
   color: var(--text-secondary);
   font-size: 12px;
   font-weight: 600;
@@ -227,7 +227,7 @@ body.de-cockpit-page .page-main--cockpit {
 
 .de-btn:hover {
   border-color: var(--de-real-line);
-  color: #eef4f8;
+  color: #1A1A1A;
   background: var(--de-real-soft);
 }
 
@@ -237,14 +237,14 @@ body.de-cockpit-page .page-main--cockpit {
   text-decoration: none;
   color: #1a1208;
   border: 0;
-  background: linear-gradient(135deg, #ecc984, #c4a574);
+  background: linear-gradient(135deg, #8B7340, #c4a574);
   box-shadow: 0 6px 18px rgba(212, 176, 122, 0.22);
 }
 
 .de-btn.is-pred-link:hover {
   filter: brightness(1.05);
   color: #1a1208;
-  background: linear-gradient(135deg, #ecc984, #c4a574);
+  background: linear-gradient(135deg, #8B7340, #c4a574);
 }
 
 /* Toolbar */
@@ -265,7 +265,7 @@ body.de-cockpit-page .page-main--cockpit {
   padding: 3px;
   border-radius: 10px;
   border: 1px solid var(--de-line);
-  background: rgba(0, 0, 0, 0.25);
+  background: #FAF8F5;
 }
 
 .de-views button {
@@ -281,7 +281,7 @@ body.de-cockpit-page .page-main--cockpit {
 
 .de-views button.is-active {
   color: #042f2c;
-  background: linear-gradient(135deg, #ecc984, #d4b07a);
+  background: linear-gradient(135deg, #8B7340, #d4b07a);
 }
 
 .de-views button:disabled {
@@ -466,8 +466,8 @@ body.de-cockpit-page .page-main--cockpit {
   padding: 9px 10px 8px;
   border-radius: 10px;
   border: 1px solid var(--de-line);
-  background: rgba(10, 14, 20, 0.92);
-  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.28);
+  background: rgba(255, 255, 255, 0.97);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.04);
   cursor: pointer;
   transition: border-color .2s, transform .2s, box-shadow .2s, opacity .2s;
   z-index: 2;
@@ -482,20 +482,20 @@ body.de-cockpit-page .page-main--cockpit {
 
 .de-node.is-hist {
   border-color: var(--de-hist-line);
-  background: linear-gradient(180deg, rgba(107, 140, 174, 0.08), rgba(10, 14, 20, 0.92));
+  background: linear-gradient(180deg, rgba(107, 140, 174, 0.08), rgba(255, 255, 255, 0.97));
 }
 
 .de-node.is-hist:hover { box-shadow: 0 10px 24px rgba(107, 140, 174, 0.18); }
 
 .de-node.is-real {
   border-color: var(--de-real-line);
-  background: linear-gradient(180deg, rgba(212, 176, 122, 0.1), rgba(10, 14, 20, 0.92));
+  background: linear-gradient(180deg, rgba(212, 176, 122, 0.1), rgba(255, 255, 255, 0.97));
 }
 
 .de-node.is-pred {
   border-style: dashed;
   border-color: var(--de-pred-line);
-  background: linear-gradient(180deg, rgba(212, 176, 122, 0.08), rgba(10, 14, 20, 0.88));
+  background: linear-gradient(180deg, rgba(212, 176, 122, 0.08), rgba(255, 255, 255, 0.96));
   opacity: 0.92;
 }
 
@@ -506,7 +506,7 @@ body.de-cockpit-page .page-main--cockpit {
   border-color: var(--de-real);
   background:
     linear-gradient(160deg, rgba(212, 176, 122, 0.16), transparent 55%),
-    rgba(10, 14, 20, 0.95);
+    #FFFFFF;
   animation: deBreathe 5.5s ease-in-out infinite;
   z-index: 6;
 }
@@ -528,8 +528,8 @@ body.de-cockpit-page .page-main--cockpit {
 }
 
 .de-node.is-skill.is-boost {
-  border-color: rgba(255, 255, 255, 0.14);
-  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(0, 0, 0, 0.28);
+  background: rgba(0,0,0,0.03);
 }
 
 .de-node.is-skill.is-boost .de-n-name { color: var(--text-secondary); }
@@ -552,7 +552,7 @@ body.de-cockpit-page .page-main--cockpit {
   display: block;
   font-size: 12.5px;
   font-weight: 700;
-  color: #eef4f8;
+  color: #1A1A1A;
   line-height: 1.3;
   margin-bottom: 5px;
 }
@@ -575,7 +575,7 @@ body.de-cockpit-page .page-main--cockpit {
   font-size: 10px;
   border: 1px solid var(--de-line-soft);
   color: var(--text-muted);
-  background: rgba(255, 255, 255, 0.02);
+  background: #FAF8F5;
 }
 
 .de-n-meta {
@@ -603,7 +603,7 @@ body.de-cockpit-page .page-main--cockpit {
   display: block;
   margin-top: 1px;
   font-size: 13px;
-  color: #f2f7fb;
+  color: #1A1A1A;
   font-variant-numeric: tabular-nums;
 }
 
@@ -652,7 +652,7 @@ body.de-cockpit-page .page-main--cockpit {
   margin: 0;
   font-size: 15px;
   font-weight: 700;
-  color: #f2f7fb;
+  color: #1A1A1A;
 }
 
 .de-rail-head p {
@@ -694,7 +694,7 @@ body.de-cockpit-page .page-main--cockpit {
 .de-kpi strong {
   font-family: var(--font-display);
   font-size: 16px;
-  color: #f2f7fb;
+  color: #1A1A1A;
   font-variant-numeric: tabular-nums;
 }
 
@@ -712,7 +712,7 @@ body.de-cockpit-page .page-main--cockpit {
   margin: 0 0 8px;
   font-size: 11.5px;
   font-weight: 700;
-  color: #e8f0f4;
+  color: #1A1A1A;
   letter-spacing: 0.03em;
 }
 
@@ -744,7 +744,7 @@ body.de-cockpit-page .page-main--cockpit {
   grid-column: 1 / -1;
   height: 4px;
   border-radius: 99px;
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(0, 0, 0, 0.06);
   overflow: hidden;
 }
 
@@ -802,7 +802,7 @@ body.de-cockpit-page .page-main--cockpit {
 .de-path .who {
   font-size: 12px;
   font-weight: 650;
-  color: #eef4f8;
+  color: #1A1A1A;
 }
 
 .de-path .conf {
@@ -849,7 +849,7 @@ body.de-cockpit-page .page-main--cockpit {
   margin: 0 0 6px;
   font-size: 12px;
   font-weight: 700;
-  color: #eef4f8;
+  color: #1A1A1A;
 }
 
 .de-mod > p {
@@ -881,7 +881,7 @@ body.de-cockpit-page .page-main--cockpit {
 
 .de-stages span.is-now {
   border-color: var(--de-real-line);
-  color: #d8fff8;
+  color: #347868;
   background: var(--de-real-soft);
 }
 
@@ -909,7 +909,7 @@ body.de-cockpit-page .page-main--cockpit {
 .de-delta-row .track {
   height: 5px;
   border-radius: 99px;
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(0, 0, 0, 0.06);
   overflow: hidden;
 }
 
@@ -917,7 +917,7 @@ body.de-cockpit-page .page-main--cockpit {
   display: block;
   height: 100%;
   border-radius: 99px;
-  background: linear-gradient(90deg, #b8925c, #ecc984);
+  background: linear-gradient(90deg, #b8925c, #8B7340);
 }
 
 .de-delta-row .up {
@@ -962,7 +962,7 @@ body.de-cockpit-page .page-main--cockpit {
 }
 
 .de-toolbar--embed .de-mini select {
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 8px;
   padding: 4px 8px;
   background: rgba(0, 0, 0, 0.35);
