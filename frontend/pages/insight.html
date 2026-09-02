@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
@@ -17,174 +17,182 @@
       }
     })();
   </script>
-  <link rel="stylesheet" href="../css/tokens.css?v=20260825soft" />
-  <link rel="stylesheet" href="../css/shell.css?v=20260825soft" />
+  <link rel="stylesheet" href="../css/tokens.css" />
+  <link rel="stylesheet" href="../css/shell.css" />
   <link rel="stylesheet" href="../css/components.css" />
-  <link rel="stylesheet" href="../css/legacy-views.css?v=20260825soft" />
-  <link rel="stylesheet" href="../css/page-polish.css" />
+  <link rel="stylesheet" href="../css/legacy-views.css" />
+  <link rel="stylesheet" href="../css/page-polish.css?v=2026082822" />
+  <link rel="stylesheet" href="../css/insight-redesign.css?v=2026083113" />
   <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@antv/g6@4.8.24/dist/g6.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
   <script src="../trends-mock.js"></script>
+<link rel="stylesheet" href="../css/news-light-overrides.css?v=typo1" />
 </head>
 <body class="standalone-view" data-page="insight">
   <div id="app-shell"></div>
   <main class="page-main" id="page-main">
     <div class="hub-panel active" data-hub-panel="evolution">
 <section class="view active" id="view-evolution">
-<div class="page-header">
-<div class="page-title-block">
-<h1>既有岗位能力动态演化</h1>
-<div class="subtitle">基于时序图谱，识别技能新增、删除与修改，追踪岗位能力结构变化</div>
-</div>
-<div class="page-actions">
-  <span class="evo-job-name" id="evo-current-job">Java 开发工程师</span>
-  <span class="evo-job-badge">· 能力动态更新</span>
-</div>
-</div>
-<div class="evo-new-layout">
-  <!-- 左主区 -->
-  <div class="evo-new-main">
-    <!-- 能力变化时间轴（双线图） -->
-    <div class="card evo-timeline-card">
-      <div class="card-header">
-        <div class="card-title">能力变化时间轴</div>
-        <div class="evo-timeline-range" id="evo-timeline-range">
-          <span class="range-pill active" data-range="6">近 6 个月</span>
-          <span class="range-pill" data-range="3">近 3 个月</span>
-          <span class="range-pill" data-range="12">近 1 年</span>
-          <span class="range-pill" data-range="all">全部</span>
+  <div id="ir-root">
+    <!-- 左栏：岗位列表 -->
+    <aside class="ir-left">
+      <div class="ir-job-search">
+        <span>🔍</span>
+        <input id="ir-job-search-input" type="text" placeholder="搜索岗位…" />
+      </div>
+      <div class="ir-job-list" id="ir-job-list"></div>
+    </aside>
+
+    <!-- 中栏：主区 -->
+    <main class="ir-main">
+      <div class="ir-topbar">
+        <div class="ir-topbar-title">
+          <h1>岗位能力动态洞察</h1>
+          <span class="ir-pano-job-chip" id="ir-pano-job-chip">
+            <span class="dot"></span>
+            <span class="name" id="ir-pano-job-name">Java 开发工程师</span>
+          </span>
+          <div class="sub">基于时序图谱，识别技能新增、删除与修改，追踪岗位能力结构变化</div>
         </div>
       </div>
-      <div class="card-body">
-        <div class="evo-timeline-legend">
-          <span class="legend-item"><i class="dot dot-cyan"></i>能力总数</span>
-          <span class="legend-item"><i class="dot dot-amber"></i>新生变化的能力</span>
-        </div>
-        <div class="chart evo-timeline-chart" id="chart-evo-timeline"></div>
-      </div>
-    </div>
-    <!-- 本期重要变化 -->
-    <div class="card evo-important-card">
-      <div class="card-header">
-        <div class="card-title"><span id="evo-important-period">2026-08</span> 本期重点变化</div>
-        <div class="card-head-right">
-          <span class="evo-vs-text">与</span>
-          <select id="evo-compare-select" class="evo-compare-select" aria-label="选择对比月份"></select>
-          <span class="evo-vs-text">相比</span>
-        </div>
-      </div>
-      <div class="card-body">
-        <!-- 状态层 -->
-        <div class="evo-important-loading" id="evo-important-loading" style="display:none;">
-          <div class="evo-spinner"></div><span>正在分析岗位能力演化趋势…</span>
-        </div>
-        <div class="evo-important-empty" id="evo-important-empty" style="display:none;">
-          <div class="evo-empty-ico">○</div>
-          <div>当前时间范围暂无重点能力变化</div>
-        </div>
-        <div class="evo-important-error" id="evo-important-error" style="display:none;">
-          <div class="evo-error-ico">!</div>
-          <div>数据加载失败，请稍后重试</div>
-          <button class="evo-error-retry" id="evo-important-retry">重新加载</button>
-        </div>
-        <!-- 三组：新增/修改/删除 -->
-        <div class="evo-groups" id="evo-groups" style="display:none;">
-          <div class="evo-group evo-group-add">
-            <div class="evo-group-side">
-              <div class="evo-group-icon ico-add">+</div>
-              <div class="evo-group-name">新增能力<br><span class="evo-group-name-en" id="evo-group-add-count">0 项</span></div>
-            </div>
-            <div class="evo-group-table" id="evo-group-add">
-              <div class="evo-table-header">
-                <div class="evo-table-cell col-name">能力</div>
-                <div class="evo-table-cell col-type">类型</div>
-                <div class="evo-table-cell col-imp">重要性</div>
-                <div class="evo-table-cell col-reason">变化原因</div>
-              </div>
-            </div>
+
+      <div class="ir-grid">
+        <!-- 能力变化全景（占满整行） -->
+        <!-- 时间轴图 -->
+        <div class="ir-panel ir-grid-item span-2">
+          <div class="ir-panel-h">
+            <span class="t">能力变化全景</span>
           </div>
-          <div class="evo-group evo-group-mod">
-            <div class="evo-group-side">
-              <div class="evo-group-icon ico-edit">✓</div>
-              <div class="evo-group-name">修改能力<br><span class="evo-group-name-en" id="evo-group-mod-count">0 项</span></div>
+          <div class="ir-pano-timeline" id="ir-pano-timeline">
+            <div class="ir-pano-timeline-head">
+              <div class="ir-pano-timeline-label">选择时间范围</div>
+              <div class="ir-pano-timeline-current" id="ir-pano-current">当前</div>
             </div>
-            <div class="evo-group-table" id="evo-group-mod">
-              <div class="evo-table-header">
-                <div class="evo-table-cell col-name">能力</div>
-                <div class="evo-table-cell col-type">类型</div>
-                <div class="evo-table-cell col-imp">重要性</div>
-                <div class="evo-table-cell col-reason">变化原因</div>
+            <div class="ir-pano-axis">
+              <button class="ir-pano-arrow left" id="ir-pano-prev" type="button" aria-label="上一月">‹</button>
+              <div class="ir-pano-track">
+                <div class="ir-pano-line"></div>
+                <div class="ir-pano-nodes" id="ir-pano-nodes"></div>
               </div>
+              <button class="ir-pano-arrow right" id="ir-pano-next" type="button" aria-label="下一月">›</button>
             </div>
+            <div class="ir-pano-range" id="ir-pano-range">已选时间范围：<span class="r-start">2026年01月</span> <span class="dash">—</span> <span class="r-end">2026年08月</span></div>
           </div>
-          <div class="evo-group evo-group-del">
-            <div class="evo-group-side">
-              <div class="evo-group-icon ico-del">−</div>
-              <div class="evo-group-name">删除能力<br><span class="evo-group-name-en" id="evo-group-del-count">0 项</span></div>
-            </div>
-            <div class="evo-group-table" id="evo-group-del">
-              <div class="evo-table-header">
-                <div class="evo-table-cell col-name">能力</div>
-                <div class="evo-table-cell col-type">类型</div>
-                <div class="evo-table-cell col-imp">重要性</div>
-                <div class="evo-table-cell col-reason">变化原因</div>
-              </div>
+          <div class="ir-panel-b ir-pano-stage">
+            <svg class="ir-pano-svg" id="ir-pano-svg" preserveAspectRatio="xMidYMid meet"></svg>
+            <div class="ir-pano-core" id="ir-pano-core">
+              <div class="halo"></div>
+              <div class="ic">👤</div>
+              <div class="tt">Java 开发工程师</div>
+              <div class="sub">岗位能力基线</div>
             </div>
           </div>
         </div>
-        <!-- 重要性图例 -->
+
+        <!-- （能力关系网络已删除） -->
       </div>
-    </div>
+    </main>
+
+    <!-- 右栏：技能详细描述 -->
+    <aside class="ir-right">
+      <div class="ir-panel ir-skills-detail" id="ir-skills-detail-panel">
+        <div class="ir-panel-h">
+          <span class="t" id="ir-job-title">Java 开发工程师</span>
+          <span class="sub">岗位介绍</span>
+        </div>
+        <div class="ir-panel-b ir-skills-detail-body" id="ir-skills-detail"></div>
+      </div>
+      <div class="ir-panel ir-radar-card" id="ir-radar-panel">
+        <div class="ir-panel-h">
+          <span class="t">核心技能掌握度</span>
+          <span class="sub">本岗位 6 项最重要技能</span>
+        </div>
+        <div class="ir-panel-b ir-radar-body">
+          <div class="ir-radar-wrap" id="ir-radar-wrap"></div>
+        </div>
+      </div>
+    </aside>
   </div>
-  <!-- 右侧栏 -->
-  <div class="evo-new-side">
-    <div class="card evo-insight-card">
-      <div class="card-header"><div class="card-title"><i class="ico-spark"></i>核心洞察</div></div>
-      <div class="card-body">
-        <div class="evo-insight-list" id="evo-insight-list">
-          <!-- 由 JS 渲染：现象 → 原因 → 趋势/结论 -->
-        </div>
-      </div>
-    </div>
-    <div class="card evo-source-card">
-      <div class="card-header">
-        <div class="card-title"><i class="ico-db"></i>数据来源</div>
-        <a class="evo-view-all" id="evo-source-expand" href="javascript:void(0)">展开全部 ▸</a>
-      </div>
-      <div class="card-body">
-        <div class="evo-source-sub" id="evo-source-sub">多源数据综合分析</div>
-        <div class="evo-source-list" id="evo-source-list">
-          <!-- 由 JS 渲染 -->
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
 </section>
 
+    </div>
+
+    <!-- 技能变化详情弹层（覆盖屏幕中心 1/2） -->
+    <div class="ir-modal" id="ir-modal" aria-hidden="true">
+      <div class="ir-modal-box" id="ir-modal-box" role="dialog" aria-modal="true">
+        <button class="ir-modal-close" id="ir-modal-close" aria-label="关闭">×</button>
+        <div class="ir-m-head">
+          <div class="ir-m-tags">
+            <span class="ir-m-job"></span>
+            <span class="ir-m-sep">·</span>
+            <span class="ir-m-cat"></span>
+            <span class="ir-m-verb"></span>
+          </div>
+          <h2 class="ir-m-name"></h2>
+          <div class="ir-m-meta">
+            <span class="ir-m-level"></span>
+            <span class="ir-m-points"></span>
+          </div>
+        </div>
+        <div class="ir-m-body">
+          <section class="ir-m-block">
+            <h3><span class="ir-m-kbd">变化原因</span></h3>
+            <p class="ir-m-reason"></p>
+          </section>
+          <section class="ir-m-block">
+            <h3><span class="ir-m-kbd">变化详情</span></h3>
+            <p class="ir-m-detail"></p>
+          </section>
+          <section class="ir-m-block ir-m-transform" id="ir-m-transform" hidden>
+            <h3><span class="ir-m-kbd">转变路径</span><span class="ir-m-arrow-note">由原来到现在的转变</span></h3>
+            <div class="ir-m-ba">
+              <div class="ir-m-ba-col ir-m-ba-before">
+                <span class="ir-m-ba-tag">原来</span>
+                <p class="ir-m-ba-before-t"></p>
+              </div>
+              <div class="ir-m-ba-mid">→</div>
+              <div class="ir-m-ba-col ir-m-ba-after">
+                <span class="ir-m-ba-tag">现在</span>
+                <p class="ir-m-ba-after-t"></p>
+              </div>
+            </div>
+          </section>
+          <section class="ir-m-block">
+            <h3><span class="ir-m-kbd">数据来源</span></h3>
+            <p class="ir-m-source"></p>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <!-- 雷达图放大弹窗（点击雷达图卡片打开） -->
+    <div class="ir-modal" id="ir-radar-modal" aria-hidden="true">
+      <div class="ir-radar-modal-box" id="ir-radar-modal-box" role="dialog" aria-modal="true">
+        <button class="ir-modal-close" id="ir-radar-modal-close" aria-label="关闭">×</button>
+        <div class="ir-radar-modal-h">
+          <span class="t" id="ir-radar-modal-title">核心技能掌握度</span>
+          <span class="sub">本岗位 6 项最重要技能</span>
+        </div>
+        <div class="ir-radar-modal-body">
+          <div class="ir-radar-wrap" id="ir-radar-modal-wrap"></div>
+        </div>
+      </div>
     </div>
   </main>
   <script src="../js/api.js"></script>
   <script src="../js/runtime-core.js"></script>
-  <script src="../js/cinema-bg.js?v=20260831bright"></script>
+  <script src="../js/cinema-bg.js"></script>
   <script src="../js/cinema-music.js"></script>
-  <script src="../js/shell.js?v=20260825rx4"></script>
-  <script src="../js/pages/evolution.js?v=2026082313"></script>
+  <script src="../js/shell.js"></script>
+  <script src="../js/pages/evolution.js?v=2026082816"></script>
+  <script src="../js/pages/insight-redesign.js?v=2026083151"></script>
   <script>
     window.Shell && window.Shell.mount({ pageId: 'insight', title: '岗位洞察', subtitle: '能力动态演化' });
-    // 页面加载后预渲染演化视图内容
+    // 页面加载后初始化重设计视图
     (function () {
       var _ready = function () {
-        try { window.initEvolution && window.initEvolution(); } catch (e) { console.error('[initEvolution]', e); }
-        // 演化页 → 独立页面的跳转入口（与 shell 统一路径）
-        try {
-          var hrefs = window.PAGE_HREF || {};
-          var lp = document.getElementById('evo-jump-learning');
-          var ns = document.getElementById('evo-jump-newskill');
-          if (lp && hrefs.learningPath) lp.href = hrefs.learningPath;
-          if (ns && hrefs.newSkill) ns.href = hrefs.newSkill;
-        } catch (e) {}
+        try { window.initInsightRedesign && window.initInsightRedesign(); } catch (e) { console.error('[initInsightRedesign]', e); }
       };
       if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', _ready);

@@ -1,0 +1,96 @@
+/* 全平台统一提示：屏幕居中单行，禁止 top+bottom 拉伸成「大牌」 */
+#zhitu-toast,
+.zhitu-toast {
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  right: auto !important;
+  bottom: auto !important;
+  transform: translate(-50%, -50%) !important;
+  z-index: 10050 !important;
+  max-width: min(86vw, 520px);
+  width: max-content;
+  height: auto !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 12px 22px !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 999px !important;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35) !important;
+  font: 600 14px/1.35 var(--font-body, system-ui, sans-serif) !important;
+  letter-spacing: 0.02em;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.22s ease, visibility 0.22s ease !important;
+  writing-mode: horizontal-tb !important;
+  animation: none !important;
+}
+
+#zhitu-toast.is-show,
+.zhitu-toast.is-show {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+@media (max-width: 640px) {
+  #zhitu-toast,
+  .zhitu-toast {
+    white-space: normal;
+    line-height: 1.4 !important;
+    border-radius: 14px !important;
+    padding: 12px 16px !important;
+  }
+}
+
+/* 旧 .toast / lifecycle / 新闻 toast 一并改成居中单行 */
+.toast,
+#app-toast,
+.trend-lifecycle-toast,
+.jn-toast {
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  right: auto !important;
+  bottom: auto !important;
+  transform: translate(-50%, -50%) !important;
+  z-index: 10050 !important;
+  width: max-content !important;
+  max-width: min(86vw, 520px) !important;
+  height: auto !important;
+  min-height: 0 !important;
+  padding: 12px 22px !important;
+  border-radius: 999px !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  line-height: 1.35 !important;
+  text-align: center !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  writing-mode: horizontal-tb !important;
+  animation: none !important;
+  pointer-events: none !important;
+}
+
+.trend-lifecycle-toast {
+  opacity: 0;
+  transition: opacity 0.22s ease !important;
+}
+.trend-lifecycle-toast.show {
+  opacity: 1 !important;
+  transform: translate(-50%, -50%) !important;
+}
+
+.jn-toast {
+  opacity: 0;
+  transition: opacity 0.22s ease !important;
+}
+.jn-toast.is-show {
+  opacity: 1 !important;
+  transform: translate(-50%, -50%) !important;
+}

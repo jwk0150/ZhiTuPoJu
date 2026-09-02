@@ -1,16 +1,18 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>执图破局 · 人岗匹配决策工作台</title>
-  <link rel="stylesheet" href="../css/tokens.css" />
-  <link rel="stylesheet" href="../css/shell.css" />
-  <link rel="stylesheet" href="../css/components.css" />
-  <link rel="stylesheet" href="../css/legacy-views.css" />
-  <link rel="stylesheet" href="../css/match.css?v=20260826ai1" />
-  <link rel="stylesheet" href="../css/learning-os.css" />
+  <link rel="stylesheet" href="../css/tokens.css?v=lightfix1" />
+  <link rel="stylesheet" href="../css/shell.css?v=lightfix1" />
+  <link rel="stylesheet" href="../css/components.css?v=newsbg2" />
+  <link rel="stylesheet" href="../css/legacy-views.css?v=lightfix1" />
+  <link rel="stylesheet" href="../css/match.css?v=newsbg2" />
+  <link rel="stylesheet" href="../css/match-paper.css?v=newsbg2" />
+  <link rel="stylesheet" href="../css/learning-os.css?v=newsbg2" />
   <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js" defer></script>
+<link rel="stylesheet" href="../css/news-light-overrides.css?v=typo1" />
 </head>
 <body class="standalone-view" data-page="match">
   <div id="app-shell"></div>
@@ -73,38 +75,47 @@
         </div>
 
         <!-- ===== STATE 1 · 简历入口 ===== -->
+        <!-- 默认显示：即使 JS 初始化失败或延迟，也不出现空白 -->
         <div class="wks-view is-active" id="view-resume">
-
-          <div class="wks-step-guide" id="wks-step-guide" data-step="resume">
-            <span class="wks-step-guide-k">STEP 01 · 确认简历</span>
-            <p class="wks-step-guide-t" id="wks-step-guide-t">左侧预览简历，右侧查看 AI 改善建议；确认后点「开始匹配」。换份简历可点「选择简历」。</p>
-          </div>
 
           <!-- 顶部操作条 -->
           <div class="rw-toolbar" id="rw-toolbar">
             <div class="rw-toolbar-actions">
               <button class="btn-sm" id="md-view-resume" type="button">查看原件</button>
               <button class="btn-sm btn-sm--ghost" id="md-change-resume" type="button">重新上传</button>
-              <button class="btn-sm btn-sm--ghost" id="md-pick-resume" type="button">选择简历</button>
               <span class="rw-toolbar-sep"></span>
               <span class="rw-file-badge" id="rw-file-badge"></span>
-              <span id="resume-head-metrics"></span>
             </div>
             <div class="rw-toolbar-filters">
               <button class="btn-sm btn-sm--solid rw-start-match" id="md-start-match-top" type="button">开始匹配 →</button>
             </div>
           </div>
 
-          <!-- 默认：预览 + 词条 + AI 改善三栏 -->
-          <div class="rw-grid is-refine" id="rw-grid">
+          <!-- 三栏工作台 -->
+          <div class="rw-grid">
+            <!-- 左：完整简历预览 / 或 上传入口（无简历时显示上传组件,占据预览列位置） -->
             <div class="rw-col rw-col--preview">
               <div class="rw-preview" id="rw-preview"></div>
+              <!-- 无简历时显示：上传入口（位于左列，与原"简历预览"位置一致） -->
+              <div class="rw-preview-empty" id="resume-upload-card" hidden>
+                <div class="mod-head"><span class="mod-label">UPLOAD · 上传简历</span></div>
+                <div class="upload-compact" id="resume-upload-zone" tabindex="0" role="button" aria-label="上传简历">
+                  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                  <div class="upload-compact-text">拖入或点击上传简历</div>
+                  <div class="upload-compact-fmt"><span>PDF</span><span>DOC</span><span>TXT</span></div>
+                  <button class="btn-sm btn-sm--ghost" id="md-sample-resume" type="button">使用示例简历</button>
+                </div>
+              </div>
             </div>
-            <div class="rw-col rw-col--nav" id="rw-col-nav">
+
+            <!-- 中：词条导航 -->
+            <div class="rw-col rw-col--nav">
               <div class="mod-head"><span class="mod-label">简历词条</span></div>
               <div class="rw-nav" id="rw-nav"></div>
             </div>
-            <div class="rw-col rw-col--editor" id="rw-col-editor">
+
+            <!-- 右：分析 + 编辑区 -->
+            <div class="rw-col rw-col--editor">
               <div class="mod-head">
                 <span class="mod-label">ANALYSIS & EDIT</span>
                 <span class="mod-tag mod-tag--warn" id="rw-editor-state">未选择</span>
@@ -114,35 +125,20 @@
             </div>
           </div>
 
-          <!-- 无简历时的上传卡 -->
-          <div class="mod mod-upload" id="resume-upload-card" hidden>
-            <div class="mod-head"><span class="mod-label">UPLOAD</span></div>
-            <div class="upload-compact" id="resume-upload-zone" tabindex="0" role="button" aria-label="上传简历">
-              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-              <div class="upload-compact-text">拖入或点击上传简历</div>
-              <div class="upload-compact-fmt"><span>PDF</span><span>DOC</span><span>TXT</span></div>
-              <button class="btn-sm btn-sm--ghost" id="md-sample-resume" type="button">使用示例简历</button>
-              <button class="btn-sm btn-sm--solid" id="md-open-vault" type="button">从个人仓库选择</button>
-            </div>
-          </div>
-
-          <!-- 底部生成按钮区（已移除：AI 改写 / 开始匹配，按用户要求去掉了这一栏） -->
+          <!-- 底部独立上传卡已移除(原 <div class="mod mod-upload" id="resume-upload-card" hidden>)
+               现已合并到左列预览位置(.rw-preview-empty)，避免重复占位 -->
 
           <div class="resume-summary" id="resume-summary" hidden></div>
         </div>
 
         <!-- ===== STATE 2 · 岗位匹配条件工作台 ===== -->
         <div class="wks-view" id="view-match" hidden>
-          <div class="wks-step-guide" data-step="match">
-            <span class="wks-step-guide-k">STEP 02 · 设定条件</span>
-            <p class="wks-step-guide-t">确认城市与方向后直接运行匹配。细则可展开调整，不影响主流程。</p>
-          </div>
           <div class="cond-wk">
             <header class="cond-wk-head">
               <div class="cond-wk-title">
                 <div class="wks-eyebrow">MATCH CONDITIONS · 岗位匹配条件</div>
-                <h1 class="wks-h1">一键跑出适合你的岗位</h1>
-                <p class="cond-wk-sub">默认沿用简历方向；改完点右下角运行即可</p>
+                <h1 class="wks-h1">岗位匹配条件工作台</h1>
+                <p class="cond-wk-sub">配置求职目标，系统将实时分析条件影响</p>
               </div>
               <div class="cond-wk-completeness">
                 <b id="cond-completeness">0%</b>
@@ -158,10 +154,6 @@
               <section class="cond-panel cond-panel--impact">
                 <div class="cond-panel-head"><b>条件影响分析</b><small>修改条件后，岗位覆盖范围将实时变化</small></div>
                 <div class="cond-impact" id="cond-impact"></div>
-              </section>
-              <section class="cond-panel cond-panel--target">
-                <div class="cond-panel-head"><b>目标岗位画像</b><button class="cond-panel-btn" id="cond-edit-job" type="button">编辑岗位</button></div>
-                <div class="cond-target" id="cond-target"></div>
               </section>
             </div>
 
@@ -185,42 +177,8 @@
               <div class="rps-bg-grid"></div>
             </div>
 
-            <!-- 中央 AI 分析核心 + 环形任务节点 -->
+            <!-- 顶部：分析标题 + 进度（左上） -->
             <section class="rps-stage" id="rps-stage" aria-label="AI 分析引擎">
-              <div class="rps-scanline" id="rps-scanline" aria-hidden="true"></div>
-              <!-- 环形任务节点（JS 渲染） -->
-              <div class="rps-ring" id="rps-ring"></div>
-              <!-- 中心能量球 -->
-              <div class="rps-orb" id="rps-orb">
-                <span class="rps-orb-halo rps-orb-halo--a"></span>
-                <span class="rps-orb-halo rps-orb-halo--b"></span>
-                <svg class="rps-neural" viewBox="0 0 120 120" aria-hidden="true">
-                  <g class="rps-neural-nodes">
-                    <circle cx="60" cy="60" r="3" />
-                    <circle cx="26" cy="34" r="2.2" />
-                    <circle cx="94" cy="32" r="2.2" />
-                    <circle cx="24" cy="86" r="2.2" />
-                    <circle cx="96" cy="86" r="2.2" />
-                    <circle cx="60" cy="16" r="2" />
-                    <circle cx="60" cy="104" r="2" />
-                  </g>
-                  <g class="rps-neural-links">
-                    <line x1="60" y1="60" x2="26" y2="34" />
-                    <line x1="60" y1="60" x2="94" y2="32" />
-                    <line x1="60" y1="60" x2="24" y2="86" />
-                    <line x1="60" y1="60" x2="96" y2="86" />
-                    <line x1="60" y1="60" x2="60" y2="16" />
-                    <line x1="60" y1="60" x2="60" y2="104" />
-                  </g>
-                </svg>
-                <span class="rps-orb-ring" aria-hidden="true"></span>
-                <div class="rps-orb-core">
-                  <span class="rps-orb-ai">AI</span>
-                  <span class="rps-orb-pulse" aria-hidden="true"></span>
-                </div>
-              </div>
-
-              <!-- 中心文案 + 环形进度 -->
               <div class="rps-core-copy">
                 <h2 class="rps-title" id="analysis-title">正在分析你的简历</h2>
                 <p class="rps-direction" id="analysis-direction">Java 后端开发方向</p>
@@ -255,28 +213,6 @@
               </div>
             </section>
 
-            <!-- 预计生成内容预览 -->
-            <section class="rps-preview" id="rps-preview" aria-label="预计生成内容">
-              <div class="rps-preview-card los-glass">
-                <span class="rps-preview-icon">◈</span>
-                <b>能力画像</b>
-                <small>技能雷达图生成中…</small>
-                <span class="rps-preview-shimmer" aria-hidden="true"></span>
-              </div>
-              <div class="rps-preview-card los-glass">
-                <span class="rps-preview-icon">◉</span>
-                <b>岗位推荐</b>
-                <small>匹配算法计算中…</small>
-                <span class="rps-preview-shimmer" aria-hidden="true"></span>
-              </div>
-              <div class="rps-preview-card los-glass">
-                <span class="rps-preview-icon">◇</span>
-                <b>学习路径</b>
-                <small>成长方案生成中…</small>
-                <span class="rps-preview-shimmer" aria-hidden="true"></span>
-              </div>
-            </section>
-
             <!-- 底部说明 -->
             <footer class="rps-foot">
               <span class="rps-foot-dot"><i></i></span>
@@ -287,16 +223,12 @@
 
         <!-- ===== STATE 4 · AI 求职决策中心（左：AI 推荐岗位中心 / 右：岗位智能分析工作区） ===== -->
         <div class="wks-view" id="view-jobs" hidden>
-          <div class="wks-step-guide" data-step="jobs">
-            <span class="wks-step-guide-k">STEP 03 · 选岗决策</span>
-            <p class="wks-step-guide-t">点左侧岗位看匹配原因；选定后可去「学习」补缺口，或直接「面试」演练。</p>
-          </div>
           <!-- 全局 SVG 渐变定义：匹配度圆环 青绿→金 -->
           <svg width="0" height="0" style="position:absolute" aria-hidden="true">
             <defs>
               <linearGradient id="match-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#2a9d8f" />
-                <stop offset="100%" stop-color="#d4b07a" />
+                <stop offset="0%" stop-color="#C84738" />
+                <stop offset="100%" stop-color="#B58A4A" />
               </linearGradient>
             </defs>
           </svg>
@@ -346,9 +278,6 @@
                 <div class="jd-pane" data-jd-pane="resume" id="jd-pane-resume"></div>
                 <div class="jd-pane" data-jd-pane="interview" id="jd-pane-interview"></div>
               </div>
-
-              <!-- 底部：职业决策路径 -->
-              <div class="jd-decision" id="jd-decision"></div>
             </section>
           </div>
 
@@ -371,10 +300,6 @@
 
         <!-- ===== STATE 6 · 学习路径 · AI Career OS ===== -->
         <div class="wks-view" id="view-learn" hidden>
-          <div class="wks-step-guide" data-step="learn">
-            <span class="wks-step-guide-k">STEP 04 · 针对岗位提升</span>
-            <p class="wks-step-guide-t">围绕当前岗位补能力缺口；学完可切到面试演练，面完再回来学——可循环。</p>
-          </div>
           <div class="los" id="los">
             <!-- 背景氛围层 -->
             <div class="los-bg" aria-hidden="true">
@@ -920,11 +845,10 @@
 
   <script src="../js/api.js"></script>
   <script src="../js/runtime-core.js"></script>
-  <script src="../js/cinema-bg.js"></script>
+  <script src="../js/cinema-bg.js?v=lightfix2"></script>
   <script src="../js/cinema-music.js"></script>
-  <script src="../js/user-vault.js?v=20260826demo1"></script>
-  <script src="../js/shell.js?v=20260826ai1"></script>
-  <script src="../js/pages/match.js?v=20260826demo1"></script>
+  <script src="../js/shell.js"></script>
+  <script src="../js/pages/match.js?v=matchfix1"></script>
   <script>
     window.Shell && window.Shell.mount({ pageId: 'match', title: '人岗匹配诊断', subtitle: '简历 → 匹配 → 岗位 → 学习 → 面试' });
     window.initMatch && window.initMatch();

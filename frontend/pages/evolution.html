@@ -1,10 +1,305 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
-  <meta http-equiv="refresh" content="0; url=insight.html" />
-  <script>location.replace('insight.html');</script>
-  <title>跳转中</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <title>岗位能力演化 · Capability Graph · 执图破局</title>
+  <link rel="stylesheet" href="../css/tokens.css?v=lightfix1" />
+  <link rel="stylesheet" href="../css/shell.css?v=lightfix1" />
+  <link rel="stylesheet" href="../css/components.css?v=newsbg2" />
+  <link rel="stylesheet" href="../css/evolution-git.css?v=newsbg2" />
+<link rel="stylesheet" href="../css/news-light-overrides.css?v=typo1" />
 </head>
-<body><a href="insight.html">进入岗位洞察</a></body>
+<body class="standalone-view" data-page="evolution">
+  <div id="app-shell"></div>
+
+  <main class="page-main" id="page-main">
+
+    <div id="ce-app">
+
+      <!-- ====================== 紧凑编辑型 Header ====================== -->
+      <header class="git-header">
+        <div class="gh-left">
+          <div class="gh-kicker">
+            <span class="dot"></span>
+            <span class="en">CAREER EVOLUTION · JOB CAPABILITY GRAPH</span>
+          </div>
+          <h1 class="gh-title">Java 开发工程师</h1>
+          <div class="gh-en">JOB&nbsp;CAPABILITY&nbsp;GRAPH · Career Intelligence</div>
+        </div>
+        <div class="gh-right">
+          <div class="gh-kpi">
+            <span class="kpi-k">VERSION</span>
+            <span class="kpi-v" id="gh-version">V2025.07</span>
+            <span class="kpi-sub" id="gh-version-date">能力模型版本</span>
+          </div>
+          <div class="gh-kpi">
+            <span class="kpi-k">CONFIDENCE</span>
+            <span class="kpi-v">91%</span>
+            <span class="kpi-sub">多源融合可信度</span>
+          </div>
+          <div class="gh-kpi">
+            <span class="kpi-k">MATURITY</span>
+            <span class="kpi-v" id="gh-maturity">76%</span>
+            <span class="kpi-sub">岗位成熟度</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- ====================== 时间滑块(可拖动切换版本) ====================== -->
+      <section class="git-slider-wrap">
+        <div class="gs-meta">
+          <span class="gs-en">VERSION&nbsp;TIMELINE&nbsp;·&nbsp;DRAG&nbsp;TO&nbsp;EXPLORE</span>
+          <span class="gs-current">当前查看：<b id="gs-current-version">V2025.07</b></span>
+        </div>
+        <div class="gs-slider-row">
+          <button class="gs-arrow" id="gs-prev" type="button" aria-label="上一版本">‹</button>
+          <div class="gs-track" id="gs-track">
+            <div class="gs-progress" id="gs-progress"></div>
+            <input type="range" id="gs-slider" min="0" max="5" value="3" step="1" aria-label="版本时间轴" />
+            <div class="gs-ticks" id="gs-ticks"></div>
+          </div>
+          <button class="gs-arrow" id="gs-next" type="button" aria-label="下一版本">›</button>
+          <button class="gs-reset" id="gs-reset" type="button" title="回到当前">CURRENT</button>
+        </div>
+      </section>
+
+      <!-- ====================== 状态摘要（5个胶囊,与节点颜色一致） ====================== -->
+      <section class="git-tiers" id="git-tiers">
+        <div class="tier add" data-status="add">
+          <span class="t-sym">+</span>
+          <span class="t-num" id="t-num-add">0</span>
+          <span class="t-lbl">新增</span>
+        </div>
+        <div class="tier del" data-status="del">
+          <span class="t-sym">−</span>
+          <span class="t-num" id="t-num-del">0</span>
+          <span class="t-lbl">移除</span>
+        </div>
+        <div class="tier mod" data-status="mod">
+          <span class="t-sym">~</span>
+          <span class="t-num" id="t-num-mod">0</span>
+          <span class="t-lbl">调整</span>
+        </div>
+        <div class="tier pred" data-status="pred">
+          <span class="t-sym">◇</span>
+          <span class="t-num" id="t-num-pred">0</span>
+          <span class="t-lbl">预测</span>
+        </div>
+        <div class="tier stable" data-status="stable">
+          <span class="t-sym">·</span>
+          <span class="t-num" id="t-num-stable">0</span>
+          <span class="t-lbl">稳定</span>
+        </div>
+      </section>
+
+      <!-- ====================== 主体:图谱 + 右侧 ====================== -->
+      <section class="git-layout">
+
+        <!-- 左侧:图谱 -->
+        <div class="git-graph-side" id="git-graph-side">
+          <div class="gg-canvas-wrap">
+            <!-- 分组标签(分类 layer) -->
+            <div class="gg-tier-labels" id="gg-tier-labels"></div>
+            <!-- SVG 图谱 -->
+            <svg id="gg-svg" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+              <defs>
+                <radialGradient id="gg-bg-grad" cx="50%" cy="50%" r="60%">
+                  <stop offset="0%" stop-color="rgba(255, 248, 230, 0.55)" />
+                  <stop offset="100%" stop-color="rgba(255, 248, 230, 0)" />
+                </radialGradient>
+                <filter id="gg-node-shadow" x="-30%" y="-30%" width="160%" height="160%">
+                  <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="rgba(70, 55, 30, 0.12)" />
+                </filter>
+              </defs>
+              <circle id="gg-bg-ring" cx="0" cy="0" r="0" fill="url(#gg-bg-grad)" />
+              <g id="gg-edges"></g>
+              <g id="gg-nodes"></g>
+            </svg>
+            <!-- Hover 信息浮层 -->
+            <div class="gg-tooltip" id="gg-tooltip" aria-hidden="true"></div>
+          </div>
+
+          <!-- 底部图例 -->
+          <div class="gg-legend">
+            <div class="gg-legend-status">
+              <span><i class="dot add"></i>新增能力</span>
+              <span><i class="dot del"></i>移除能力</span>
+              <span><i class="dot mod"></i>能力调整</span>
+              <span><i class="dot pred"></i>未来预测</span>
+              <span><i class="dot stable"></i>稳定能力</span>
+            </div>
+            <div class="gg-legend-edge">
+              <span><i class="line strong"></i>强关联</span>
+              <span><i class="line mid"></i>中等关联</span>
+              <span><i class="line weak"></i>弱关联</span>
+            </div>
+            <div class="gg-legend-hint">
+              拖动时间滑块查看不同版本 · 点击节点查看详情
+            </div>
+          </div>
+        </div>
+
+        <!-- 右侧:选中节点详情(默认显示 Java 工程师信息) -->
+        <aside class="git-side" id="git-side">
+          <div class="gs-state" id="gs-state-default">
+            <section class="gs-section">
+              <div class="gs-sec-head">
+                <span class="en">CURRENT ROLE</span>
+                <span class="cn">当前岗位</span>
+              </div>
+              <div class="gs-role-card gs-role-card-ll">
+                <div class="gs-role-name" id="gs-role-name">Java 开发工程师</div>
+                <div class="gs-role-ver">
+                  <span class="gs-pill" id="gs-pill-ver">V2025.07</span>
+                  <span class="gs-pill soft"><span id="gs-cap-count">0</span> 项能力</span>
+                </div>
+              </div>
+              <div class="gs-mat">
+                <div class="gs-mat-row">
+                  <span>能力成熟度</span>
+                  <b id="gs-mat-num">76%</b>
+                </div>
+                <div class="gs-mat-bar"><i id="gs-mat-bar" style="width:76%"></i></div>
+              </div>
+            </section>
+
+            <section class="gs-section">
+              <div class="gs-sec-head">
+                <span class="en">CATEGORY DISTRIBUTION</span>
+                <span class="cn">分类构成</span>
+              </div>
+              <div class="gs-cat-list" id="gs-cat-list"></div>
+            </section>
+
+            <section class="gs-section">
+              <div class="gs-sec-head">
+                <span class="en">SHIFT</span>
+                <span class="cn">岗位演化路径</span>
+              </div>
+              <div class="gs-shift">
+                <div class="gs-shift-row from">
+                  <span class="dot"></span><span class="lbl">传统 Java 后端</span>
+                </div>
+                <div class="gs-shift-arrow"><span class="bar"></span></div>
+                <div class="gs-shift-row mid">
+                  <span class="dot"></span><span class="lbl">云原生后端</span>
+                </div>
+                <div class="gs-shift-arrow"><span class="bar"></span></div>
+                <div class="gs-shift-row to">
+                  <span class="dot"></span><span class="lbl">AI + 后端工程师</span>
+                </div>
+              </div>
+            </section>
+
+            <button class="gs-ev-btn" id="gs-ev-btn" type="button">
+              <span>VIEW EVIDENCE</span>
+              <span class="arrow">→</span>
+            </button>
+          </div>
+
+          <!-- 节点详情(默认隐藏) -->
+          <div class="gs-state hidden" id="gs-state-detail">
+            <button class="gs-detail-back" id="gs-detail-back" type="button">
+              <span class="arrow">←</span> 返回图谱
+            </button>
+
+            <div class="gs-detail-head">
+              <div class="gs-detail-name" id="gd-name">—</div>
+              <span class="gs-detail-en" id="gd-en">—</span>
+              <span class="gs-detail-status" id="gd-status">—</span>
+            </div>
+
+            <div class="gs-detail-stats">
+              <div class="gs-stat">
+                <span>需求强度</span>
+                <b id="gd-demand">0</b>
+              </div>
+              <div class="gs-stat">
+                <span>未来增长</span>
+                <b id="gd-growth">+0%</b>
+              </div>
+              <div class="gs-stat">
+                <span>岗位相关度</span>
+                <b id="gd-rel">—</b>
+              </div>
+            </div>
+
+            <div class="gs-detail-section">
+              <div class="gs-detail-h">
+                <span class="en">CATEGORY</span>
+                <span class="cn">能力分类</span>
+              </div>
+              <div class="gd-cat" id="gd-cat">—</div>
+            </div>
+
+            <div class="gs-detail-section">
+              <div class="gs-detail-h">
+                <span class="en">FIRST APPEARED</span>
+                <span class="cn">首次出现</span>
+              </div>
+              <div class="gd-version" id="gd-version">—</div>
+            </div>
+
+            <div class="gs-detail-section">
+              <div class="gs-detail-h">
+                <span class="en">WHY IT MATTERS</span>
+                <span class="cn">为什么重要</span>
+              </div>
+              <p class="gd-paragraph" id="gd-reason">—</p>
+            </div>
+
+            <div class="gs-detail-section">
+              <div class="gs-detail-h">
+                <span class="en">RELATED SKILLS</span>
+                <span class="cn">关联技能</span>
+              </div>
+              <div class="gd-tags" id="gd-related"></div>
+            </div>
+
+            <button class="gs-ev-btn sm" id="gd-ev-btn" type="button">
+              <span>VIEW EVIDENCE</span>
+              <span class="arrow">→</span>
+            </button>
+          </div>
+        </aside>
+
+      </section>
+
+      <!-- ====================== 证据抽屉 ====================== -->
+      <div class="git-drawer-mask" id="git-drawer-mask"></div>
+      <aside class="git-drawer" id="git-drawer" role="dialog" aria-modal="true">
+        <header class="gd-head">
+          <div class="gd-head-l">
+            <span class="gd-head-en">EVIDENCE</span>
+            <span class="gd-head-cn" id="gd-title">数据证据</span>
+          </div>
+          <button class="gd-close" id="gd-close" type="button" aria-label="关闭">×</button>
+        </header>
+        <div class="gd-body" id="gd-body"></div>
+      </aside>
+
+      <!-- ====================== Toast ====================== -->
+      <div class="git-toast" id="git-toast"></div>
+
+    </div>
+
+  </main>
+
+  <script src="../js/api.js"></script>
+  <script src="../js/runtime-core.js"></script>
+  <script src="../js/shell.js"></script>
+  <script src="../js/pages/ev-data.js?v=2026090210"></script>
+  <script src="../js/pages/ev-app.js?v=2026090210"></script>
+  <script src="../js/pages/ev-views.js?v=20260901sprint"></script>
+  <script src="../js/cinema-bg.js?v=lightfix2"></script>
+  <script>
+    window.Shell && window.Shell.mount({
+      pageId: 'evolution',
+      title: '岗位能力演化',
+      subtitle: '岗位在进化，能力也需要进化'
+    });
+  </script>
+</body>
 </html>

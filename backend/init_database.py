@@ -18,6 +18,7 @@ from backend.config import config
 
 
 USER_CENTER_SCHEMA = ROOT / "backend" / "sql" / "user_center_schema.sql"
+RAG_SCHEMA = ROOT / "backend" / "sql" / "rag_schema.sql"
 
 # 当前数据源:the_total_table_copy1(实际业务表,共 38780 条)。
 # 历史代码通过 the_total_table 视图访问岗位数据;这里把视图指向新数据源,
@@ -85,6 +86,56 @@ async def initialize() -> None:
                     "public.the_total_table 已存在但不是视图；为避免覆盖数据，未执行初始化。"
                 )
             await conn.execute(TOTAL_TABLE_VIEW_SQL)
+    finally:
+        await conn.close()
+    await ensure_rag_schema()
+
+
+async def ensure_rag_schema() -> None:
+    """幂等应用 RAG 基础设施 Schema（Phase 01）。
+
+    只做 ALTER ADD COLUMN IF NOT EXISTS / CREATE INDEX IF NOT EXISTS；
+    不清空、不重建、不删除任何现有数据。
+
+    兼容迁移：早期版本把 embedding 建为 cube 类型（本机 cube 上限 100 维，
+    无法承载 512 维向量）。若该列存在且为空（本阶段新建、无数据），
+    则安全迁移为 double precision[]；非空则拒绝自动修改。
+    """
+    conn = await asyncpg.connect(
+        host=config.PG_HOST,
+        port=config.PG_PORT,
+        user=config.PG_USER,
+        password=config.PG_PASSWORD,
+        database=config.PG_DB,
+    )
+    try:
+        async with conn.transaction():
+            # 1) 兼容迁移：cube 列 → double precision[]（仅空列）
+            dtype = await conn.fetchval(
+                """
+                SELECT data_type FROM information_schema.columns
+                WHERE table_name='document_chunks' AND column_name='embedding'
+                """
+            )
+            if dtype == "USER-DEFINED":
+                filled = await conn.fetchval(
+                    "SELECT count(embedding) FROM document_chunks"
+                )
+                if filled:
+                    raise RuntimeError(
+                        "document_chunks.embedding 已存在 cube 数据，禁止自动改类型；"
+                        "请人工确认后再迁移到 double precision[] / vector。"
+                    )
+                await conn.execute("DROP INDEX IF EXISTS idx_chunks_embed_gist")
+                await conn.execute(
+                    "ALTER TABLE document_chunks "
+                    "ALTER COLUMN embedding TYPE double precision[] "
+                    "USING NULL::double precision[]"
+                )
+            # 2) 应用幂等 DDL
+            sql = RAG_SCHEMA.read_text(encoding="utf-8")
+            await conn.execute(sql)
+        print("RAG schema 已就绪（source_documents / document_chunks / evidence_items 扩展完成）")
     finally:
         await conn.close()
 

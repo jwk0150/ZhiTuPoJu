@@ -1,7 +1,7 @@
 (function () {
   function localApiBase() {
     if (location.hostname === '127.0.0.1' || location.hostname === 'localhost') {
-      return 'http://127.0.0.1:8000';
+      return 'http://127.0.0.1:5000';
     }
     return location.origin;
   }
@@ -9,6 +9,19 @@
   window.resolveApiBase = window.resolveApiBase || function () {
     return window.API_BASE || localApiBase();
   };
+
+  // ---- JWT Token 存取（Global Agent Phase 1）----
+  var TOKEN_KEY = 'zhitu_token';
+  window.zhituGetToken = function () {
+    try { return localStorage.getItem(TOKEN_KEY) || ''; } catch (_) { return ''; }
+  };
+  window.zhituSetToken = function (token) {
+    try {
+      if (token) localStorage.setItem(TOKEN_KEY, token);
+      else localStorage.removeItem(TOKEN_KEY);
+    } catch (_) {}
+  };
+  window.zhituClearToken = function () { window.zhituSetToken(''); };
 
   window.showToast = function (message, tone) {
     if (window.Utils && window.Utils.showToast && window.Utils.showToast !== window.showToast) {
@@ -47,6 +60,16 @@
 
   window.apiFetch = async function (path, options) {
     const url = path.startsWith('http') ? path : window.API_BASE + path;
+    options = options || {};
+    // 自动附带 Bearer Token（不覆盖调用方显式传入的 headers）
+    const headers = Object.assign({}, options.headers || {});
+    const token = window.zhituGetToken();
+    if (token && !headers['Authorization'] && !headers['authorization']) {
+      headers['Authorization'] = 'Bearer ' + token;
+    }
+    if (Object.keys(headers).length) {
+      options = Object.assign({}, options, { headers: headers });
+    }
     const res = await fetch(url, options);
     let payload = null;
     try { payload = await res.json(); } catch (_) { payload = null; }

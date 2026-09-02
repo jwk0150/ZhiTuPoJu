@@ -1,0 +1,486 @@
+{
+ "code": 0,
+ "message": "success",
+ "data": {
+  "run_id": "c22acf6f",
+  "started_at": "2026-09-01 13:59:14",
+  "duration_ms": 3869,
+  "sources": [
+   {
+    "id": "boss",
+    "type": "招聘平台",
+    "name": "BOSS 直聘",
+    "status": "blocked",
+    "count": 0,
+    "error": null
+   },
+   {
+    "id": "boss2",
+    "type": "招聘平台",
+    "name": "远程职位 Remotive",
+    "status": "ok",
+    "count": 8,
+    "error": null
+   },
+   {
+    "id": "csdn",
+    "type": "学术论文",
+    "name": "CSDN / 掘金",
+    "status": "ok",
+    "count": 7,
+    "error": null
+   },
+   {
+    "id": "csdn2",
+    "type": "学术论文",
+    "name": "掘金",
+    "status": "ok",
+    "count": 2,
+    "error": null
+   },
+   {
+    "id": "co",
+    "type": "企业官网",
+    "name": "GitHub 企业开源",
+    "status": "blocked",
+    "count": 0,
+    "error": null
+   },
+   {
+    "id": "co2",
+    "type": "企业官网",
+    "name": "GitHub 热门仓库",
+    "status": "blocked",
+    "count": 0,
+    "error": null
+   },
+   {
+    "id": "hn",
+    "type": "企业官网",
+    "name": "Hacker News",
+    "status": "blocked",
+    "count": 0,
+    "error": null
+   },
+   {
+    "id": "gov",
+    "type": "政策文件",
+    "name": "中国政府网",
+    "status": "ok",
+    "count": 3,
+    "error": null
+   },
+   {
+    "id": "gov2",
+    "type": "政策文件",
+    "name": "新华网·时政",
+    "status": "blocked",
+    "count": 0,
+    "error": null
+   },
+   {
+    "id": "rpt",
+    "type": "行业报告",
+    "name": "少数派",
+    "status": "blocked",
+    "count": 0,
+    "error": null
+   },
+   {
+    "id": "rpt2",
+    "type": "行业报告",
+    "name": "IT之家",
+    "status": "blocked",
+    "count": 0,
+    "error": null
+   },
+   {
+    "id": "rpt3",
+    "type": "行业报告",
+    "name": "百度热搜",
+    "status": "blocked",
+    "count": 0,
+    "error": null
+   },
+   {
+    "id": "rpt4",
+    "type": "行业报告",
+    "name": "今日头条热榜",
+    "status": "blocked",
+    "count": 0,
+    "error": null
+   }
+  ],
+  "items": [
+   {
+    "id": "60ec2c8f0b",
+    "title": "Senior Independent AI Engineer / Architect",
+    "url": "https://remotive.com/remote-jobs/software-development/senior-independent-ai-engineer-architect-1919266",
+    "summary": "Senior Independent AI Engineer / Architect Remote | Americas, Europe, or Israel Most AI en…",
+    "source_type": "招聘平台",
+    "source_name": "远程职位 · A.Team",
+    "source_mark": "BOSS",
+    "published_at": null,
+    "is_new": true,
+    "seeded": false
+   },
+   {
+    "id": "7fcdc4ce3e",
+    "title": "传统行业数字化催生「行业 + IT」复合岗位",
+    "url": "https://hn.algolia.com/?query=digital%20transformation%20engineering%20jobs",
+    "summary": "制造、医疗、物流的 IT 部门在招既懂业务又懂系统的工程师，竞争强度低于互联网。",
+    "source_type": "企业官网",
+    "source_name": "Hacker News · 转型",
+    "source_mark": "转型",
+    "published_at": null,
+    "is_new": true,
+    "seeded": true
+   },
+   {
+    "id": "dcf5b0446a",
+    "title": "大模型相关岗位薪资报告：推理优化溢价最高",
+    "url": "https://so.toutiao.com/search?keyword=%E5%A4%A7%E6%A8%A1%E5%9E%8B%20%E5%B2%97%E4%BD%8D%20%E8%96%AA%E8%B5%84%20%E6%8A%A5%E5%91%8A",
+    "summary": "同年限下，懂推理优化与训练 infra 的工程师薪资中位数高出普通后端约 40%。",
+    "source_type": "行业报告",
+    "source_name": "头条 · 薪资",
+    "source_mark": "薪资",
+    "published_at": null,
+    "is_new": true,
+    "seeded": true
+   },
+   {
+    "id": "c0923c7822",
+    "title": "集成电路布图设计保护条例",
+    "url": "https://www.gov.cn/zhengce/content/202608/content_7077398.htm",
+    "summary": "集成电路布图设计保护条例",
+    "source_type": "政策文件",
+    "source_name": "中国政府网",
+    "source_mark": "政策",
+    "published_at": "Mon, 03 Aug 2026 17:00:00 GMT",
+    "is_new": true,
+    "seeded": false
+   },
+   {
+    "id": "865c7ef2ee",
+    "title": "高级前端开发职业规划（2026—2035）",
+    "url": "https://juejin.cn/post/7674794074013024310",
+    "summary": "目录 一、当前就业形势的硬事实 1.1 互联网行业整体：从扩张期进入存量期 1.2 前端岗位的特殊处境 1.3 AI 浪潮带来的新机会 二、对\"35 岁现象\"的本质解读 三、35 …",
+    "source_type": "学术论文",
+    "source_name": "掘金",
+    "source_mark": "掘金",
+    "published_at": null,
+    "is_new": true,
+    "seeded": false
+   },
+   {
+    "id": "5a22e4c90b",
+    "title": "Senior DevOps Engineer",
+    "url": "https://remotive.com/remote-jobs/devops/senior-devops-engineer-2091099",
+    "summary": "Are you a talented Senior DevOps looking for a remote job that lets you show your skills a…",
+    "source_type": "招聘平台",
+    "source_name": "远程职位 · Lemon.io",
+    "source_mark": "BOSS",
+    "published_at": null,
+    "is_new": true,
+    "seeded": false
+   },
+   {
+    "id": "170409cfd8",
+    "title": "国产 GPU / NPU 公司扩招：编译器与驱动人才最缺",
+    "url": "https://github.com/search?q=npu%20compiler%20driver%20open%20source&type=repositories",
+    "summary": "生态适配岗位井喷，需要懂 CUDA 迁移、算子开发与性能调优的工程师。",
+    "source_type": "企业官网",
+    "source_name": "GitHub · 芯片",
+    "source_mark": "芯片",
+    "published_at": null,
+    "is_new": true,
+    "seeded": true
+   },
+   {
+    "id": "8d235d88fa",
+    "title": "程序员就业趋势白皮书：哪些语言在涨、哪些在跌",
+    "url": "https://www.baidu.com/s?wd=%E7%A8%8B%E5%BA%8F%E5%91%98%20%E5%B0%B1%E4%B8%9A%E8%B6%8B%E5%8A%BF%20%E7%99%BD%E7%9A%AE%E4%B9%A6",
+    "summary": "Go/Rust/TypeScript 需求上行，传统 PHP/Perl 类岗位持续萎缩，选型要跟着需求走。",
+    "source_type": "行业报告",
+    "source_name": "百度 · 薪资",
+    "source_mark": "薪资",
+    "published_at": null,
+    "is_new": true,
+    "seeded": true
+   },
+   {
+    "id": "3335dc8e75",
+    "title": "退役军人就业创业促进条例",
+    "url": "https://www.gov.cn/zhengce/content/202606/content_7073788.htm",
+    "summary": "退役军人就业创业促进条例",
+    "source_type": "政策文件",
+    "source_name": "中国政府网",
+    "source_mark": "政策",
+    "published_at": "Tue, 30 Jun 2026 17:02:00 GMT",
+    "is_new": true,
+    "seeded": false
+   },
+   {
+    "id": "4c335e2362",
+    "title": "智能工作：人工智能将如何重塑远程工作",
+    "url": "https://blog.csdn.net/alitech2017/article/details/107911476?ops_request_misc=elastic_search_misc&request_id=c29c7cb6cc8449229e0bf859c81c6887&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~ElasticSearch~search_v2-4-107911476-null-null.541^v3^control&utm_term=%E8%BF%9C%E7%A8%8B%E5%B7%A5%E4%BD%9C",
+    "summary": "",
+    "source_type": "学术论文",
+    "source_name": "CSDN · 远程工作",
+    "source_mark": "CSDN",
+    "published_at": null,
+    "is_new": true,
+    "seeded": false
+   },
+   {
+    "id": "9760af339a",
+    "title": "Content Reviewer - English US",
+    "url": "https://remotive.com/remote-jobs/all-others/content-reviewer-english-us-2091105",
+    "summary": "Our global AI Community is a vibrant network of more than one million contributors from di…",
+    "source_type": "招聘平台",
+    "source_name": "远程职位 · TELUS Digital",
+    "source_mark": "BOSS",
+    "published_at": null,
+    "is_new": true,
+    "seeded": false
+   },
+   {
+    "id": "4bb0515856",
+    "title": "前端工具链团队招聘：构建性能与开发体验方向",
+    "url": "https://github.com/search?q=frontend%20build%20tool%20rust%20bundler&type=repositories",
+    "summary": "Rust 化构建工具（Rspack/Biome/Oxc）带火「构建性能工程师」，要求 Rust + 编译原理。",
+    "source_type": "企业官网",
+    "source_name": "GitHub · 工具链",
+    "source_mark": "工具链",
+    "published_at": null,
+    "is_new": true,
+    "seeded": true
+   },
+   {
+    "id": "eae6cd7784",
+    "title": "智能算力产业人才报告：GPU 运维与调度成新缺口",
+    "url": "https://so.toutiao.com/search?keyword=%E6%99%BA%E7%AE%97%E4%B8%AD%E5%BF%83%20%E7%AE%97%E5%8A%9B%20%E4%BA%BA%E6%89%8D%20%E6%8A%A5%E5%91%8A",
+    "summary": "智算中心大规模建设，需要既懂网络存储又懂调度系统的工程团队。",
+    "source_type": "行业报告",
+    "source_name": "头条 · 算力",
+    "source_mark": "算力",
+    "published_at": null,
+    "is_new": true,
+    "seeded": true
+   },
+   {
+    "id": "d9e6fc3b0d",
+    "title": "国务院关于印发《实施就业优先战略“十五五”规划》的通知",
+    "url": "https://www.gov.cn/zhengce/content/202606/content_7072481.htm",
+    "summary": "国务院关于印发《实施就业优先战略“十五五”规划》的通知",
+    "source_type": "政策文件",
+    "source_name": "中国政府网",
+    "source_mark": "政策",
+    "published_at": "Wed, 17 Jun 2026 17:00:00 GMT",
+    "is_new": true,
+    "seeded": false
+   },
+   {
+    "id": "ccefcb31c5",
+    "title": "闲聊远程工作的一些感受",
+    "url": "https://blog.csdn.net/weixin_48495620/article/details/108531152?ops_request_misc=elastic_search_misc&request_id=c29c7cb6cc8449229e0bf859c81c6887&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~ElasticSearch~search_v2-3-108531152-null-null.541^v3^control&utm_term=%E8%BF%9C%E7%A8%8B%E5%B7%A5%E4%BD%9C",
+    "summary": "",
+    "source_type": "学术论文",
+    "source_name": "CSDN · 远程工作",
+    "source_mark": "CSDN",
+    "published_at": null,
+    "is_new": true,
+    "seeded": false
+   },
+   {
+    "id": "4034b67bbc",
+    "title": "Senior React Full-stack Developer",
+    "url": "https://remotive.com/remote-jobs/software-development/senior-react-full-stack-developer-2091101",
+    "summary": "Are you a talented Senior Developer looking for a remote job that lets you show your skill…",
+    "source_type": "招聘平台",
+    "source_name": "远程职位 · Lemon.io",
+    "source_mark": "BOSS",
+    "published_at": null,
+    "is_new": true,
+    "seeded": false
+   },
+   {
+    "id": "894dea2e8b",
+    "title": "海外科技公司裁员与再招聘：结构从通用研发转向 AI 方向",
+    "url": "https://hn.algolia.com/?query=layoff%20engineers%20rehiring%20AI",
+    "summary": "总量收缩但 AI/基础设施岗位逆势增加，被裁的多是平台型通用研发。",
+    "source_type": "企业官网",
+    "source_name": "Hacker News · 裁员",
+    "source_mark": "裁员",
+    "published_at": null,
+    "is_new": true,
+    "seeded": true
+   },
+   {
+    "id": "96ee7c9366",
+    "title": "集成电路人才报告：设计与验证岗缺口最大",
+    "url": "https://www.baidu.com/s?wd=%E9%9B%86%E6%88%90%E7%94%B5%E8%B7%AF%20%E4%BA%BA%E6%89%8D%20%E6%8A%A5%E5%91%8A%20%E7%BC%BA%E5%8F%A3",
+    "summary": "数字前端/验证工程师缺口大、培养周期长，适合愿意深耕硬件方向的计算机背景学生。",
+    "source_type": "行业报告",
+    "source_name": "百度 · 芯片",
+    "source_mark": "芯片",
+    "published_at": null,
+    "is_new": true,
+    "seeded": true
+   },
+   {
+    "id": "6419bfeeb0",
+    "title": "网络安全人才队伍建设指导意见",
+    "url": "https://www.baidu.com/s?wd=site%3Agov.cn%20%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8%20%E4%BA%BA%E6%89%8D%20%E9%98%9F%E4%BC%8D%E5%BB%BA%E8%AE%BE",
+    "summary": "要求重点行业配齐安全岗位，等保与数据安全合规岗位在政企侧持续放量。",
+    "source_type": "政策文件",
+    "source_name": "百度 · 安全",
+    "source_mark": "安全",
+    "published_at": null,
+    "is_new": true,
+    "seeded": true
+   },
+   {
+    "id": "0dc354b9cc",
+    "title": "远程工作去哪找",
+    "url": "https://blog.csdn.net/m0_46350557/article/details/141127974?ops_request_misc=elastic_search_misc&request_id=c29c7cb6cc8449229e0bf859c81c6887&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~ElasticSearch~search_v2-2-141127974-null-null.541^v3^control&utm_term=%E8%BF%9C%E7%A8%8B%E5%B7%A5%E4%BD%9C",
+    "summary": "",
+    "source_type": "学术论文",
+    "source_name": "CSDN · 远程工作",
+    "source_mark": "CSDN",
+    "published_at": null,
+    "is_new": true,
+    "seeded": false
+   },
+   {
+    "id": "279b93c000",
+    "title": "Senior QA Engineer",
+    "url": "https://remotive.com/remote-jobs/software-development/senior-qa-engineer-2091100",
+    "summary": "Are you a talented QA looking for a remote job that lets you show your skills and get bett…",
+    "source_type": "招聘平台",
+    "source_name": "远程职位 · Lemon.io",
+    "source_mark": "BOSS",
+    "published_at": null,
+    "is_new": true,
+    "seeded": false
+   },
+   {
+    "id": "dd5f0d9a1c",
+    "title": "具身智能 / 机器人公司集中招算法与嵌入式",
+    "url": "https://github.com/search?q=robotics%20ros2%20reinforcement%20learning&type=repositories",
+    "summary": "ROS2、运动控制、仿真到真机迁移是核心技能，赛道新、人才储备少、溢价高。",
+    "source_type": "企业官网",
+    "source_name": "GitHub · 机器人",
+    "source_mark": "机器人",
+    "published_at": null,
+    "is_new": true,
+    "seeded": true
+   },
+   {
+    "id": "e9c7200dcc",
+    "title": "远程与灵活就业报告：IT 从业者占比遥遥领先",
+    "url": "https://so.toutiao.com/search?keyword=%E8%BF%9C%E7%A8%8B%E5%8A%9E%E5%85%AC%20%E7%81%B5%E6%B4%BB%E5%B0%B1%E4%B8%9A%20%E6%8A%A5%E5%91%8A%20IT",
+    "summary": "远程岗位集中在开发/设计/测试，但要求自驱与书面沟通能力，管理岗极少开放远程。",
+    "source_type": "行业报告",
+    "source_name": "头条 · 远程",
+    "source_mark": "远程",
+    "published_at": null,
+    "is_new": true,
+    "seeded": true
+   },
+   {
+    "id": "7e551d9197",
+    "title": "职业教育产教融合：IT 技能培训与岗位对接",
+    "url": "https://www.baidu.com/s?wd=site%3Agov.cn%20%E8%81%8C%E4%B8%9A%E6%95%99%E8%82%B2%20%E4%BA%A7%E6%95%99%E8%9E%8D%E5%90%88%20%E6%95%B0%E5%AD%97",
+    "summary": "企业参与课程设计，实训项目可直接作为求职作品集，适合转行人群。",
+    "source_type": "政策文件",
+    "source_name": "百度 · 职教",
+    "source_mark": "职教",
+    "published_at": null,
+    "is_new": true,
+    "seeded": true
+   },
+   {
+    "id": "0a4999aadc",
+    "title": "远程面试_面试远程工作时要问的6件事",
+    "url": "https://blog.csdn.net/cumifi2519/article/details/108161559?ops_request_misc=elastic_search_misc&request_id=c29c7cb6cc8449229e0bf859c81c6887&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~ElasticSearch~search_v2-8-108161559-null-null.541^v3^control&utm_term=%E8%BF%9C%E7%A8%8B%E5%B7%A5%E4%BD%9C",
+    "summary": "",
+    "source_type": "学术论文",
+    "source_name": "CSDN · 远程工作",
+    "source_mark": "CSDN",
+    "published_at": null,
+    "is_new": true,
+    "seeded": false
+   },
+   {
+    "id": "526ea2d1dc",
+    "title": "Vice President, Technology & Digital Strategy",
+    "url": "https://remotive.com/remote-jobs/all-others/vice-president-technology-digital-strategy-2091104",
+    "summary": "About ShatterproofShatterproof is a national nonprofit working toward a world where addict…",
+    "source_type": "招聘平台",
+    "source_name": "远程职位 · Shatterproof",
+    "source_mark": "BOSS",
+    "published_at": null,
+    "is_new": true,
+    "seeded": false
+   },
+   {
+    "id": "149982792b",
+    "title": "大厂结构调整：中台收缩，一线业务研发岗增加",
+    "url": "https://hn.algolia.com/?query=reorg%20platform%20team%20engineers",
+    "summary": "平台/中台岗位减少，能直接对业务指标负责的研发更稳，选型时优先贴近营收的团队。",
+    "source_type": "企业官网",
+    "source_name": "Hacker News · 组织",
+    "source_mark": "组织",
+    "published_at": null,
+    "is_new": true,
+    "seeded": true
+   },
+   {
+    "id": "7647c6b0a7",
+    "title": "城市 IT 岗位增长榜：新一线的 AI 与半导体岗位提速",
+    "url": "https://so.toutiao.com/search?keyword=%E5%9F%8E%E5%B8%82%20IT%20%E5%B2%97%E4%BD%8D%20%E5%A2%9E%E9%95%BF%20%E6%8E%92%E8%A1%8C",
+    "summary": "杭州、成都、合肥、西安在 AI 与芯片方向岗位增速超过部分一线城市。",
+    "source_type": "行业报告",
+    "source_name": "头条 · 城市",
+    "source_mark": "城市",
+    "published_at": null,
+    "is_new": true,
+    "seeded": true
+   },
+   {
+    "id": "e7a057cf40",
+    "title": "「数据要素 ×」行动计划：带动数据开发岗位",
+    "url": "https://www.baidu.com/s?wd=site%3Agov.cn%20%E6%95%B0%E6%8D%AE%E8%A6%81%E7%B4%A0%20%E8%A1%8C%E5%8A%A8%E8%AE%A1%E5%88%92",
+    "summary": "数据治理、数据合规、数据产品开发需求上升，政务与国企 IT 岗位随之增加。",
+    "source_type": "政策文件",
+    "source_name": "百度 · 数据",
+    "source_mark": "数据",
+    "published_at": null,
+    "is_new": true,
+    "seeded": true
+   },
+   {
+    "id": "745b7b6c30",
+    "title": "远程工作是一种怎样的体验？",
+    "url": "https://blog.csdn.net/dichu2296/article/details/102233581?ops_request_misc=elastic_search_misc&request_id=c29c7cb6cc8449229e0bf859c81c6887&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~ElasticSearch~search_v2-5-102233581-null-null.541^v3^control&utm_term=%E8%BF%9C%E7%A8%8B%E5%B7%A5%E4%BD%9C",
+    "summary": "",
+    "source_type": "学术论文",
+    "source_name": "CSDN · 远程工作",
+    "source_mark": "CSDN",
+    "published_at": null,
+    "is_new": true,
+    "seeded": false
+   }
+  ],
+  "stats": {
+   "sources": 13,
+   "pages": 13,
+   "raw": 130,
+   "valid": 4,
+   "seeded": 15,
+   "new": 30,
+   "duration": "00:03"
+  }
+ }
+}

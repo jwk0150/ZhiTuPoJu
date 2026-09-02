@@ -1,40 +1,130 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@500;600;700&family=Sora:wght@600;700&family=IBM+Plex+Mono:wght@500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&family=Noto+Serif+SC:wght@500;600;700&family=Inter:wght@400;500;600&display=swap');
 
-/* Brand palette — Soft Ink Gold
- * 目标：保留黑金，但降低「洞穴黑 + 高亮白字」带来的视觉疲劳
- * - 底色抬升到墨青灰，避免纯黑/近纯黑
- * - 正文用暖灰白，避免 #fff 光晕
- * - 金色降饱和，作点缀而非大面积高饱和
- */
+/* ==========================================================================
+   Design Tokens · 「执图破局」亮色资讯纸感（对齐岗位大新闻原背景）
+   浅米白 + 深墨字 + 赭金强调
+   ========================================================================== */
 :root {
-  --signal: #4db8c4;
-  --signal-deep: #6ecbd4;
-  --signal-dim: rgba(77, 184, 196, 0.14);
-  --primary: #3aa8b4;
-  --primary-light: #6ecbd4;
-  --primary-navy: #243a48;
-  --accent-gold: #c9a86a;
-  --brand-gold: #d2b57a;
-  --brand-gold-bright: #e4cfa0;
-  --bg-page: #101c19;
-  --bg-page-soft: #152420;
-  --bg-elevated: #1a2c27;
-  --bg-sidebar: rgba(16, 28, 25, 0.82);
-  --bg-card: rgba(255, 255, 255, 0.07);
-  --bg-topbar: rgba(16, 28, 25, 0.55);
-  --text-dark: #d5e0db;
-  --text-secondary: #9aada5;
-  --text-muted: #6f837b;
-  --text-on-dark: #e2ebe7;
-  --border: rgba(255, 255, 255, 0.11);
-  --shadow-md: 0 10px 28px rgba(0, 0, 0, 0.28);
-  --radius: 14px;
-  --font-display: 'Sora', 'Noto Sans SC', sans-serif;
-  --font-body: 'DM Sans', 'Noto Sans SC', "PingFang SC", "Microsoft YaHei", sans-serif;
-  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
-  --sidebar-w: 248px;
+  /* —— 背景层级 —— */
+  --bg: #F5F2ED;
+  --bg-deep: #EFEAE2;
+  --surface: #FFFFFF;
+  --surface-soft: #FAF8F5;
+  --surface-hover: #F0EDE8;
+  --surface-input: #FCF9F3;
+  --surface-paper: #F8F3EA;
+
+  /* —— 文字层级 —— */
+  --text-primary: #111111;
+  --text-secondary: #2F3747;
+  --text-tertiary: #404040;
+
+  /* —— 边框 —— */
+  --border: rgba(0, 0, 0, 0.08);
+  --border-soft: rgba(0, 0, 0, 0.05);
+  --border-strong: rgba(0, 0, 0, 0.15);
+  --line: rgba(105, 85, 60, 0.16);
+
+  /* —— 主要强调色 —— */
+  --accent-red: #C84738;
+  --accent-red-hover: #B83D31;
+  --accent-red-soft: #F4E4DF;
+  --accent-red-border: #E5C7C0;
+  --accent-red-wash: rgba(200, 71, 56, 0.08);
+
+  /* —— 辅助强调 —— */
+  --accent-gold: #A88B4E;
+  --accent-gold-soft: #C4A86B;
+  --accent-gold-deep: #8B7340;
+  --accent-gold-light: #F3EBDD;
+
+  --accent-green: #3D8B7A;
+  --accent-green-deep: #347868;
+  --accent-green-soft: #E8EEE7;
+  --accent-green-border: #CBD8C9;
+  --success: #5F765D;
+  --success-soft: #E8EEE7;
+  --success-border: #CBD8C9;
+
+  /* —— 圆角 —— */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  --radius-xl: 12px;
+  --radius: 10px;
+
+  /* —— 阴影 —— */
+  --shadow-soft: 0 2px 10px rgba(60, 45, 30, 0.06);
+  --shadow-press: 0 1px 4px rgba(60, 45, 30, 0.08);
+  --shadow-none: 0 0 0 transparent;
+
+  /* —— 字体 —— */
+  --font-serif: "Noto Serif SC", "Source Han Serif SC", "Songti SC", "STSong", serif;
+  --font-sans: "Noto Sans SC", "Source Han Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-mono: "Inter", "Noto Sans SC", ui-monospace, monospace;
+  --font-display: "Noto Serif SC", "Noto Sans SC", serif;
+  --font-brand: var(--font-serif);
+  --font-chart: var(--font-sans);
+  --font-body: var(--font-sans);
+
+  /* —— 兼容老变量 —— */
+  --signal: #A88B4E;
+  --signal-deep: #8B7340;
+  --signal-dim: rgba(168, 139, 78, 0.12);
+  --primary: #A88B4E;
+  --primary-light: #C4A86B;
+  --primary-navy: #1A1A1A;
+  --brand-gold: #A88B4E;
+  --brand-gold-bright: #C4A86B;
+  --bg-page: #F5F2ED;
+  --bg-page-soft: #FAF8F5;
+  --bg-sidebar: #FFFFFF;
+  --bg-card: #FFFFFF;
+  --bg-topbar: rgba(255, 255, 255, 0.82);
+  --text-dark: #111111;
+  --text-dark-secondary: #404040;
+  --text-secondary-legacy: #404040;
+  --text-muted: #454545;
+  --text-on-dark: #F5F2ED;
+
+  /* —— match 兼容 —— */
+  --rose: #C84738;
+  --rose-wash: #F4E4DF;
+  --rose-deep: #B83D31;
+  --ok: #5F765D;
+  --warn: #A88B4E;
+  --ink: #111111;
+  --ink-soft: #404040;
+  --ink-faint: #5C6370;
+  --ck-signal: #A88B4E;
+  --bg-2: #FAF8F5;
+  --bg-2-soft: #F0EDE8;
+  --surface-2: #FFFFFF;
+  --shadow: var(--shadow-soft);
+  --shadow-sm: 0 1px 4px rgba(60, 45, 30, 0.06);
+
+  /* —— 布局尺寸 —— */
+  --sidebar-w: 232px;
   --topbar-h: 64px;
-  --brand-logo: url('../assets/brand/logo.png');
-  --brand-logo-gold: url('../assets/brand/logo-gold.png');
-  --brand-hero: url('../assets/brand/hero-bg.png');
+  --radius-btn: 6px;
+  --radius-card: 10px;
+
+  --gradient-warm: linear-gradient(135deg, #C4A86B 0%, #A88B4E 100%);
+  --gold-title: #8B7340;
+  --gold-body: #4A4438;
+  --gold-body-soft: #6B6458;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--text-primary);
+  font-weight: 400;
 }

@@ -1,0 +1,29 @@
+id:bigint
+source_name:text
+source_id:text
+source_id_hash:text
+job_title:text
+company_name:text
+city:text
+district:text
+salary_min:double precision
+salary_max:double precision
+salary_unit:text
+experience:text
+education:text
+job_type:text
+publish_time:text
+crawl_time:text
+status:bigint
+fingerprint:text
+completeness:bigint
+data_source:text
+industry_tags:text
+skills:text
+job_description:text
+qualification:text
+work_experience:text
+
+--- counts ---
+total rows: 37163
+ai_seed rows: 11009

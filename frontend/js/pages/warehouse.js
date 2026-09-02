@@ -5,6 +5,41 @@
   var pickMode = false;
   var expanded = {};
 
+  var LANE_META = {
+    news: {
+      title: '岗位大新闻',
+      emptyTitle: '还没有收藏新闻',
+      emptyDesc: '在新闻列表或详情页点「收藏」，行业动态会集中显示在这里。',
+      href: 'news/index.html',
+      cta: '去看岗位大新闻',
+      quickDesc: '行业动态与政策解读'
+    },
+    discovery: {
+      title: '新岗位发现',
+      emptyTitle: '还没有收藏发现岗位',
+      emptyDesc: '在发现详情页点「收藏到仓库」，新兴岗位会归入此栏。',
+      href: 'discovery.html',
+      cta: '去发现新岗位',
+      quickDesc: '新兴岗位与趋势线索'
+    },
+    forecast: {
+      title: '新岗位预测',
+      emptyTitle: '还没有收藏预测岗位',
+      emptyDesc: '在预测详情页收藏后，未来方向岗位会保存在这里。',
+      href: 'discovery-forecast.html',
+      cta: '去看岗位预测',
+      quickDesc: '未来方向与能力要求'
+    },
+    match: {
+      title: '人岗匹配',
+      emptyTitle: '还没有收藏匹配岗位',
+      emptyDesc: '在人岗匹配结果卡片上点星标，心仪岗位会汇总到这里。',
+      href: 'match.html',
+      cta: '去人岗匹配',
+      quickDesc: '匹配结果与心仪岗位'
+    }
+  };
+
   function esc(s) {
     return String(s == null ? '' : s)
       .replace(/&/g, '&amp;')
@@ -25,6 +60,18 @@
     }
   }
 
+  function fmtDateShort(ts) {
+    if (!ts) return '';
+    try {
+      var d = new Date(ts);
+      if (isNaN(d.getTime())) return '';
+      var p = function (n) { return n < 10 ? '0' + n : String(n); };
+      return p(d.getMonth() + 1) + '月' + p(d.getDate()) + '日';
+    } catch (_) {
+      return '';
+    }
+  }
+
   function snapshot() {
     if (window.ZhituVault && typeof window.ZhituVault.snapshot === 'function') {
       return window.ZhituVault.snapshot();
@@ -37,24 +84,96 @@
     return src || '本地';
   }
 
-  function renderFavLane(title, items, emptyHint) {
+  function favTotal(f) {
+    f = f || {};
+    return (f.news || []).length + (f.discovery || []).length + (f.forecast || []).length + (f.match || []).length;
+  }
+
+  function lastActivityTs(snap) {
+    var max = 0;
+    var f = snap.favs || {};
+    ['news', 'discovery', 'forecast', 'match'].forEach(function (key) {
+      (f[key] || []).forEach(function (it) {
+        if (it.savedAt && it.savedAt > max) max = it.savedAt;
+      });
+    });
+    (snap.resumes || []).forEach(function (r) {
+      if (r.updatedAt && r.updatedAt > max) max = r.updatedAt;
+      if (r.createdAt && r.createdAt > max) max = r.createdAt;
+    });
+    return max;
+  }
+
+  function renderStats(snap) {
+    var el = document.getElementById('vault-stats');
+    if (!el) return;
+    var f = snap.favs || {};
+    var total = favTotal(f);
+    var resumes = (snap.resumes || []).length;
+    var last = lastActivityTs(snap);
+    el.innerHTML =
+      '<div class="vault-stat">' +
+        '<span class="vault-stat-n">' + total + '</span>' +
+        '<span class="vault-stat-l">收藏条目</span>' +
+      '</div>' +
+      '<div class="vault-stat">' +
+        '<span class="vault-stat-n">' + resumes + '</span>' +
+        '<span class="vault-stat-l">简历档案</span>' +
+      '</div>' +
+      '<div class="vault-stat">' +
+        '<span class="vault-stat-n vault-stat-n--text">' + (last ? fmtDateShort(last) : '暂无') + '</span>' +
+        '<span class="vault-stat-l">最近更新</span>' +
+      '</div>';
+  }
+
+  function renderQuickLinks(snap) {
+    var el = document.getElementById('vault-quick');
+    if (!el) return;
+    var f = snap.favs || {};
+    el.innerHTML = Object.keys(LANE_META).map(function (key) {
+      var meta = LANE_META[key];
+      var count = (f[key] || []).length;
+      return (
+        '<a class="vault-quick-card" href="' + esc(meta.href) + '">' +
+          '<span class="vault-quick-title">' + esc(meta.title) + '</span>' +
+          '<span class="vault-quick-desc">' + esc(meta.quickDesc) + '</span>' +
+          '<span class="vault-quick-meta">已收藏 ' + count + ' 条</span>' +
+        '</a>'
+      );
+    }).join('');
+  }
+
+  function renderEmptyLane(meta) {
+    return (
+      '<div class="vault-empty-rich">' +
+        '<p class="vault-empty-title">' + esc(meta.emptyTitle) + '</p>' +
+        '<p class="vault-empty-desc">' + esc(meta.emptyDesc) + '</p>' +
+        '<a class="vault-empty-cta" href="' + esc(meta.href) + '">' + esc(meta.cta) + ' →</a>' +
+      '</div>'
+    );
+  }
+
+  function renderFavLane(laneKey, items) {
+    var meta = LANE_META[laneKey] || { title: laneKey, emptyTitle: '暂无内容', emptyDesc: '', href: '#', cta: '去看看' };
+    var title = meta.title;
     var count = items.length;
     var body;
     if (!count) {
-      body = '<div class="vault-empty">' + esc(emptyHint) + '</div>';
+      body = renderEmptyLane(meta);
     } else {
       body = '<div class="vault-grid">' + items.map(function (it) {
-        var meta = [];
-        if (it.company) meta.push(it.company);
-        if (it.city) meta.push(it.city);
-        if (it.salary) meta.push(it.salary);
-        if (it.match != null) meta.push('匹配 ' + it.match + '%');
-        if (it.conf) meta.push('置信 ' + Math.round(Number(it.conf) * (Number(it.conf) <= 1 ? 100 : 1)) + '%');
+        var metaLine = [];
+        if (it.company) metaLine.push(it.company);
+        if (it.city) metaLine.push(it.city);
+        if (it.salary) metaLine.push(it.salary);
+        if (it.match != null) metaLine.push('匹配度 ' + it.match + '%');
+        if (it.conf) metaLine.push('置信度 ' + Math.round(Number(it.conf) * (Number(it.conf) <= 1 ? 100 : 1)) + '%');
+        var tag = fmtDateShort(it.savedAt) ? ('收藏于 ' + fmtDateShort(it.savedAt)) : title;
         return (
           '<a class="vault-item" href="' + esc(it.href || '#') + '">' +
-            '<span class="vault-item-k">' + esc(title) + '</span>' +
+            '<span class="vault-item-k">' + esc(tag) + '</span>' +
             '<p class="vault-item-t">' + esc(it.title || '未命名') + '</p>' +
-            (meta.length ? '<p class="vault-item-m">' + esc(meta.join(' · ')) + '</p>' : '') +
+            (metaLine.length ? '<p class="vault-item-m">' + esc(metaLine.join(' · ')) + '</p>' : '') +
           '</a>'
         );
       }).join('') + '</div>';
@@ -63,7 +182,7 @@
       '<section class="vault-lane">' +
         '<div class="vault-lane-head">' +
           '<h2 class="vault-lane-title">' + esc(title) + '</h2>' +
-          '<span class="vault-lane-count">' + count + '</span>' +
+          '<span class="vault-lane-count">' + count + ' 条</span>' +
         '</div>' +
         body +
       '</section>'
@@ -75,10 +194,10 @@
     if (!el) return;
     var f = snap.favs || {};
     el.innerHTML =
-      renderFavLane('岗位大新闻', f.news || [], '还没有收藏新闻，去「岗位大新闻」点心形即可。') +
-      renderFavLane('新岗位发现', f.discovery || [], '还没有收藏发现岗位。在详情页点「收藏到仓库」即可落入此处。') +
-      renderFavLane('新岗位预测', f.forecast || [], '还没有收藏预测岗位。在详情页点「收藏到仓库」即可落入此处。') +
-      renderFavLane('人岗匹配', f.match || [], '在人岗匹配结果卡片上点 ★。');
+      renderFavLane('news', f.news || []) +
+      renderFavLane('discovery', f.discovery || []) +
+      renderFavLane('forecast', f.forecast || []) +
+      renderFavLane('match', f.match || []);
   }
 
   function useResume(item, versionId) {
@@ -134,12 +253,32 @@
     });
   }
 
+  function renderResumeEmpty() {
+    return (
+      '<div class="vault-empty-rich vault-empty-rich--wide">' +
+        '<p class="vault-empty-title">还没有简历档案</p>' +
+        '<p class="vault-empty-desc">可以通过简历探索填写各模块内容，也可以直接上传已有 txt 文件。每次保存都会留档，方便对比不同版本。</p>' +
+        '<div class="vault-empty-actions">' +
+          '<a class="vault-empty-cta" href="resume.html">打开简历探索 →</a>' +
+          '<button type="button" class="vault-btn vault-btn--ghost" id="vault-empty-upload">上传简历文件</button>' +
+        '</div>' +
+      '</div>'
+    );
+  }
+
   function renderResumes(snap) {
     var el = document.getElementById('vault-resume-list');
     if (!el) return;
     var list = snap.resumes || [];
     if (!list.length) {
-      el.innerHTML = '<div class="vault-empty">还没有简历。可上传，或通过「简历探索」生成初稿。</div>';
+      el.innerHTML = renderResumeEmpty();
+      var emptyBtn = document.getElementById('vault-empty-upload');
+      if (emptyBtn) {
+        emptyBtn.addEventListener('click', function () {
+          var input = document.getElementById('vault-upload-input');
+          if (input) input.click();
+        });
+      }
       return;
     }
     el.innerHTML = list.map(function (r) {
@@ -147,7 +286,7 @@
       var vers = r.versions || [];
       var histBtn = vers.length
         ? ('<button type="button" class="vault-link" data-expand="' + esc(r.id) + '">' +
-            (open ? '收起历史' : ('历史版本 · ' + vers.length)) + '</button>')
+            (open ? '收起修订记录' : ('查看修订 · 共 ' + vers.length + ' 版')) + '</button>')
         : '';
       var histList = '';
       if (open && vers.length) {
@@ -159,7 +298,7 @@
                 esc(sourceLabel(v.source)) + ' · ' + esc(fmtTime(v.createdAt)) +
               '</span></div>' +
               '<button type="button" class="vault-btn vault-btn--mini" data-use="' + esc(r.id) + '" data-ver="' + esc(v.id) + '">' +
-                (pickMode ? '选用' : (cur ? '当前 · 匹配' : '用此版本匹配')) +
+                (pickMode ? '选用' : (cur ? '当前版本 · 去匹配' : '用此版本匹配')) +
               '</button>' +
             '</li>'
           );
@@ -176,7 +315,7 @@
           '</div>' +
           '<div class="vault-resume-actions">' +
             '<button type="button" class="vault-btn" data-use="' + esc(r.id) + '">' +
-              (pickMode ? '选用此简历' : '用人岗匹配') +
+              (pickMode ? '选用此简历' : '用于人岗匹配') +
             '</button>' +
             (pickMode ? '' : '<button type="button" class="vault-btn vault-btn--ghost" data-del="' + esc(r.id) + '">删除</button>') +
           '</div>' +
@@ -201,7 +340,7 @@
     });
     el.querySelectorAll('[data-del]').forEach(function (btn) {
       btn.addEventListener('click', function () {
-        if (!window.confirm('确定删除这份简历（含历史版本）？')) return;
+        if (!window.confirm('确定删除这份简历（含全部修订记录）？')) return;
         if (window.ZhituVault) window.ZhituVault.removeVaultResume(btn.getAttribute('data-del'));
         paint();
       });
@@ -230,7 +369,9 @@
   function paint() {
     var snap = snapshot();
     var u = document.getElementById('vault-user');
-    if (u) u.textContent = '当前用户 · ' + (snap.userId || 'guest');
+    if (u) u.textContent = '当前账号 · ' + (snap.userId === 'guest' ? '访客（本地保存）' : snap.userId);
+    renderStats(snap);
+    renderQuickLinks(snap);
     renderFavs(snap);
     renderResumes(snap);
     bindUpload();
@@ -247,8 +388,8 @@
     if (pickMode) {
       var lead = document.getElementById('vault-lead');
       var hint = document.getElementById('vault-resume-hint');
-      if (lead) lead.textContent = '请选择一份简历用于人岗匹配（可展开历史优化版本）。';
-      if (hint) hint.textContent = '选用后将返回人岗匹配工作台。';
+      if (lead) lead.textContent = '请选择一份简历用于人岗匹配，可展开查看历次修订并选用任意版本。';
+      if (hint) hint.textContent = '选定后将返回人岗匹配工作台。';
       document.querySelectorAll('.vault-tab').forEach(function (t) {
         var on = t.getAttribute('data-tab') === 'resumes';
         t.classList.toggle('is-on', on);

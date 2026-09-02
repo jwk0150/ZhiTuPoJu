@@ -593,9 +593,11 @@
     }, 760);
   };
 
-  const goScene3 = ({ skipScene2Intro = false, fromScene2Exit = false } = {}) => {
+  const goScene3 = ({ skipScene2Intro = false, fromScene2Exit = false, fromKey = null } = {}) => {
     const canEnterFromScene2Intro = skipScene2Intro && phase === 'scene2-intro';
-    if (scene2SkipStarted || (!canEnterFromScene2Intro && phase !== 'scene2-idle')) return;
+    const allowFromScene1 = phase === 'scene1-idle' || phase === 'scene1';
+    if (!fromKey && scene2SkipStarted) return;
+    if (!fromKey && !canEnterFromScene2Intro && phase !== 'scene2-idle' && !allowFromScene1) return;
     if (canEnterFromScene2Intro) {
       scene2SkipStarted = true;
       scene2IdleStarted = true;
@@ -605,7 +607,15 @@
     stopFrameLoop();
     ensureScene3Seekable().then(() => warmVideo(videos.scene3));
     setPhase('transition-2-3', { trackMs: reduceMotion ? 0 : 560 });
-    const outgoingKey = canEnterFromScene2Intro ? 'scene2' : 'scene2Idle';
+    const outgoingKey =
+      fromKey ||
+      (canEnterFromScene2Intro
+        ? 'scene2'
+        : allowFromScene1
+          ? 'scene1'
+          : videos.scene2Idle?.classList.contains('is-visible')
+            ? 'scene2Idle'
+            : 'scene1');
     const jumpStart = reduceMotion ? SCENE3_LICK_START : 0;
     const loginAt = reduceMotion ? 0.05 : SCENE3_LOGIN_AT;
     const loginWaitMs = reduceMotion ? 280 : wallMs(loginAt, SCENE3_PLAY_RATE);
@@ -839,9 +849,22 @@
     el.addEventListener('click', (event) => {
       event.preventDefault();
       event.stopPropagation();
-      skipScene2AndGoScene3();
+      if (phase === 'scene3-idle') return;
+      if (phase === 'transition-2-3') {
+        skipScene3JumpToLogin();
+        return;
+      }
+      if (phase === 'scene2-intro' || phase === 'scene2-idle') {
+        skipScene2AndGoScene3();
+        return;
+      }
+      // 首页 / 其它阶段：直接进登录（演示友好）
+      goScene3({ fromKey: 'scene1', fromScene2Exit: true });
     });
   });
+
+  window.skipScene2AndGoScene3 = skipScene2AndGoScene3;
+  window.goLoginFast = () => goScene3({ fromKey: 'scene1', fromScene2Exit: true });
 
   const loginForm = document.getElementById('entryLoginForm');
   const registerForm = document.getElementById('entryRegisterForm');
@@ -859,12 +882,16 @@
 
   const finishAuth = (payload) => {
     const data = payload && typeof payload === 'object' ? payload : {};
+    // 保存 JWT（与 api.js 的 zhituGetToken 同一 key，Global Agent 等接口鉴权依赖它）
+    if (data.token) {
+      try { localStorage.setItem('zhitu_token', data.token); } catch (_) {}
+    }
     localStorage.setItem('zhitu_user', JSON.stringify({
       username: data.username || 'user',
       role: data.role || 'user',
       loginTime: Date.now()
     }));
-    const dest = 'pages/resume.html';
+    const dest = 'pages/news/index.html';
     if (window.ZhituAuthTransit && window.ZhituAuthTransit.go) {
       window.ZhituAuthTransit.go(dest);
     } else {
@@ -951,10 +978,30 @@
   const devSkip = document.getElementById('entryDevSkip');
   if (devSkip && isLocalHost()) {
     devSkip.hidden = false;
-    devSkip.addEventListener('click', (event) => {
+    devSkip.addEventListener('click', async (event) => {
       event.preventDefault();
       event.stopPropagation();
-      finishAuth({ username: 'developer', role: 'dev' });
+      const errorEl = document.getElementById('entryLoginError');
+      showAuthError(errorEl, '');
+      devSkip.disabled = true;
+      try {
+        // 本地跳过登录：确保 developer 账号存在并走真实后端签发 JWT
+        let login = await postAuth('/api/auth/login', { username: 'developer', password: '123456' });
+        if (login.code !== 0) {
+          await postAuth('/api/auth/register', { username: 'developer', password: '123456' });
+          login = await postAuth('/api/auth/login', { username: 'developer', password: '123456' });
+        }
+        if (login.code === 0) finishAuth(login.data);
+        else showAuthError(errorEl, (login && login.message) || '开发账号不可用，请注册后登录');
+      } catch (err) {
+        showAuthError(
+          errorEl,
+          '连不上后端（' + authApiBase() + '）。请先运行 start_all.cmd 或确认 :5000 已启动。'
+        );
+        if (window.showToast) window.showToast('后端未就绪 · 请启动 :5000', 'amber');
+      } finally {
+        devSkip.disabled = false;
+      }
     });
   }
 

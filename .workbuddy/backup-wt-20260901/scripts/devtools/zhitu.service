@@ -1,0 +1,14 @@
+[Unit]
+Description=Zhitu FastAPI backend
+After=network.target postgresql.service
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/zhitu
+EnvironmentFile=/opt/zhitu/.env
+ExecStart=/opt/zhitu/.venv/bin/uvicorn backend.main:app --host 127.0.0.1 --port 5000 --workers 1
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
