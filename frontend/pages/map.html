@@ -38,7 +38,6 @@
 <div id="talent-back-zone">
 <button class="btn" onclick="window.talentMapBack()" id="talent-back-btn" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>返回</button>
 <button class="btn" id="talent-province-back-btn" onclick="window.talentMapBack()" style="display:none">← 返回全国总览</button>
-<button class="graph-btn" id="talent-graph-back-btn" title="返回" onclick="window.talentGraphBack()" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button>
 <button class="btn" id="talent-detail-back-btn" onclick="window.talentMapBack()" style="display:none">← 返回地图</button>
 </div>
 
@@ -153,8 +152,9 @@ onmouseleave="window.gangaZoomHover('澳门',false)">
 </aside>
 <!-- 中间岗位列表 -->
 <section class="analysis-job-list">
-<div class="talent-province-header" style="display:flex;align-items:center;gap:12px">
-<h2 id="talent-province-title" style="margin:0"></h2>
+<div class="talent-province-header">
+<h2 id="talent-province-title"></h2>
+<div class="talent-province-sub" id="talent-province-sub">岗位分布 · 技能需求 · 人才画像</div>
 </div>
 <div class="job-list-toolbar">
 <span class="job-found-label" id="talent-job-found-label">共找到 <b>--</b> 个岗位</span>
@@ -178,7 +178,6 @@ onmouseleave="window.gangaZoomHover('澳门',false)">
 <div style="width:100%;height:100%;position:relative;display:flex;flex-direction:column;min-width:0">
 <div class="graph-toolbar">
 <div class="graph-toolbar-left">
-<div class="graph-city-label" id="talent-graph-city-label">--</div>
 <div class="graph-mode-toggle" id="talent-graph-mode-toggle" style="display:none">
 <button class="graph-mode-bubble active" id="talent-graph-view-overview" title="当前岗位 → 所需技术 → 技术关联" onclick="window.talentSetJobGraphView('overview')">岗位技术图谱</button>
 <button class="graph-mode-bubble" id="talent-graph-view-stack" title="技术分类 → 层级归属关系" onclick="window.talentSetJobGraphView('stack')">技术栈</button>

@@ -849,6 +849,8 @@ window.talentShowLayer = function(layer) {
     if (provinceLayerEl) provinceLayerEl.classList.toggle('city-mode', cityMode);
     var mapViewEl = document.getElementById('view-map');
     if (mapViewEl) mapViewEl.classList.toggle('city-analysis-active', cityMode);
+    // 岗位分析层（省/市）：隐藏外层页头，突出分析主标题
+    if (mapViewEl) mapViewEl.classList.toggle('analysis-active', layer === 'province');
     var layoutEl = mapViewEl ? mapViewEl.querySelector('.graph-layout') : null;
     if (layoutEl) layoutEl.classList.toggle('city-analysis-mode', cityMode);
     // 离开图谱层时清除技能详情状态并恢复右侧面板，防止状态残留
@@ -863,12 +865,10 @@ window.talentShowLayer = function(layer) {
     // 统一返回操作区（地图左上角）：各返回按钮按当前层显隐
     var backBtn = document.getElementById('talent-back-btn');
     var provBackBtn = document.getElementById('talent-province-back-btn');
-    var graphBackBtn = document.getElementById('talent-graph-back-btn');
     var detailBackBtn = document.getElementById('talent-detail-back-btn');
     var showMapBack = layer === 'map' && talentMapState.selectedProvince;
     if (backBtn) backBtn.style.display = showMapBack || layer !== 'map' ? '' : 'none';
     if (provBackBtn) provBackBtn.style.display = layer === 'province' ? '' : 'none';
-    if (graphBackBtn) graphBackBtn.style.display = layer === 'graph' ? '' : 'none';
     if (detailBackBtn) detailBackBtn.style.display = showMapBack ? '' : 'none';
     // 右侧面板
     var emptyPanel = document.getElementById('talent-detail-empty');
@@ -2028,7 +2028,7 @@ window.renderProvinceJobList = async function(province, selectedCity) {
     if (titleEl) titleEl.textContent = displayName + ' · 岗位分析 · ' + (isCity ? (talentMapState.currentProvinceName || '') : '数字人才洞察');
 
     var statsEl = document.getElementById('talent-province-stats');
-    if (statsEl) statsEl.innerHTML = '<span>岗位数 --</span> | <span>热门指数 --</span> | <span>平均薪资 --</span>';
+    if (statsEl) statsEl.innerHTML = '<div class="talent-stat-item"><span class="talent-stat-label">岗位数</span><span class="talent-stat-value">--</span></div><div class="talent-stat-item"><span class="talent-stat-label">热门指数</span><span class="talent-stat-value">--</span></div><div class="talent-stat-item"><span class="talent-stat-label">平均薪资</span><span class="talent-stat-value">--</span></div>';
     var foundEl = document.getElementById('talent-job-found-label');
     if (foundEl) foundEl.innerHTML = '共找到 <b>--</b> 个岗位';
     var sortEl = document.getElementById('talent-job-sort');
@@ -2100,7 +2100,7 @@ window.renderProvinceJobList = async function(province, selectedCity) {
         });
         var avgSal = salN ? Math.round(salSum / salN) : (detail.avgSalary || 0);
         var hotIndex = maxHot || (detail.hotIndex || '--');
-        statsEl.innerHTML = '<span>岗位数 ' + shownTotal.toLocaleString() + '</span> | <span>热门指数 ' + hotIndex + '</span> | <span>平均薪资 ' + talentFormatSalary(avgSal) + '</span>';
+        statsEl.innerHTML = '<div class="talent-stat-item"><span class="talent-stat-label">岗位数</span><span class="talent-stat-value">' + shownTotal.toLocaleString() + '</span></div><div class="talent-stat-item"><span class="talent-stat-label">热门指数</span><span class="talent-stat-value">' + hotIndex + '</span></div><div class="talent-stat-item"><span class="talent-stat-label">平均薪资</span><span class="talent-stat-value">' + talentFormatSalary(avgSal) + '</span></div>';
     }
 
     // 渲染岗位卡片（统一高度横向布局，卡片不展示技术标签）
@@ -2149,7 +2149,7 @@ window.talentRenderJobCards = function() {
             + '<button class="btn" onclick="window.talentCityResetFilter()">重置筛选</button>'
             + '</div>';
         if (foundEl) foundEl.innerHTML = '共找到 <b>0</b> 个岗位';
-        if (statsEl) statsEl.innerHTML = '<span>岗位数 0</span> | <span>热门指数 --</span> | <span>平均薪资 --</span>';
+        if (statsEl) statsEl.innerHTML = '<div class="talent-stat-item"><span class="talent-stat-label">岗位数</span><span class="talent-stat-value">0</span></div><div class="talent-stat-item"><span class="talent-stat-label">热门指数</span><span class="talent-stat-value">--</span></div><div class="talent-stat-item"><span class="talent-stat-label">平均薪资</span><span class="talent-stat-value">--</span></div>';
         talentMapState.shownTotal = 0;
         // 右侧面板：清空岗位详情，显示合理空状态
         var panel = document.getElementById('talent-detail-job');
@@ -2744,10 +2744,7 @@ window.renderCityTechGraph = async function(cityName, jobName, keepMode, viewMod
         return;
     }
 
-    // 标签文案：进入图谱后聚焦当前岗位（不再展示城市级）
     var labelText = jobName || cityName;
-    var cityLabelEl = document.getElementById('talent-graph-city-label');
-    if (cityLabelEl) cityLabelEl.textContent = labelText + ' · ' + ({ overview: '岗位技术图谱', stack: '技术栈', level: '级别' }[view] || '岗位技术图谱');
     techDetailState.currentCity = cityName;
     // 保存用于图谱的岗位名
     techDetailState.graphJobName = jobName || cityName;
@@ -2804,7 +2801,7 @@ window.renderCityTechGraph = async function(cityName, jobName, keepMode, viewMod
                 var catColor = TECH_CATEGORY_COLORS_MAP[cat.name] || '#6366F1';
                 allTechNodes.push({
                     name: tech.name,
-                    size: Math.max(14, Math.min(42, tech.size || 24)),
+                    size: Math.max(12, Math.min(34, (tech.size || 24) * 0.88)),
                     frequency: tech.frequency || 1,
                     ratio: tech.ratio || 0.5,
                     catColor: catColor,
@@ -2834,7 +2831,7 @@ window.renderCityTechGraph = async function(cityName, jobName, keepMode, viewMod
             var techs = cat.technologies.map(function(tech) {
                 var catColor = TECH_CATEGORY_COLORS_MAP[cat.name] || '#6366F1';
                 allTechNodes.push({
-                    name: tech.name, size: Math.max(14, Math.min(42, tech.size || 24)), frequency: tech.frequency || 1,
+                    name: tech.name, size: Math.max(12, Math.min(34, (tech.size || 24) * 0.88)), frequency: tech.frequency || 1,
                     ratio: tech.ratio || 0.5, catColor: catColor, catName: cat.name, parentId: gId
                 });
                 return allTechNodes[allTechNodes.length - 1];
@@ -2852,7 +2849,7 @@ window.renderCityTechGraph = async function(cityName, jobName, keepMode, viewMod
             var lvColor = ({ '初级': '#4ADE80', '中级': '#FBBF24', '高级': '#F472B6' })[lv.name] || '#60A5FA';
             var techs = lv.technologies.map(function(tech) {
                 allTechNodes.push({
-                    name: tech.name, size: Math.max(14, Math.min(42, tech.size || 24)), frequency: tech.frequency || 1,
+                    name: tech.name, size: Math.max(12, Math.min(34, (tech.size || 24) * 0.88)), frequency: tech.frequency || 1,
                     ratio: tech.ratio || 0.5, catColor: lvColor, catName: lv.name, parentId: gId
                 });
                 return allTechNodes[allTechNodes.length - 1];
@@ -3131,15 +3128,10 @@ window.renderCityTechGraph = async function(cityName, jobName, keepMode, viewMod
             techSize = tech.size;
             techBase = tech.size;
         }
-        // 普通技能节点：统一暖白/米白填充（#F8F3E8）+ 金色描边（#D99A22）+ 柔和暖金光晕（不再按分类着色）
-        var techStyle = {
-            fill: view === 'stack' ? 'l(0) 0:#F8F3E8 1:#F1E4CA' : '#F8F3E8',
-            stroke: '#D99A22',
-            lineWidth: view === 'stack' ? 1.6 : 2,
-            radius: view === 'stack' ? 11 : 0,
-            shadowColor: 'rgba(217,154,34,.32)',
-            shadowBlur: view === 'stack' ? 12 : 12
-        };
+        // 普通技能节点：纯金色实心填充（技术栈卡片/圆点）+ 深金描边 + 柔和暖金光晕，文字统一黑色（#111111），浅色画布上高对比可读
+        var techStyle = view === 'stack'
+            ? { fill: 'l(0) 0:#EAC560 1:#D4A72C', stroke: 'rgba(122,88,10,.5)', lineWidth: 1.2, radius: 9, shadowColor: 'rgba(180,130,20,.3)', shadowBlur: 8 }
+            : { fill: '#D4A72C', stroke: '#B8860B', lineWidth: 1.8, radius: 0, shadowColor: 'rgba(180,130,20,.32)', shadowBlur: 10 };
         nodes.push({
             id: techId,
             label: tech.name,
@@ -3157,7 +3149,7 @@ window.renderCityTechGraph = async function(cityName, jobName, keepMode, viewMod
             labelCfg: {
                 position: view === 'stack' ? 'center' : 'bottom',
                 offset: view === 'stack' ? 0 : 3,
-                style: { fill: view === 'stack' ? '#5C4935' : '#F5E9C9', fontSize: view === 'stack' ? 15 : 10, fontWeight: view === 'stack' ? 600 : 500, fontFamily: 'var(--font-sans),sans-serif', textShadowColor: view === 'stack' ? 'rgba(255,255,255,0)' : 'rgba(0,0,0,.55)', textShadowBlur: view === 'stack' ? 0 : 4 }
+                style: { fill: '#111111', fontSize: view === 'stack' ? 14 : 11, fontWeight: 600, fontFamily: 'var(--font-sans),sans-serif', textShadowColor: 'rgba(255,255,255,0)', textShadowBlur: 0 }
             }
         });
         // 边：overview 直接连中心；stack/level 连所属二级节点
@@ -3219,7 +3211,7 @@ window.renderCityTechGraph = async function(cityName, jobName, keepMode, viewMod
                 labelCfg: {
                     position: 'bottom',
                     offset: 5,
-                    style: { fill: '#F5E9C9', fontSize: 10, fontWeight: 500, fontFamily: 'var(--font-sans),sans-serif' }
+                    style: { fill: '#111111', fontSize: 11, fontWeight: 600, fontFamily: 'var(--font-sans),sans-serif' }
                 }
             },
             defaultEdge: {
@@ -3227,21 +3219,21 @@ window.renderCityTechGraph = async function(cityName, jobName, keepMode, viewMod
                 style: { stroke: 'rgba(186,144,54,.22)', lineWidth: 1, endArrow: false }
             },
             nodeStateStyles: {
-                // active：更亮的暖白填充 + 金色描边增强 + 柔和金光晕，文字保持深棕清晰可读
+                // active：高亮金色填充 + 深金描边增强 + 金光晕；节点文字保持黑色（#111111）清晰可读
                 active: {
-                    fill: '#FDF6E3',
+                    fill: '#F0C75C',
                     lineWidth: 3,
-                    stroke: '#D99A22',
-                    shadowColor: 'rgba(217,154,34,.55)',
-                    shadowBlur: 28
+                    stroke: '#A87F16',
+                    shadowColor: 'rgba(217,154,34,.6)',
+                    shadowBlur: 26
                 },
                 linked: {
                     lineWidth: 2,
-                    stroke: 'rgba(217,154,34,.7)',
-                    shadowColor: 'rgba(217,154,34,.35)',
+                    stroke: 'rgba(168,127,22,.75)',
+                    shadowColor: 'rgba(217,154,34,.4)',
                     shadowBlur: 12
                 },
-                inactive: { opacity: 0.12 }
+                inactive: { opacity: 0.4 }
             },
             edgeStateStyles: {
                 active: { stroke: '#FFD666', lineWidth: 2, opacity: 1, shadowColor: 'rgba(255,214,102,.8)', shadowBlur: 10 },
@@ -3295,12 +3287,12 @@ window.renderCityTechGraph = async function(cityName, jobName, keepMode, viewMod
                 graph.clearItemStates(node, ['active', 'linked', 'inactive']);
                 if (nm.id === model.id) {
                     if (nm.type !== 'center') graph.setItemState(node, 'active', true);
-                    // 当前节点放大 + Hover 样式（更亮暖白填充 + 金色描边增强 + 柔和金光晕，与统一暖金风格一致）
+                    // 当前节点放大 + Hover 样式（亮金色填充 + 深金描边增强 + 柔和金光晕；文字保持黑色清晰可读）
                     if (nm.baseSize) {
                         var bz = nm.baseSize;
                         var hoverStyle = (nm.type === 'center')
                             ? { lineWidth: 4, shadowColor: 'rgba(217,154,34,.8)', shadowBlur: 40 }
-                            : { fill: '#FDF6E3', stroke: '#D99A22', lineWidth: 3, shadowColor: 'rgba(217,154,34,.55)', shadowBlur: 28 };
+                            : { fill: '#F0C75C', stroke: '#A87F16', lineWidth: 3, shadowColor: 'rgba(217,154,34,.6)', shadowBlur: 26 };
                         graph.updateItem(node, { size: Array.isArray(bz) ? [bz[0] * 1.18, bz[1] * 1.18] : bz * 1.35, style: hoverStyle });
                     }
                 } else if (linkedNodeIds[nm.id]) {
@@ -3467,7 +3459,7 @@ window.renderTechDetail = async function(techName, frequency, ratio) {
     // 构建详情HTML
     var hotStars = '';
     var hl = techDetail.hotLevel || 3;
-    for (var i = 0; i < 5; i++) hotStars += '<span class="tech-detail-hot-star" style="color:' + (i < hl ? '#F59E0B' : 'rgba(0,0,0,.15)') + '">★</span>';
+    for (var i = 0; i < 5; i++) hotStars += '<span class="tech-detail-hot-star" style="color:' + (i < hl ? '#D9A92E' : 'rgba(120,90,20,.18)') + '">★</span>';
     
     var html = '<div class="detail-content">';
     html += '<button class="graph-btn" style="margin-bottom:12px;font-size:11px;border-color:rgba(212,175,55,.35);color:#8F6B0E" onclick="window.talentRestoreProvincePanel()">← 返回岗位分析</button>';
@@ -3492,7 +3484,7 @@ window.renderTechDetail = async function(techName, frequency, ratio) {
     html += '<div class="tech-detail-section"><div class="tech-detail-section-title">核心知识点</div><div class="tech-detail-tag-list">';
     var kps = techDetail.knowledgePoints && techDetail.knowledgePoints.length ? techDetail.knowledgePoints : ['基础语法', '核心API', '常用框架', '最佳实践', '性能优化'];
     kps.forEach(function(k) {
-        html += '<span class="tech-detail-tag" style="background:rgba(99,102,241,.1);color:#5b63d3;border-color:rgba(99,102,241,.15)">' + k + '</span>';
+        html += '<span class="tech-detail-tag" style="background:rgba(217,169,46,.13);color:#4A3A10;border-color:rgba(168,139,78,.4)">' + k + '</span>';
     });
     html += '</div></div>';
     
