@@ -159,6 +159,23 @@ body.standalone-view {
   position: relative;
   overflow-y: auto; padding: 18px 22px 40px;
   scrollbar-width: thin;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 仅让简历视图(#view-resume)的内容撑满视图高度(其他 view 的布局不动) */
+#view-resume.is-active {
+  display: flex !important;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+#view-resume.is-active > .rw-toolbar {
+  flex: 0 0 auto;
+}
+#view-resume.is-active > .rw-grid {
+  flex: 1 1 auto;
+  min-height: 0;
 }
 .match-art-layer {
   position: absolute;
@@ -315,6 +332,61 @@ body.standalone-view {
 .upload-compact-text { font-size: 13px; font-weight: 500; }
 .upload-compact-fmt { display: flex; gap: 6px; }
 .upload-compact-fmt span { font-size: 10px; padding: 2px 6px; background: var(--bg-2); border-radius: 4px; color: var(--ink-faint); }
+
+/* 左列内嵌上传入口：默认无简历时显示，已上传隐藏 */
+.rw-preview-empty {
+  display: flex; flex-direction: column; gap: 14px;
+  padding: 48px 36px;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  /* 撑满整列高度(在 .rw-col--preview flex column 中) */
+  flex: 1 1 auto;
+  min-height: 460px;
+}
+/* 显式 [hidden]：CSS 用了 display:flex，浏览器默认的 [hidden]{display:none} 会被覆盖，需要明确声明 */
+.rw-preview-empty[hidden] { display: none !important; }
+.rw-preview-empty .mod-head { margin-bottom: 8px; align-self: flex-start; }
+.rw-preview-empty .upload-compact { padding: 42px 32px; gap: 14px; min-width: 360px; }
+.rw-preview-empty .upload-compact svg { width: 44px; height: 44px; }
+.rw-preview-empty .upload-compact-text { font-size: 15px; font-weight: 500; color: var(--ink-2); }
+.rw-preview-empty .upload-compact-fmt span { font-size: 11px; padding: 3px 9px; }
+
+/* 右栏无简历时:UI 框保留,中央显示上传提示(替换默认分析内容) */
+.rw-empty-hint {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 12px;
+  min-height: 320px;
+  padding: 36px 28px;
+  color: var(--ink-soft);
+}
+.rw-empty-ic {
+  width: 56px; height: 56px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%;
+  background: var(--bg-2);
+  border: 1px dashed var(--line-strong);
+  color: var(--ink-faint);
+}
+.rw-empty-t {
+  font-size: 15px; font-weight: 600;
+  color: var(--ink-2);
+  letter-spacing: 0.01em;
+}
+.rw-empty-d {
+  font-size: 12.5px;
+  color: var(--ink-faint);
+  line-height: 1.7;
+  max-width: 280px;
+}
+.rw-empty-btn { margin-top: 4px; }
 
 .resume-summary {
   margin-top: var(--gap); padding: 14px 16px; background: var(--surface);
@@ -2144,17 +2216,23 @@ body[data-page="match"] .aip-body:empty {
   align-items: stretch;
   position: relative;
   z-index: 2;
+  /* 让 grid 撑满 .wks-center 剩余高度(视图不会"短") */
+  flex: 1 1 auto;
+  min-height: 0;
 }
 .rw-col {
   border: 1px solid var(--line); border-radius: var(--radius);
   background: var(--surface); box-shadow: var(--shadow);
-  padding: 14px; min-width: 0; min-height: 320px; position: relative; z-index: 1;
+  padding: 14px; min-width: 0; min-height: 0;
+  display: flex; flex-direction: column;
+  position: relative; z-index: 1;
 }
 
 /* 左：纸质简历预览（无 UI 组件框，仿 A4 纸张） */
 .rw-col--preview {
   border: none; background: transparent; box-shadow: none; padding: 0;
 }
+.rw-col--preview > * { min-height: 0; }
 .rw-preview { display: block; max-height: 72vh; overflow-y: auto; padding-right: 4px; }
 .rw-paper {
   background: #FBF8F1;

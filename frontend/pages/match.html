@@ -93,9 +93,19 @@
 
           <!-- 三栏工作台 -->
           <div class="rw-grid">
-            <!-- 左：完整简历预览（纸质简历样式） -->
+            <!-- 左：完整简历预览 / 或 上传入口（无简历时显示上传组件,占据预览列位置） -->
             <div class="rw-col rw-col--preview">
               <div class="rw-preview" id="rw-preview"></div>
+              <!-- 无简历时显示：上传入口（位于左列，与原"简历预览"位置一致） -->
+              <div class="rw-preview-empty" id="resume-upload-card" hidden>
+                <div class="mod-head"><span class="mod-label">UPLOAD · 上传简历</span></div>
+                <div class="upload-compact" id="resume-upload-zone" tabindex="0" role="button" aria-label="上传简历">
+                  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                  <div class="upload-compact-text">拖入或点击上传简历</div>
+                  <div class="upload-compact-fmt"><span>PDF</span><span>DOC</span><span>TXT</span></div>
+                  <button class="btn-sm btn-sm--ghost" id="md-sample-resume" type="button">使用示例简历</button>
+                </div>
+              </div>
             </div>
 
             <!-- 中：词条导航 -->
@@ -115,18 +125,8 @@
             </div>
           </div>
 
-          <!-- 无简历时的上传卡 -->
-          <div class="mod mod-upload" id="resume-upload-card" hidden>
-            <div class="mod-head"><span class="mod-label">UPLOAD</span></div>
-            <div class="upload-compact" id="resume-upload-zone" tabindex="0" role="button" aria-label="上传简历">
-              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-              <div class="upload-compact-text">拖入或点击上传简历</div>
-              <div class="upload-compact-fmt"><span>PDF</span><span>DOC</span><span>TXT</span></div>
-              <button class="btn-sm btn-sm--ghost" id="md-sample-resume" type="button">使用示例简历</button>
-            </div>
-          </div>
-
-          <!-- 底部生成按钮区（已移除：AI 改写 / 开始匹配，按用户要求去掉了这一栏） -->
+          <!-- 底部独立上传卡已移除(原 <div class="mod mod-upload" id="resume-upload-card" hidden>)
+               现已合并到左列预览位置(.rw-preview-empty)，避免重复占位 -->
 
           <div class="resume-summary" id="resume-summary" hidden></div>
         </div>

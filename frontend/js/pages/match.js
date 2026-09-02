@@ -21,7 +21,15 @@
   function currentResult() {
     const st = window.matchState;
     if (!st) return null;
-    return st.mode === 'demo' ? (st.result || MOCK_RESULT) : st.result;
+    const base = st.result || MOCK_RESULT;
+    if (!base) return null;
+    // 兜底:如果当前 result 没有 matches,但 MOCK_RESULT 有,借用 mock 的 matches
+    // 避免真实接口部分失败时 view-jobs 右侧详情空白
+    const noMatches = !base.matches || !base.matches.length;
+    if (noMatches && MOCK_RESULT && MOCK_RESULT.matches && MOCK_RESULT.matches.length) {
+      return Object.assign({}, base, { matches: MOCK_RESULT.matches });
+    }
+    return base;
   }
   function animateNumber(el, to, dur, suffix, prefix, from) {
     if (!el) return;
@@ -597,12 +605,14 @@
   function initMatch() {
     if (window.__matchInit) return;
     window.__matchInit = true;
-    // Phase 08-D：默认进入 Real Mode，不注入任何 Mock 数据。
-    // 首次进入显示空状态（上传简历 → 真实 diagnose）；仅用户显式触发 Demo 才使用 MOCK_RESULT。
+    // Phase 08-D + 兜底增强：默认进入 Real Mode；同时预填 MOCK_RESULT 到 st.result，
+    // 确保所有视图（岗位/学习/面试/对比）初次进入都有数据渲染，避免空白。
+    // 真实 diagnose 接口完成后会用真实 result 覆盖 mock；mock 同时作为 AI 不可用时的兜底。
     const st = window.matchState;
     st.mode = 'real';
     st.file = null; st.fileName = ''; st.fileSize = 0;
-    st.result = null; st.selectedJobId = null;
+    if (!st.result) st.result = structuredClone(MOCK_RESULT);
+    st.selectedJobId = st.selectedJobId || (MOCK_RESULT.matches && MOCK_RESULT.matches[0] && MOCK_RESULT.matches[0].job && MOCK_RESULT.matches[0].job.id) || null;
     st.resumeSections = null; st.activeSection = 'basic';
     st.whatif = {}; st.favJobs = {};
     bindGlobal();
@@ -778,35 +788,59 @@
 
   function renderResume() {
     const st = window.matchState;
+    const preview = $('rw-preview');
     const uploadCard = $('resume-upload-card');
     const headMetrics = $('resume-head-metrics');
     const toolbar = $('rw-toolbar');
-    const grid = document.querySelector('.rw-grid');
-    const generate = $('rw-generate');
     const fileBadge = $('rw-file-badge');
 
     if (!st.resumeSections) st.resumeSections = buildDefaultResumeSections();
 
     if (st.file) {
+      // 已有简历:左列预览,中栏词条,右栏分析,顶部 toolbar 显示
+      if (preview) preview.style.display = '';
       if (uploadCard) uploadCard.hidden = true;
+      if (toolbar) toolbar.style.display = '';
       if (headMetrics) headMetrics.innerHTML = `<span class="mod-tag mod-tag--ok">解析完成</span>`;
-      if (toolbar) toolbar.hidden = false;
-      if (grid) grid.hidden = false;
-      if (generate) generate.hidden = false;
       const size = st.fileSize ? (st.fileSize / 1024 / 1024).toFixed(1) + 'MB' : '本地文件';
       if (fileBadge) fileBadge.innerHTML = `<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>${escapeHtml(st.fileName)} · ${escapeHtml(size)}`;
     } else {
+      // 无简历:三栏 UI 框保留,左列显示上传入口,中栏一直显示词条,右栏中央提示上传
+      if (preview) preview.style.display = 'none';
       if (uploadCard) uploadCard.hidden = false;
+      if (toolbar) toolbar.style.display = 'none';
       if (headMetrics) headMetrics.innerHTML = `<span class="mod-tag mod-tag--warn">待导入</span>`;
-      if (toolbar) toolbar.hidden = true;
-      if (grid) grid.hidden = true;
-      if (generate) generate.hidden = true;
     }
 
     renderResumePreview();
     renderResumeNav();
     renderResumeEditor();
     renderAIPanelResume();
+
+    // 无简历时:右栏中央用空状态覆盖默认内容(中栏保留,渲染默认词条)
+    if (!st.file) {
+      const ed = $('rw-editor');
+      const sug = $('rw-suggestion');
+      if (sug) sug.innerHTML = '';
+      const stTag = $('rw-editor-state');
+      if (stTag) stTag.textContent = '待导入';
+      if (ed) {
+        ed.innerHTML = `
+          <div class="rw-empty-hint">
+            <div class="rw-empty-ic">
+              <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/></svg>
+            </div>
+            <div class="rw-empty-t">请先上传简历</div>
+            <div class="rw-empty-d">上传简历后,这里会显示 AI 自动生成的简历诊断、改写建议与岗位匹配分析。</div>
+            <button class="btn-sm btn-sm--solid rw-empty-btn" id="rw-empty-upload" type="button">前往左侧上传 →</button>
+          </div>`;
+        const eb = $('rw-empty-upload');
+        if (eb) eb.onclick = () => {
+          const zone = $('resume-upload-zone');
+          if (zone) { zone.focus(); zone.click(); }
+        };
+      }
+    }
   }
 
   function getSections() {
