@@ -46,6 +46,53 @@ Object.entries(GEO_TO_SHORT).forEach(([k,v]) => { SHORT_TO_GEO[v] = k; });
 function toShort(g) { return GEO_TO_SHORT[g] || g; }
 function toGeo(s) { return SHORT_TO_GEO[s] || s; }
 
+// ============== 增长率 / 城市 tooltip 通用逻辑（2026-09-03 数据链路修复） ==============
+// 数据库无跨期历史快照（crawl_time 均为 2026-08-12 单次批量抓取，publish_time 为单岗位发布时间），
+// 无法可靠计算增长率。真实 API 返回的省份对象不含 growthRate → 一律隐藏，严禁显示 0%。
+window.talentHasGrowth = function(p) {
+    return !!p && typeof p.growthRate === 'number' && isFinite(p.growthRate);
+};
+window.talentGrowthStatHTML = function(p) {
+    if (!window.talentHasGrowth(p)) return '';
+    var g = p.growthRate;
+    return '<div class="detail-stat"><div class="detail-stat-label">增长率</div>'
+        + '<div class="detail-stat-value" style="color:' + (g >= 0 ? '#8F6B0E' : '#f87171') + '">'
+        + (g >= 0 ? '\u2191' : '\u2193') + Math.abs(g) + '%</div></div>';
+};
+// 全国/市级地图共用的 tooltip formatter：
+// - 省份层：显示岗位数量/热门指数/平均薪资；增长率仅在存在有效值时显示
+// - 市级/区级层：优先显示 cityData 真实数据；无数据时显示"暂无岗位数据"（不使用 "--"）
+window.talentMapTooltipFormatter = function(params) {
+    if (!params || !params.name) return '';
+    var rawName = String(params.name);
+    var inProvinceMap = talentMapState.mapLevel !== 'country' || !!talentMapState.selectedProvince;
+    if (inProvinceMap) {
+        var city = window.talentFindCityData(talentMapState.cityData || [], rawName);
+        var s = '<div style="font-weight:700;color:#8F6B0E;margin-bottom:4px">' + rawName + '</div>';
+        if (city && city.jobCount > 0) {
+            s += '岗位数量：<b>' + (city.jobCount || 0).toLocaleString() + '</b><br/>';
+            if (city.avgSalary) s += '平均薪资：<b>' + window.talentFormatSalary(city.avgSalary) + '</b><br/>';
+            s += '<span style="color:#8B6B3B">点击进入岗位分析</span>';
+        } else {
+            s += '<span style="color:#8B6B3B">暂无岗位数据</span>';
+        }
+        return s;
+    }
+    var short = toShort(rawName);
+    var p = talentMapState.allProvinces.find(function(x) { return x.name === short; });
+    if (!p) return rawName;
+    var html = '<div style="font-weight:700;color:#8F6B0E;margin-bottom:4px">' + p.name + '</div>'
+        + '岗位数量：<b>' + (p.jobCount || 0).toLocaleString() + '</b><br/>'
+        + '热门指数：<b>' + (p.hotIndex || '--') + '</b><br/>';
+    if (window.talentHasGrowth(p)) {
+        var g = p.growthRate;
+        html += '增长率：<b style="color:' + (g >= 0 ? '#8F6B0E' : '#f87171') + '">'
+            + (g >= 0 ? '\u2191' : '\u2193') + Math.abs(g) + '%</b><br/>';
+    }
+    html += '点击查看详情';
+    return html;
+};
+
 // 省份中心坐标（用于地图聚焦缩放）
 var PROVINCE_CENTERS = {
     '北京':[116.40,39.93],'天津':[117.20,39.13],'上海':[121.48,31.23],'重庆':[106.50,29.53],
@@ -1218,6 +1265,14 @@ window.talentRenderCityMap = function(provinceName) {
     });
 
     chart.setOption({
+        tooltip: {
+            trigger: 'item',
+            backgroundColor: 'rgba(255,255,255,.95)',
+            borderColor: 'rgba(212,175,55,.35)',
+            borderWidth: 1,
+            textStyle: { color: '#2A2110', fontSize: 12 },
+            formatter: window.talentMapTooltipFormatter
+        },
         geo: {
             map: geoName,
             roam: true,
@@ -1729,17 +1784,7 @@ window.renderChinaMap = async function() {
             borderColor: 'rgba(212,175,55,.35)',
             borderWidth: 1,
             textStyle: { color: '#2A2110', fontSize: 12 },
-            formatter: function(params) {
-                const short = toShort(params.name);
-                const p = talentMapState.allProvinces.find(x => x.name === short);
-                if (!p) return params.name + '<br/>--';
-                return '<div style="font-weight:700;color:#8F6B0E;margin-bottom:4px">' + p.name + '</div>'
-                    + '岗位数量：<b>' + (p.jobCount || 0).toLocaleString() + '</b><br/>'
-                    + '热门指数：<b>' + (p.hotIndex || '--') + '</b><br/>'
-                    + '增长率：<b style="color:' + ((p.growthRate || 0) >= 0 ? '#8F6B0E' : '#f87171') + '">'
-                    + (p.growthRate >= 0 ? '↑' : '↓') + Math.abs(p.growthRate || 0) + '%</b><br/>'
-                    + '点击查看详情';
-            }
+            formatter: window.talentMapTooltipFormatter
         },
         geo: {
             map: 'china',
@@ -1863,7 +1908,7 @@ function talentShowHover(p) {
     var growthWrap = document.getElementById('talent-hover-growth-wrap');
     var cityBlock = document.getElementById('talent-hover-city-block');
     if (hotWrap) hotWrap.style.display = '';
-    if (growthWrap) growthWrap.style.display = '';
+    if (growthWrap) growthWrap.style.display = window.talentHasGrowth(p) ? '' : 'none';
     if (cityBlock) cityBlock.style.display = 'none';
     var hbtn = document.getElementById('talent-hover-btn');
     if (hbtn) hbtn.textContent = '查看详情 →';
@@ -1873,10 +1918,12 @@ function talentShowHover(p) {
     document.getElementById('talent-hover-name').textContent = p.name;
     document.getElementById('talent-hover-jobs').textContent = (p.jobCount || 0).toLocaleString();
     document.getElementById('talent-hover-hot').textContent = p.hotIndex || '--';
-    const growth = p.growthRate || 0;
     const gEl = document.getElementById('talent-hover-growth');
-    gEl.textContent = (growth >= 0 ? '↑' : '↓') + Math.abs(growth) + '%';
-    gEl.style.color = growth >= 0 ? '#8F6B0E' : '#f87171';
+    if (window.talentHasGrowth(p)) {
+        const growth = p.growthRate;
+        gEl.textContent = (growth >= 0 ? '↑' : '↓') + Math.abs(growth) + '%';
+        gEl.style.color = growth >= 0 ? '#8F6B0E' : '#f87171';
+    }
     document.getElementById('talent-hover-salary').textContent = talentFormatSalary(p.avgSalary);
     const badge = document.getElementById('talent-hover-badge');
     badge.textContent = (p.hotIndex >= 80 ? '热门' : p.hotIndex >= 60 ? '活跃' : '增长中');
@@ -1953,7 +2000,7 @@ window.renderProvinceDetail = async function(province) {
     if (grid) {
         grid.innerHTML = '<div class="detail-stat"><div class="detail-stat-label">岗位数量</div><div class="detail-stat-value">' + (province.jobCount || 0).toLocaleString() + '</div></div>'
             + '<div class="detail-stat"><div class="detail-stat-label">热门指数</div><div class="detail-stat-value">' + (province.hotIndex || '--') + '</div></div>'
-            + '<div class="detail-stat"><div class="detail-stat-label">增长率</div><div class="detail-stat-value" style="color:' + ((province.growthRate||0)>=0?'#8F6B0E':'#f87171') + '">' + ((province.growthRate||0)>=0?'\u2191':'\u2193') + Math.abs(province.growthRate||0) + '%</div></div>'
+            + window.talentGrowthStatHTML(province)
             + '<div class="detail-stat"><div class="detail-stat-label">平均薪资</div><div class="detail-stat-value">' + talentFormatSalary(province.avgSalary) + '</div></div>';
     }
 
@@ -1972,7 +2019,7 @@ window.renderProvinceDetail = async function(province) {
             grid.innerHTML = '<div class="detail-stat"><div class="detail-stat-label">岗位数量</div><div class="detail-stat-value">' + (detail.totalJobs || 0).toLocaleString() + '</div></div>'
                 + '<div class="detail-stat"><div class="detail-stat-label">平均薪资</div><div class="detail-stat-value">' + talentFormatSalary(detail.avgSalary || province.avgSalary) + '</div></div>'
                 + '<div class="detail-stat"><div class="detail-stat-label">热门岗位</div><div class="detail-stat-value" style="font-size:13px">' + (detail.topJobs ? detail.topJobs.length : 0) + ' 个</div></div>'
-                + '<div class="detail-stat"><div class="detail-stat-label">增长率</div><div class="detail-stat-value" style="color:' + ((province.growthRate||0)>=0?'#8F6B0E':'#f87171') + '">' + ((province.growthRate||0)>=0?'\u2191':'\u2193') + Math.abs(province.growthRate||0) + '%</div></div>';
+                + window.talentGrowthStatHTML(province);
         }
 
         // 保存详情数据供岗位分析使用
@@ -2352,7 +2399,7 @@ function talentShowProvinceDetailPanel(province, job) {
     if (grid) {
         grid.innerHTML = '<div class="detail-stat"><div class="detail-stat-label">岗位数量</div><div class="detail-stat-value">' + (province.jobCount || 0).toLocaleString() + '</div></div>'
             + '<div class="detail-stat"><div class="detail-stat-label">热门指数</div><div class="detail-stat-value">' + (province.hotIndex || '--') + '</div></div>'
-            + '<div class="detail-stat"><div class="detail-stat-label">增长率</div><div class="detail-stat-value" style="color:' + ((province.growthRate||0)>=0?'#8F6B0E':'#f87171') + '">' + ((province.growthRate||0)>=0?'↑':'↓') + Math.abs(province.growthRate||0) + '%</div></div>'
+            + window.talentGrowthStatHTML(province)
             + '<div class="detail-stat"><div class="detail-stat-label">平均薪资</div><div class="detail-stat-value">' + talentFormatSalary(province.avgSalary) + '</div></div>';
     }
     const topEl = document.getElementById('talent-prov-top-jobs');

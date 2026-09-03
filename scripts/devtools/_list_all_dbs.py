@@ -37,7 +37,7 @@ async def main():
             print(f"\n== {db} ==")
             print("tables:", names)
             print("views:", vnames)
-            for t in ("the_total_table", "the_total_table_copy1", "zhilian_job_postings"):
+            for t in ("the_total_table", "map_data_table", "zhilian_job_postings"):
                 if t in names or t in vnames:
                     try:
                         n = await conn.fetchval(f'SELECT count(*) FROM "{t}"')

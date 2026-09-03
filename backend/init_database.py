@@ -20,12 +20,12 @@ from backend.config import config
 USER_CENTER_SCHEMA = ROOT / "backend" / "sql" / "user_center_schema.sql"
 RAG_SCHEMA = ROOT / "backend" / "sql" / "rag_schema.sql"
 
-# 当前数据源:the_total_table_copy1(实际业务表,共 38780 条)。
+# 当前数据源:map_data_table(实际业务表,共 38780 条)。
 # 历史代码通过 the_total_table 视图访问岗位数据;这里把视图指向新数据源,
 # 保持上层 SQL 完全不变。
 TOTAL_TABLE_VIEW_SQL = """
 CREATE OR REPLACE VIEW public.the_total_table AS
-SELECT * FROM public.the_total_table_copy1;
+SELECT * FROM public.map_data_table;
 """
 
 # 本机仅有智联爬虫表时的兼容视图（缺 industry_tags/skills 等列时用 NULL 补齐）
@@ -59,19 +59,19 @@ async def initialize() -> None:
         schema_sql = schema_sql.replace("BEGIN;", "").replace("COMMIT;", "")
         async with conn.transaction():
             await conn.execute(schema_sql)
-            # 检查 the_total_table_copy1 是否存在
+            # 检查 map_data_table 是否存在
             # 注意:relkind 是 char 类型,asyncpg 会返回 bytes;用 ::text 保证是 str
             copy1_kind = await conn.fetchval(
                 """
                 SELECT c.relkind::text
                 FROM pg_class AS c
                 JOIN pg_namespace AS n ON n.oid = c.relnamespace
-                WHERE n.nspname = 'public' AND c.relname = 'the_total_table_copy1'
+                WHERE n.nspname = 'public' AND c.relname = 'map_data_table'
                 """
             )
             if copy1_kind is None:
                 raise RuntimeError(
-                    "public.the_total_table_copy1 不存在；请先创建/导入该表（含 38780 条数据）后再运行初始化。"
+                    "public.map_data_table 不存在；请先创建/导入该表（含 38780 条数据）后再运行初始化。"
                 )
             relation_kind = await conn.fetchval(
                 """
@@ -144,7 +144,7 @@ async def ensure_view_only() -> None:
     """轻量级：保证本地兼容视图可用（不碰云库已有视图）。
 
     - 若已有 the_total_table（表或视图）或 map_data_table：不做任何替换
-    - 否则优先 the_total_table_copy1，再回退 zhilian_job_postings
+    - 否则优先 map_data_table，再回退 zhilian_job_postings
     """
     conn = await asyncpg.connect(
         host=config.PG_HOST,
@@ -171,7 +171,7 @@ async def ensure_view_only() -> None:
         if await _relkind("the_total_table") is not None:
             return
 
-        copy1_kind = await _relkind("the_total_table_copy1")
+        copy1_kind = await _relkind("map_data_table")
         if copy1_kind is not None:
             await conn.execute(TOTAL_TABLE_VIEW_SQL)
             return

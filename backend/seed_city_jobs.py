@@ -371,7 +371,7 @@ def make_job_description(title: str, industry_tags: list) -> str:
 # ---------------------------------------------------------------------------
 
 MIGRATE_SQL = """
-ALTER TABLE the_total_table_copy1
+ALTER TABLE map_data_table
     ADD COLUMN IF NOT EXISTS industry_tags text,
     ADD COLUMN IF NOT EXISTS skills text,
     ADD COLUMN IF NOT EXISTS job_description text,
@@ -393,7 +393,7 @@ async def get_city_stats(conn: asyncpg.Connection, city_short: str) -> dict:
         f"""
         SELECT job_title, count(*)::int AS cnt,
                bool_or(source_name = 'ai_seed') AS is_ai_seed
-        FROM the_total_table_copy1
+        FROM map_data_table
         WHERE {city_match} AND job_title IS NOT NULL AND job_title <> ''
         GROUP BY job_title
         """,
@@ -412,14 +412,14 @@ async def upsert_seed_jobs(conn: asyncpg.Connection, city_short: str, jobs: list
     for j in jobs:
         sid = j["source_id"]
         exists = await conn.fetchval(
-            "SELECT 1 FROM the_total_table_copy1 WHERE source_name='ai_seed' AND source_id=$1",
+            "SELECT 1 FROM map_data_table WHERE source_name='ai_seed' AND source_id=$1",
             sid,
         )
         if exists:
             continue
         await conn.execute(
             """
-            INSERT INTO the_total_table_copy1
+            INSERT INTO map_data_table
                 (source_name, source_id, source_id_hash, job_title, company_name,
                  city, district, salary_min, salary_max, salary_unit,
                  experience, education, job_type, publish_time, crawl_time,
@@ -442,7 +442,7 @@ async def upsert_seed_jobs(conn: asyncpg.Connection, city_short: str, jobs: list
 async def rebuild_city_ai_seed(conn: asyncpg.Connection, city_short: str) -> int:
     """删除该城市已有 ai_seed 行（--rebuild 时使用）"""
     deleted = await conn.execute(
-        "DELETE FROM the_total_table_copy1 WHERE source_name='ai_seed' AND split_part(city,'·',1)=$1",
+        "DELETE FROM map_data_table WHERE source_name='ai_seed' AND split_part(city,'·',1)=$1",
         city_short,
     )
     # deleted 返回类似 "DELETE 12"
@@ -453,7 +453,7 @@ async def rebuild_city_ai_seed(conn: asyncpg.Connection, city_short: str) -> int
 
 
 async def delete_all_ai_seed(conn: asyncpg.Connection) -> int:
-    deleted = await conn.execute("DELETE FROM the_total_table_copy1 WHERE source_name='ai_seed'")
+    deleted = await conn.execute("DELETE FROM map_data_table WHERE source_name='ai_seed'")
     try:
         return int(deleted.split()[-1])
     except Exception:
@@ -485,7 +485,7 @@ async def ensure_city_min_jobs(conn: asyncpg.Connection, city_short: str, min_jo
         return 0
     province = _find_province_for_city(city_short)
     sids = await conn.fetch(
-        "SELECT source_id FROM the_total_table_copy1 WHERE source_name='ai_seed' AND split_part(city,'·',1)=$1",
+        "SELECT source_id FROM map_data_table WHERE source_name='ai_seed' AND split_part(city,'·',1)=$1",
         city_short,
     )
     existing_sids = {r["source_id"] for r in sids}
@@ -706,7 +706,7 @@ async def main() -> None:
     conn = await asyncpg.connect(**db)
     try:
         await migrate(conn)
-        print("[迁移] the_total_table_copy1 已补齐 industry_tags/skills/job_description/qualification/work_experience/city_seed/sort_weight 列")
+        print("[迁移] map_data_table 已补齐 industry_tags/skills/job_description/qualification/work_experience/city_seed/sort_weight 列")
 
         if args.rebuild and not args.dry_run:
             if args.city:
@@ -742,7 +742,7 @@ async def main() -> None:
                 continue
 
             sids = await conn.fetch(
-                "SELECT source_id FROM the_total_table_copy1 WHERE source_name='ai_seed' AND split_part(city,'·',1)=$1",
+                "SELECT source_id FROM map_data_table WHERE source_name='ai_seed' AND split_part(city,'·',1)=$1",
                 city_short,
             )
             existing_sids = {r["source_id"] for r in sids}

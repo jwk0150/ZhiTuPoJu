@@ -439,13 +439,21 @@ async def fetch_cities_summary(
 
     all_params = match_names + filter_params
 
+    # 直辖市/特别行政区显示"区县级"城市条目（如 北京·朝阳区 / 太原 无区概念），与区县地图 hover 匹配一致；
+    # 普通省份按主城市聚合（兼容 "太原" 与 "太原·小店区" 并存 → 太原市整体统计），
+    # 保证地图 hover 城市数量与点击进入的岗位分析页 totalJobs 口径一致。
+    metro_prov = {"北京", "上海", "天津", "重庆", "香港", "澳门"}
+    if prov_name in metro_prov:
+        city_expr, group_expr = "city", "city"
+    else:
+        city_expr, group_expr = "split_part(city, '·', 1) AS city", "1"
     sql = f"""
-    SELECT city, count(*)::int AS job_count,
+    SELECT {city_expr}, count(*)::int AS job_count,
            avg((salary_min + salary_max) / 2.0)::int AS avg_salary,
            count(DISTINCT job_title)::int AS distinct_titles
     FROM the_total_table
     WHERE split_part(city, '·', 1) = ANY(ARRAY[{pholders}]) AND ({where_shifted})
-    GROUP BY city
+    GROUP BY {group_expr}
     ORDER BY job_count DESC
     """
     try:
@@ -1639,7 +1647,7 @@ async def update_job_tech_graph(
 ) -> Optional[dict]:
     """动态更新岗位技术图谱（挑战杯演示）：
 
-    1) 从 the_total_table（视图，指向 the_total_table_copy1）提取该岗位真实技术池；
+    1) 从 the_total_table（视图，指向 map_data_table）提取该岗位真实技术池；
     2) 与通用补充池合并；
     3) 按"轮次"确定性策略重新选择一批技术（数量随轮次明显变化、核心技术保留、边缘技术轮换）；
     4) 将本次结果写入 new_skill_table（同一数据库，数据版本 = 轮次）；
@@ -1647,7 +1655,7 @@ async def update_job_tech_graph(
     """
     from collections import Counter
 
-    # 0. 确保 new_skill_table 存在（与 the_total_table_copy1 同一数据库/schema）
+    # 0. 确保 new_skill_table 存在（与 map_data_table 同一数据库/schema）
     await conn.execute("""
         CREATE TABLE IF NOT EXISTS public.new_skill_table (
             id BIGSERIAL PRIMARY KEY,
@@ -1661,7 +1669,7 @@ async def update_job_tech_graph(
         )
     """)
 
-    # 1. 该岗位真实技术池（来自 the_total_table_copy1 的数据）
+    # 1. 该岗位真实技术池（来自 map_data_table 的数据）
     rows = await conn.fetch("""
         SELECT skills FROM the_total_table
         WHERE skills IS NOT NULL AND skills <> '' AND job_title = $1

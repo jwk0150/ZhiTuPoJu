@@ -11,7 +11,7 @@ from backend.init_database import ensure_view_only
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # 启动时确保 the_total_table 视图指向 the_total_table_copy1（幂等）
+    # 启动时确保 the_total_table 视图指向 map_data_table（幂等）
     try:
         await ensure_view_only()
     except Exception:

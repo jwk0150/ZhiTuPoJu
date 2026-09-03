@@ -1,0 +1,40 @@
+﻿=== city LIKE %呼伦贝尔% in map_data_table ===
+  city='呼伦贝尔' cnt=32
+=== 内蒙古城市分布 (via split_part) ===
+  city='包头' cnt=149
+  city='鄂尔多斯' cnt=145
+  city='呼和浩特' cnt=106
+  city='呼伦贝尔' cnt=32
+  city='赤峰' cnt=31
+=== 呼伦贝尔样例记录 ===
+  id=None city='呼伦贝尔' job='Python开发工程师' src='ai_seed' sal=13014.0-21999.0
+  id=None city='呼伦贝尔' job='Java开发工程师' src='ai_seed' sal=12771.0-21552.0
+  id=None city='呼伦贝尔' job='前端开发工程师' src='ai_seed' sal=15373.0-21021.0
+  id=None city='呼伦贝尔' job='数据分析师' src='ai_seed' sal=10836.0-16449.0
+  id=None city='呼伦贝尔' job='测试开发工程师' src='ai_seed' sal=14260.0-21700.0
+=== DISTINCT city 样本 ===
+  '柳州'
+  '上海·崇明区'
+  '十堰'
+  '崇左·凭祥市'
+  None
+  '佛山·南海区'
+  '成都·天府新区'
+  '荆州·荆州区'
+  '沈阳·沈河区'
+  '珠海·香洲区'
+  '湖州·南浔区'
+  '杭州·桐庐县'
+  '常州·天宁区'
+  '晋中'
+  '韶关'
+  '抚顺'
+  '许昌'
+  '嘉兴·秀洲区'
+  '石柱土家族自治'
+  '南京·高淳区'
+  '泰州·海陵区'
+  '遂宁'
+  '重庆·渝中区'
+  '乌鲁木齐'
+  '南京·鼓楼区'

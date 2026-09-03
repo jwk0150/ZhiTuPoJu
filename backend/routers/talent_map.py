@@ -224,7 +224,7 @@ async def get_city_preview_endpoint(province_name: str, city_name: str):
 async def update_tech_graph(payload: dict):
     """更新岗位技术图谱（挑战杯演示）：
 
-    从 the_total_table_copy1 提取该岗位真实技术池 + 通用补充池，
+    从 map_data_table 提取该岗位真实技术池 + 通用补充池，
     按轮次确定性重新选择一批技术并写入 new_skill_table，
     返回更新后的图谱数据（结构与 /map/job-tech-graph 一致）。
     """

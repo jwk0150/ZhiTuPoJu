@@ -63,7 +63,7 @@ async def try_one(kw):
                     if isinstance(v, str) and len(v) > 80:
                         row[k] = v[:80] + "…"
                 out["sample"] = row
-        for name in ("the_total_table", "the_total_table_copy1"):
+        for name in ("the_total_table", "map_data_table"):
             if name in tables:
                 out[f"{name}_cnt"] = await conn.fetchval(f'SELECT count(*) FROM "{name}"')
                 cols = await conn.fetch(
