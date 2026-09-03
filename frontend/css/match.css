@@ -1289,13 +1289,67 @@ body.standalone-view {
 .los-empty { margin: 60px auto; max-width: 420px; text-align: center; padding: 28px 24px; border: 1px solid rgba(255, 255, 255, .08); border-radius: 14px; color: var(--ink-faint); line-height: 1.8; }
 
 /* Phase 08-C · JobMatchingAgent 问答面板 */
-.jd-agent { margin: 14px 0 4px; padding: 14px 16px; border: 1px solid rgba(255, 255, 255, .08); border-radius: 14px; background: rgba(255, 255, 255, .03); }
-.jd-agent-actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 4px; }
-.jd-agent-input { display: flex; gap: 8px; margin: 8px 0 4px; }
+.jd-agent {
+  margin: 0; padding: 6px 10px 10px;
+  border: 1px solid rgba(255, 255, 255, .08); border-radius: 12px;
+  background: rgba(255, 255, 255, .03);
+  display: flex; flex-direction: column; gap: 8px;
+  min-height: 0;
+}
+.jd-agent .detail-section-title { margin: 0 0 2px; }
+.jd-agent-actions { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; }
+.jd-agent-input { display: flex; gap: 8px; margin: 0; }
 .jd-agent-input input { flex: 1; min-width: 0; background: rgba(255, 255, 255, .05); border: 1px solid rgba(255, 255, 255, .12); border-radius: 8px; padding: 8px 12px; color: inherit; outline: none; }
 .jd-agent-input input::placeholder { color: var(--ink-faint); }
-.jd-agent-result { margin-top: 10px; }
-.jd-agent-answer { white-space: pre-wrap; line-height: 1.7; color: var(--ink); }
+.jd-agent-result { margin-top: 4px; }
+
+/* 聊天框：输出区域（ChatGPT 风格） */
+.jd-agent-answer {
+  background: linear-gradient(180deg, rgba(200, 63, 50, .06), rgba(120, 100, 75, .04));
+  border: 1px solid rgba(200, 63, 50, .2);
+  border-radius: 12px;
+  padding: 16px 18px;
+  line-height: 1.75;
+  color: #2a2620;
+  font-size: 14px;
+  font-weight: 400;
+}
+.jd-agent-empty { color: var(--ink-faint); font-size: 13px; padding: 6px 0; }
+.jd-agent-h {
+  margin: 14px 0 6px; padding: 0;
+  font-size: 15px; font-weight: 600; letter-spacing: 0;
+  color: #1f1d1a;
+  border: 0; padding-left: 0;
+}
+.jd-agent-h:first-child { margin-top: 0; }
+.jd-agent-p { margin: 8px 0; color: #2d2a25; font-size: 14px; line-height: 1.85; }
+.jd-agent-list {
+  margin: 8px 0 12px; padding-left: 24px;
+  color: #2d2a25; font-size: 14px; line-height: 1.8;
+}
+.jd-agent-list li { margin: 4px 0; }
+.jd-agent-list li::marker { color: var(--rose); font-weight: 700; }
+.jd-agent-answer strong {
+  font-weight: 600; color: #1f1d1a;
+  background: rgba(200, 63, 50, .08);
+  padding: 1px 5px; border-radius: 4px;
+}
+.jd-agent-answer code {
+  background: rgba(120, 100, 75, .12); color: #b0331f;
+  padding: 1px 6px; border-radius: 4px; font-size: 13px;
+  font-family: "SF Mono", "Consolas", monospace;
+}
+
+/* 能力匹配 Tab 现在只承载 AI 顾问面板 */
+.jd-resume-agent {
+  flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column;
+}
+.jd-resume-agent .jd-agent { flex: 1 1 auto; min-height: 0; }
+.jd-resume-agent .jd-agent-result { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
+.jd-resume-agent .jd-agent-answer {
+  flex: 1 1 auto; min-height: 0; overflow-y: auto; padding-right: 6px;
+  margin-top: 4px;
+}
 .jd-evidence { margin: 6px 0; padding: 8px 10px; border-left: 2px solid var(--rose); background: rgba(255, 255, 255, .03); border-radius: 6px; font-size: 13px; line-height: 1.6; }
 .jd-evidence a { color: var(--gold); text-decoration: underline; }
 
@@ -2988,15 +3042,24 @@ mark.hl-good.is-adopted { background: rgba(120, 100, 75, 0.1); color: #7f9c8c; t
 /* ============================================================
  * AI 面试分析报告 · 职业能力分析 Dashboard
  * ============================================================ */
-.md-report { position: fixed; inset: 56px 0 0 0; z-index: 1300; background: var(--bg); overflow-y: auto; }
+.md-report {
+  position: fixed; inset: 56px 0 0 0; z-index: 1300; overflow-y: auto;
+  background: #FAF8F5 url('../assets/news/bg-atmosphere-light.png') center top / cover no-repeat;
+  background-attachment: fixed;
+}
+.md-report::before {
+  content: ''; position: fixed; inset: 56px 0 0 0; z-index: 0; pointer-events: none;
+  background: radial-gradient(120% 90% at 50% 30%, rgba(255,255,255,.35), rgba(245,242,237,.55) 100%);
+}
+.md-report-dialog { position: relative; z-index: 1; }
 .md-report[hidden] { display: none !important; }
 .md-report-dialog {
   width: min(1120px, calc(100vw - 40px)); margin: 24px auto 40px;
   display: flex; flex-direction: column; gap: 16px;
 }
 .md-report-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 14px; padding: 0 4px; }
-.md-report-kicker { font-size: 11px; letter-spacing: 1.6px; color: var(--signal); font-weight: 500; text-transform: uppercase; }
-.md-report-title { font-size: 24px; font-weight: 500; margin-top: 4px; letter-spacing: -.4px; color: var(--ink); }
+.md-report-kicker { font-size: 11px; letter-spacing: 1.6px; color: var(--signal); font-weight: 600; text-transform: uppercase; }
+.md-report-title { font-size: 24px; font-weight: 600; margin-top: 4px; letter-spacing: -.4px; color: #1a1208; }
 .md-report-actions { display: flex; gap: 10px; }
 .md-report-scroll { display: flex; flex-direction: column; gap: 16px; }
 
@@ -3004,36 +3067,38 @@ mark.hl-good.is-adopted { background: rgba(120, 100, 75, 0.1); color: #7f9c8c; t
 .rpt-overview {
   display: grid; grid-template-columns: 1fr minmax(320px, .9fr); gap: 16px;
   padding: 18px; border-radius: 9px;
-  background: linear-gradient(150deg, rgba(200, 71, 56, .1), rgba(181, 138, 74, .05) 55%, #FBF8F1);
-  border: 1px solid rgba(200, 71, 56, .24);
-   inset 0 1px 0 rgba(120, 100, 75, 0.05);
+  background: linear-gradient(150deg, rgba(255, 251, 244, .95), rgba(251, 248, 241, .92) 55%, rgba(251, 248, 241, .88));
+  border: 1px solid rgba(200, 71, 56, .3);
+  box-shadow: 0 6px 18px rgba(70, 50, 30, 0.06);
+  backdrop-filter: blur(6px);
 }
 .rpt-overview-metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
 .rpt-metric {
   display: flex; flex-direction: column; gap: 6px;
   padding: 14px; border-radius: 9px;
-  background: #FBF8F1; border: 1px solid rgba(120, 100, 75, 0.05);
+  background: #FFFFFF; border: 1px solid rgba(120, 100, 75, 0.12);
+  box-shadow: 0 2px 6px rgba(70, 50, 30, 0.04);
 }
-.rpt-metric-lbl { font-size: 10.5px; letter-spacing: 1px; color: var(--ink-faint); font-weight: 600; }
-.rpt-metric-val { display: flex; align-items: baseline; gap: 4px; font-size: 34px; font-weight: 500; color: var(--ink); line-height: 1; font-variant-numeric: tabular-nums; }
-.rpt-metric-val small { font-size: 12px; color: var(--ink-faint); font-weight: 600; }
+.rpt-metric-lbl { font-size: 11px; letter-spacing: 1px; color: #5C4A28; font-weight: 700; }
+.rpt-metric-val { display: flex; align-items: baseline; gap: 4px; font-size: 34px; font-weight: 600; color: #1a1208; line-height: 1; font-variant-numeric: tabular-nums; }
+.rpt-metric-val small { font-size: 12px; color: #5C4A28; font-weight: 600; }
 .rpt-metric-val.gold { color: var(--accent-gold); text-shadow: none; }
-.rpt-metric-val.lvl { font-size: 17px; font-weight: 500; color: var(--signal); }
-.rpt-metric-sub { font-size: 10.5px; color: var(--ink-faint); }
+.rpt-metric-val.lvl { font-size: 16px; font-weight: 600; color: var(--signal); }
+.rpt-metric-sub { font-size: 11px; color: #5C4A28; font-weight: 500; }
 .rpt-ai-summary {
   display: flex; gap: 12px; align-items: flex-start;
   padding: 15px; border-radius: 9px;
   background: #FBF8F1; border: 1px solid rgba(200, 71, 56, .2);
 }
-.rpt-ai-summary-text b { display: block; font-size: 13px; font-weight: 500; color: var(--ink); margin-bottom: 6px; }
-.rpt-ai-summary-text p { margin: 0; font-size: 13px; line-height: 1.7; color: var(--ink-soft); }
+.rpt-ai-summary-text b { display: block; font-size: 13px; font-weight: 600; color: #1a1208; margin-bottom: 6px; }
+.rpt-ai-summary-text p { margin: 0; font-size: 13px; line-height: 1.7; color: #2d2a25; }
 
 /* ---------- 能力雷达 ---------- */
-.rpt-card { background: rgba(120, 100, 75, 0.05); border: 1px solid rgba(120, 100, 75, 0.08); border-radius: 15px; padding: 15px 16px;  -webkit- }
+.rpt-card { background: rgba(255, 255, 255, .82); border: 1px solid rgba(120, 100, 75, 0.14); border-radius: 15px; padding: 15px 16px; box-shadow: 0 4px 12px rgba(70, 50, 30, 0.05); backdrop-filter: blur(6px); }
 .rpt-sec-head { display: flex; align-items: baseline; gap: 10px; padding: 2px 4px; }
-.rpt-sec-head b { font-size: 14px; font-weight: 500; color: var(--ink); }
+.rpt-sec-head b { font-size: 14px; font-weight: 600; color: #1a1208; }
 .rpt-sec-head b::before { content: ""; display: inline-block; width: 3px; height: 13px; border-radius: 2px; background: var(--signal); box-shadow: 0 0 8px var(--signal); margin-right: 9px; vertical-align: -1px; }
-.rpt-sec-head small { font-size: 11px; color: var(--ink-faint); }
+.rpt-sec-head small { font-size: 11px; color: #5C4A28; font-weight: 500; }
 .rpt-radar { height: 320px; margin-top: 6px; }
 
 /* ---------- 能力分析列表 ---------- */
@@ -3042,30 +3107,31 @@ mark.hl-good.is-adopted { background: rgba(120, 100, 75, 0.1); color: #7f9c8c; t
   position: relative; cursor: pointer; overflow: hidden;
   display: flex; flex-direction: column; gap: 9px;
   padding: 14px 15px; border-radius: 13px;
-  background: rgba(120, 100, 75, 0.05); border: 1px solid rgba(120, 100, 75, 0.08);
+  background: rgba(255, 255, 255, .88); border: 1px solid rgba(120, 100, 75, 0.14);
   transition: transform .16s, border-color .16s, box-shadow .16s;
+  backdrop-filter: blur(6px);
 }
 .rpt-skill:hover { transform: translateY(-3px); border-color: rgba(200, 71, 56, .45); box-shadow: 0 14px 30px rgba(70, 50, 30, 0.08), 0 0 24px rgba(200, 71, 56, .12); }
 .rpt-skill.is-open { border-color: rgba(200, 71, 56, .6); box-shadow: 0 0 26px rgba(200, 71, 56, .16); }
 .rpt-skill-top { display: flex; align-items: center; gap: 9px; }
-.rpt-skill-idx { font-size: 10.5px; font-weight: 500; letter-spacing: .5px; color: var(--ink-faint); font-family: var(--font-mono, monospace); }
-.rpt-skill-name { font-size: 13.5px; font-weight: 500; color: var(--ink); flex: 1 1 auto; }
-.rpt-skill-status { font-size: 10px; font-weight: 500; padding: 3px 9px; border-radius: 6px; white-space: nowrap; }
-.rpt-skill-status.is-ok { color: #6FA69A; background: rgba(120, 100, 75, 0.12); border: 1px solid rgba(120, 100, 75, 0.3); }
+.rpt-skill-idx { font-size: 11px; font-weight: 600; letter-spacing: .5px; color: #5C4A28; font-family: var(--font-mono, monospace); }
+.rpt-skill-name { font-size: 13.5px; font-weight: 600; color: #1a1208; flex: 1 1 auto; }
+.rpt-skill-status { font-size: 10.5px; font-weight: 600; padding: 3px 9px; border-radius: 6px; white-space: nowrap; }
+.rpt-skill-status.is-ok { color: #2F6B5A; background: rgba(120, 100, 75, 0.12); border: 1px solid rgba(120, 100, 75, 0.3); }
 .rpt-skill-status.is-good { color: var(--signal); background: var(--signal-dim); border: 1px solid rgba(200, 71, 56, .3); }
-.rpt-skill-status.is-warn { color: var(--accent-gold); background: rgba(181, 138, 74, .1); border: 1px solid rgba(181, 138, 74, .3); }
+.rpt-skill-status.is-warn { color: #8B7340; background: rgba(181, 138, 74, .14); border: 1px solid rgba(181, 138, 74, .35); }
 .rpt-skill-score { display: flex; align-items: baseline; gap: 3px; }
-.rpt-skill-score b { font-size: 30px; font-weight: 500; color: var(--ink); line-height: 1; font-variant-numeric: tabular-nums; }
+.rpt-skill-score b { font-size: 30px; font-weight: 600; color: #1a1208; line-height: 1; font-variant-numeric: tabular-nums; }
 .rpt-skill.is-warn .rpt-skill-score b { color: var(--accent-gold); }
-.rpt-skill.is-ok .rpt-skill-score b { color: #6FA69A; }
-.rpt-skill-score small { font-size: 11px; color: var(--ink-faint); }
+.rpt-skill.is-ok .rpt-skill-score b { color: #2F6B5A; }
+.rpt-skill-score small { font-size: 11px; color: #5C4A28; font-weight: 500; }
 .rpt-skill-bar { height: 6px; border-radius: 6px; background: rgba(120, 100, 75, 0.05); overflow: hidden; }
 .rpt-skill-bar i { display: block; height: 100%; width: 0; border-radius: 6px; background: linear-gradient(90deg, var(--signal), var(--signal-deep)); transition: width 1.1s cubic-bezier(.2, .8, .3, 1); }
 .rpt-skill.is-warn .rpt-skill-bar i { background: linear-gradient(90deg, var(--accent-gold), #A97845); }
-.rpt-skill-eval { margin: 0; font-size: 11.5px; line-height: 1.65; color: var(--ink-soft); }
+.rpt-skill-eval { margin: 0; font-size: 12px; line-height: 1.7; color: #2d2a25; }
 .rpt-skill-detail { padding-top: 2px; animation: fadeUp .25s ease both; }
 .rpt-skill-detail-inner {
-  padding: 9px 11px; border-radius: 9px; font-size: 11px; line-height: 1.6; color: var(--ink-soft);
+  padding: 9px 11px; border-radius: 9px; font-size: 11.5px; line-height: 1.65; color: #2d2a25;
   background: rgba(200, 71, 56, .07); border: 1px solid rgba(200, 71, 56, .18);
 }
 
@@ -3074,44 +3140,45 @@ mark.hl-good.is-adopted { background: rgba(120, 100, 75, 0.1); color: #7f9c8c; t
 .rpt-insight {
   display: flex; flex-direction: column; gap: 10px;
   padding: 15px 16px; border-radius: 13px;
-  background: rgba(120, 100, 75, 0.05); border: 1px solid rgba(120, 100, 75, 0.08);
+  background: rgba(255, 255, 255, .88); border: 1px solid rgba(120, 100, 75, 0.14);
   transition: transform .16s, box-shadow .16s, border-color .16s;
+  backdrop-filter: blur(6px);
 }
 .rpt-insight:hover { transform: translateY(-2px); box-shadow: 0 12px 26px rgba(70, 50, 30, 0.08); }
-.rpt-insight-head { display: flex; align-items: center; gap: 8px; font-size: 12.5px; font-weight: 500; color: var(--ink); }
+.rpt-insight-head { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: #1a1208; }
 .rpt-insight-head span { font-size: 13px; letter-spacing: 1px; }
 .rpt-insight.is-strong { border-color: rgba(181, 138, 74, .35); }
-.rpt-insight.is-strong .rpt-insight-head span { color: var(--accent-gold); text-shadow: none; }
-.rpt-insight.is-risk { border-color: rgba(200, 63, 50, 0.14); }
-.rpt-insight.is-risk .rpt-insight-head span { color: #E5C7C0; }
+.rpt-insight.is-strong .rpt-insight-head span { color: #8B7340; text-shadow: none; }
+.rpt-insight.is-risk { border-color: rgba(200, 63, 50, 0.25); }
+.rpt-insight.is-risk .rpt-insight-head span { color: #B0331F; }
 .rpt-insight.is-learn { border-color: rgba(200, 71, 56, .3); }
 .rpt-insight.is-learn .rpt-insight-head span { color: var(--signal); }
 .rpt-insight-tags { display: flex; flex-wrap: wrap; gap: 6px; }
 .rpt-insight-tags span {
   font-size: 11.5px; font-weight: 600; padding: 5px 12px; border-radius: 6px;
-  color: var(--ink-soft); background: rgba(120, 100, 75, 0.05); border: 1px solid rgba(120, 100, 75, 0.08);
+  color: #2d2a25; background: rgba(120, 100, 75, 0.05); border: 1px solid rgba(120, 100, 75, 0.12);
 }
-.is-strong .rpt-insight-tags span { color: var(--accent-gold); background: rgba(181, 138, 74, .09); border-color: rgba(181, 138, 74, .28); }
-.is-risk .rpt-insight-tags span { color: #E5C7C0; background: rgba(200, 63, 50, 0.08); border-color: rgba(200, 63, 50, 0.14); }
-.is-learn .rpt-insight-tags span { color: var(--signal); background: var(--signal-dim); border-color: rgba(200, 71, 56, .28); }
+.is-strong .rpt-insight-tags span { color: #6f5a32; background: rgba(181, 138, 74, .14); border-color: rgba(181, 138, 74, .32); }
+.is-risk .rpt-insight-tags span { color: #B0331F; background: rgba(200, 63, 50, 0.08); border-color: rgba(200, 63, 50, 0.22); }
+.is-learn .rpt-insight-tags span { color: var(--signal); background: var(--signal-dim); border-color: rgba(200, 71, 56, .32); }
 .rpt-insight-up { display: flex; align-items: baseline; justify-content: center; gap: 7px; margin-top: 4px; padding: 8px; border-radius: 9px; background: rgba(200, 71, 56, .07); border: 1px dashed rgba(200, 71, 56, .3); }
-.rpt-insight-up span { font-size: 10.5px; color: var(--ink-faint); }
-.rpt-insight-up b { font-size: 15px; font-weight: 500; color: var(--accent-gold); text-shadow: none; }
-.rpt-insight-up small { font-size: 10px; color: var(--ink-faint); }
+.rpt-insight-up span { font-size: 11px; color: #5C4A28; font-weight: 500; }
+.rpt-insight-up b { font-size: 15px; font-weight: 600; color: var(--accent-gold); text-shadow: none; }
+.rpt-insight-up small { font-size: 10px; color: #5C4A28; font-weight: 500; }
 
 /* ---------- 职业发展路径 ---------- */
 .rpt-career { display: flex; flex-direction: column; gap: 13px; }
 .rpt-career-path { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .rpt-career-step { display: flex; align-items: center; gap: 8px; }
-.rpt-career-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--ink-faint); flex: 0 0 auto; }
+.rpt-career-dot { width: 9px; height: 9px; border-radius: 50%; background: #5C4A28; flex: 0 0 auto; }
 .rpt-career-step.is-cur .rpt-career-dot { background: var(--signal); box-shadow: 0 0 12px var(--signal); }
 .rpt-career-step.is-next .rpt-career-dot { background: var(--accent-gold); box-shadow: 0 0 12px var(--accent-gold); }
 .rpt-career-card {
   padding: 11px 16px; border-radius: 11px; min-width: 150px;
-  background: rgba(120, 100, 75, 0.05); border: 1px solid rgba(120, 100, 75, 0.08);
+  background: rgba(120, 100, 75, 0.05); border: 1px solid rgba(120, 100, 75, 0.12);
 }
-.rpt-career-card b { display: block; font-size: 14px; font-weight: 500; color: var(--ink); }
-.rpt-career-card small { display: block; font-size: 10.5px; color: var(--ink-faint); margin-top: 3px; }
+.rpt-career-card b { display: block; font-size: 14px; font-weight: 600; color: #1a1208; }
+.rpt-career-card small { display: block; font-size: 11px; color: #5C4A28; font-weight: 500; margin-top: 3px; }
 .rpt-career-step.is-next .rpt-career-card { border-color: rgba(181, 138, 74, .45); background: rgba(181, 138, 74, .08); }
 .rpt-career-arrow { color: var(--signal); font-size: 18px; font-weight: 500; }
 .rpt-career-need { display: flex; align-items: center; gap: 10px; margin-left: auto; flex-wrap: wrap; }

@@ -80,23 +80,27 @@
   --gap-y: 14px;
 
   position: relative;
-  min-height: 100vh;
+  /* 单屏铺满：占满 topnav 之下的全部可视高度，三栏底边对齐视口底部 */
+  height: calc(100vh - var(--topbar-h, 64px));
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   color: var(--text-1);
   font-family: var(--font-cn);
   font-size: 14px;
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  padding: 64px 28px 60px;
+  padding: 14px 28px 20px;
 
-  background:
-    radial-gradient(1100px 620px at 88% -12%, rgba(181, 138, 58, 0.16), transparent 55%),
-    radial-gradient(960px 540px at -8% 28%, rgba(115, 140, 136, 0.14), transparent 60%),
-    radial-gradient(800px 580px at 50% 105%, rgba(181, 138, 58, 0.06), transparent 55%),
-    linear-gradient(168deg, #F8F5EC 0%, #F4EFE3 48%, #ECE5D4 100%);
+  /* 背景透明：不再用大块米白渐变遮住站点的氛围背景图 */
+  background: transparent;
 }
 
-#ce-app > * { position: relative; z-index: 1; }
+/* 注意：证据抽屉 / 遮罩 / Toast 为 fixed 弹层，排除在“提升为 relative”之外，
+   否则会掉进文档流底部（数据证据悬浮窗跑到屏幕下方的问题根源） */
+#ce-app > *:not(.git-drawer):not(.git-drawer-mask):not(.git-toast) { position: relative; z-index: 1; }
 
 @keyframes ceFadeUp {
   from { opacity: 0; transform: translateY(10px); }
@@ -1927,7 +1931,7 @@
    响应式
    ========================================================================== */
 @media (max-width: 1280px) {
-  #ce-app { padding: 18px 28px 60px; }
+  #ce-app { padding: 12px 24px 16px; }
   .git-layout { grid-template-columns: minmax(0, 1fr) 300px; gap: 18px; }
   .gh-title { font-size: 32px; }
 }
@@ -1943,6 +1947,127 @@
   .git-side { position: relative; top: 0; max-height: none; }
   .gg-canvas-wrap { aspect-ratio: 5 / 4; }
 }
+
+/* ==========================================================================
+   VIEWPORT-FIT · 单屏铺满（2026-09-03）
+   ① 主体三栏底边对齐、恰好铺满 topnav 之下的可视区域；
+   ② 数据证据悬浮窗 / 遮罩 / Toast 恢复 fixed 屏幕居中；
+   ③ #ce-app 米白渐变底已透明化，露出站点氛围背景图，去掉底部大块米白框。
+   ========================================================================== */
+
+/* 去除 page-main 默认内边距，让 #ce-app 精确占满可视高度 */
+body[data-page="evolution"] #page-main {
+  padding: 0;
+  overflow: hidden;
+}
+
+/* 顶部三块与主体同宽居中；header/slider/tiers 固定高度，主体吸收剩余空间 */
+.git-header,
+.git-slider-wrap,
+.git-tiers,
+.git-layout {
+  width: min(100%, var(--max-w));
+  margin-left: auto;
+  margin-right: auto;
+}
+.git-header  { flex: 0 0 auto; margin-bottom: 12px; }
+.git-slider-wrap { flex: 0 0 auto; margin-bottom: 12px; }
+.git-tiers   { flex: 0 0 auto; margin-bottom: 12px; }
+
+/* 主体：占满剩余高度，行高锁定为容器高，三列等高并底边对齐 */
+.git-layout {
+  flex: 1 1 auto;
+  min-height: 0;
+  align-items: stretch;
+  grid-template-rows: minmax(0, 1fr);
+}
+.git-layout > * { min-height: 0; }
+
+/* 左栏 / 右栏：去掉 sticky 与视口约束，改为随网格行高等高 + 内部滚动 */
+.git-job-picker,
+.git-side {
+  position: relative;
+  top: auto;
+  max-height: none;
+}
+.git-side { overflow-y: auto; }
+
+/* 左栏内岗位列表吸收剩余高度并内部滚动 */
+.git-job-picker { overflow: hidden; }
+.git-job-list {
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: none;
+  overflow-y: auto;
+}
+
+/* 中栏：图表画布弹性吸收剩余高度（不再锁 16:9），图例固定在底部 */
+.git-graph-side {
+  display: flex;
+  flex-direction: column;
+}
+.gg-canvas-wrap {
+  flex: 1 1 auto;
+  aspect-ratio: auto;
+  min-height: 180px;
+}
+.gg-legend { flex: 0 0 auto; }
+
+/* 证据抽屉与 Toast 必须保持 fixed（防止被 #ce-app 内部定位规则影响） */
+#ce-app > .git-drawer,
+#ce-app > .git-drawer-mask,
+#ce-app > .git-toast {
+  position: fixed;
+}
+
+/* 较矮视口：压缩头部间距，把高度让给主体图谱 */
+@media (max-height: 900px) {
+  #ce-app { padding-top: 10px; }
+  .git-header { margin-bottom: 8px; padding-bottom: 12px; }
+  .git-slider-wrap { margin-bottom: 8px; padding: 12px 20px; }
+  .git-slider-wrap .gs-meta { margin-bottom: 8px; }
+  .git-tiers { margin-bottom: 8px; }
+  .tier { padding: 6px 12px; }
+}
+@media (max-height: 800px) {
+  .git-header { margin-bottom: 6px; padding-bottom: 8px; }
+  .git-slider-wrap { margin-bottom: 6px; padding: 8px 18px; }
+  .gs-meta { margin-bottom: 6px; }
+  .git-slider-wrap .gs-track { height: 44px; padding-top: 6px; padding-bottom: 12px; }
+  .git-slider-wrap .gs-arrow { width: 28px; height: 28px; }
+  .git-tiers { margin-bottom: 6px; }
+  .tier { padding: 4px 10px; font-size: 11.5px; }
+  .gg-canvas-wrap { min-height: 140px; }
+}
+
+/* 窄屏(<1080)回退为纵向滚动：单列网格 + 固定画布比例，避免挤压 */
+@media (max-width: 1080px) {
+  body[data-page="evolution"] #page-main { overflow: auto; }
+  #ce-app {
+    display: block;
+    height: auto;
+    min-height: calc(100vh - var(--topbar-h, 64px));
+    overflow: visible;
+    padding: 18px 20px 40px;
+  }
+  .git-header,
+  .git-slider-wrap,
+  .git-tiers,
+  .git-layout {
+    width: 100%;
+    max-width: var(--max-w);
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .git-header, .git-slider-wrap, .git-tiers { flex: none; }
+  .git-layout { flex: none; min-height: 0; grid-template-rows: none; }
+  .git-job-picker { overflow-y: auto; max-height: none; }
+  .git-job-list { flex: none; max-height: 320px; }
+  .git-graph-side { display: block; }
+  .gg-canvas-wrap { flex: none; aspect-ratio: 5 / 4; min-height: 320px; }
+  .gg-legend { flex: none; }
+}
+
 
 @media (max-width: 720px) {
   #ce-app { padding: 14px 16px 50px; }

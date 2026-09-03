@@ -628,11 +628,12 @@
   z-index: 90;
   width: 330px;
   border-radius: 18px;
-  background: linear-gradient(165deg, rgba(17, 29, 56, 0.92), rgba(8, 15, 31, 0.94));
-  border: 1px solid rgba(53, 224, 200, 0.28);
+  background: linear-gradient(165deg, rgba(17, 29, 56, .95), rgba(8, 15, 31, .97));
+  border: 1px solid rgba(53, 224, 200, .35);
   backdrop-filter: blur(20px) saturate(1.2);
   box-shadow: 0 18px 60px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(53, 224, 200, 0.08), 0 0 40px rgba(31, 200, 217, 0.12);
   overflow: hidden;
+  color: #dbe7f5;
   animation: los-coach-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.4s backwards;
 }
 .los-coach::before {
@@ -1086,4 +1087,529 @@ body:has(#view-learn.is-active) .qa-fab {
 }
 @media (prefers-reduced-motion: reduce) {
   .rps-scanline, .rps-orb-ring, .rps-orb-pulse, .rps-marquee-track, .rps-neural-nodes circle, .rps-neural-links line { animation: none !important; }
+}
+
+/* ============================================================
+ * 浅色纸张版 LOS 覆盖层（body.standalone-view 已强制 .los-glass 为奶油色）
+ * ── 解决：原本深色主题的文字/边框/按钮在浅色卡片上看不清
+ * ── 顺手：① 单屏布局 ② 底部章节变点击弹窗
+ * ============================================================ */
+
+/* ===== 主题色变量重写（深→浅） ===== */
+body.standalone-view .los {
+  --los-bg0: transparent;
+  --los-bg1: transparent;
+  --los-ink: #2A2520;            /* 主体字色 — 由浅蓝改为深墨 */
+  --los-ink-soft: #5C5347;       /* 次级字色 — 由浅蓝改为深棕 */
+  --los-ink-faint: #94897B;      /* 辅助字色 */
+  --los-ok: #2F7A4D;
+  --los-warn: #B58A3C;
+  --los-danger: #B83D31;
+  --los-line: rgba(105, 85, 60, 0.18);
+  --los-line-strong: rgba(105, 85, 60, 0.34);
+  --los-glass: #FFFFFF;
+  --los-glass-2: #FBF6EA;
+  --los-teal: #2A8A8C;            /* 主色：青绿（深色背景用 #35e0c8 → 浅底用 #2A8A8C 更稳重）*/
+  --los-teal-2: #1F6E70;
+  --los-gold: #A0763A;
+  --los-gold-2: #8B6321;
+
+  /* 紧凑布局 */
+  padding: 4px 6px 18px;
+  gap: 14px;
+  color: var(--los-ink);
+  font-family: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", -apple-system, sans-serif;
+}
+
+/* 隐藏深色背景氛围层 */
+body.standalone-view .los-bg,
+body.standalone-view .los-bg-orb,
+body.standalone-view .los-bg-grid {
+  display: none;
+}
+
+/* ===== 全局文字颜色 ===== */
+body.standalone-view .los-hero-title,
+body.standalone-view .los-h2,
+body.standalone-view .los-radar-title {
+  color: var(--los-ink);
+}
+body.standalone-view .los-hero-title em {
+  color: var(--los-teal);
+  font-weight: 700;
+}
+body.standalone-view .los-sec-sub,
+body.standalone-view .los-advice-title small,
+body.standalone-view .los-coach-title small {
+  color: var(--los-ink-soft);
+}
+
+/* AI 职业建议正文 — 必须深色清晰可读 */
+body.standalone-view .los-advice-text {
+  background: linear-gradient(160deg, rgba(42, 138, 140, 0.07), rgba(168, 139, 78, 0.05));
+  border: 1px solid rgba(42, 138, 140, 0.25);
+  border-left: 3px solid var(--los-teal);
+  color: var(--los-ink);
+  font-weight: 500;
+  font-size: 13.5px;
+  line-height: 1.75;
+}
+
+/* ===== ① 顶部职业成长概览 Dashboard — 压缩 ===== */
+body.standalone-view .los-hero {
+  gap: 12px;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.92fr) minmax(0, 1fr);
+}
+body.standalone-view .los-hero-left,
+body.standalone-view .los-radar,
+body.standalone-view .los-advice {
+  padding: 14px 18px;
+  box-shadow: 0 2px 12px rgba(60, 45, 30, 0.06);
+}
+body.standalone-view .los-glow::before {
+  display: none;
+}
+body.standalone-view .los-hero-title {
+  font-size: 16.5px;
+  font-weight: 700;
+  color: #1F1B16;
+}
+body.standalone-view .los-hero-live {
+  border-color: rgba(47, 122, 77, 0.32);
+  background: rgba(47, 122, 77, 0.10);
+  color: var(--los-ok);
+}
+body.standalone-view .los-level {
+  background: #FBF7EE;
+  border: 1px solid var(--los-line);
+  padding: 10px 12px;
+}
+body.standalone-view .los-level-tag b { color: #1F1B16; font-size: 13px; }
+body.standalone-view .los-level-tag small { color: var(--los-ink-faint); }
+body.standalone-view .los-level-eta b { color: var(--los-gold-2); }
+body.standalone-view .los-level-arrow {
+  background: linear-gradient(135deg, rgba(42, 138, 140, 0.18), rgba(168, 139, 78, 0.16));
+  border-color: rgba(42, 138, 140, 0.4);
+  color: var(--los-gold);
+}
+
+/* stats — 配色对齐，深字有色 */
+body.standalone-view .los-stats { gap: 9px; margin-top: auto; }
+body.standalone-view .los-stat {
+  background: #FBF7EE;
+  border: 1px solid var(--los-line);
+  padding: 11px 13px;
+}
+body.standalone-view .los-stat-label { color: var(--los-ink-faint); }
+body.standalone-view .los-stat-value b { font-size: 23px; color: #1F1B16; }
+body.standalone-view .los-stat-value b.hot { color: var(--los-teal); }
+body.standalone-view .los-stat-value b.gold { color: var(--los-gold-2); }
+body.standalone-view .los-stat-sub { color: var(--los-ink-soft); }
+body.standalone-view .los-stat-sub .up { color: var(--los-ok); font-weight: 700; }
+body.standalone-view .los-stat-meter {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+/* AI Orb */
+body.standalone-view .los-ai-orb {
+  background: linear-gradient(135deg, var(--los-teal), var(--los-teal-2));
+  color: #FFFFFF;
+}
+body.standalone-view .los-advice-state {
+  border-color: rgba(168, 139, 78, 0.35);
+  background: rgba(168, 139, 78, 0.10);
+  color: var(--los-gold-2);
+}
+
+/* ===== ② 学习路径主体（Timeline + Skill Cards）— 压缩 + 浅化 ===== */
+body.standalone-view .los-sec-head { margin-bottom: 8px; }
+body.standalone-view .los-eyebrow {
+  color: var(--los-teal);
+  font-family: "Inter", "IBM Plex Mono", monospace;
+}
+body.standalone-view .los-h2 { font-size: 16px; }
+
+body.standalone-view .los-main {
+  grid-template-columns: 230px minmax(0, 1fr);
+  gap: 14px;
+}
+
+/* timeline stages — 紧凑卡片 */
+body.standalone-view .los-timeline {
+  padding: 6px 0 6px 32px;
+  gap: 9px;
+}
+body.standalone-view .los-timeline::before {
+  background: linear-gradient(180deg, rgba(42, 138, 140, 0.45), rgba(168, 139, 78, 0.4));
+}
+body.standalone-view .los-stage {
+  background: #FFFFFF;
+  border: 1px solid var(--los-line);
+  padding: 11px 14px;
+  color: var(--los-ink);
+}
+body.standalone-view .los-stage:hover {
+  border-color: var(--los-line-strong);
+}
+body.standalone-view .los-stage::before {
+  background: #F7F1E4;
+  border: 2px solid rgba(42, 138, 140, 0.5);
+}
+body.standalone-view .los-stage.is-active {
+  background: linear-gradient(150deg, rgba(42, 138, 140, 0.10), #FFFFFF);
+  border-color: rgba(42, 138, 140, 0.42);
+}
+body.standalone-view .los-stage.is-active::before {
+  background: var(--los-teal);
+}
+body.standalone-view .los-stage-name { font-size: 13px; color: #1F1B16; }
+body.standalone-view .los-stage-en { color: var(--los-ink-faint); }
+body.standalone-view .los-stage-value {
+  background: rgba(168, 139, 78, 0.12);
+  border-color: rgba(168, 139, 78, 0.32);
+  color: var(--los-gold-2);
+}
+body.standalone-view .los-stage-meta { color: var(--los-ink-faint); }
+body.standalone-view .los-stage-meta b { color: var(--los-ink-soft); }
+body.standalone-view .los-stage-bar { background: rgba(0, 0, 0, 0.07); }
+
+/* skill cards — 紧凑 */
+body.standalone-view .los-cards {
+  gap: 12px;
+}
+body.standalone-view .los-card {
+  background: #FFFFFF;
+  border: 1px solid var(--los-line);
+  color: var(--los-ink);
+  min-height: 180px;
+  padding: 13px 14px;
+  box-shadow: 0 2px 10px rgba(60, 45, 30, 0.05);
+}
+body.standalone-view .los-card::after { display: none; }
+body.standalone-view .los-card:hover {
+  border-color: rgba(42, 138, 140, 0.42);
+  box-shadow: 0 12px 28px rgba(60, 45, 30, 0.10);
+}
+body.standalone-view .los-card.is-mastered {
+  border-color: rgba(47, 122, 77, 0.36);
+}
+body.standalone-view .los-card.is-gap {
+  border-color: rgba(184, 61, 49, 0.36);
+}
+body.standalone-view .los-card-title h3 { color: #1F1B16; font-size: 14px; }
+body.standalone-view .los-card-icon {
+  background: linear-gradient(150deg, rgba(42, 138, 140, 0.16), rgba(42, 138, 140, 0.05));
+  border-color: rgba(42, 138, 140, 0.32);
+  color: var(--los-teal);
+}
+body.standalone-view .los-card.is-mastered .los-card-icon {
+  background: linear-gradient(150deg, rgba(47, 122, 77, 0.16), rgba(47, 122, 77, 0.05));
+  border-color: rgba(47, 122, 77, 0.32);
+  color: var(--los-ok);
+}
+body.standalone-view .los-card.is-gap .los-card-icon {
+  background: linear-gradient(150deg, rgba(184, 61, 49, 0.16), rgba(184, 61, 49, 0.05));
+  border-color: rgba(184, 61, 49, 0.32);
+  color: var(--los-danger);
+}
+body.standalone-view .los-card-value-label { color: var(--los-ink-faint); }
+body.standalone-view .los-card-value b {
+  background: rgba(168, 139, 78, 0.10);
+  border-color: rgba(168, 139, 78, 0.32);
+  color: var(--los-gold-2);
+}
+body.standalone-view .los-card-progress-row { color: var(--los-ink-faint); }
+body.standalone-view .los-card-progress-row b { color: var(--los-teal); }
+body.standalone-view .los-progress-bar { background: rgba(0, 0, 0, 0.06); }
+body.standalone-view .los-card.is-mastered .los-progress-bar i {
+  background: linear-gradient(90deg, var(--los-ok), #2F7A4D);
+}
+body.standalone-view .los-card.is-gap .los-progress-bar i {
+  background: linear-gradient(90deg, var(--los-danger), #C84738);
+}
+body.standalone-view .los-card-reco {
+  background: linear-gradient(135deg, var(--los-gold), #C4A86B);
+  color: #2A1A02;
+}
+body.standalone-view .los-card-detail {
+  background: #FBF7EE;
+  border-color: var(--los-line);
+  color: var(--los-ink-soft);
+}
+body.standalone-view .los-card-detail b { color: var(--los-ink); }
+body.standalone-view .los-card-detail-row .k { color: var(--los-ink-faint); }
+body.standalone-view .los-card-actions {
+  border-top: 1px dashed var(--los-line);
+}
+
+/* tags - 全套深色字 */
+body.standalone-view .los-tag {
+  background: rgba(0, 0, 0, 0.04);
+  border-color: var(--los-line);
+  color: var(--los-ink-soft);
+}
+body.standalone-view .los-tag--teal {
+  color: var(--los-teal);
+  background: rgba(42, 138, 140, 0.10);
+  border-color: rgba(42, 138, 140, 0.32);
+}
+body.standalone-view .los-tag--gold {
+  color: var(--los-gold-2);
+  background: rgba(168, 118, 58, 0.10);
+  border-color: rgba(168, 118, 58, 0.32);
+}
+body.standalone-view .los-tag--mastered {
+  color: var(--los-ok);
+  background: rgba(47, 122, 77, 0.10);
+  border-color: rgba(47, 122, 77, 0.32);
+}
+body.standalone-view .los-tag--learning {
+  color: var(--los-warn);
+  background: rgba(181, 138, 60, 0.10);
+  border-color: rgba(181, 138, 60, 0.32);
+}
+body.standalone-view .los-tag--gap {
+  color: var(--los-danger);
+  background: rgba(184, 61, 49, 0.10);
+  border-color: rgba(184, 61, 49, 0.32);
+}
+
+/* 按钮 — 浅底板高对比 */
+body.standalone-view .los-btn--solid {
+  background: linear-gradient(135deg, var(--los-teal), var(--los-teal-2));
+  color: #FFFFFF;
+}
+body.standalone-view .los-btn--gold {
+  background: linear-gradient(135deg, var(--los-gold), #C4A86B);
+  color: #FFFFFF;
+}
+body.standalone-view .los-btn--ghost {
+  color: var(--los-ink-soft);
+  background: rgba(0, 0, 0, 0.04);
+  border-color: var(--los-line);
+}
+body.standalone-view .los-btn--ghost:hover {
+  background: rgba(0, 0, 0, 0.08);
+  color: var(--los-ink);
+}
+
+/* ===== ③ ④ 章节 — 默认隐藏，改用点击触发按钮 ===== */
+body.standalone-view .los-graph-sec,
+body.standalone-view .los-forecast-sec {
+  display: none;
+}
+
+/* 弹窗触发按钮区（紧跟在 los-cards 之后） */
+body.standalone-view .los-actions-bar {
+  display: flex;
+  gap: 12px;
+  margin-top: 4px;
+}
+body.standalone-view .los-trigger {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.85), #FBF6EA);
+  border: 1px solid var(--los-line);
+  cursor: pointer;
+  font-family: inherit;
+  color: var(--los-ink);
+  transition: all 0.22s;
+  text-align: left;
+}
+body.standalone-view .los-trigger:hover {
+  transform: translateY(-2px);
+  border-color: rgba(42, 138, 140, 0.4);
+  box-shadow: 0 10px 24px rgba(60, 45, 30, 0.08);
+}
+body.standalone-view .los-trigger-icon {
+  flex: 0 0 auto;
+  width: 38px; height: 38px;
+  display: grid; place-items: center;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--los-teal), var(--los-teal-2));
+  color: #FFF;
+  font-size: 18px;
+}
+body.standalone-view .los-trigger-icon.gold {
+  background: linear-gradient(135deg, var(--los-gold), #C4A86B);
+}
+body.standalone-view .los-trigger-text { flex: 1; min-width: 0; }
+body.standalone-view .los-trigger-text b { display: block; font-size: 13.5px; font-weight: 700; color: #1F1B16; }
+body.standalone-view .los-trigger-text small { display: block; font-size: 11.5px; color: var(--los-ink-soft); margin-top: 2px; }
+body.standalone-view .los-trigger-arrow { color: var(--los-ink-faint); font-size: 14px; }
+
+/* ===== AI Career Coach — 紧凑版 ===== */
+body.standalone-view .los-coach {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 90;
+  width: 280px;
+  border-radius: 14px;
+  background: linear-gradient(165deg, #FFFFFF, #FBF6EA);
+  border: 1px solid var(--los-line);
+  box-shadow: 0 14px 40px rgba(60, 45, 30, 0.18);
+  color: var(--los-ink);
+  overflow: hidden;
+}
+body.standalone-view .los-coach::before { display: none; }
+body.standalone-view .los-coach-head {
+  border-bottom: 1px solid var(--los-line);
+  padding: 11px 14px;
+}
+body.standalone-view .los-coach-orb {
+  background: linear-gradient(135deg, var(--los-teal), var(--los-teal-2));
+  color: #FFFFFF;
+}
+body.standalone-view .los-coach-orb::after { display: none; }
+body.standalone-view .los-coach-title b { color: #1F1B16; font-size: 12.5px; }
+body.standalone-view .los-coach-title small { color: var(--los-ink-soft); }
+body.standalone-view .los-coach-live { color: var(--los-ok); }
+body.standalone-view .los-coach-body { padding: 10px 14px; gap: 7px; }
+body.standalone-view .los-coach-task-label { color: var(--los-ink-faint); }
+body.standalone-view .los-coach-task { color: #1F1B16; font-size: 13px; }
+body.standalone-view .los-coach-task .tick { color: var(--los-gold); }
+body.standalone-view .los-coach-reason {
+  background: #FBF7EE;
+  border-left: 2px solid var(--los-gold);
+  color: var(--los-ink-soft);
+  font-size: 11px;
+  line-height: 1.6;
+  padding: 8px 10px;
+}
+body.standalone-view .los-coach-progress .row { color: var(--los-ink-faint); }
+body.standalone-view .los-coach-progress .row b { color: var(--los-gold-2); }
+body.standalone-view .los-coach-progress .los-progress-bar { background: rgba(0, 0, 0, 0.07); }
+body.standalone-view .los-coach-cta {
+  background: linear-gradient(135deg, var(--los-teal), var(--los-teal-2));
+  color: #FFF;
+  box-shadow: 0 6px 18px rgba(42, 138, 140, 0.32);
+  border-radius: 0 0 14px 14px;
+  padding: 10px;
+  font-size: 12.5px;
+}
+
+/* ===== LOS 内嵌弹窗（用于展示 ③ ④） ===== */
+body.standalone-view .los-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(20, 16, 10, 0.42);
+  backdrop-filter: blur(4px);
+  animation: losFadeIn 0.18s ease;
+}
+/* 尊重 HTML hidden 属性 */
+body.standalone-view .los-modal[hidden] {
+  display: none;
+}
+body.standalone-view .los-modal-card {
+  width: min(880px, calc(100vw - 40px));
+  max-height: calc(100vh - 60px);
+  background: linear-gradient(165deg, #FFFFFF, #FBF6EA);
+  border: 1px solid var(--los-line);
+  border-radius: 16px;
+  box-shadow: 0 24px 60px rgba(20, 16, 10, 0.32);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: losPop 0.22s ease;
+}
+body.standalone-view .los-modal-head {
+  display: flex; align-items: center; gap: 12px;
+  padding: 16px 22px;
+  border-bottom: 1px solid var(--los-line);
+}
+body.standalone-view .los-modal-head .los-modal-icon {
+  width: 32px; height: 32px; border-radius: 10px;
+  display: grid; place-items: center;
+  background: linear-gradient(135deg, var(--los-teal), var(--los-teal-2));
+  color: #FFF; font-size: 14px;
+}
+body.standalone-view .los-modal-head .los-modal-icon.gold {
+  background: linear-gradient(135deg, var(--los-gold), #C4A86B);
+}
+body.standalone-view .los-modal-head-title { flex: 1; min-width: 0; }
+body.standalone-view .los-modal-head-title b { display: block; font-size: 16px; font-weight: 700; color: #1F1B16; font-family: "Noto Serif SC", serif; letter-spacing: 0.02em; }
+body.standalone-view .los-modal-head-title small { display: block; font-size: 11.5px; color: var(--los-ink-soft); margin-top: 2px; }
+body.standalone-view .los-modal-close {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  border: 1px solid var(--los-line);
+  background: #FBF7EE;
+  color: var(--los-ink-soft);
+  cursor: pointer;
+  display: grid; place-items: center;
+  font-size: 14px;
+}
+body.standalone-view .los-modal-close:hover { background: #F0E8D8; color: var(--los-ink); }
+body.standalone-view .los-modal-body {
+  padding: 16px 22px 20px;
+  overflow: auto;
+}
+
+/* 弹窗内部 · 能力地图 SVG 容器配色 */
+body.standalone-view .los-modal-body .los-graph-legend { color: var(--los-ink-soft); }
+body.standalone-view .los-modal-body .los-graph-svg { width: 100%; height: auto; }
+body.standalone-view .los-modal-body .los-gedge { stroke: rgba(60, 45, 30, 0.22); }
+body.standalone-view .los-modal-body .los-gnode-label { fill: #1F1B16; }
+body.standalone-view .los-modal-body .los-gnode-sub { fill: var(--los-ink-faint); }
+body.standalone-view .los-modal-body .los-gnode-halo {
+  fill: rgba(255, 255, 255, 0.6);
+  stroke-width: 1.2;
+}
+body.standalone-view .los-modal-body .los-gnode.is-mastered .los-gnode-core {
+  fill: rgba(47, 122, 77, 0.12);
+  stroke: var(--los-ok);
+}
+body.standalone-view .los-modal-body .los-gnode.is-learning .los-gnode-core {
+  fill: rgba(181, 138, 60, 0.12);
+  stroke: var(--los-warn);
+}
+body.standalone-view .los-modal-body .los-gnode.is-gap .los-gnode-core {
+  fill: rgba(184, 61, 49, 0.12);
+  stroke: var(--los-danger);
+}
+body.standalone-view .los-modal-body .los-graph-info {
+  background: #FBF7EE;
+  border: 1px solid var(--los-line);
+  color: var(--los-ink-soft);
+}
+body.standalone-view .los-modal-body .los-graph-info b { color: var(--los-ink); }
+body.standalone-view .los-modal-body .los-graph-info .lg-title strong { color: #1F1B16; }
+body.standalone-view .los-modal-body .los-graph-info .lg-row .k { color: var(--los-ink-faint); }
+body.standalone-view .los-modal-body .los-forecast-canvas {
+  height: 320px;
+}
+
+/* 弹窗内 ECharts 文本适配浅色背景 (forecast) */
+body.standalone-view .los-modal-body .los-forecast-canvas text { fill: var(--los-ink-soft); }
+body.standalone-view .los-modal-body .los-forecast { padding: 0; background: transparent; }
+
+/* ===== 弹窗动画 ===== */
+@keyframes losFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes losPop {
+  from { opacity: 0; transform: scale(0.97); }
+  to { opacity: 1; transform: none; }
+}
+
+/* ===== 响应式微调（确保一屏可读） ===== */
+@media (max-width: 1280px) {
+  body.standalone-view .los-hero { grid-template-columns: 1fr 1fr; }
+  body.standalone-view .los-advice { grid-column: 1 / -1; }
+  body.standalone-view .los-advice-text { margin: 10px 0; }
+  body.standalone-view .los-main { grid-template-columns: 1fr; }
+  body.standalone-view .los-timeline { flex-direction: row; flex-wrap: wrap; padding: 6px 0; }
+  body.standalone-view .los-timeline::before { display: none; }
+  body.standalone-view .los-stage { flex: 1 1 220px; }
+  body.standalone-view .los-stage::before { display: none; }
 }

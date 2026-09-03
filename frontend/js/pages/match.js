@@ -1864,7 +1864,7 @@
   function renderAgentResult(d, el) {
     if (!el) return;
     const answer = (d && (d.answer || d.summary)) || '';
-    let html = `<div class="jd-agent-answer">${escapeHtml(answer)}</div>`;
+    let html = `<div class="jd-agent-answer">${formatAgentAnswer(answer)}</div>`;
     if (d && d.intent === 'WHAT_IF' && d.skill) {
       const before = d.before && d.before.score != null ? d.before.score : '—';
       const after = d.after && d.after.score != null ? d.after.score : '—';
@@ -1878,6 +1878,80 @@
         evs.slice(0, 3).map((e) => `<div class="jd-evidence">“${escapeHtml((e.snippet || '').slice(0, 160))}”${e.source_url ? `<br><a href="${escapeHtml(e.source_url)}" target="_blank" rel="noreferrer">来源链接 ↗</a>` : ''}</div>`).join('');
     }
     el.innerHTML = html;
+  }
+
+  /* ---- AI 顾问回答格式化：【标题】/有序列表/无序列表/段落 + Markdown 加粗 ---- */
+  function formatAgentAnswer(text) {
+    if (!text) return '<div class="jd-agent-empty">（AI 顾问暂无回答，请稍后重试）</div>';
+    const raw = String(text).replace(/\r\n/g, '\n').trim();
+    const lines = raw.split(/\n+/);
+    const out = [];
+    let buf = []; // 普通段落缓冲
+    let listType = null; // 'ol' | 'ul' | null
+    const renderInline = (s) => {
+      // 转义后再把 **xxx** 还原为 <strong>xxx</strong>
+      const esc = escapeHtml(s);
+      return esc.replace(/\*\*([^*\n]+?)\*\*/g, '<strong>$1</strong>');
+    };
+    const flushPara = () => {
+      if (buf.length) {
+        const p = buf.join(' ').trim();
+        if (p) out.push(`<p class="jd-agent-p">${renderInline(p)}</p>`);
+        buf = [];
+      }
+    };
+    const openList = (type) => {
+      if (listType && listType !== type) closeList();
+      if (!listType) { out.push(`<${type} class="jd-agent-list">`); listType = type; }
+    };
+    const closeList = () => {
+      if (listType) { out.push(`</${listType}>`); listType = null; }
+    };
+    const OL_RE = /^\s*(\d{1,2})[\.、\)]\s*(.+)$/;
+    const UL_RE = /^\s*[·•\-—]\s*(.+)$/;
+    const H_RE  = /^\s*【(.+?)】\s*(.*)$/;
+    // 整行以 **xxx**：或 **xxx** 开头 → 识别为段落标题
+    const H2_RE = /^\s*\*\*([^*\n]{2,40}?)\*\*[:：]?\s*(.*)$/;
+    for (const line of lines) {
+      const t = line.trim();
+      if (!t) { flushPara(); closeList(); continue; }
+      const hm = t.match(H_RE);
+      if (hm) {
+        flushPara(); closeList();
+        const title = escapeHtml(hm[1]);
+        const rest = hm[2];
+        out.push(`<h4 class="jd-agent-h">${title}</h4>`);
+        if (rest) buf.push(renderInline(rest));
+        continue;
+      }
+      const h2 = t.match(H2_RE);
+      if (h2) {
+        flushPara(); closeList();
+        const title = escapeHtml(h2[1]);
+        const rest = h2[2];
+        out.push(`<h4 class="jd-agent-h">${title}</h4>`);
+        if (rest) buf.push(renderInline(rest));
+        continue;
+      }
+      if (OL_RE.test(t)) {
+        flushPara();
+        const m = t.match(OL_RE);
+        openList('ol');
+        out.push(`<li>${renderInline(m[2])}</li>`);
+        continue;
+      }
+      if (UL_RE.test(t)) {
+        flushPara();
+        const m = t.match(UL_RE);
+        openList('ul');
+        out.push(`<li>${renderInline(m[1])}</li>`);
+        continue;
+      }
+      buf.push(t);
+    }
+    flushPara();
+    closeList();
+    return out.join('') || '<div class="jd-agent-empty">（AI 顾问暂无回答）</div>';
   }
 
   function renderJobAgentPanel(m) {
@@ -2429,7 +2503,6 @@
     el.innerHTML = `
       <div class="jd-info-scroll">
         ${renderAIMatchCard(m)}
-        <div id="jd-agent-panel"></div>
         <div class="jd-info-grid">
           <div class="jd-info-col jd-info-col--text">
             <div class="detail-section-title">岗位基本信息</div>
@@ -2475,40 +2548,15 @@
     if (bar) requestAnimationFrame(() => requestAnimationFrame(() => { bar.style.width = (bar.dataset.w || 0) + '%'; }));
     renderCapabilityGapAnalysis($('detail-graph'), m);
     const lb = $('jd-learn-btn'); if (lb) lb.addEventListener('click', () => openLearningProfile());
-    renderJobAgentPanel(m);
   }
 
   function renderDetailResumePane(m, job) {
     const el = $('jd-pane-resume'); if (!el) return;
-    const ev = m.evidences || {};
-    const matched = ev.matched || (m.matched || []).map((t) => ({ t: t, d: '' }));
-    const missing = ev.missing || (m.missing || []).map((t) => ({ t: t, d: '' }));
-    const gaps = (m.gaps || []).filter((g) => g.readiness < 70);
     el.innerHTML = `
-      <div class="jd-resume-cols">
-        <div class="jd-resume-card">
-          <div class="detail-section-title" style="color:var(--ok)">✓ 适配的地方</div>
-          ${matched.map((x) => `<div class="detail-reason ok"><span class="mk">✓</span><div><b>${escapeHtml(x.t)}</b>${x.d ? '<div class="jd-sub">' + escapeHtml(x.d) + '</div>' : ''}</div></div>`).join('')}
-          <div class="jd-summary-line ok-line">你的核心技能与岗位要求重合度高，面试时优先讲清这些项目的真实细节与量化结果。</div>
-        </div>
-        <div class="jd-resume-card jd-resume-card--gap">
-          <div class="detail-section-title" style="color:var(--rose)">! 不足的地方</div>
-          ${missing.map((x) => `<div class="detail-reason bad"><span class="mk">!</span><div><b>${escapeHtml(x.t)}</b>${x.d ? '<div class="jd-sub">' + escapeHtml(x.d) + '</div>' : ''}</div></div>`).join('')}
-          ${gaps.length ? '<div class="detail-section-title mt">能力缺口</div>' + gaps.map((g) => `<div class="job-skill-mini" style="margin-top:6px"><span class="nm">${escapeHtml(g.skill)}</span><span class="bar"><i style="width:${g.readiness}%"></i></span><span class="v">${g.readiness}</span></div>`).join('') : ''}
-          <div class="jd-summary-line bad-line">建议按「面试常问 → 上线常用」的优先级，先补强前两项能力缺口。</div>
-        </div>
-      </div>
-      <div class="jd-excellent">
-        <div class="detail-section-title" style="margin-top:14px">推荐优秀简历</div>
-        <div class="jd-excellent-card">
-          <div>
-            <b>${escapeHtml(job.title || '岗位')} · 标杆简历</b>
-            <p>参考同岗位高分简历的项目写法、技能排序与量化表达，补齐你的表述短板；也可点击标杆中的高亮亮点，一键同步到你的简历。</p>
-          </div>
-          <button class="btn-sm btn-sm--solid" id="jd-excellent-btn" type="button">查看优秀简历 →</button>
-        </div>
+      <div class="jd-resume-agent">
+        <div id="jd-agent-panel"></div>
       </div>`;
-    const eb = $('jd-excellent-btn'); if (eb) eb.addEventListener('click', openBenchmark);
+    renderJobAgentPanel(m);
   }
 
   /* ============================================================
@@ -3112,6 +3160,11 @@
         if (c) { c.scrollIntoView({ behavior: 'smooth', block: 'center' }); setTimeout(() => startLearnSkill(c), 450); }
         return;
       }
+      // 弹窗触发按钮
+      const openGraph = e.target.closest('#los-open-graph');
+      if (openGraph) { openLosModal('graph'); return; }
+      const openForecast = e.target.closest('#los-open-forecast');
+      if (openForecast) { openLosModal('forecast'); return; }
     });
     // 图谱节点 hover 联动（明暗）
     wrap.addEventListener('mouseover', (e) => {
@@ -3125,7 +3178,110 @@
       qsa('.los-gnode').forEach((g) => g.classList.remove('is-dim'));
       qsa('.los-gedge').forEach((ed) => ed.classList.remove('is-live'));
     });
+    // 弹窗关闭
+    const modalCloseGraph = $('los-modal-graph-close');
+    if (modalCloseGraph) modalCloseGraph.addEventListener('click', () => closeLosModal('graph'));
+    const modalCloseFcst = $('los-modal-forecast-close');
+    if (modalCloseFcst) modalCloseFcst.addEventListener('click', () => closeLosModal('forecast'));
+    const modalGraphMask = $('los-modal-graph');
+    if (modalGraphMask) modalGraphMask.addEventListener('click', (e) => { if (e.target === modalGraphMask) closeLosModal('graph'); });
+    const modalFcstMask = $('los-modal-forecast');
+    if (modalFcstMask) modalFcstMask.addEventListener('click', (e) => { if (e.target === modalFcstMask) closeLosModal('forecast'); });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        const fg = $('los-modal-graph'); if (fg && !fg.hidden) { closeLosModal('graph'); }
+        const ff = $('los-modal-forecast'); if (ff && !ff.hidden) { closeLosModal('forecast'); }
+      }
+    });
     bindLosChartsResize();
+  }
+
+  /* ---------- LOS 弹窗：把隐藏的 ③④ 章节挪到弹窗里展示 ---------- */
+  function openLosModal(type) {
+    const modal = $('los-modal-' + type);
+    const body = $('los-modal-' + type + '-body');
+    if (!modal || !body) return;
+    body.innerHTML = '';
+    if (type === 'graph') {
+      const src = $('los-graph');
+      if (src) body.innerHTML = src.innerHTML;
+      bindLearnGraphInModal(body);
+      body.classList.add('is-graph-body');
+    } else if (type === 'forecast') {
+      // 在弹窗里重建一个干净的 forecast canvas
+      body.innerHTML = '<div class="los-forecast-canvas" id="los-modal-forecast-canvas"></div>';
+      body.classList.add('is-forecast-body');
+      if (window.__losForecastOption && window.echarts) {
+        requestAnimationFrame(() => {
+          losChart('los-modal-forecast-canvas', window.__losForecastOption);
+        });
+      }
+    }
+    modal.hidden = false;
+  }
+
+  function closeLosModal(type) {
+    const modal = $('los-modal-' + type);
+    if (!modal) return;
+    modal.hidden = true;
+    // forecast: 销毁弹窗内的 chart 节省资源
+    if (type === 'forecast') {
+      const el = $('los-modal-forecast-canvas');
+      if (el && el._losChart) { try { el._losChart.dispose(); } catch (_) {} }
+    }
+  }
+
+  // 弹窗内的能力地图节点交互（点击节点显示下方 detail）
+  function bindLearnGraphInModal(root) {
+    if (!root) return;
+    const infoEl = root.querySelector('#los-graph-info');
+    qsa('.los-gnode', root).forEach((node) => {
+      node.addEventListener('click', () => {
+        if (!infoEl) return;
+        showLearnGraphInfoInto(node.dataset.skill, infoEl);
+      });
+    });
+  }
+
+  function showLearnGraphInfoInto(skillId, infoEl) {
+    if (!infoEl) return;
+    const _res = window.matchState.result;
+    if (isRealLearningPath(_res)) {
+      const gg = _res.gap_graph || {};
+      const nodes = gg.nodes || [];
+      const edges = gg.edges || [];
+      const node = nodes.find((n) => n.id === skillId || n.label === skillId);
+      if (!node) { infoEl.innerHTML = ''; return; }
+      const statusMap = { matched: ['已达标', '#2F7A4D'], candidate: ['可拓展', '#2A8A8C'], gap: ['能力缺口', '#B83D31'] };
+      const [label, color] = statusMap[node.status] || ['未知', '#94897B'];
+      const relatedEdges = edges.filter((e) => e.source === node.id || e.target === node.id);
+      infoEl.innerHTML = `
+        <div class="lg-title">
+          <span class="dot" style="background:${color};box-shadow:0 0 8px ${color}"></span>
+          <strong>${escapeHtml(node.label)}</strong>
+          <span class="los-tag los-tag--s ${node.status === 'matched' ? 'los-tag--mastered' : (node.status === 'candidate' ? 'los-tag--teal' : 'los-tag--gap')}">${label}</span>
+        </div>
+        <div class="lg-row"><span class="k">关系</span><span>${relatedEdges.length ? relatedEdges.slice(0, 4).map((e) => escapeHtml((e.source === node.id ? e.target : e.source))).join(' · ') : '—'}</span></div>`;
+      return;
+    }
+    const g = LEARN_OS.graph;
+    const node = g.nodes.find((n) => n.id === skillId);
+    if (!node) return;
+    const idx = g.chain.indexOf(skillId);
+    const next = idx >= 0 && idx < g.chain.length - 1 ? g.nodes.find((n) => n.id === g.chain[idx + 1]) : null;
+    const chainLen = g.chain.length;
+    const statusMap = { mastered: ['已掌握', '#2F7A4D'], learning: ['学习中', '#B58A3C'], gap: ['能力缺口', '#B83D31'] };
+    const [statusLabel, statusColor] = statusMap[node.status];
+    infoEl.innerHTML = `
+      <div class="lg-title">
+        <span class="dot" style="background:${statusColor};box-shadow:0 0 8px ${statusColor}"></span>
+        <strong>${escapeHtml(node.name)}</strong>
+        <span class="los-tag los-tag--s ${node.status === 'mastered' ? 'los-tag--mastered' : (node.status === 'learning' ? 'los-tag--learning' : 'los-tag--gap')}">${statusLabel}</span>
+        <span style="margin-left:auto;font-size:10.5px;color:var(--los-ink-faint)">能力链第 ${idx + 1} / ${chainLen} 环</span>
+      </div>
+      <div class="lg-row"><span class="k">为什么学习</span><span>${escapeHtml(node.info)}</span></div>
+      <div class="lg-row"><span class="k">学习建议</span><span>${escapeHtml(node.learn)}</span></div>
+      ${next ? `<div class="lg-row"><span class="k">下一环节</span><span>→ ${escapeHtml(next.name)}（${statusMap[next.status][0]}）</span></div>` : '<div class="lg-row"><span class="k">下一环节</span><span>✅ 已到达能力链终点</span></div>'}`;
   }
 
   function bindLosChartsResize() {
@@ -3555,6 +3711,7 @@
     box.innerHTML = `<div class="los-forecast-canvas" id="los-forecast-canvas"></div>`;
     if (!window.echarts) {
       box.innerHTML = `<div style="padding:20px;color:var(--los-ink-soft);font-size:12.5px">图表库加载中，请稍候…</div>`;
+      window.__losForecastOption = null;
       return;
     }
     // Phase 06：真实模式下用真实匹配度 + learning_path 生成预测点（demo 才用 LEARN_OS.forecast）
@@ -3579,28 +3736,28 @@
       grid: { left: 48, right: 30, top: 40, bottom: 40 },
       tooltip: {
         trigger: 'axis',
-        backgroundColor: 'rgba(10,18,36,0.92)',
-        borderColor: 'rgba(53,224,200,0.35)',
-        textStyle: { color: '#e8f2f8', fontSize: 12 },
+        backgroundColor: 'rgba(247, 241, 228, 0.98)',
+        borderColor: 'rgba(105, 85, 60, 0.32)',
+        textStyle: { color: '#2A2520', fontSize: 12 },
         formatter: (params) => {
           const p = points[params[0].dataIndex];
-          return `<b>${escapeHtml(p.label)}</b><br/>岗位匹配度 <b style="color:#35e0c8">${p.value}%</b><br/><span style="color:#9db2c6">${escapeHtml(p.note)}</span>`;
+          return `<b>${escapeHtml(p.label)}</b><br/>岗位匹配度 <b style="color:#2A8A8C">${p.value}%</b><br/><span style="color:#5C5347">${escapeHtml(p.note)}</span>`;
         }
       },
       xAxis: {
         type: 'category',
         data: points.map((p) => p.label),
         boundaryGap: false,
-        axisLine: { lineStyle: { color: 'rgba(140,190,255,0.18)' } },
+        axisLine: { lineStyle: { color: 'rgba(60, 45, 30, 0.18)' } },
         axisTick: { show: false },
-        axisLabel: { color: '#9db2c6', fontSize: 11, interval: 0 }
+        axisLabel: { color: '#5C5347', fontSize: 11, interval: 0 }
       },
       yAxis: {
         type: 'value',
         min: 55,
         max: 100,
-        splitLine: { lineStyle: { color: 'rgba(140,190,255,0.08)', type: 'dashed' } },
-        axisLabel: { color: '#5d738c', fontSize: 11, formatter: '{value}%' }
+        splitLine: { lineStyle: { color: 'rgba(60, 45, 30, 0.10)', type: 'dashed' } },
+        axisLabel: { color: '#94897B', fontSize: 11, formatter: '{value}%' }
       },
       series: [{
         type: 'line',
@@ -3608,14 +3765,14 @@
         smooth: true,
         symbol: 'circle',
         symbolSize: 9,
-        lineStyle: { width: 3, color: '#35e0c8', shadowColor: 'rgba(53,224,200,0.5)', shadowBlur: 14 },
-        itemStyle: { color: '#f0b429', borderColor: '#0a1224', borderWidth: 2 },
+        lineStyle: { width: 3, color: '#2A8A8C', shadowColor: 'rgba(42, 138, 140, 0.4)', shadowBlur: 14 },
+        itemStyle: { color: '#A0763A', borderColor: '#FBF6EA', borderWidth: 2 },
         areaStyle: {
           color: {
             type: 'linear', x: 0, y: 0, x2: 0, y2: 1,
             colorStops: [
-              { offset: 0, color: 'rgba(53,224,200,0.35)' },
-              { offset: 1, color: 'rgba(53,224,200,0.02)' }
+              { offset: 0, color: 'rgba(42, 138, 140, 0.32)' },
+              { offset: 1, color: 'rgba(42, 138, 140, 0.02)' }
             ]
           }
         },
@@ -3628,7 +3785,7 @@
             itemStyle: { color: 'transparent' },
             label: {
               formatter: p.value + '%',
-              color: '#f5ddb0',
+              color: '#8B6321',
               fontSize: 11,
               fontWeight: 700,
               position: 'top',
@@ -3638,6 +3795,7 @@
         }
       }]
     };
+    window.__losForecastOption = option;
     requestAnimationFrame(() => losChart('los-forecast-canvas', option));
   }
 
