@@ -2,6 +2,11 @@
 // build: 2026082301 — 历史版本对比重构：版本选择+能力结构演化关系
 console.log('[evolution.js] build=2026082301, history version compare refactor');
 let evolutionState = {currentJobId: 'Java开发工程师', timeOffset: 6};
+// —— 支持 ?job=<岗位名> 直达（来自新岗发现/个人仓库「洞察该岗位」入口） ——
+try {
+    var __qJob = new URLSearchParams(location.search).get('job');
+    if (__qJob && __qJob.trim()) evolutionState.currentJobId = __qJob.trim();
+} catch (_) {}
 window.initEvolution = function() {
     // 确保 Store 准备就绪
     if (!window.Store.state.evolution) window.generateAllData();
@@ -1144,6 +1149,15 @@ window.renderEvolutionCharts = function() {
 
 // 分岗位演化画像（切换左侧岗位时驱动变化）
 window.EVOLUTION_JOB_PROFILES = {
+    'RAG 知识工程师': {
+        cat:'人工智能', jdCount:860,
+        added:[{name:'GraphRAG',version:'新出现',growth:'+310%'},{name:'Rerank 重排',version:'新出现',growth:'+240%'},{name:'HyDE 假设文档',version:'新出现',growth:'+168%'},{name:'Agentic RAG',version:'新出现',growth:'+205%'},{name:'多路召回',version:'加分→必备',growth:'+96%'},{name:'RAGAS 评估',version:'新出现',growth:'+88%'}],
+        removed:[{name:'单路向量检索',version:'边缘化',decline:'-64%'},{name:'纯关键词倒排',version:'边缘化',decline:'-71%'},{name:'固定长度切片',version:'被替代',decline:'-55%'},{name:'朴素 Top-K',version:'被替代',decline:'-48%'}],
+        modified:[{name:'向量数据库',change:'加分→必备',weight:'↑'},{name:'混合检索',change:'新出现→必备',weight:'↑'},{name:'查询改写',change:'选修→加分',weight:'+26%'},{name:'评估体系',change:'—→必备',weight:'↑'},{name:'切片策略',change:'加分→核心',weight:'+31%'}],
+        hotSkills:['GraphRAG','Rerank','向量数据库','混合检索','RAGAS','HyDE','LangChain','LlamaIndex','Embedding','查询改写'],
+        hotValues:[296,241,228,205,148,132,196,154,188,118],
+        trendMust:[14,17,20,24,28,33,38,44,50,57,64,72], trendNice:[8,10,12,15,18,21,25,29,33,38,43,48]
+    },
     'Java开发工程师': {
         cat:'后端', jdCount:1420,
         added:[{name:'Spring Cloud Alibaba',version:'v2026.1',growth:'+347%'},{name:'GraalVM Native Image',version:'新出现',growth:'+128'},{name:'JDK 21 Virtual Thread',version:'v17→v21',growth:'+89%'},{name:'Spring AI',version:'新出现',growth:'+147'},{name:'OpenTelemetry',version:'新出现',growth:'+52'},{name:'eBPF',version:'新出现',growth:'+45'}],
@@ -1610,3 +1624,28 @@ window.exportNewSkillReport = function() {
     window.Utils.showToast('✓ 已生成「' + newSkillState.currentName + '」技能详情报告（演示）', 'mint');
 };
 
+
+
+// ============ 岗位洞察入口守卫：无明确岗位且无收藏 → 提示先收藏 ============
+(function () {
+    try {
+        var qJob = new URLSearchParams(location.search).get('job');
+        if (qJob && qJob.trim()) return; // 有明确岗位参数，直接展示
+        var u = JSON.parse(localStorage.getItem('zhitu_user') || 'null') || {};
+        var uid = String(u.username || u.user_id || u.id || 'guest');
+        var favs = [];
+        try { favs = JSON.parse(localStorage.getItem('zhitu_disc_favs__' + uid) || '[]') || []; } catch (_) {}
+        if (Array.isArray(favs) && favs.length) return;
+        var ov = document.createElement('div');
+        ov.id = 'evo-no-fav-overlay';
+        ov.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(250,247,240,.96);display:flex;align-items:center;justify-content:center;padding:24px';
+        ov.innerHTML = '<div style="width:min(420px,100%);background:#fff;border:1px solid #e8dfca;border-radius:18px;padding:34px 30px;text-align:center;box-shadow:0 24px 64px rgba(60,45,30,.18)">'
+            + '<div style="width:58px;height:58px;margin:0 auto 14px;border-radius:50%;background:linear-gradient(135deg,#c9a86a,#8c6f3e);color:#fff;display:grid;place-items:center;font-size:26px">☆</div>'
+            + '<h3 style="margin:0 0 8px;font:600 20px \'Noto Serif SC\',serif;color:#2a1f10">请先收藏岗位</h3>'
+            + '<p style="margin:0 0 20px;color:#6a6258;font-size:13px;line-height:1.8">岗位洞察基于你收藏的岗位生成。<br/>前往「新岗位发现」收藏感兴趣的岗位后，这里会展示对应的能力演化洞察。</p>'
+            + '<div style="display:flex;gap:10px">'
+            + '<a href="discovery.html?v=fix25" style="flex:1;text-align:center;padding:12px;border-radius:10px;background:linear-gradient(135deg,#c9a86a,#8c6f3e);color:#fff;font:600 14px sans-serif;text-decoration:none">前往新岗位发现</a>'
+            + '</div></div>';
+        document.body.appendChild(ov);
+    } catch (_) {}
+})();
