@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#F5F2ED" />
+  <title>执图破局 · 图谱与知识</title>
+  <link rel="stylesheet" href="../css/tokens.css?v=lightfix1" />
+  <link rel="stylesheet" href="../css/admin.css?v=premium2" />
+</head>
+<body>
+  <div class="admin-app">
+    <aside class="admin-sidebar" id="adminSidebar">
+      <div class="sidebar-top">
+        <a class="admin-brand" href="../index.html" aria-label="返回执图破局首页">
+          <span class="brand-glyph">执</span><span class="brand-copy"><b>执图破局</b><small>ADMIN CONSOLE</small></span>
+        </a>
+        <button class="mobile-close" id="closeNav" type="button" aria-label="关闭导航">×</button>
+        <div class="operator-card"><span class="operator-mark">◆</span><div><strong id="operatorName">值班工作区</strong><small id="operatorRole">ADMIN / OPERATOR</small></div><span class="online-dot" data-state="live"></span></div>
+      </div>
+      <nav class="admin-nav" aria-label="管理端工作区">
+        <p class="nav-label">运营 · OPERATIONS</p>
+        <a href="admin.html"><span class="nav-icon">◈</span><span>指挥台</span><small>01</small></a>
+        <a href="pipeline.html"><span class="nav-icon">↗</span><span>数据管线</span><small>02</small></a>
+        <a href="knowledge.html" class="active"><span class="nav-icon">⌘</span><span>图谱与知识</span><small>03</small></a>
+        <a href="quality.html"><span class="nav-icon">◒</span><span>质量与可信</span><small>04</small></a>
+        <a href="jobs-pool.html"><span class="nav-icon">▤</span><span>岗位池</span><small>05</small></a>
+        <a href="crawler.html"><span class="nav-icon">⊕</span><span>采集源</span><small>06</small></a>
+        <a href="cleaning.html"><span class="nav-icon">◐</span><span>清洗仓</span><small>07</small></a>
+        <p class="nav-label nav-label-lower">治理 · GOVERNANCE</p>
+        <a href="permissions.html"><span class="nav-icon">♙</span><span>权限矩阵</span><small>08</small></a>
+        <a href="users.html"><span class="nav-icon">▦</span><span>用户与审计</span><small>09</small></a>
+        <a href="notice.html"><span class="nav-icon">✎</span><span>系统公告</span><small>10</small></a>
+        <a href="report.html"><span class="nav-icon">▥</span><span>运营日报</span><small>11</small></a>
+      </nav>
+      <div class="sidebar-foot"><span class="status-dot" data-state="live"></span><div><strong id="sideHealth">系统正常</strong><small id="sideUpdated">—</small></div></div>
+    </aside>
+    <div class="nav-scrim" id="navScrim"></div>
+
+    <main class="admin-main">
+      <header class="admin-topbar">
+        <button class="mobile-menu" id="openNav" type="button" aria-label="打开导航">☰</button>
+        <div class="topbar-title"><span class="eyebrow">ADMIN / OPERATIONS</span><h1>管理运营中枢</h1><p>采集、图谱、岗位、用户、公告，都在这。</p></div>
+        <div class="top-actions"><div class="sync-readout"><span>LAST SYNC</span><strong id="lastSync">—</strong></div><button class="ghost-btn" id="refreshBtn" type="button">↻ <span>同步数据</span></button><div class="user-chip" id="userChip">未登录 <span>READ ONLY</span></div></div>
+      </header>
+
+      <section id="rag" class="workspace section-block" aria-labelledby="ragTitle">
+        <div class="section-heading"><div><span class="eyebrow">03 / GRAPH &amp; KNOWLEDGE</span><h2 id="ragTitle">图谱与知识</h2><p>岗位、能力、企业、证据，长成一张网。</p></div></div>
+        <div class="knowledge-grid">
+          <article class="panel graph-visual reveal"><div class="panel-head"><div><span class="eyebrow">JOB ABILITY GRAPH</span><h3>关系网络</h3></div><span class="pulse-tag"><i></i>实时构建中</span></div><div class="network-stage" aria-label="岗位能力关系网络示意图"><svg viewBox="0 0 600 240" role="img" aria-labelledby="graphCaption"><title id="graphCaption">岗位、技能、企业关系网络</title><g class="network-links"><path d="M110 160L250 78L410 142L510 52M250 78L320 205L410 142M110 160L320 205"/><path d="M250 78L510 52"/></g><g class="network-nodes"><circle cx="110" cy="160" r="18"/><circle cx="250" cy="78" r="25"/><circle cx="410" cy="142" r="20"/><circle cx="510" cy="52" r="14"/><circle cx="320" cy="205" r="16"/></g><g class="network-labels"><text x="75" y="200">岗位</text><text x="218" y="42">能力</text><text x="378" y="180">企业</text><text x="483" y="32">证据</text><text x="286" y="234">技能</text></g></svg></div><div class="graph-stats"><div><span>节点</span><strong id="graphNodes" data-count>0</strong></div><div><span>关系</span><strong id="graphEdges" data-count>0</strong></div><div><span>岗位实体</span><strong id="graphJobs" data-count>0</strong></div></div><div class="entity-bars"><div class="panel-head"><div><span class="eyebrow">ENTITY MIX</span><h3>实体构成</h3></div></div><div class="entity-bar-row"><span>岗位</span><b><i class="bar-fill" data-w="62"></i></b><em>62%</em></div><div class="entity-bar-row"><span>技能</span><b><i class="bar-fill" data-w="24"></i></b><em>24%</em></div><div class="entity-bar-row"><span>企业</span><b><i class="bar-fill" data-w="9"></i></b><em>9%</em></div><div class="entity-bar-row"><span>证据</span><b><i class="bar-fill" data-w="5"></i></b><em>5%</em></div></div></article>
+          <article class="panel knowledge-status reveal"><div class="panel-head"><div><span class="eyebrow">KNOWLEDGE BASE</span><h3>知识处理状态</h3></div></div><div class="knowledge-facts"><div><strong id="kbDocs">—</strong><span>文档</span></div><div><strong id="kbIndexed">—</strong><span>已向量化</span></div><div><strong id="kbPending">—</strong><span>待处理</span></div></div><div class="kb-progress"><div class="kb-progress-head"><span>索引进度</span><b id="kbPercent">—</b></div><b class="kb-track"><i class="bar-fill" data-w="0" id="kbBar"></i></b></div><div id="knowledgeMsg" class="kb-msg">知识库正在处理增量文档，检索链路保持可用。</div><div class="readiness-note"><b>证据回溯链路</b><span>Chunk → Document → source_url</span></div></article>
+        </div>
+      </section>
+
+      <footer class="admin-footer"><span>执图破局 · 管理运营中枢</span><span>© 2026 ZHITU · v3.2</span></footer>
+    </main>
+  </div>
+  <div class="toast-host" id="toastHost" aria-live="polite"></div>
+  <script src="../js/admin-guard.js?v=guard2"></script>
+  <script src="../js/admin-shell.js?v=shell2"></script>
+  <script src="../js/api.js?v=20260903"></script>
+  <script src="../js/admin.js?v=split1"></script>
+</body>
+</html>

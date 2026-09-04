@@ -530,7 +530,73 @@ body:has(#cinema-bg) .page-main {
   }
 }
 
-/* —— 简历探索窗口（对齐新闻浅色纸感） —— */
+/* —— 首次进入：资料完善提示（仅提示，不解除功能门槛） —— */
+.shell-profile-prompt {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 1180;
+  width: min(390px, calc(100vw - 32px));
+  padding: 22px 22px 20px;
+  border: 1px solid rgba(168, 139, 78, .32);
+  border-left: 4px solid #A88B4E;
+  background: linear-gradient(145deg, #1b1b1a, #29251e);
+  color: #fff;
+  box-shadow: 0 18px 46px rgba(45, 33, 18, .22);
+  animation: shell-profile-prompt-in .42s cubic-bezier(.22,1,.36,1) both;
+}
+.shell-profile-prompt-mark {
+  color: #d6bd83;
+  font: 600 10px/1.4 "IBM Plex Mono", monospace;
+  letter-spacing: .15em;
+}
+.shell-profile-prompt h2 {
+  margin: 8px 0 7px;
+  font: 600 22px/1.25 "Noto Serif SC", serif;
+}
+.shell-profile-prompt p {
+  margin: 0;
+  color: rgba(255,255,255,.7);
+  font-size: 13px;
+  line-height: 1.7;
+}
+.shell-profile-prompt-actions {
+  display: flex;
+  gap: 9px;
+  margin-top: 17px;
+}
+.shell-profile-prompt-actions button {
+  min-height: 36px;
+  padding: 0 14px;
+  border-radius: 4px;
+  font: 600 12px inherit;
+  cursor: pointer;
+}
+.shell-profile-prompt-primary {
+  border: 1px solid #b99a5a;
+  background: #b99a5a;
+  color: #171717;
+}
+.shell-profile-prompt-skip {
+  border: 1px solid rgba(255,255,255,.25);
+  background: transparent;
+  color: rgba(255,255,255,.82);
+}
+.shell-profile-prompt-actions button:focus-visible {
+  outline: 2px solid #d6bd83;
+  outline-offset: 2px;
+}
+@keyframes shell-profile-prompt-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (max-width: 620px) {
+  .shell-profile-prompt { right: 16px; bottom: 16px; left: 16px; width: auto; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .shell-profile-prompt { animation: none; }
+}
+
 .rx-mask {
   position: fixed;
   inset: 0;

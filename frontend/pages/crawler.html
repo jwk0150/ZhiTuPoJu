@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#F5F2ED" />
+  <title>执图破局 · 采集源</title>
+  <link rel="stylesheet" href="../css/tokens.css?v=lightfix1" />
+  <link rel="stylesheet" href="../css/admin.css?v=premium1" />
+</head>
+<body>
+  <div class="admin-app">
+    <aside class="admin-sidebar" id="adminSidebar">
+      <div class="sidebar-top">
+        <a class="admin-brand" href="../index.html" aria-label="返回执图破局首页">
+          <span class="brand-glyph">执</span><span class="brand-copy"><b>执图破局</b><small>ADMIN CONSOLE</small></span>
+        </a>
+        <button class="mobile-close" id="closeNav" type="button" aria-label="关闭导航">×</button>
+        <div class="operator-card"><span class="operator-mark">◆</span><div><strong id="operatorName">值班工作区</strong><small id="operatorRole">ADMIN / OPERATOR</small></div><span class="online-dot" data-state="live"></span></div>
+      </div>
+      <nav class="admin-nav" aria-label="管理端工作区">
+        <p class="nav-label">运营 · OPERATIONS</p>
+        <a href="admin.html"><span class="nav-icon">◈</span><span>指挥台</span><small>01</small></a>
+        <a href="pipeline.html"><span class="nav-icon">↗</span><span>数据管线</span><small>02</small></a>
+        <a href="knowledge.html"><span class="nav-icon">⌘</span><span>图谱与知识</span><small>03</small></a>
+        <a href="quality.html"><span class="nav-icon">◒</span><span>质量与可信</span><small>04</small></a>
+        <a href="jobs-pool.html"><span class="nav-icon">▤</span><span>岗位池</span><small>05</small></a>
+        <a href="crawler.html" class="active"><span class="nav-icon">⊕</span><span>采集源</span><small>06</small></a>
+        <a href="cleaning.html"><span class="nav-icon">◐</span><span>清洗仓</span><small>07</small></a>
+        <p class="nav-label nav-label-lower">治理 · GOVERNANCE</p>
+        <a href="permissions.html"><span class="nav-icon">♙</span><span>权限矩阵</span><small>08</small></a>
+        <a href="users.html"><span class="nav-icon">▦</span><span>用户与审计</span><small>09</small></a>
+        <a href="notice.html"><span class="nav-icon">✎</span><span>系统公告</span><small>10</small></a>
+        <a href="report.html"><span class="nav-icon">▥</span><span>运营日报</span><small>11</small></a>
+      </nav>
+      <div class="sidebar-foot"><span class="status-dot" data-state="live"></span><div><strong id="sideHealth">系统正常</strong><small id="sideUpdated">—</small></div></div>
+    </aside>
+    <div class="nav-scrim" id="navScrim"></div>
+
+    <main class="admin-main">
+      <header class="admin-topbar">
+        <button class="mobile-menu" id="openNav" type="button" aria-label="打开导航">☰</button>
+        <div class="topbar-title"><span class="eyebrow">07 / CRAWLER SOURCES</span><h1>采集源</h1><p>多家招聘平台与公开数据源，统一调度。</p></div>
+        <div class="top-actions"><div class="sync-readout"><span>QUEUE</span><strong id="queueBadge">0</strong></div><button class="ghost-btn" id="bulkStart" type="button">▶ <span>全部启动</span></button><button class="ghost-btn" id="pauseAll" type="button">⏸ <span>全部暂停</span></button><div class="user-chip" id="userChip">未登录 <span>READ ONLY</span></div></div>
+      </header>
+
+      <section class="workspace section-block">
+        <div class="stats-strip">
+          <div class="stat-card"><span class="label">SOURCES</span><span class="value" id="statSources">—</span><span class="delta">已接入</span></div>
+          <div class="stat-card"><span class="label">RUNNING</span><span class="value" id="statRunning">0</span><span class="delta">实时任务</span></div>
+          <div class="stat-card"><span class="label">CRAWLED TODAY</span><span class="value" id="statToday">—</span><span class="delta">较昨日 +14%</span></div>
+          <div class="stat-card"><span class="label">SUCCESS RATE</span><span class="value" id="statRate">—</span><span class="delta">7 日均值</span></div>
+        </div>
+
+        <div class="crawler-shell">
+          <section class="source-grid" id="sourceGrid"></section>
+          <aside class="panel log-panel">
+            <div class="panel-head">
+              <div>
+                <span class="eyebrow">LIVE CRAWLER STREAM</span>
+                <h3>实时爬取日志</h3>
+              </div>
+              <div class="log-tools">
+                <button class="ghost-btn" id="logClear" type="button">清空</button>
+                <button class="ghost-btn" id="logPause" type="button">⏸ 暂停</button>
+                <label class="switch"><input type="checkbox" id="autoScroll" checked /><span class="switch-track"></span></label>
+              </div>
+            </div>
+            <div class="log-stats">
+              <span><i class="dot is-ok"></i>成功 <b id="logOk">0</b></span>
+              <span><i class="dot is-warn"></i>重试 <b id="logWarn">0</b></span>
+              <span><i class="dot is-error"></i>失败 <b id="logError">0</b></span>
+              <span><i class="dot is-info"></i>信息 <b id="logInfo">0</b></span>
+            </div>
+            <div class="log-stream" id="logStream"></div>
+            <div class="log-filter">
+              <button class="chip is-active" data-filter="all">全部</button>
+              <button class="chip" data-filter="ok">成功</button>
+              <button class="chip" data-filter="warn">重试</button>
+              <button class="chip" data-filter="error">失败</button>
+              <button class="chip" data-filter="info">信息</button>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <footer class="admin-footer"><span>执图破局 · 管理运营中枢</span><span>© 2026 ZHITU · v3.2</span></footer>
+    </main>
+  </div>
+  <div class="toast-host" id="toastHost" aria-live="polite"></div>
+  <script src="../js/admin-guard.js?v=guard1"></script>
+  <script src="../js/admin-shell.js?v=shell1"></script>
+  <script src="../js/api.js?v=20260903"></script>
+  <script src="../js/admin-crawler.js?v=v1"></script>
+</body>
+</html>

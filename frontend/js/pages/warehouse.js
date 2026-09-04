@@ -30,14 +30,6 @@
       cta: '去看岗位预测',
       quickDesc: '未来方向与能力要求'
     },
-    match: {
-      title: '人岗匹配',
-      emptyTitle: '还没有收藏匹配岗位',
-      emptyDesc: '在人岗匹配结果卡片上点星标，心仪岗位会汇总到这里。',
-      href: 'match.html',
-      cta: '去人岗匹配',
-      quickDesc: '匹配结果与心仪岗位'
-    }
   };
 
   function esc(s) {
@@ -92,7 +84,7 @@
   function lastActivityTs(snap) {
     var max = 0;
     var f = snap.favs || {};
-    ['news', 'discovery', 'forecast', 'match'].forEach(function (key) {
+    ['news', 'discovery', 'forecast'].forEach(function (key) {
       (f[key] || []).forEach(function (it) {
         if (it.savedAt && it.savedAt > max) max = it.savedAt;
       });
@@ -174,6 +166,11 @@
             '<span class="vault-item-k">' + esc(tag) + '</span>' +
             '<p class="vault-item-t">' + esc(it.title || '未命名') + '</p>' +
             (metaLine.length ? '<p class="vault-item-m">' + esc(metaLine.join(' · ')) + '</p>' : '') +
+            ((laneKey === 'discovery' || laneKey === 'forecast') ?
+              '<span class="vault-item-jumps" style="display:flex;gap:6px;margin-top:10px">' +
+                '<span role="button" tabindex="0" onclick="event.preventDefault();event.stopPropagation();location.href=\'evolution.html?v=2&job=\' + encodeURIComponent(\'' + esc(it.title || '') + '\')" style="flex:1;text-align:center;padding:6px 4px;border-radius:8px;border:1px solid rgba(212,175,55,.5);background:rgba(255,252,245,.95);color:#8F6B0E;font-size:11.5px;font-weight:600;cursor:pointer">◈ 洞察该岗位</span>' +
+                '<span role="button" tabindex="0" onclick="event.preventDefault();event.stopPropagation();location.href=\'map.html?v=fix25c5&layer=graph&job=\' + encodeURIComponent(\'' + esc(it.title || '') + '\')" style="flex:1;text-align:center;padding:6px 4px;border-radius:8px;border:1px solid rgba(119,141,169,.5);background:rgba(248,250,253,.95);color:#33557a;font-size:11.5px;font-weight:600;cursor:pointer">◱ 技能要求图谱</span>' +
+              '</span>' : '') +
           '</a>'
         );
       }).join('') + '</div>';
@@ -196,8 +193,7 @@
     el.innerHTML =
       renderFavLane('news', f.news || []) +
       renderFavLane('discovery', f.discovery || []) +
-      renderFavLane('forecast', f.forecast || []) +
-      renderFavLane('match', f.match || []);
+      renderFavLane('forecast', f.forecast || []);
   }
 
   function useResume(item, versionId) {
@@ -315,7 +311,7 @@
           '</div>' +
           '<div class="vault-resume-actions">' +
             '<button type="button" class="vault-btn" data-use="' + esc(r.id) + '">' +
-              (pickMode ? '选用此简历' : '用于人岗匹配') +
+              (pickMode ? '选用此简历' : '选用此简历') +
             '</button>' +
             (pickMode ? '' : '<button type="button" class="vault-btn vault-btn--ghost" data-del="' + esc(r.id) + '">删除</button>') +
           '</div>' +
@@ -388,8 +384,8 @@
     if (pickMode) {
       var lead = document.getElementById('vault-lead');
       var hint = document.getElementById('vault-resume-hint');
-      if (lead) lead.textContent = '请选择一份简历用于人岗匹配，可展开查看历次修订并选用任意版本。';
-      if (hint) hint.textContent = '选定后将返回人岗匹配工作台。';
+      if (lead) lead.textContent = '请选择一份简历，可展开查看历次修订并选用任意版本。';
+      if (hint) hint.textContent = '选定后即可使用该版本。';
       document.querySelectorAll('.vault-tab').forEach(function (t) {
         var on = t.getAttribute('data-tab') === 'resumes';
         t.classList.toggle('is-on', on);

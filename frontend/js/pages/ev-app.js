@@ -56,7 +56,7 @@
   // 后端数据加载（不阻塞 UI 渲染）
   // ============================================================
   if (D.fetchServer) {
-    D.fetchServer('Java开发工程师').then(() => {
+    D.fetchServer(window.__EV_JOB_TITLE || 'Java开发工程师').then(() => {
       // 数据源切换：未来如需切换 UI 标识,在这里更新
       document.documentElement.setAttribute('data-ev-source', D.isDemo() ? 'demo' : 'db');
     });

@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#F5F2ED" />
+  <title>执图破局 · 运营日报</title>
+  <link rel="stylesheet" href="../css/tokens.css?v=lightfix1" />
+  <link rel="stylesheet" href="../css/admin.css?v=premium1" />
+</head>
+<body>
+  <div class="admin-app">
+    <aside class="admin-sidebar" id="adminSidebar">
+      <div class="sidebar-top">
+        <a class="admin-brand" href="../index.html" aria-label="返回执图破局首页">
+          <span class="brand-glyph">执</span><span class="brand-copy"><b>执图破局</b><small>ADMIN CONSOLE</small></span>
+        </a>
+        <button class="mobile-close" id="closeNav" type="button" aria-label="关闭导航">×</button>
+        <div class="operator-card"><span class="operator-mark">◆</span><div><strong id="operatorName">值班工作区</strong><small id="operatorRole">ADMIN / OPERATOR</small></div><span class="online-dot" data-state="live"></span></div>
+      </div>
+      <nav class="admin-nav" aria-label="管理端工作区">
+        <p class="nav-label">运营 · OPERATIONS</p>
+        <a href="admin.html"><span class="nav-icon">◈</span><span>指挥台</span><small>01</small></a>
+        <a href="pipeline.html"><span class="nav-icon">↗</span><span>数据管线</span><small>02</small></a>
+        <a href="knowledge.html"><span class="nav-icon">⌘</span><span>图谱与知识</span><small>03</small></a>
+        <a href="quality.html"><span class="nav-icon">◒</span><span>质量与可信</span><small>04</small></a>
+        <a href="jobs-pool.html"><span class="nav-icon">▤</span><span>岗位池</span><small>05</small></a>
+        <a href="crawler.html"><span class="nav-icon">⊕</span><span>采集源</span><small>06</small></a>
+        <a href="cleaning.html"><span class="nav-icon">◐</span><span>清洗仓</span><small>07</small></a>
+        <p class="nav-label nav-label-lower">治理 · GOVERNANCE</p>
+        <a href="permissions.html"><span class="nav-icon">♙</span><span>权限矩阵</span><small>08</small></a>
+        <a href="users.html"><span class="nav-icon">▦</span><span>用户与审计</span><small>09</small></a>
+        <a href="notice.html"><span class="nav-icon">✎</span><span>系统公告</span><small>10</small></a>
+        <a href="report.html" class="active"><span class="nav-icon">▥</span><span>运营日报</span><small>11</small></a>
+      </nav>
+      <div class="sidebar-foot"><span class="status-dot" data-state="live"></span><div><strong id="sideHealth">系统正常</strong><small id="sideUpdated">—</small></div></div>
+    </aside>
+    <div class="nav-scrim" id="navScrim"></div>
+
+    <main class="admin-main">
+      <header class="admin-topbar">
+        <button class="mobile-menu" id="openNav" type="button" aria-label="打开导航">☰</button>
+        <div class="topbar-title"><span class="eyebrow">09 / DAILY REPORT</span><h1>运营日报</h1><p>按日期生成的多区块运营报告，支持导出与归档。</p></div>
+        <div class="top-actions"><div class="sync-readout"><span>LAST SYNC</span><strong id="lastSync">—</strong></div><button class="ghost-btn" id="refreshBtn" type="button">↻ <span>重新生成</span></button><div class="user-chip" id="userChip">未登录 <span>READ ONLY</span></div></div>
+      </header>
+
+      <section class="workspace section-block">
+        <div class="report-toolbar">
+          <button class="ghost-btn" type="button" data-preset="today">今日</button>
+          <button class="ghost-btn" type="button" data-preset="yesterday">昨日</button>
+          <button class="ghost-btn" type="button" data-preset="7d">近 7 日</button>
+          <div class="date-group">
+            <span>自定义</span>
+            <input id="reportDate" type="date" />
+          </div>
+          <div class="actions">
+            <button class="outline-btn" type="button" data-exp="pdf">▤ 导出 PDF</button>
+            <button class="outline-btn" type="button" data-exp="json">{ } 导出 JSON</button>
+            <button class="outline-btn" type="button" data-exp="md">≣ 复制 Markdown</button>
+          </div>
+        </div>
+
+        <div class="report-grid" id="reportGrid">
+          <!-- 概要 -->
+          <article class="panel report-section">
+            <div class="report-headline"><div><span class="eyebrow">OVERVIEW</span><h3>概要</h3></div><span class="report-num" id="ovCollected">—</span></div>
+            <p style="margin:0;color:var(--admin-muted);font-size:13px;line-height:1.7" id="ovSummary">采集管线正常运行，主要来源增量稳定。</p>
+            <div class="report-status-line" style="margin-top:14px"><span>✓</span><span id="ovStatus">所有可信防线正常运行</span></div>
+          </article>
+
+          <!-- 数据采集 -->
+          <article class="panel report-section">
+            <div class="report-headline"><div><span class="eyebrow">INGESTION</span><h3>数据采集</h3></div><span class="report-num" id="ovSources">—</span></div>
+            <div class="report-list" id="sourcesList"></div>
+          </article>
+
+          <!-- 岗位结构 -->
+          <article class="panel report-section">
+            <div class="report-headline"><div><span class="eyebrow">JOB MIX</span><h3>岗位结构</h3></div><span class="report-num" id="ovCities">—</span></div>
+            <div class="report-list" id="citiesList"></div>
+          </article>
+
+          <!-- 能力热点 -->
+          <article class="panel report-section">
+            <div class="report-headline"><div><span class="eyebrow">CAPABILITY HOT</span><h3>能力热点 TOP 5</h3></div><span class="report-num" id="ovSkills">—</span></div>
+            <div class="report-list" id="skillsList"></div>
+          </article>
+
+          <!-- 质量 -->
+          <article class="panel report-section">
+            <div class="report-headline"><div><span class="eyebrow">QUALITY</span><h3>质量与可信</h3></div><span class="report-num" id="ovQuality">—</span></div>
+            <div class="report-list" id="qualityList"></div>
+          </article>
+
+          <!-- 审计摘要 -->
+          <article class="panel report-section">
+            <div class="report-headline"><div><span class="eyebrow">AUDIT SUMMARY</span><h3>审计摘要</h3></div><span class="report-num" id="ovAudits">—</span></div>
+            <div class="report-list" id="auditList"></div>
+          </article>
+
+          <!-- 备注 / 引述 -->
+          <article class="panel report-section" style="grid-column: span 2">
+            <div class="report-headline"><div><span class="eyebrow">EDITOR NOTE</span><h3>运营备注</h3></div></div>
+            <div class="report-quote">今日猎聘来源触发了一次规则匹配异常，运维已介入并补充了来源正则，预计明日恢复正常。LLM 工程师相关岗位的招聘信息环比增长 <code>+18%</code>，建议关注能力图谱中「LLM 工程」「RAG」等节点的覆盖与证据补全。</div>
+          </article>
+        </div>
+      </section>
+
+      <footer class="admin-footer"><span>执图破局 · 管理运营中枢</span><span>© 2026 ZHITU · v3.1</span></footer>
+    </main>
+  </div>
+  <div class="toast-host" id="toastHost" aria-live="polite"></div>
+  <script src="../js/admin-guard.js?v=guard1"></script>
+  <script src="../js/admin-shell.js?v=shell1"></script>
+  <script src="../js/api.js?v=20260903"></script>
+  <script src="../js/admin-report.js?v=v1"></script>
+</body>
+</html>

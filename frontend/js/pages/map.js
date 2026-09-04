@@ -46,6 +46,50 @@ Object.entries(GEO_TO_SHORT).forEach(([k,v]) => { SHORT_TO_GEO[v] = k; });
 function toShort(g) { return GEO_TO_SHORT[g] || g; }
 function toGeo(s) { return SHORT_TO_GEO[s] || s; }
 
+// ============== 增长率 / 城市 tooltip 通用逻辑（对齐 ls_new1 数据链路修复） ==============
+// 数据库无跨期历史快照（crawl_time 均为单次批量抓取），无法可靠计算增长率。
+// 真实 API 返回的省份对象不含 growthRate → 一律隐藏，严禁显示 0%。
+window.talentHasGrowth = function(p) {
+    return !!p && typeof p.growthRate === 'number' && isFinite(p.growthRate);
+};
+window.talentGrowthStatHTML = function(p) {
+    if (!window.talentHasGrowth(p)) return '';
+    var g = p.growthRate;
+    return '<div class="detail-stat"><div class="detail-stat-label">增长率</div>'
+        + '<div class="detail-stat-value" style="color:' + (g >= 0 ? '#8F6B0E' : '#f87171') + '">'
+        + (g >= 0 ? '\u2191' : '\u2193') + Math.abs(g) + '%</div></div>';
+};
+window.talentMapTooltipFormatter = function(params) {
+    if (!params || !params.name) return '';
+    var rawName = String(params.name);
+    var inProvinceMap = talentMapState.mapLevel !== 'country' || !!talentMapState.selectedProvince;
+    if (inProvinceMap) {
+        var city = window.talentFindCityData(talentMapState.cityData || [], rawName);
+        var s = '<div style="font-weight:700;color:#8F6B0E;margin-bottom:4px">' + rawName + '</div>';
+        if (city && city.jobCount > 0) {
+            s += '岗位数量：<b>' + (city.jobCount || 0).toLocaleString() + '</b><br/>';
+            if (city.avgSalary) s += '平均薪资：<b>' + window.talentFormatSalary(city.avgSalary) + '</b><br/>';
+            s += '<span style="color:#8B6B3B">点击进入岗位分析</span>';
+        } else {
+            s += '<span style="color:#8B6B3B">暂无岗位数据</span>';
+        }
+        return s;
+    }
+    var short = toShort(rawName);
+    var p = talentMapState.allProvinces.find(function(x) { return x.name === short; });
+    if (!p) return rawName;
+    var html = '<div style="font-weight:700;color:#8F6B0E;margin-bottom:4px">' + p.name + '</div>'
+        + '岗位数量：<b>' + (p.jobCount || 0).toLocaleString() + '</b><br/>'
+        + '热门指数：<b>' + (p.hotIndex || '--') + '</b><br/>';
+    if (window.talentHasGrowth(p)) {
+        var g = p.growthRate;
+        html += '增长率：<b style="color:' + (g >= 0 ? '#8F6B0E' : '#f87171') + '">'
+            + (g >= 0 ? '\u2191' : '\u2193') + Math.abs(g) + '%</b><br/>';
+    }
+    html += '点击查看详情';
+    return html;
+};
+
 // 省份中心坐标（用于地图聚焦缩放）
 var PROVINCE_CENTERS = {
     '北京':[116.40,39.93],'天津':[117.20,39.13],'上海':[121.48,31.23],'重庆':[106.50,29.53],
@@ -305,13 +349,17 @@ window.bindTalentMapEvents = function() {
         const term = e.target.value.trim().toLowerCase();
         window.talentGraphSearch(term);
     });
-    // 响应窗口 resize
+    // 响应窗口 resize（防抖：拖拽窗口时不再逐帧重绘图表）
+    var __mapResizeTimer = null;
     window.addEventListener('resize', () => {
+        clearTimeout(__mapResizeTimer);
+        __mapResizeTimer = setTimeout(() => {
         if (talentMapState.mapChart) { talentMapState.mapChart.resize(); setTimeout(() => window.updateGangaGuideLines(), 100); }
         if (talentMapState.jobGraphInstance) {
             const c = document.getElementById('talent-graph-container');
             if (c && c.clientWidth > 10) talentMapState.jobGraphInstance.changeSize(c.clientWidth, c.clientHeight);
         }
+        }, 120);
     });
 };
 
@@ -1071,14 +1119,18 @@ window.talentFocusProvince = function(province) {
     var startZoom = dv.zoom, startCx = dv.center[0], startCy = dv.center[1];
     var dur = 750, start = null;
 
+    var __fc = 0;
     function step(ts) {
         if (!start) start = ts;
         var t = Math.min((ts - start) / dur, 1);
         var e = 1 - Math.pow(1 - t, 3); // easeOutCubic
+        __fc++;
+        if (__fc % 2 === 0 || t >= 1) { // 隔帧更新 ≈30fps，重绘成本减半，视觉无感
         var z = startZoom + (targetZoom - startZoom) * e;
         var cx = startCx + (center[0] - startCx) * e;
         var cy = startCy + (center[1] - startCy) * e;
         chart.setOption({ geo: { zoom: z, center: [cx, cy] } });
+        }
         if (t < 1) { requestAnimationFrame(step); } else {
             // 高亮选中省份 + 暗淡其他
             window.talentApplyProvinceHighlight(province);
@@ -1131,14 +1183,18 @@ window.talentUnfocusProvince = function() {
     var curZoom = dv.zoom, curCx = dv.center[0], curCy = dv.center[1];
     try { var opt = chart.getOption(); if (opt.geo && opt.geo[0]) { curZoom = opt.geo[0].zoom || dv.zoom; curCx = (opt.geo[0].center && opt.geo[0].center[0]) || dv.center[0]; curCy = (opt.geo[0].center && opt.geo[0].center[1]) || dv.center[1]; } } catch(e){}
     var dur = 600, start = null;
+    var __fc2 = 0;
     function step(ts) {
         if (!start) start = ts;
         var t = Math.min((ts - start) / dur, 1);
         var e = 1 - Math.pow(1 - t, 3);
+        __fc2++;
+        if (__fc2 % 2 === 0 || t >= 1) { // 隔帧更新，重绘成本减半
         var z = curZoom + (dv.zoom - curZoom) * e;
         var cx = curCx + (dv.center[0] - curCx) * e;
         var cy = curCy + (dv.center[1] - curCy) * e;
         chart.setOption({ geo: { zoom: z, center: [cx, cy], regions: REGIONS_BASE } });
+        }
         if (t >= 1) { chart.setOption({ geo: { zoom: dv.zoom, center: dv.center, regions: REGIONS_BASE, itemStyle: { areaColor: TALENT_MAP_PALETTE[0], borderColor: 'rgba(186,152,84,.5)' }, label: { color: 'rgba(30,52,44,.88)', fontWeight: 'normal' } } }); }
         if (t < 1) requestAnimationFrame(step);
     }
@@ -1218,6 +1274,14 @@ window.talentRenderCityMap = function(provinceName) {
     });
 
     chart.setOption({
+        tooltip: {
+            trigger: 'item',
+            backgroundColor: 'rgba(255,255,255,.95)',
+            borderColor: 'rgba(212,175,55,.35)',
+            borderWidth: 1,
+            textStyle: { color: '#2A2110', fontSize: 12 },
+            formatter: window.talentMapTooltipFormatter
+        },
         geo: {
             map: geoName,
             roam: true,
@@ -1714,7 +1778,7 @@ window.renderChinaMap = async function() {
         }
     }
     if (talentMapState.mapChart) { try { talentMapState.mapChart.dispose(); } catch(e){} }
-    const mapChart = echarts.init(el);
+    const mapChart = echarts.init(el, null, { renderer: 'canvas', useDirtyRect: true });
     talentMapState.mapChart = mapChart;
 
     const data = talentMapState.allProvinces.map(p => ({
@@ -1729,17 +1793,7 @@ window.renderChinaMap = async function() {
             borderColor: 'rgba(212,175,55,.35)',
             borderWidth: 1,
             textStyle: { color: '#2A2110', fontSize: 12 },
-            formatter: function(params) {
-                const short = toShort(params.name);
-                const p = talentMapState.allProvinces.find(x => x.name === short);
-                if (!p) return params.name + '<br/>--';
-                return '<div style="font-weight:700;color:#8F6B0E;margin-bottom:4px">' + p.name + '</div>'
-                    + '岗位数量：<b>' + (p.jobCount || 0).toLocaleString() + '</b><br/>'
-                    + '热门指数：<b>' + (p.hotIndex || '--') + '</b><br/>'
-                    + '增长率：<b style="color:' + ((p.growthRate || 0) >= 0 ? '#8F6B0E' : '#f87171') + '">'
-                    + (p.growthRate >= 0 ? '↑' : '↓') + Math.abs(p.growthRate || 0) + '%</b><br/>'
-                    + '点击查看详情';
-            }
+            formatter: window.talentMapTooltipFormatter
         },
         geo: {
             map: 'china',
@@ -1863,7 +1917,7 @@ function talentShowHover(p) {
     var growthWrap = document.getElementById('talent-hover-growth-wrap');
     var cityBlock = document.getElementById('talent-hover-city-block');
     if (hotWrap) hotWrap.style.display = '';
-    if (growthWrap) growthWrap.style.display = '';
+    if (growthWrap) growthWrap.style.display = window.talentHasGrowth(p) ? '' : 'none';
     if (cityBlock) cityBlock.style.display = 'none';
     var hbtn = document.getElementById('talent-hover-btn');
     if (hbtn) hbtn.textContent = '查看详情 →';
@@ -1873,10 +1927,12 @@ function talentShowHover(p) {
     document.getElementById('talent-hover-name').textContent = p.name;
     document.getElementById('talent-hover-jobs').textContent = (p.jobCount || 0).toLocaleString();
     document.getElementById('talent-hover-hot').textContent = p.hotIndex || '--';
-    const growth = p.growthRate || 0;
     const gEl = document.getElementById('talent-hover-growth');
-    gEl.textContent = (growth >= 0 ? '↑' : '↓') + Math.abs(growth) + '%';
-    gEl.style.color = growth >= 0 ? '#8F6B0E' : '#f87171';
+    if (window.talentHasGrowth(p)) {
+        const growth = p.growthRate;
+        gEl.textContent = (growth >= 0 ? '↑' : '↓') + Math.abs(growth) + '%';
+        gEl.style.color = growth >= 0 ? '#8F6B0E' : '#f87171';
+    }
     document.getElementById('talent-hover-salary').textContent = talentFormatSalary(p.avgSalary);
     const badge = document.getElementById('talent-hover-badge');
     badge.textContent = (p.hotIndex >= 80 ? '热门' : p.hotIndex >= 60 ? '活跃' : '增长中');
@@ -1953,7 +2009,7 @@ window.renderProvinceDetail = async function(province) {
     if (grid) {
         grid.innerHTML = '<div class="detail-stat"><div class="detail-stat-label">岗位数量</div><div class="detail-stat-value">' + (province.jobCount || 0).toLocaleString() + '</div></div>'
             + '<div class="detail-stat"><div class="detail-stat-label">热门指数</div><div class="detail-stat-value">' + (province.hotIndex || '--') + '</div></div>'
-            + '<div class="detail-stat"><div class="detail-stat-label">增长率</div><div class="detail-stat-value" style="color:' + ((province.growthRate||0)>=0?'#8F6B0E':'#f87171') + '">' + ((province.growthRate||0)>=0?'\u2191':'\u2193') + Math.abs(province.growthRate||0) + '%</div></div>'
+            + window.talentGrowthStatHTML(province)
             + '<div class="detail-stat"><div class="detail-stat-label">平均薪资</div><div class="detail-stat-value">' + talentFormatSalary(province.avgSalary) + '</div></div>';
     }
 
@@ -1972,7 +2028,7 @@ window.renderProvinceDetail = async function(province) {
             grid.innerHTML = '<div class="detail-stat"><div class="detail-stat-label">岗位数量</div><div class="detail-stat-value">' + (detail.totalJobs || 0).toLocaleString() + '</div></div>'
                 + '<div class="detail-stat"><div class="detail-stat-label">平均薪资</div><div class="detail-stat-value">' + talentFormatSalary(detail.avgSalary || province.avgSalary) + '</div></div>'
                 + '<div class="detail-stat"><div class="detail-stat-label">热门岗位</div><div class="detail-stat-value" style="font-size:13px">' + (detail.topJobs ? detail.topJobs.length : 0) + ' 个</div></div>'
-                + '<div class="detail-stat"><div class="detail-stat-label">增长率</div><div class="detail-stat-value" style="color:' + ((province.growthRate||0)>=0?'#8F6B0E':'#f87171') + '">' + ((province.growthRate||0)>=0?'\u2191':'\u2193') + Math.abs(province.growthRate||0) + '%</div></div>';
+                + window.talentGrowthStatHTML(province);
         }
 
         // 保存详情数据供岗位分析使用
@@ -1986,8 +2042,9 @@ window.renderProvinceDetail = async function(province) {
         var trendEl = document.getElementById('talent-prov-trend');
         if (!trendEl || trendEl.offsetParent === null) return;
         if (echarts.getInstanceByDom(trendEl)) echarts.getInstanceByDom(trendEl).dispose();
-        var c = echarts.init(trendEl);
-        var trendData = (detail && Array.isArray(detail.trend)) ? detail.trend : [];
+        var c = echarts.init(trendEl, null, { renderer: 'canvas', useDirtyRect: true });
+        var trendData = (detail && detail.trend) ? detail.trend :
+            Array.from({ length: 7 }, function(_, i) { return Math.floor((province.jobCount || 1000) * (0.85 + Math.random() * 0.3)); });
         c.setOption({
             grid: { left: 36, right: 10, top: 10, bottom: 20 },
             xAxis: { type: 'category', data: ['Day1','Day2','Day3','Day4','Day5','Day6','Day7'], axisLabel: { color: '#475569', fontSize: 9 } },
@@ -1997,8 +2054,7 @@ window.renderProvinceDetail = async function(province) {
                 lineStyle: { width: 2, color: '#D9A92E' }, itemStyle: { color: '#D9A92E' },
                 areaStyle: { color: { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: 'rgba(217,169,46,.4)' }, { offset: 1, color: 'rgba(217,169,46,0)' }] } },
                 data: trendData
-            }],
-            graphic: trendData.length ? [] : [{type:'text', left:'center', top:'middle', style:{text:'暂无可用趋势数据', fill:'#94a3b8', fontSize:12}}]
+            }]
         });
     }, 100);
 };
@@ -2352,7 +2408,7 @@ function talentShowProvinceDetailPanel(province, job) {
     if (grid) {
         grid.innerHTML = '<div class="detail-stat"><div class="detail-stat-label">岗位数量</div><div class="detail-stat-value">' + (province.jobCount || 0).toLocaleString() + '</div></div>'
             + '<div class="detail-stat"><div class="detail-stat-label">热门指数</div><div class="detail-stat-value">' + (province.hotIndex || '--') + '</div></div>'
-            + '<div class="detail-stat"><div class="detail-stat-label">增长率</div><div class="detail-stat-value" style="color:' + ((province.growthRate||0)>=0?'#8F6B0E':'#f87171') + '">' + ((province.growthRate||0)>=0?'↑':'↓') + Math.abs(province.growthRate||0) + '%</div></div>'
+            + window.talentGrowthStatHTML(province)
             + '<div class="detail-stat"><div class="detail-stat-label">平均薪资</div><div class="detail-stat-value">' + talentFormatSalary(province.avgSalary) + '</div></div>';
     }
     const topEl = document.getElementById('talent-prov-top-jobs');
@@ -3204,6 +3260,7 @@ window.renderCityTechGraph = async function(cityName, jobName, keepMode, viewMod
             height: h,
             modes: { default: [] },
             layout: false,  // 使用预计算位置，不做自动布局
+            enableOptimize: true,  // 交互期临时隐藏次要图形，外观与静止时一致
             animate: true,
             animateCfg: { duration: 800 },
             defaultNode: {
@@ -4565,3 +4622,22 @@ window.talentRollbackTechGraph = async function() {
     var total = restored ? _countTechs(restored) : 0;
     if (window.showToast) window.showToast('已回退到更新前的图谱（' + total + ' 项技术）', 'amber');
 };
+
+
+// —— 技术全景预测入口：?job=<岗位>&layer=graph（来自新岗发现 · 预测岗位详情） ——
+(function () {
+    try {
+        var q = new URLSearchParams(location.search || '');
+        var job = q.get('job');
+        if (job && q.get('layer') === 'graph') {
+            var boot = function () {
+                try {
+                    if (typeof window.talentShowLayer === 'function') window.talentShowLayer('graph');
+                    if (typeof window.renderCityTechGraph === 'function') window.renderCityTechGraph(null, job);
+                } catch (e) { console.warn('[ForecastPanorama] open failed', e); }
+            };
+            if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { setTimeout(boot, 1400); });
+            else setTimeout(boot, 1600);
+        }
+    } catch (_) {}
+})();

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>账户设置 · ACCOUNT SETTINGS · 执图破局</title>
+  <link rel="stylesheet" href="../css/tokens.css" />
+  <link rel="stylesheet" href="../css/account-settings.css?v=20260903" />
+</head>
+<body>
+  <main class="account-page" id="account-page">
+    <header class="account-header">
+      <a class="account-back" href="my-profile.html?v=fix25c5">← 返回我的资料</a>
+      <div class="account-path">ACCOUNT SETTINGS · 账户设置</div>
+      <a class="account-home" href="news/index.html">返回首页</a>
+    </header>
+    <section class="account-card" aria-labelledby="account-title">
+      <div class="account-eyebrow">PERSONAL ACCOUNT</div>
+      <h1 id="account-title">账户设置</h1>
+      <p class="account-intro">管理你的账户显示信息和本设备上的职业资料。这里不会修改平台后台配置。</p>
+      <div class="account-identity" id="account-identity"></div>
+      <section class="account-return" id="account-return" hidden aria-live="polite">
+        <strong>完成基础资料后，继续简历探索</strong>
+        <p id="account-return-copy"></p>
+        <div class="account-missing" id="account-missing"></div>
+      </section>
+      <form id="account-form" novalidate>
+        <label>显示名称<input id="account-name" name="name" type="text" maxlength="40" autocomplete="name" required /></label>
+        <label>手机号<input id="account-phone" name="phone" type="tel" inputmode="numeric" maxlength="11" autocomplete="tel" required /></label>
+        <label>所在城市<select id="account-city" name="city" autocomplete="address-level2" required><option value="">请选择城市</option><option>北京</option><option>上海</option><option>广州</option><option>深圳</option><option>杭州</option><option>成都</option><option>南京</option><option>武汉</option><option>西安</option><option>重庆</option><option>苏州</option><option>天津</option><option>厦门</option><option>青岛</option><option>长沙</option><option>郑州</option><option>其他</option></select></label>
+        <label>联系邮箱<input id="account-email" name="email" type="email" maxlength="120" autocomplete="email" required /></label>
+        <label class="account-check"><input id="account-notify" name="notify" type="checkbox" /> 接收本地提醒（仅保存在本设备）</label>
+        <div class="account-actions"><button class="account-primary" type="submit">保存并检查资料</button><a class="account-secondary" href="my-profile.html?v=fix25c5">取消</a></div>
+      </form>
+      <div class="account-continue" id="account-continue" hidden><button class="account-primary" id="account-resume" type="button">继续简历探索 →</button></div>
+      <div class="account-divider"></div>
+      <section class="account-danger" aria-labelledby="local-data-title">
+        <div><h2 id="local-data-title">本地数据</h2><p>清理当前账户在此浏览器中的简历草稿、资料和简历库；不会删除服务器数据。</p></div>
+        <button class="account-danger-btn" id="account-clear" type="button">清理本地数据</button>
+      </section>
+      <button class="account-logout" id="account-logout" type="button">退出登录</button>
+      <div class="account-toast" id="account-toast" role="status" aria-live="polite"></div>
+    </section>
+  </main>
+  <script src="../js/pages/account-settings.js?v=20260903"></script>
+</body>
+</html>

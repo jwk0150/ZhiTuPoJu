@@ -894,8 +894,8 @@ body.modal-open {
   place-items: center;
   font-family: var(--mp-font-serif);
   font-size: 96px;
-  color: var(--mp-text-on-dark-2);
-  background: linear-gradient(170deg,#1d1d1d,#0d0d0d);
+  color: #b99a5a;
+  background: linear-gradient(170deg, #f7f3ea, #e9dfc8);
 }
 .mp-photo-sign {
   position: absolute;
@@ -906,7 +906,7 @@ body.modal-open {
   color: var(--mp-gold);
   letter-spacing: .02em;
   pointer-events: none;
-  text-shadow: 0 2px 8px rgba(0,0,0,.6);
+  text-shadow: 0 2px 8px rgba(60,45,30,.18);
   transform: rotate(-3deg);
 }
 
@@ -1395,7 +1395,7 @@ body.modal-open {
   font-family: var(--mp-font-serif);
   font-weight: 600;
   font-size: 32px;
-  color: var(--mp-text-on-dark);
+  color: #f1ede3;
   letter-spacing: .04em;
   line-height: 1.2;
   margin: 0 0 14px;
@@ -1481,7 +1481,7 @@ body.modal-open {
   font-weight: 700;
   font-size: 18px;
   letter-spacing: .12em;
-  color: var(--mp-text-on-dark);
+  color: #f1ede3;
   margin: 14px 0 2px;
 }
 .mp-resume-preview-role {
@@ -1821,7 +1821,8 @@ body.modal-open {
   .mp-nav { flex-direction: row; flex-wrap: wrap; gap: 4px; padding: 0; overflow: visible; }
   .mp-nav-item { padding: 8px 12px; flex: 1 1 auto; min-width: 120px; }
   .mp-nav-item.is-active::before { display: none; }
-  .mp-side-foot { display: none; }
+  .mp-side-foot { display: flex; }
+  .mp-foot-link { min-height: 42px; }
   .mp-topbar { padding: 14px 20px; }
   .mp-hero { padding: 48px 20px 60px; }
   .mp-section { padding: 60px 20px; }
@@ -1851,16 +1852,100 @@ body.modal-open {
 /* ============================================================
  *  减弱动画
  * ============================================================ */
-@media (prefers-reduced-motion: reduce) {
-  .mp-root *, .mp-root *::before, .mp-root *::after {
-    animation-duration: 0.01ms !important;
-    transition-duration: 0.01ms !important;
-  }
-}
 
 /* ============================================================
- *  入场动画（克制）
+ *  紧凑工作台收口：首屏优先完成基础资料
  * ============================================================ */
+.mp-root {
+  --mp-sidebar-w: 224px;
+  --mp-section-pad: 42px;
+}
+
+/* 步骤编号收窄，避免黑色展示板抢占内容宽度 */
+.mp-section-head {
+  grid-template-columns: 92px 1fr;
+  gap: 22px;
+}
+.mp-section-num {
+  font-size: 68px;
+  line-height: .9;
+}
+.mp-section-num-block { gap: 5px; }
+
+/* 已填写资料使用更易读的字号 */
+.mp-info-value {
+  font-size: 15px;
+  line-height: 1.55;
+}
+.mp-info-label {
+  font-size: 11px;
+}
+.mp-section-title { font-size: 26px; }
+.mp-section-desc { font-size: 14px; }
+.mp-side {
+  padding: 20px 18px 18px;
+  gap: 16px;
+}
+.mp-id { gap: 9px; padding: 2px 0; }
+.mp-id-avatar { width: 58px; height: 58px; }
+.mp-id-name { font-size: 17px; }
+.mp-id-badge { padding: 4px 8px; font-size: 10px; }
+.mp-topbar { padding: 12px 28px; min-height: 54px; }
+.mp-hero {
+  padding: 36px clamp(28px, 4vw, 54px) 44px;
+  gap: 28px;
+}
+.mp-hero-left { padding-top: 6px; }
+.mp-h1 { font-size: clamp(54px, 7vw, 82px); }
+.mp-hero-quote { margin-top: 18px; }
+.mp-hero-num { top: 18px; right: 30px; font-size: 120px; opacity: .32; }
+.mp-section { padding: 52px clamp(28px, 4vw, 54px); }
+.mp-section-head { margin-bottom: 24px; }
+.mp-section-num { font-size: 78px; }
+.mp-onboarding {
+  margin: 0 28px;
+  padding: 16px 18px;
+  grid-template-columns: minmax(190px, .7fr) minmax(360px, 1.5fr) minmax(170px, .65fr);
+  gap: 14px;
+}
+.mp-onboarding h2 { font-size: 21px; margin: 4px 0; }
+.mp-onboarding p { line-height: 1.55; }
+.mp-quick-form { gap: 8px; }
+.mp-quick-form label { gap: 4px; font-size: 11px; }
+.mp-quick-form input { min-height: 34px; padding: 7px 9px; }
+.mp-onboarding-actions { padding-top: 10px; }
+
+@media (max-width: 1100px) and (min-width: 861px) {
+  .mp-onboarding { grid-template-columns: 1fr 1.4fr; }
+  .mp-onboarding-copy { grid-column: 1 / -1; }
+}
+@media (max-width: 860px) {
+  .mp-topbar { padding: 11px 18px; }
+  .mp-hero { padding: 30px 20px 38px; }
+  .mp-section { padding: 42px 20px; }
+  .mp-onboarding { margin: 0 12px; }
+}
+/* 紧凑的基础资料工作台 */
+.mp-onboarding { margin: 0 clamp(16px, 3vw, 36px); padding: 22px; display:grid; grid-template-columns:minmax(220px, .8fr) minmax(360px, 1.4fr) minmax(180px, .7fr); gap:18px; align-items:start; background:#171717; color:#fff; border:1px solid #2d2b26; box-shadow:0 10px 24px rgba(17,17,17,.1); }
+.mp-onboarding-kicker { color:var(--mp-gold); font:600 10px/1.4 var(--mp-font-mono); letter-spacing:.16em; }
+.mp-onboarding h2 { margin:7px 0 6px; font:600 clamp(19px,2vw,26px)/1.25 var(--mp-font-serif); }
+.mp-onboarding p { margin:0; color:rgba(255,255,255,.68); font-size:12px; line-height:1.7; }
+.mp-quick-form { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.mp-quick-form label { display:grid; gap:5px; color:rgba(255,255,255,.68); font-size:11px; }
+.mp-quick-form input { width:100%; min-height:36px; padding:8px 10px; border:1px solid rgba(255,255,255,.2); border-radius:3px; background:#25231f; color:#fff; font:13px var(--mp-font-sans); }
+.mp-quick-form input::placeholder { color:rgba(255,255,255,.35); }
+.mp-quick-form input:focus-visible { outline:2px solid var(--mp-gold); outline-offset:2px; }
+.mp-onboarding-checklist { display:flex; flex-wrap:wrap; align-content:start; gap:6px; }
+.mp-onboarding-item { padding:6px 8px; border:1px solid rgba(255,255,255,.18); color:rgba(255,255,255,.68); font-size:11px; }
+.mp-onboarding-item.is-complete { color:#d6bd83; border-color:rgba(185,154,90,.55); }
+.mp-onboarding-item.is-missing { color:#fff; }
+.mp-onboarding-actions { grid-column:1 / -1; display:flex; gap:8px; justify-content:flex-end; border-top:1px solid rgba(255,255,255,.12); padding-top:14px; }
+.mp-onboarding .mp-btn { justify-content:center; white-space:nowrap; }
+.mp-onboarding .mp-btn-ghost { color:#fff; border-color:rgba(255,255,255,.25); }
+.mp-btn:focus-visible, .mp-nav-item:focus-visible, .mp-completion-chip:focus-visible, .mp-foot-link:focus-visible { outline:2px solid var(--mp-gold); outline-offset:3px; }
+@media (max-width:900px) { .mp-onboarding { grid-template-columns:1fr 1fr; } .mp-onboarding-copy { grid-column:1 / -1; } }
+@media (max-width:620px) { .mp-onboarding { margin:0 12px; padding:16px; grid-template-columns:1fr; } .mp-quick-form { grid-template-columns:1fr; } .mp-onboarding-actions { grid-column:auto; justify-content:stretch; } .mp-onboarding-actions .mp-btn { flex:1; } }
+
 @keyframes mp-rise {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: none; }
@@ -1870,4 +1955,218 @@ body.modal-open {
 .mp-rise-2 { animation-delay: .12s; }
 .mp-rise-3 { animation-delay: .20s; }
 .mp-rise-4 { animation-delay: .28s; }
-.mp-rise-5 { animation-delay: .36s; }
+@media (prefers-reduced-motion: reduce) {
+  .mp-rise { animation: none; }
+}
+
+/* 最终紧凑覆盖：步骤板更轻，资料文字更清晰 */
+.mp-root {
+  --mp-sidebar-w: 248px;
+}
+
+/* 顶栏与主页面共用暖白氛围底图，不再使用厚重的深色面板 */
+.mp-main {
+  background: transparent;
+}
+.mp-topbar {
+  background: rgba(245, 242, 237, .48);
+  border-bottom-color: rgba(17, 17, 17, .08);
+  backdrop-filter: blur(16px) saturate(1.08);
+  -webkit-backdrop-filter: blur(16px) saturate(1.08);
+}
+.mp-topbar::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: rgba(255, 255, 255, .16);
+}
+
+.mp-section-head {
+  grid-template-columns: 88px minmax(0, 1fr);
+  gap: 20px;
+}
+.mp-section-num {
+  font-size: 66px;
+  line-height: .9;
+}
+.mp-section-num-block { gap: 4px; }
+.mp-section-title { font-size: 26px; }
+.mp-section-desc { font-size: 14px; }
+.mp-info-value {
+  font-size: 15px;
+  line-height: 1.55;
+}
+.mp-info-label { font-size: 11px; }
+
+/* 左侧目录不截断中文名称，英文标识自动让位 */
+.mp-nav-item { gap: 8px; padding-left: 10px; padding-right: 8px; }
+.mp-nav-item .label {
+  flex: 0 1 auto;
+  overflow: visible;
+  text-overflow: clip;
+  white-space: nowrap;
+  font-size: 14px;
+}
+.mp-nav-item .en {
+  margin-left: auto;
+  font-size: 8px;
+  letter-spacing: .1em;
+}
+.mp-nav-item.is-active .en { margin-right: 8px; }
+
+/* 教育视觉板改为紧凑横向信息卡，避免占满整屏 */
+.mp-school-card {
+  width: min(100%, 300px);
+  height: 210px;
+  min-height: 0;
+  aspect-ratio: auto;
+  justify-self: end;
+  padding: 20px 18px;
+}
+.mp-school-card-name { font-size: 20px; line-height: 1.35; }
+.mp-school-card-tag { font-size: 11px; letter-spacing: .14em; }
+
+/* 简历卡右侧预览也保持可控高度 */
+.mp-resume-preview {
+  width: min(100%, 240px);
+  max-width: 240px;
+  aspect-ratio: 5 / 7;
+}
+.mp-resume-card .mp-resume-title {
+  color: #1c1c1c !important;
+}
+.mp-resume-card .mp-resume-meta,
+.mp-resume-card .mp-resume-meta-item {
+  color: #5a5346;
+}
+
+@media (max-width: 1100px) and (min-width: 861px) {
+  .mp-school-card { justify-self: start; }
+}
+@media (max-width: 860px) {
+  .mp-root { --mp-sidebar-w: 224px; }
+  .mp-section-head { grid-template-columns: 1fr; gap: 8px; }
+  .mp-section-num { font-size: 54px; }
+  .mp-school-card { width: 100%; max-width: none; height: 180px; }
+}
+
+/* 身份卡：头像居中，并明确提示可更换 */
+.mp-id { align-items: center; text-align: center; }
+.mp-id-avatar-wrap { display: flex; flex-direction: column; align-items: center; gap: 7px; }
+.mp-avatar-hint {
+  color: var(--mp-gold-bright);
+  font-size: 10px;
+  letter-spacing: .08em;
+  white-space: nowrap;
+}
+.mp-id-copy { width: 100%; display: flex; flex-direction: column; align-items: center; }
+.mp-id-role { text-align: center; }
+.mp-id-badge { align-self: center; }
+
+/* 下拉选择与输入框保持相同的紧凑视觉 */
+.mp-quick-form select {
+  width: 100%;
+  min-height: 36px;
+  padding: 8px 28px 8px 10px;
+  border: 1px solid rgba(255,255,255,.2);
+  border-radius: 3px;
+  background: #25231f;
+  color: #fff;
+  font: 13px var(--mp-font-body);
+}
+.mp-quick-form select:focus-visible { outline: 2px solid var(--mp-gold); outline-offset: 2px; }
+.mp-quick-form select option { color: #222; background: #fff; }
+
+@media (max-width: 860px) {
+  .mp-id { flex-direction: column; }
+}
+
+
+/* ==========================================================================
+   亮色化：暗色展示框 → 暖纸/米白卡片（与主区纸感一致）
+   ========================================================================== */
+.mp-side {
+  --mp-ink-1: transparent;
+  --mp-ink-2: #f4f1ea;
+  --mp-ink-3: #ede8dc;
+  --mp-ink-4: rgba(17, 17, 17, 0.14);
+  --mp-text-on-dark: #2f3747;
+  --mp-text-on-dark-2: #5a5346;
+  --mp-text-on-dark-3: #8a8576;
+  --mp-divider-on-dark: rgba(17, 17, 17, 0.10);
+  background: linear-gradient(180deg, #faf9f5 0%, #f2eee4 100%);
+  color: #2f3747;
+  border-right: 1px solid var(--mp-line);
+  box-shadow: 4px 0 24px rgba(60, 45, 30, 0.08);
+}
+.mp-side::before {
+  background-color: transparent;
+  background-image: url('../assets/admin-bg.jpg');
+  mix-blend-mode: multiply;
+  opacity: .45;
+}
+.mp-brand { color: #8a6d2f; }
+.mp-brand-mark { color: #8a6d2f; border-color: #c9a86a; background: rgba(185, 154, 90, .12); }
+
+/* onboarding 黑条 → 米白卡片 */
+.mp-onboarding {
+  background: linear-gradient(180deg, #fffdf8 0%, #f7f3ea 100%) !important;
+  color: #2f3747 !important;
+  border: 1px solid var(--mp-line) !important;
+  box-shadow: 0 10px 24px rgba(60, 45, 30, .08) !important;
+}
+.mp-onboarding h2 { color: #1c1c1c !important; }
+.mp-onboarding p { color: #5a5346 !important; }
+.mp-onboarding-kicker { color: #8a6d2f !important; }
+
+/* 大头像展示卡 → 暖纸金 */
+.mp-id-avatar-fallback {
+  background: linear-gradient(160deg, #f7f3ea 0%, #e9dfc8 100%) !important;
+  color: #a3801f !important;
+}
+.mp-id-badge, .mp-id-name, .mp-id-role {
+  --mp-text-on-dark: #2f3747;
+  --mp-text-on-dark-2: #5a5346;
+  --mp-text-on-dark-3: #8a8576;
+}
+
+/* 简历预览 mini 卡 → 暖纸 */
+.mp-resume-preview {
+  --mp-text-on-dark: #2f3747;
+  --mp-text-on-dark-2: #5a5346;
+  background: linear-gradient(180deg, #fffdf8 0%, #f2ecdd 100%);
+  box-shadow: 0 16px 40px -10px rgba(60, 45, 30, .25);
+}
+
+/* 头像上传占位 → 暖纸 */
+.mp-avatar-preview { background: #faf9f5; }
+.mp-avatar-preview .empty {
+  background: linear-gradient(160deg, #f7f3ea, #e9dfc8);
+  color: #c9a86a;
+}
+
+
+/* 简历横幅卡亮色化（04 我的简历 · NO RESUME YET） */
+.mp-resume-card {
+  --mp-text-on-dark: #2f3747;
+  --mp-text-on-dark-2: #5a5346;
+  --mp-text-on-dark-3: #8a8576;
+  background: linear-gradient(160deg, #fffdf8 0%, #f2ecdd 100%);
+  border: 1px solid var(--mp-line);
+  box-shadow: 0 16px 40px -14px rgba(60, 45, 30, .2);
+}
+.mp-resume-card .mp-btn-primary { color: #fff; }
+.mp-resume-card .mp-resume-title { color: #1c1c1c; }
+.mp-resume-card .mp-resume-info p { color: #5a5346; }
+
+/* —— 顶栏/侧栏字体可读性：Google 字体加载失败时的可靠兜栈 + 对比度 —— */
+.mp-topbar, .mp-topbar .lbl, .mp-topbar .sub, .mp-topbar button,
+.mp-side, .mp-nav a, .mp-nav a span, .mp-nav a small {
+  font-family: 'Noto Sans SC', 'Microsoft YaHei', 'PingFang SC', system-ui, sans-serif;
+}
+.mp-nav a { color: #4a4030 !important; font-weight: 600 !important; }
+.mp-nav a .mp-nav-num, .mp-nav a small { color: #8a8576 !important; }
+.mp-topbar .lbl { color: #4a4030 !important; }
+.mp-topbar .sub { color: #8a8576 !important; }

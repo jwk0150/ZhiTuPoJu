@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#F5F2ED" />
+  <title>执图破局 · 系统公告</title>
+  <link rel="stylesheet" href="../css/tokens.css?v=lightfix1" />
+  <link rel="stylesheet" href="../css/admin.css?v=premium1" />
+</head>
+<body>
+  <div class="admin-app">
+    <aside class="admin-sidebar" id="adminSidebar">
+      <div class="sidebar-top">
+        <a class="admin-brand" href="../index.html" aria-label="返回执图破局首页">
+          <span class="brand-glyph">执</span><span class="brand-copy"><b>执图破局</b><small>ADMIN CONSOLE</small></span>
+        </a>
+        <button class="mobile-close" id="closeNav" type="button" aria-label="关闭导航">×</button>
+        <div class="operator-card"><span class="operator-mark">◆</span><div><strong id="operatorName">值班工作区</strong><small id="operatorRole">ADMIN / OPERATOR</small></div><span class="online-dot" data-state="live"></span></div>
+      </div>
+      <nav class="admin-nav" aria-label="管理端工作区">
+        <p class="nav-label">运营 · OPERATIONS</p>
+        <a href="admin.html"><span class="nav-icon">◈</span><span>指挥台</span><small>01</small></a>
+        <a href="pipeline.html"><span class="nav-icon">↗</span><span>数据管线</span><small>02</small></a>
+        <a href="knowledge.html"><span class="nav-icon">⌘</span><span>图谱与知识</span><small>03</small></a>
+        <a href="quality.html"><span class="nav-icon">◒</span><span>质量与可信</span><small>04</small></a>
+        <a href="jobs-pool.html"><span class="nav-icon">▤</span><span>岗位池</span><small>05</small></a>
+        <a href="crawler.html"><span class="nav-icon">⊕</span><span>采集源</span><small>06</small></a>
+        <a href="cleaning.html"><span class="nav-icon">◐</span><span>清洗仓</span><small>07</small></a>
+        <p class="nav-label nav-label-lower">治理 · GOVERNANCE</p>
+        <a href="permissions.html"><span class="nav-icon">♙</span><span>权限矩阵</span><small>08</small></a>
+        <a href="users.html"><span class="nav-icon">▦</span><span>用户与审计</span><small>09</small></a>
+        <a href="notice.html" class="active"><span class="nav-icon">✎</span><span>系统公告</span><small>10</small></a>
+        <a href="report.html"><span class="nav-icon">▥</span><span>运营日报</span><small>11</small></a>
+      </nav>
+      <div class="sidebar-foot"><span class="status-dot" data-state="live"></span><div><strong id="sideHealth">系统正常</strong><small id="sideUpdated">—</small></div></div>
+    </aside>
+    <div class="nav-scrim" id="navScrim"></div>
+
+    <main class="admin-main">
+      <header class="admin-topbar">
+        <button class="mobile-menu" id="openNav" type="button" aria-label="打开导航">☰</button>
+        <div class="topbar-title"><span class="eyebrow">08 / ANNOUNCEMENT</span><h1>系统公告</h1><p>面向用户发布运营通知、维护公告与版本说明。</p></div>
+        <div class="top-actions"><div class="sync-readout"><span>LAST SYNC</span><strong id="lastSync">—</strong></div><button class="ghost-btn" id="refreshBtn" type="button">↻ <span>刷新列表</span></button><div class="user-chip" id="userChip">未登录 <span>READ ONLY</span></div></div>
+      </header>
+
+      <section class="workspace section-block">
+        <div class="stats-strip">
+          <div class="stat-card"><span class="label">TOTAL</span><span class="value" id="statTotal">—</span><span class="delta">已发布</span></div>
+          <div class="stat-card"><span class="label">SCHEDULED</span><span class="value" id="statScheduled">—</span><span class="delta">待发布</span></div>
+          <div class="stat-card"><span class="label">DRAFTS</span><span class="value" id="statDrafts">—</span><span class="delta">本地草稿</span></div>
+          <div class="stat-card"><span class="label">READS</span><span class="value" id="statReads">—</span><span class="delta">最近 7 日</span></div>
+        </div>
+
+        <div class="notice-shell">
+          <article class="panel notice-list-card">
+            <div class="panel-head" style="margin-bottom:14px"><div><span class="eyebrow">ANNOUNCEMENT LIST</span><h3>历史公告</h3></div><button class="outline-btn" type="button" id="newNoticeBtn">+ 新建公告</button></div>
+            <div class="chips" id="statusChips" style="margin-bottom:14px">
+              <button class="chip is-active" data-status="all"><i></i>全部</button>
+              <button class="chip" data-status="published"><i></i>已发布</button>
+              <button class="chip" data-status="scheduled"><i></i>已排期</button>
+              <button class="chip" data-status="draft"><i></i>草稿</button>
+            </div>
+            <div class="notice-list" id="noticeList"></div>
+          </article>
+
+          <article class="panel notice-compose-card">
+            <span class="eyebrow">COMPOSE</span>
+            <h3>撰写新公告</h3>
+            <form class="notice-form" id="noticeForm">
+              <div class="field-group">
+                <label for="noticeTitle">公告标题</label>
+                <input id="noticeTitle" type="text" placeholder="一句话说明本次公告主题" maxlength="64" />
+              </div>
+              <div class="row">
+                <div class="field-group">
+                  <label for="noticeType">分类</label>
+                  <select id="noticeType"><option value="运营">运营</option><option value="维护">维护</option><option value="版本">版本</option><option value="公告">公告</option></select>
+                </div>
+                <div class="field-group">
+                  <label for="noticeAudience">面向用户</label>
+                  <select id="noticeAudience"><option value="全部用户">全部用户</option><option value="仅新用户">仅新用户</option><option value="仅企业用户">仅企业用户</option><option value="仅管理员">仅管理员</option></select>
+                </div>
+              </div>
+              <div class="field-group">
+                <label for="noticeSchedule">发布时间</label>
+                <input id="noticeSchedule" type="datetime-local" />
+              </div>
+              <div class="field-group">
+                <label for="noticeContent">正文</label>
+                <textarea id="noticeContent" placeholder="详细说明本次公告的背景、影响范围与建议操作…"></textarea>
+              </div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap">
+                <button class="ghost-btn" type="button" id="saveDraft">保存草稿</button>
+                <button class="outline-btn" type="button" id="scheduleBtn">⟳ 排期发布</button>
+                <button class="outline-btn" type="submit" style="margin-left:auto;background:var(--accent-gold);color:#FFFFFF;border-color:var(--accent-gold)">▶ 立即发布</button>
+              </div>
+            </form>
+            <div class="notice-preview" id="noticePreview">
+              <div class="notice-preview-label">PREVIEW · 用户将看到</div>
+              <h4 id="previewTitle">公告标题</h4>
+              <p id="previewContent">在左侧输入内容后，这里会实时显示用户端看到的公告样式。</p>
+              <div class="notice-preview-meta"><span id="previewType">运营</span><span>·</span><span id="previewAudience">全部用户</span></div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <footer class="admin-footer"><span>执图破局 · 管理运营中枢</span><span>© 2026 ZHITU · v3.1</span></footer>
+    </main>
+  </div>
+  <div class="toast-host" id="toastHost" aria-live="polite"></div>
+  <script src="../js/admin-guard.js?v=guard1"></script>
+  <script src="../js/admin-shell.js?v=shell1"></script>
+  <script src="../js/api.js?v=20260903"></script>
+  <script src="../js/admin-notice.js?v=v1"></script>
+</body>
+</html>

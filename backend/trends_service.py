@@ -537,15 +537,16 @@ def get_emerging_jobs_analysis() -> dict:
 
 
 def _mock_emerging_jobs() -> dict:
+    # 演示口径：预测岗位全部为趋势外推产生、当前招聘市场上尚不存在的全新岗位
     return {
         "emerging_jobs": [
-            {"title": "端侧AI部署工程师", "growth_potential": 92, "eta_months": 6, "drivers": ["手机/汽车端侧大模型趋势", "隐私计算需求爆发"], "required_skills": ["ONNX", "TensorRT", "量化", "知识蒸馏"], "definition": "将大模型压缩部署到端侧设备，优化推理延迟和内存占用。", "evidence_signals": ["端侧部署相关JD增长85%", "高通/苹果端侧芯片竞赛加速"]},
-            {"title": "具身智能工程师", "growth_potential": 85, "eta_months": 12, "drivers": ["人形机器人产业化", "Sim-to-Real技术突破"], "required_skills": ["ROS2", "PyTorch", "SLAM", "强化学习"], "definition": "负责具身智能系统的感知-规划-控制全栈开发。", "evidence_signals": ["机器人相关JD增长120%", "特斯拉Optimus量产推进"]},
-            {"title": "AI安全对齐工程师", "growth_potential": 88, "eta_months": 9, "drivers": ["AI监管法规趋严", "大模型幻觉与越狱风险"], "required_skills": ["对抗攻击", "RLHF", "红队测试", "可解释性"], "definition": "负责大模型安全对齐，包括幻觉防控、越狱检测、合规评测。", "evidence_signals": ["AI安全相关职位增长210%", "欧盟AI Act合规要求落地"]},
-            {"title": "合成数据工程师", "growth_potential": 80, "eta_months": 8, "drivers": ["真实数据枯竭", "隐私法规限制"], "required_skills": ["数据生成", "GAN", "LLM", "数据增强"], "definition": "利用生成模型生产高质量合成训练数据。", "evidence_signals": ["合成数据相关论文增长3x", "企业数据合规成本上升"]},
-            {"title": "AI芯片软件栈工程师", "growth_potential": 78, "eta_months": 15, "drivers": ["GPU禁运倒逼国产芯片", "AI编译优化需求"], "required_skills": ["Triton", "MLIR", "TVM", "CUDA"], "definition": "负责AI芯片上层的编译优化与软件栈适配。", "evidence_signals": ["国产GPU厂商招聘量增长5x", "CUDA替代生态加速建设"]},
+            {"title": "世界模型对齐工程师", "growth_potential": 92, "eta_months": 6, "drivers": ["视频生成世界模型爆发", "物理一致性训练需求"], "required_skills": ["World Model", "时序预测", "对齐训练", "强化学习"], "definition": "负责让世界模型与物理规律对齐，约束生成结果的因果一致性。", "evidence_signals": ["世界模型相关论文增长4x", "头部实验室组建对齐团队"]},
+            {"title": "神经符号推理架构师", "growth_potential": 88, "eta_months": 9, "drivers": ["大模型逻辑幻觉倒逼", "可验证推理需求"], "required_skills": ["Neuro-Symbolic", "知识图谱", "定理证明", "推理引擎"], "definition": "设计神经网络与符号推理融合的混合架构，保证结论可验证。", "evidence_signals": ["NeSy 相关职位增长170%", "金融/医疗高可靠场景落地"]},
+            {"title": "具身智能伦理审计师", "growth_potential": 85, "eta_months": 8, "drivers": ["人形机器人进入公共场所", "具身行为合规要求"], "required_skills": ["VLA", "伦理框架", "行为审计", "红队测试"], "definition": "审计具身智能体在物理世界中的决策与行为边界，出具合规报告。", "evidence_signals": ["机器人伦理岗位从0到1出现", "多地出台机器人行为草案"]},
+            {"title": "自主智能体仿真工程师", "growth_potential": 82, "eta_months": 7, "drivers": ["Agent 社会模拟兴起", "政策沙盒推演需求"], "required_skills": ["Agent Society", "仿真推演", "博弈论", "沙盒环境"], "definition": "构建大规模自主智能体社会仿真，推演经济与组织行为。", "evidence_signals": ["Agent 仿真论文增长3x", "智库开始采购推演平台"]},
+            {"title": "量子机器学习编译工程师", "growth_potential": 78, "eta_months": 15, "drivers": ["量子硬件比特数突破", "QML 编译层空白"], "required_skills": ["QML", "量子门", "编译器", "混合编程"], "definition": "为量子机器学习模型构建编译层，优化量子-经典混合执行。", "evidence_signals": ["量子云平台开放编译接口", "超导芯片规模翻番"]},
         ],
-        "analysis_summary": "AI技术正从模型层向应用层、硬件层、安全层全方位扩散，未来6-18个月将涌现一批跨领域融合的新岗位。",
+        "analysis_summary": "AI技术正从模型层向世界模型、神经符号、具身伦理、智能体社会与量子计算方向扩散，未来6-18个月将涌现一批当前招聘市场上尚不存在的全新岗位。",
         "data_source": "mock",
     }
 

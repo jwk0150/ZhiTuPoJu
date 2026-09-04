@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#F5F2ED" />
+  <title>执图破局 · 数据管线</title>
+  <link rel="stylesheet" href="../css/tokens.css?v=lightfix1" />
+  <link rel="stylesheet" href="../css/admin.css?v=premium2" />
+</head>
+<body>
+  <div class="admin-app">
+    <aside class="admin-sidebar" id="adminSidebar">
+      <div class="sidebar-top">
+        <a class="admin-brand" href="../index.html" aria-label="返回执图破局首页">
+          <span class="brand-glyph">执</span><span class="brand-copy"><b>执图破局</b><small>ADMIN CONSOLE</small></span>
+        </a>
+        <button class="mobile-close" id="closeNav" type="button" aria-label="关闭导航">×</button>
+        <div class="operator-card"><span class="operator-mark">◆</span><div><strong id="operatorName">值班工作区</strong><small id="operatorRole">ADMIN / OPERATOR</small></div><span class="online-dot" data-state="live"></span></div>
+      </div>
+      <nav class="admin-nav" aria-label="管理端工作区">
+        <p class="nav-label">运营 · OPERATIONS</p>
+        <a href="admin.html"><span class="nav-icon">◈</span><span>指挥台</span><small>01</small></a>
+        <a href="pipeline.html" class="active"><span class="nav-icon">↗</span><span>数据管线</span><small>02</small></a>
+        <a href="knowledge.html"><span class="nav-icon">⌘</span><span>图谱与知识</span><small>03</small></a>
+        <a href="quality.html"><span class="nav-icon">◒</span><span>质量与可信</span><small>04</small></a>
+        <a href="jobs-pool.html"><span class="nav-icon">▤</span><span>岗位池</span><small>05</small></a>
+        <a href="crawler.html"><span class="nav-icon">⊕</span><span>采集源</span><small>06</small></a>
+        <a href="cleaning.html"><span class="nav-icon">◐</span><span>清洗仓</span><small>07</small></a>
+        <p class="nav-label nav-label-lower">治理 · GOVERNANCE</p>
+        <a href="permissions.html"><span class="nav-icon">♙</span><span>权限矩阵</span><small>08</small></a>
+        <a href="users.html"><span class="nav-icon">▦</span><span>用户与审计</span><small>09</small></a>
+        <a href="notice.html"><span class="nav-icon">✎</span><span>系统公告</span><small>10</small></a>
+        <a href="report.html"><span class="nav-icon">▥</span><span>运营日报</span><small>11</small></a>
+      </nav>
+      <div class="sidebar-foot"><span class="status-dot" data-state="live"></span><div><strong id="sideHealth">系统正常</strong><small id="sideUpdated">—</small></div></div>
+    </aside>
+    <div class="nav-scrim" id="navScrim"></div>
+
+    <main class="admin-main">
+      <header class="admin-topbar">
+        <button class="mobile-menu" id="openNav" type="button" aria-label="打开导航">☰</button>
+        <div class="topbar-title"><span class="eyebrow">ADMIN / OPERATIONS</span><h1>管理运营中枢</h1><p>采集、图谱、岗位、用户、公告，都在这。</p></div>
+        <div class="top-actions"><div class="sync-readout"><span>LAST SYNC</span><strong id="lastSync">—</strong></div><button class="ghost-btn" id="refreshBtn" type="button">↻ <span>同步数据</span></button><div class="user-chip" id="userChip">未登录 <span>READ ONLY</span></div></div>
+      </header>
+
+      <section id="crawler" class="workspace section-block" aria-labelledby="crawlerTitle">
+        <div class="section-heading"><div><span class="eyebrow">02 / INGESTION PIPELINE</span><h2 id="crawlerTitle">数据管线</h2><p>采集 → 治理 → 入库，每一步都能追。</p></div><div class="section-actions"><button class="outline-btn" id="jobsRefresh" type="button">刷新任务</button></div></div>
+        <div class="pipeline-card panel reveal"><div class="pipeline-step"><span class="step-no">01</span><div><strong>采集</strong><small>Playwright · 多源调度</small></div><em id="pipelineSources">—</em></div><span class="pipeline-arrow">→</span><div class="pipeline-step"><span class="step-no">02</span><div><strong>治理</strong><small>字段清洗 · SHA256 去重</small></div><em id="pipelineValid">—</em></div><span class="pipeline-arrow">→</span><div class="pipeline-step"><span class="step-no">03</span><div><strong>理解</strong><small>实体关系 · 能力抽取</small></div><em id="pipelineGraph">—</em></div><span class="pipeline-arrow">→</span><div class="pipeline-step"><span class="step-no">04</span><div><strong>入库</strong><small>PostgreSQL · 向量索引</small></div><em id="pipelineStore">—</em></div></div>
+        <article class="panel table-panel reveal"><div class="panel-head"><div><span class="eyebrow">SOURCE STATUS</span><h3>采集来源状态</h3></div></div><div class="table-wrap"><table><thead><tr><th>来源</th><th>状态</th><th>说明</th><th>今日增量</th></tr></thead><tbody id="sourcesBody"><tr><td colspan="4" class="table-empty">正在读取来源状态…</td></tr></tbody></table></div></article>
+        <article class="panel table-panel reveal"><div class="panel-head"><div><span class="eyebrow">RECENT RUNS</span><h3>最近任务</h3></div><div class="table-tools"><label class="sr-only" for="jobSearch">搜索任务</label><input id="jobSearch" type="search" placeholder="搜索岗位 / 企业…" autocomplete="off" /><label class="sr-only" for="jobFilter">筛选任务</label><select id="jobFilter"><option value="all">全部状态</option><option value="success">已完成</option><option value="running">运行中</option><option value="failed">异常</option></select></div></div><div class="table-wrap"><table><thead><tr><th>岗位任务</th><th>来源</th><th>时间</th><th>状态</th></tr></thead><tbody id="jobsBody"><tr><td colspan="4" class="table-empty">正在读取任务记录…</td></tr></tbody></table></div></article>
+      </section>
+
+      <footer class="admin-footer"><span>执图破局 · 管理运营中枢</span><span>© 2026 ZHITU · v3.2</span></footer>
+    </main>
+  </div>
+  <div class="toast-host" id="toastHost" aria-live="polite"></div>
+  <script src="../js/admin-guard.js?v=guard2"></script>
+  <script src="../js/admin-shell.js?v=shell2"></script>
+  <script src="../js/api.js?v=20260903"></script>
+  <script src="../js/admin.js?v=split1"></script>
+</body>
+</html>

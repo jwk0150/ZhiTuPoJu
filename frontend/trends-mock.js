@@ -22,31 +22,31 @@ const MONTHS_12 = [
 const JOB_TRENDS = {
   'AI Agent 工程师': {
     color: '#2563EB',
-    quarterly:  [18,22,28,35, 42,55,68,82, 102,126],
+    quarterly:  [72,88,104,128, 156,192,236,288, 342,412],
     growthRate: 38.6,
     category: '人工智能',
   },
   '大模型应用工程师': {
     color: '#7C3AED',
-    quarterly:  [10,14,20,28, 38,50,65,78, 95,112],
+    quarterly:  [70,84,102,124, 152,188,232,276, 318,386],
     growthRate: 34.2,
     category: '人工智能',
   },
   '数据工程师': {
     color: '#0EA5E9',
-    quarterly:  [52,55,58,62, 65,70,74,78, 82,85],
+    quarterly:  [172,188,204,222, 238,256,274,292, 308,326],
     growthRate: 8.4,
     category: '大数据',
   },
   '云原生工程师': {
     color: '#16A34A',
-    quarterly:  [42,45,48,52, 56,60,64,68, 72,76],
+    quarterly:  [148,162,174,188, 202,218,232,246, 262,276],
     growthRate: 9.8,
     category: '云计算',
   },
   '算法工程师': {
     color: '#F59E0B',
-    quarterly:  [65,64,62,60, 58,56,55,54, 53,52],
+    quarterly:  [218,214,206,198, 188,178,170,162, 156,148],
     growthRate: -3.2,
     category: '人工智能',
   },
@@ -152,19 +152,20 @@ const FORECASTS = {
 };
 
 // ─── 预测岗位 TOP 5 ───
+// 预测岗位均为趋势外推产生的「市面上尚不存在」的新岗位（演示口径：全网招聘无在招记录）
 const FORECAST_JOBS = [
-  { rank:1, name:'AI Agent 工程师',       growth:63, confidence:91, sparkline:[28,42,55,68,82,102,126,142,158,175] },
-  { rank:2, name:'大模型应用工程师',        growth:47, confidence:88, sparkline:[20,28,38,50,65,78,95,112,128,145] },
-  { rank:3, name:'AI 数据治理师',          growth:39, confidence:84, sparkline:[8,12,18,25,33,42,52,62,73,85]  },
-  { rank:4, name:'MLOps 工程师',          growth:35, confidence:82, sparkline:[15,20,27,35,44,54,64,75,86,98]  },
-  { rank:5, name:'多智能体系统架构师',       growth:32, confidence:79, sparkline:[6,10,15,22,30,39,49,60,72,85]  },
+  { rank:1, name:'多智能体社会编排师',      growth:63, confidence:91, sparkline:[3,5,8,12,18,26,36,49,64,82]  },
+  { rank:2, name:'世界模型训练师',         growth:47, confidence:88, sparkline:[2,4,7,11,17,25,35,47,61,78]  },
+  { rank:3, name:'神经符号推理架构师',      growth:39, confidence:84, sparkline:[1,3,5,8,12,18,25,34,44,56]   },
+  { rank:4, name:'具身智能伦理审计师',      growth:35, confidence:82, sparkline:[2,3,5,8,12,17,23,31,40,51]   },
+  { rank:5, name:'自主智能体仿真工程师',    growth:32, confidence:79, sparkline:[1,2,4,6,9,13,19,26,34,44]    },
 ];
 
 // ─── AI 洞察文本 ───
 const AI_INSIGHT = {
   summary: `过去 12 个月，AI Agent 相关岗位需求持续增长，同比增长 38.6%。\n\n其中 Tool Calling、RAG、向量数据库等能力增长最为明显，成为 AI Agent 岗位的核心能力三角。\n\n根据当前趋势：\n\n① AI Agent 工程师需求预计在未来 6-18 个月继续保持强劲增长\n② GraphRAG 正从萌芽期进入快速增长阶段，预计 12 个月内成为主流需求\n③ 单纯 Prompt Engineering 的增长趋于稳定，正被 Tool Calling 和 Agent 编排能力取代\n④ Hadoop 等传统大数据技能持续衰退，被 Spark/Flink/实时流处理替代`,
   basis: [
-    { label:'历史岗位数量',    value:'852 条 AI Agent 相关 JD', },
+    { label:'历史岗位数量',    value:'3,742 条 AI Agent 相关 JD', },
     { label:'技能出现频率',    value:'RAG 76%、LLM 68%、Agent 64%', },
     { label:'同比增长率',      value:'AI Agent +38.6%、大模型应用 +34.2%', },
     { label:'岗位-技能关联度',  value:'AI Agent ↔ RAG 0.87、LLM 0.82', },
@@ -173,7 +174,7 @@ const AI_INSIGHT = {
   ],
   confidence: 87.4,
   dataRange: '2024 Q1 – 2026 Q2',
-  sampleSize: 12452,
+  sampleSize: 38780,
 };
 
 // ─── KPI 数据 ───

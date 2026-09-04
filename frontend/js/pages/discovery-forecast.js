@@ -350,15 +350,15 @@
         xAxis: {
           type: 'category',
           data: cats,
-          axisLabel: { color: 'rgba(160,180,195,0.85)', fontSize: 10 },
-          axisLine: { lineStyle: { color: 'rgba(255,255,255,0.08)' } }
+          axisLabel: { color: 'rgba(90,105,120,0.95)', fontSize: 11 },
+          axisLine: { lineStyle: { color: 'rgba(0,0,0,0.14)' } }
         },
         yAxis: {
           type: 'value',
           min: 30,
           max: 100,
-          axisLabel: { color: 'rgba(150,170,185,0.7)', fontSize: 10 },
-          splitLine: { lineStyle: { color: 'rgba(255,255,255,0.05)', type: 'dashed' } }
+          axisLabel: { color: 'rgba(110,125,140,0.95)', fontSize: 11 },
+          splitLine: { lineStyle: { color: 'rgba(0,0,0,0.08)', type: 'dashed' } }
         },
         series: [
           {
@@ -391,13 +391,13 @@
           type: 'value',
           min: 0,
           max: 24,
-          axisLabel: { color: 'rgba(150,170,185,0.75)', fontSize: 10 },
-          splitLine: { lineStyle: { color: 'rgba(255,255,255,0.05)', type: 'dashed' } }
+          axisLabel: { color: 'rgba(110,125,140,0.95)', fontSize: 11 },
+          splitLine: { lineStyle: { color: 'rgba(0,0,0,0.08)', type: 'dashed' } }
         },
         yAxis: {
           type: 'category',
           data: rows.map((j) => j.title),
-          axisLabel: { color: 'rgba(210,222,232,0.9)', fontSize: 10, width: 100, overflow: 'truncate' },
+          axisLabel: { color: '#1c2b33', fontSize: 11, width: 100, overflow: 'truncate' },
           axisLine: { show: false },
           axisTick: { show: false }
         },
@@ -448,8 +448,8 @@
             bottom: 6,
             nodeWidth: 10,
             nodeGap: 12,
-            label: { color: 'rgba(220,230,240,0.9)', fontSize: 10 },
-            lineStyle: { color: 'gradient', opacity: 0.4, curveness: 0.5 },
+            label: { color: '#1c2b33', fontSize: 11.5, fontWeight: 500 },
+            lineStyle: { color: 'gradient', opacity: 0.55, curveness: 0.5 },
             data: nodes,
             links
           }

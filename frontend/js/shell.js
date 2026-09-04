@@ -81,7 +81,7 @@
     newSkill: 'insight',
     collection: 'data',
     quality: 'data',
-    profile: 'match'
+    profile: 'profile'
   };
 
   const ICONS = {
@@ -198,6 +198,64 @@
     }
     window.__agentOpenPending = true; // agent-ui.js 加载完成后自动打开
   }
+
+  function profileResumeReady() {
+    try {
+      const u = JSON.parse(localStorage.getItem('zhitu_user') || 'null') || {};
+      const id = String(u.username || u.user_id || u.id || 'guest');
+      const profile = JSON.parse(localStorage.getItem('zhitu_my_profile_v1__' + id) || 'null') || {};
+      const p = profile.userProfile || {};
+      return !!(String(p.name || '').trim() && /^1[3-9]\d{9}$/.test(String(p.phone || '').replace(/\D/g, '')) && /^\S+@\S+\.\S+$/.test(String(p.email || '').trim()) && String(p.city || '').trim());
+    } catch (_) { return false; }
+  }
+
+  function openResumeFromShell() {
+    if (!profileResumeReady()) {
+      try { sessionStorage.removeItem('zhitu_open_resume'); } catch (_) {}
+      const missing = encodeURIComponent('姓名、手机号、邮箱、所在城市');
+      location.href = hrefBase() + 'my-profile.html?v=20260903&return=resume&missing=' + missing;
+      return;
+    }
+    window.ShellRX && window.ShellRX.open({ firstLogin: false, reload: true });
+  }
+
+  function profilePromptKey(user) {
+    const id = user && (user.username || user.user_id || user.id);
+    return id ? 'zhitu_profile_prompt_seen:' + String(id) : '';
+  }
+
+  function showProfilePrompt(user) {
+    const key = profilePromptKey(user);
+    if (!key || profileResumeReady()) return;
+    try { if (localStorage.getItem(key) === '1') return; } catch (_) { return; }
+    if (document.getElementById('shell-profile-prompt')) return;
+
+    const prompt = document.createElement('aside');
+    prompt.id = 'shell-profile-prompt';
+    prompt.className = 'shell-profile-prompt';
+    prompt.setAttribute('role', 'dialog');
+    prompt.setAttribute('aria-labelledby', 'shell-profile-prompt-title');
+    prompt.innerHTML =
+      '<div class="shell-profile-prompt-mark">PROFILE / 01</div>' +
+      '<h2 id="shell-profile-prompt-title">先把你的职业资料补齐</h2>' +
+      '<p>姓名、手机号、邮箱和所在城市会预填到简历，并帮助人岗匹配给出更可靠的结果。</p>' +
+      '<div class="shell-profile-prompt-actions">' +
+        '<button type="button" class="shell-profile-prompt-primary" id="shell-profile-prompt-go">现在完善</button>' +
+        '<button type="button" class="shell-profile-prompt-skip" id="shell-profile-prompt-skip">暂时跳过</button>' +
+      '</div>';
+    document.body.appendChild(prompt);
+
+    const finish = function () {
+      try { localStorage.setItem(key, '1'); } catch (_) {}
+      prompt.remove();
+    };
+    prompt.querySelector('#shell-profile-prompt-go').addEventListener('click', function () {
+      finish();
+      location.href = hrefBase() + 'my-profile.html?v=20260903&return=resume';
+    });
+    prompt.querySelector('#shell-profile-prompt-skip').addEventListener('click', finish);
+  }
+
 
   function resumeSrc() {
     const b = hrefBase();
@@ -349,22 +407,26 @@
 
     ensureQaUi();
     ensureResumeExplorer();
+    if (pageId === 'home' || pageId === 'news') {
+      window.setTimeout(function () { showProfilePrompt(user); }, 180);
+      // 消费「打开简历探索」标记：resume.html 非嵌入访问、档案保存后跳转都会携带它。
+      // 之前只有 remove 没有 getItem，导致从个人仓库/档案页跳回后停在岗位大新闻。
+      window.setTimeout(function () {
+        try {
+          if (sessionStorage.getItem('zhitu_open_resume') === '1') {
+            sessionStorage.removeItem('zhitu_open_resume');
+            // 来自个人仓库「打开简历探索」或档案页跳转：直接打开向导。
+            // 资料未就绪也没关系——向导第一步会自行校验并要求补全，避免静默回落到岗位大新闻。
+            window.ShellRX && window.ShellRX.open({ firstLogin: false, reload: true });
+          }
+        } catch (_) {}
+      }, 320);
+    }
 
     const resumeBtn = host.querySelector('#shell-resume');
     if (resumeBtn) {
-      resumeBtn.addEventListener('click', function () {
-        window.ShellRX && window.ShellRX.open({ firstLogin: false, reload: true });
-      });
+      resumeBtn.addEventListener('click', openResumeFromShell);
     }
-
-    try {
-      if (sessionStorage.getItem('zhitu_open_resume') === '1') {
-        sessionStorage.removeItem('zhitu_open_resume');
-        window.setTimeout(function () {
-          window.ShellRX && window.ShellRX.open({ firstLogin: true, reload: true });
-        }, 420);
-      }
-    } catch (_) {}
 
     bindVaultNav(host);
     setupNavPrefetch();

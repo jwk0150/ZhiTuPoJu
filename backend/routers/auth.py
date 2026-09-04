@@ -12,7 +12,7 @@ import json
 import time
 from pathlib import Path
 
-from fastapi import APIRouter, Header, HTTPException
+from fastapi import APIRouter, Depends, Header, HTTPException
 from pydantic import BaseModel
 
 from backend.config import config
@@ -135,6 +135,14 @@ def get_current_user(authorization: str | None = Header(default=None)) -> dict:
     return {"username": user["username"], "role": user["role"]}
 
 
+def require_admin(current_user: dict = Depends(get_current_user)) -> dict:
+    """FastAPI 依赖：仅允许服务端用户记录中的管理员访问。"""
+    role = str(current_user.get("role") or "").strip().lower()
+    if role not in {"admin", "administrator"}:
+        raise HTTPException(status_code=403, detail="需要管理员权限")
+    return current_user
+
+
 @router.post("/login")
 def login(req: LoginRequest):
     username = req.username.strip()
@@ -211,7 +219,7 @@ def register(req: RegisterRequest):
     return ok({"username": username, "role": "user"})
 
 
-@router.get("/users")
+@router.get("/users", dependencies=[Depends(require_admin)])
 def list_users():
     users = [
         {"username": u["username"], "role": u["role"]}

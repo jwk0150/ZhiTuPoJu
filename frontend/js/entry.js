@@ -882,7 +882,6 @@
 
   const finishAuth = (payload) => {
     const data = payload && typeof payload === 'object' ? payload : {};
-    // 保存 JWT（与 api.js 的 zhituGetToken 同一 key，Global Agent 等接口鉴权依赖它）
     if (data.token) {
       try { localStorage.setItem('zhitu_token', data.token); } catch (_) {}
     }
@@ -891,22 +890,40 @@
       role: data.role || 'user',
       loginTime: Date.now()
     }));
-    // 新登录用户首次进入先打开简历探索，引导建立个人画像。
-    try {
-      const uid = String(data.username || data.user?.username || '');
-      const seenKey = 'zhitu_resume_onboarding_seen:' + uid;
-      if (uid && localStorage.getItem(seenKey) !== '1') {
-        sessionStorage.setItem('zhitu_open_resume', '1');
-        localStorage.setItem(seenKey, '1');
-      }
-    } catch (_) {}
-    const dest = 'pages/news/index.html';
-    if (window.ZhituAuthTransit && window.ZhituAuthTransit.go) {
-      window.ZhituAuthTransit.go(dest);
-    } else {
-      window.location.href = dest;
-    }
+    // 1) 若来自管理端守卫的 return 回跳，优先使用
+    const ret = new URLSearchParams(location.search).get('return');
+    if (ret) { window.location.href = ret; return; }
+    // 2) 用户在端点卡片上的选择
+    const next = sessionStorage.getItem('zhitu_next_endpoint');
+    if (next === 'admin') { sessionStorage.removeItem('zhitu_next_endpoint'); return goDest('pages/admin.html'); }
+    if (next === 'user') { sessionStorage.removeItem('zhitu_next_endpoint'); return goDest('pages/news/index.html'); }
+    // 3) 根据角色默认跳
+    const role = String((data.role || '')).toLowerCase();
+    return goDest(role === 'admin' ? 'pages/admin.html' : 'pages/news/index.html');
   };
+
+  const goDest = (url) => {
+    if (window.ZhituAuthTransit && window.ZhituAuthTransit.go) window.ZhituAuthTransit.go(url);
+    else window.location.href = url;
+  };
+
+  // 测试账号 / 离线兜底：本地没有后端时也能进两端
+  var TEST_ACCOUNTS = {
+    admin: { username: 'admin', password: 'admin123', role: 'admin', displayName: '系统管理员' },
+    operator: { username: 'operator', password: 'operator123', role: 'operator', displayName: '运营专员' },
+    analyst: { username: 'analyst', password: 'analyst123', role: 'analyst', displayName: '数据分析师' },
+    user: { username: 'user', password: 'user123', role: 'user', displayName: '体验用户' }
+  };
+
+  function tryLocalAccount(username, password) {
+    var u = String(username || '').trim().toLowerCase();
+    var p = String(password || '');
+    if (TEST_ACCOUNTS[u] && TEST_ACCOUNTS[u].password === p) {
+      var acc = TEST_ACCOUNTS[u];
+      return { ok: true, payload: { username: acc.username, role: acc.role, displayName: acc.displayName, token: 'local-' + acc.role, source: 'local' } };
+    }
+    return { ok: false };
+  }
 
   const postAuth = async (path, body) => {
     const res = await fetch(authApiBase() + path, {
@@ -942,12 +959,19 @@
       return;
     }
     showAuthError(errorEl, '');
+    // 1) 先试测试账号（本地 / 离线可用）
+    var local = tryLocalAccount(username, password);
+    if (local.ok) {
+      finishAuth(local.payload);
+      return;
+    }
+    // 2) 走真实后端
     try {
       const result = await postAuth('/api/auth/login', { username, password });
-      if (result.code === 0) finishAuth(result.data);
-      else showAuthError(errorEl, result.message || '登录失败，请先注册');
+      if (result && result.code === 0) finishAuth(result.data);
+      else showAuthError(errorEl, (result && result.message) || '登录失败 · 请使用测试账号 admin/admin123 或 user/user123');
     } catch (_) {
-      showAuthError(errorEl, '网络错误，请稍后重试');
+      showAuthError(errorEl, '后端未连接 · 已切换为本地测试账号，请使用 admin/admin123 或 user/user123');
     }
   });
 
@@ -984,44 +1008,60 @@
     }
   });
 
-  const devSkip = document.getElementById('entryDevSkip');
-  const adminSkip = document.getElementById('entryAdminSkip');
-  if (devSkip && isLocalHost()) {
-    devSkip.hidden = false;
-    devSkip.addEventListener('click', async (event) => {
+  const endpointTabs = Array.from(document.querySelectorAll('.login-endpoint-tab'));
+  // 若来自管理端守卫的 return 回跳，默认高亮「管理员」tab
+  const retParam = new URLSearchParams(location.search).get('return');
+  const isAdminReturn = retParam && /admin\.html/i.test(retParam);
+
+  var LEADS = {
+    user: '登录后从岗位大新闻进入地图、洞察、发现、匹配与个人仓库。',
+    admin: '登录后进入内部运营端：指挥台、数据管线、清洗仓、岗位池与治理。'
+  };
+
+  function selectEndpoint(which) {
+    sessionStorage.setItem('zhitu_next_endpoint', which);
+    endpointTabs.forEach((t) => {
+      const on = t.dataset.endpoint === which;
+      t.classList.toggle('is-active', on);
+      t.setAttribute('aria-selected', on ? 'true' : 'false');
+    });
+    const lead = document.getElementById('loginLead');
+    if (lead) lead.textContent = LEADS[which] || LEADS.user;
+    // 预填测试账号：仅当当前值是默认值之一（未手动输入自定义账号）时切换
+    if (loginForm) {
+      const u = loginForm.querySelector('[name="username"]');
+      const p = loginForm.querySelector('[name="password"]');
+      const defaultUsers = ['', 'admin', 'user'];
+      const defaultPwds = ['', 'admin123', 'user123'];
+      if (u && defaultUsers.indexOf(u.value.trim()) >= 0) u.value = which === 'admin' ? 'admin' : 'user';
+      if (p && defaultPwds.indexOf(p.value) >= 0) p.value = which === 'admin' ? 'admin123' : 'user123';
+    }
+  }
+
+  endpointTabs.forEach((tab) => {
+    if (tab.dataset.endpoint === 'admin' && isAdminReturn) {
+      tab.classList.add('is-emphasis');
+      selectEndpoint('admin');
+    }
+    tab.addEventListener('click', (event) => {
       event.preventDefault();
       event.stopPropagation();
-      const errorEl = document.getElementById('entryLoginError');
-      showAuthError(errorEl, '');
-      devSkip.disabled = true;
-      try {
-        // 本地跳过登录：确保 developer 账号存在并走真实后端签发 JWT
-        let login = await postAuth('/api/auth/login', { username: 'developer', password: '123456' });
-        if (login.code !== 0) {
-          await postAuth('/api/auth/register', { username: 'developer', password: '123456' });
-          login = await postAuth('/api/auth/login', { username: 'developer', password: '123456' });
-        }
-        if (login.code === 0) finishAuth(login.data);
-        else showAuthError(errorEl, (login && login.message) || '开发账号不可用，请注册后登录');
-      } catch (err) {
-        showAuthError(
-          errorEl,
-          '连不上后端（' + authApiBase() + '）。请先运行 start_all.cmd 或确认 :5000 已启动。'
-        );
-        if (window.showToast) window.showToast('后端未就绪 · 请启动 :5000', 'amber');
-      } finally {
-        devSkip.disabled = false;
+      selectEndpoint(tab.dataset.endpoint);
+    });
+  });
+  // 默认选中用户端（若无 return 参数）
+  if (!isAdminReturn) selectEndpoint('user');
+  // 已登录用户：直接进入对应端
+  (() => {
+    try {
+      const existing = JSON.parse(localStorage.getItem('zhitu_user') || 'null');
+      if (existing && !retParam) {
+        // 已登录但停留在入口页：给出提示按钮
+        const hint = document.getElementById('entryLoginError');
+        if (hint) showAuthError(hint, '已登录为 ' + (existing.username || '') + ' · 点击右上端点即可直接进入');
       }
-    });
-  }
-  if (adminSkip && isLocalHost()) {
-    adminSkip.hidden = false;
-    adminSkip.addEventListener('click', (event) => {
-      event.preventDefault();
-      event.stopPropagation();
-      window.location.href = 'pages/admin.html';
-    });
-  }
+    } catch (_) {}
+  })();
 
   readMetadata().then(() => {
     document.body.dataset.phase = 'scene1';

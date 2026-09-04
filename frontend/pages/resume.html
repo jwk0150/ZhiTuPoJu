@@ -59,6 +59,7 @@
           <span class="rb-brand-dot"></span>
           <span>执图破局 · 简历向导</span>
         </div>
+        <button class="rb-return-profile" id="rb-return-profile" type="button">← 返回我的资料</button>
       </div>
       <div class="rb-scene-copy" hidden>
         <h1 id="rb-left-title">基本<br/><em>信息</em></h1>
@@ -378,6 +379,11 @@
   <script src="../js/data/job-pool.js?v=20260826rx3"></script>
   <script src="../js/user-vault.js?v=20260826vd1"></script>
   <script src="../js/auth-transit.js?v=4"></script>
+  <script>
+    // 进入向导：不再做强制的档案完整性守卫。
+    // 理由：向导本身有 step 1 字段校验；seedFromProfile 已在 init 时把已保存的档案预填进来；
+    //       即使用户档案尚未完整，也应允许直接进入向导内部填写（避免被反向踢回资料页）。
+  </script>
   <script src="../js/resume-builder.js?v=20260826vd1"></script>
   <script>
     if (window.ZhituAuthTransit) window.ZhituAuthTransit.playEnterIfNeeded();

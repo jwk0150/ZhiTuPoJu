@@ -70,7 +70,13 @@
     if (Object.keys(headers).length) {
       options = Object.assign({}, options, { headers: headers });
     }
-    const res = await fetch(url, options);
+    const ctl = new AbortController();
+    const timer = setTimeout(function () { ctl.abort(); }, 2500); // 慢查询超时回落，避免页面长时间挂起
+    let res = null;
+    try {
+      res = await fetch(url, Object.assign({}, options, { signal: ctl.signal }));
+    } finally { clearTimeout(timer); }
+    if (!res) throw new Error('request timeout');
     let payload = null;
     try { payload = await res.json(); } catch (_) { payload = null; }
     if (!res.ok) {

@@ -1,0 +1,33 @@
+/* 用户账户设置：与资料页共享暖白纸面语义 */
+:root { --bg:#F5F2ED; --surface:#fff; --paper:#FAF8F5; --ink:#111; --muted:#5f625f; --line:#DED5C6; --gold:#A88B4E; --danger:#B64034; }
+* { box-sizing:border-box; }
+html,body { margin:0; min-height:100%; background:var(--bg); color:var(--ink); font-family:"Noto Sans SC","Microsoft YaHei",sans-serif; }
+body { padding:24px; }
+.account-page { min-height:calc(100vh - 48px); max-width:920px; margin:0 auto; }
+.account-header { display:flex; align-items:center; justify-content:space-between; gap:18px; padding:10px 0 30px; font-size:12px; letter-spacing:.08em; }
+.account-header a { color:var(--muted); text-decoration:none; }
+.account-header a:hover,.account-header a:focus-visible { color:var(--gold); }
+.account-path { color:var(--gold); font-family:"IBM Plex Mono",monospace; }
+.account-card { background:rgba(255,255,255,.9); border:1px solid var(--line); padding:clamp(28px,5vw,58px); box-shadow:0 14px 38px rgba(72,55,31,.08); }
+.account-eyebrow { color:var(--gold); font:600 11px/1.4 "IBM Plex Mono",monospace; letter-spacing:.16em; }
+h1 { margin:10px 0 8px; font:700 clamp(34px,6vw,60px)/1.05 "Noto Serif SC",serif; }
+.account-intro { max-width:620px; margin:0 0 32px; color:var(--muted); line-height:1.8; }
+.account-identity { padding:14px 16px; background:var(--paper); border-left:3px solid var(--gold); margin-bottom:18px; color:var(--muted); }
+.account-return { margin:0 0 24px; padding:16px 18px; background:#171717; color:#fff; border-left:3px solid var(--gold); }
+.account-return strong { display:block; font-family:"Noto Serif SC",serif; font-size:18px; }
+.account-return p { margin:7px 0 0; color:rgba(255,255,255,.7); font-size:13px; line-height:1.6; }
+.account-missing { margin-top:8px; color:#d6bd83; font-size:12px; }
+.account-continue { margin-top:12px; }
+#account-form { display:grid; gap:18px; max-width:620px; }
+label { display:grid; gap:7px; color:var(--muted); font-size:13px; }
+input[type=text],input[type=tel],input[type=email] { width:100%; border:1px solid var(--line); background:#fff; color:var(--ink); padding:11px 12px; border-radius:4px; font:inherit; }
+input:focus-visible { outline:2px solid rgba(168,139,78,.55); outline-offset:2px; }
+.account-check { display:flex; align-items:center; gap:9px; }
+.account-check input { accent-color:var(--gold); }
+.account-actions { display:flex; gap:10px; align-items:center; margin-top:8px; }
+.account-primary,.account-secondary,.account-danger-btn,.account-logout { border:1px solid var(--gold); border-radius:4px; padding:10px 17px; font:600 13px inherit; cursor:pointer; text-decoration:none; }
+.account-primary { background:var(--gold); color:#fff; }.account-secondary { color:var(--muted); border-color:var(--line); background:#fff; }
+.account-divider { height:1px; background:var(--line); margin:36px 0 26px; }
+.account-danger { display:flex; align-items:center; justify-content:space-between; gap:20px; }.account-danger h2 { margin:0 0 5px; font-size:16px; }.account-danger p { margin:0; color:var(--muted); font-size:12px; line-height:1.7; }.account-danger-btn { flex:none; border-color:rgba(182,64,52,.35); background:#fff8f6; color:var(--danger); }
+.account-logout { margin-top:28px; border-color:var(--line); background:transparent; color:var(--muted); }.account-toast { min-height:22px; margin-top:16px; color:#347868; font-size:13px; }
+@media (max-width:620px) { body { padding:12px; }.account-page { min-height:calc(100vh - 24px); }.account-header { flex-wrap:wrap; padding-bottom:18px; }.account-path { order:-1; width:100%; }.account-card { padding:26px 20px; }.account-danger { align-items:flex-start; flex-direction:column; }.account-danger-btn { width:100%; } }

@@ -12,7 +12,7 @@
   <link rel="stylesheet" href="../css/discovery-favs.css?v=goldfix1" />
   <link rel="stylesheet" href="../css/discovery-detail.css?v=chartlight1" />
   <link rel="stylesheet" href="../css/discovery-evolve.css?v=lightfix1" />
-  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script src="../js/vendor/gsap.min.js"></script>
 <link rel="stylesheet" href="../css/news-light-overrides.css?v=chartlight1" />
 </head>
 <body class="standalone-view dd-cockpit-page" data-page="discovery">
@@ -192,6 +192,7 @@
       <div class="dd-fc" id="dd-forecast-shell" hidden>
         <nav class="dd-fc-crumb enter" style="--d:.02s" aria-label="面包屑">
           <a href="discovery.html?v=fix25" class="dd-back-bubble">← 返回预测岗位列表</a>
+          <a href="../pages/map.html?v=fix25c5&layer=graph" class="dd-back-bubble" id="dd-fc-panorama-btn" style="margin-left:10px;border-color:rgba(217,169,46,.55);color:#8F6B0E;font-weight:600">◈ 技术全景预测 →</a>
         </nav>
 
         <header class="dd-fc-hero enter" style="--d:.06s">
@@ -400,7 +401,7 @@
       if (window.__echartsLoading) { window.__echartsLoading.then(cb); return; }
       window.__echartsLoading = new Promise(function (resolve, reject) {
         var s = document.createElement('script');
-        s.src = 'https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js';
+        s.src = '../js/vendor/echarts.min.js';
         s.async = true;
         s.onload = function () { resolve(window.echarts); cb(); };
         s.onerror = function () { reject(new Error('echarts load failed')); };
