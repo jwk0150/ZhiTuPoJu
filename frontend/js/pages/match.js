@@ -601,6 +601,79 @@
     });
   }
 
+  /* ============================================================
+   * 匹配进度持久化（localStorage）
+   * 目标：匹配过一次后，刷新/重进页面保留之前的操作，不再重新匹配。
+   * ============================================================ */
+  const MATCH_STORAGE_KEY = 'zhitu_match_progress_v1';
+
+  function persistMatchState() {
+    try {
+      const st = window.matchState;
+      if (!st) return;
+      const snapshot = {
+        mode: st.mode,
+        activeView: st.activeView,
+        stage: st.stage,
+        result: st.result || null,
+        selectedJobId: st.selectedJobId || null,
+        preferences: st.preferences || null,
+        resumeSections: st.resumeSections || null,
+        activeSection: st.activeSection || 'basic',
+        fileName: st.fileName || '',
+        interview: st.interview || null
+      };
+      localStorage.setItem(MATCH_STORAGE_KEY, JSON.stringify(snapshot));
+    } catch (e) { /* 存储失败不影响主流程 */ }
+  }
+
+  // 从已解析的词条重建文本，用于刷新后补一个可展示的 File（不影响已保存的匹配结果）
+  function fileFromSections(fileName, sections) {
+    const text = (sections || []).map((s) => (s.label || '') + '\n' + (s.content || '')).join('\n\n');
+    return new File([text], fileName || '简历.txt', { type: 'text/plain' });
+  }
+
+  function restorePersistedState() {
+    let raw = null;
+    try { raw = localStorage.getItem(MATCH_STORAGE_KEY); } catch (e) {}
+    if (!raw) return null;
+    let s = null;
+    try { s = JSON.parse(raw); } catch (e) { return null; }
+    if (!s) return null;
+    const st = window.matchState;
+    if (s.mode) st.mode = s.mode;
+    if (s.result) st.result = s.result;
+    if (s.selectedJobId) st.selectedJobId = s.selectedJobId;
+    if (s.preferences) st.preferences = Object.assign(st.preferences || {}, s.preferences);
+    if (Array.isArray(s.resumeSections) && s.resumeSections.length) st.resumeSections = s.resumeSections;
+    if (s.activeSection) st.activeSection = s.activeSection;
+    if (s.fileName) st.fileName = s.fileName;
+    if (s.interview) st.interview = s.interview;
+    // 刷新后本地 File 对象会丢失，用已保存的词条补一个可展示的占位 File，
+    // 保证简历入口仍显示“已解析”，但真实重新匹配仍需重新上传原件。
+    if (s.fileName && !st.file) {
+      try { st.file = fileFromSections(s.fileName, st.resumeSections || []); st.fileSize = st.file.size; } catch (e) {}
+    }
+    // 临时态（分析中/面试中）回退到稳定的主视图
+    const viewMap = { interview: 'jobs', analysis: 'jobs' };
+    const view = viewMap[s.activeView] || s.activeView;
+    return (view && ['resume', 'match', 'jobs', 'learn', 'compare'].indexOf(view) >= 0) ? view : null;
+  }
+
+  function resetMatch() {
+    try { localStorage.removeItem(MATCH_STORAGE_KEY); } catch (e) {}
+    const st = window.matchState;
+    st.mode = 'real';
+    st.stage = 'resume';
+    st.file = null; st.fileName = ''; st.fileSize = 0;
+    st.result = null; st.selectedJobId = null;
+    st.resumeSections = []; st.activeSection = 'basic';
+    st.interview = { index: 0, answers: [], questions: [] };
+    st.whatif = {};
+    setView('resume');
+    if (window.showToast) window.showToast('已清空匹配进度，可重新开始', 'teal');
+  }
+
   /* ---------------- 入口 ---------------- */
   function initMatch() {
     if (window.__matchInit) return;
@@ -654,9 +727,11 @@
     renderProgress();
     renderResume();
     bindQuickDirections();
-    setView('resume');
+    // 恢复上次匹配进度：匹配过一次后刷新，直接回到上次所在的视图
+    const restoredView = restorePersistedState();
+    setView(restoredView || 'resume');
     const art = qs('.match-art-layer'); if (art) art.hidden = true;
-    renderAIPanelResume();
+    if (!restoredView || restoredView === 'resume') renderAIPanelResume();
   }
 
   // Phase 08-D：Demo Mode 手动入口 —— 仅显式调用才启用 Mock（默认 Real，两者完全分离）。
@@ -691,6 +766,9 @@
       if (nav === 'learn' && !window.matchState.selectedJobId) { window.showToast('请先选择岗位再生成学习路径', 'amber'); setView('jobs'); return; }
       setView(map[nav] || 'resume');
     }));
+    // 右上角「重新匹配」：清空进度回到第一页
+    const rematch = $('md-rematch');
+    if (rematch) rematch.addEventListener('click', resetMatch);
   }
 
   function renderProgress() {
@@ -773,6 +851,7 @@
     if (name === 'learn') renderLearning();
     if (name === 'compare') renderCompare();
     if (name === 'resume') renderResume();
+    persistMatchState();
   }
 
   /* ============================================================
@@ -1126,13 +1205,15 @@
         window.matchState.resumeSections = parseResumeText(String(reader.result || ''));
         window.matchState.activeSection = 'basic';
         renderResume();
+        persistMatchState();
       };
-      reader.onerror = () => { window.matchState.resumeSections = buildDefaultResumeSections(); renderResume(); };
+      reader.onerror = () => { window.matchState.resumeSections = buildDefaultResumeSections(); renderResume(); persistMatchState(); };
       reader.readAsText(file, 'utf-8');
     } else {
       window.matchState.resumeSections = buildDefaultResumeSections();
       window.matchState.activeSection = 'basic';
       renderResume();
+      persistMatchState();
     }
     window.showToast('简历已就绪', 'teal');
   }
@@ -1766,6 +1847,7 @@
     const minShow = new Promise((r) => setTimeout(r, reduceMotion() ? 400 : 4600));
     Promise.all([diagnoseResume(window.matchState.file), minShow]).then((arr) => {
       window.matchState.result = arr[0];
+      persistMatchState();
       finishTheater();
       setTimeout(() => { setView('jobs'); }, reduceMotion() ? 200 : 700);
     }).catch((err) => {
@@ -2259,6 +2341,7 @@
         qsa('.job-card', list).forEach((r) => r.classList.remove('is-selected'));
         row.classList.add('is-selected');
         if (typeof renderDetail === 'function') renderDetail();
+        persistMatchState();
       };
       row.addEventListener('click', (e) => {
         if (e.target.closest('.job-fav') || e.target.closest('.job-card-go')) return;
@@ -3139,6 +3222,9 @@
       if (stageEl) { setLearnStage(stageEl.dataset.stage); return; }
       const allBtn = e.target.closest('#los-filter-all');
       if (allBtn) { setLearnStage('all'); return; }
+      // 空阶段提示中的「回到全部」按钮
+      const emptyAct = e.target.closest('[data-empty-action]');
+      if (emptyAct) { if (emptyAct.dataset.emptyAction === 'all') setLearnStage('all'); return; }
       const card = e.target.closest('.los-card');
       if (card) {
         const action = e.target.closest('[data-action]');
@@ -3342,6 +3428,93 @@
       desc: l.description || '',
       deliverable: l.deliverable || ''
     }));
+
+    // 把技能分布到 4 个阶段，避免真实模式下时间轴只有 1 步
+    const STAGE_DEFS = [
+      { id: 's1', name: '学习入门', en: 'GETTING STARTED' },
+      { id: 's2', name: '核心能力', en: 'CORE SKILLS' },
+      { id: 's3', name: '进阶提升', en: 'INTERMEDIATE' },
+      { id: 's4', name: '高级实战', en: 'ADVANCED PRACTICE' }
+    ];
+    const groups = STAGE_DEFS.map(() => []);
+    if (skills.length === 0) {
+      // noop：保留空分组
+    } else if (skills.length <= STAGE_DEFS.length) {
+      // 技能较少：每个阶段放 1 个，剩余阶段留空（作为路线占位）
+      skills.forEach((sk, i) => {
+        sk.stage = STAGE_DEFS[i].id;
+        groups[i].push(sk);
+      });
+    } else {
+      // 技能较多：均匀分布
+      skills.forEach((sk, i) => {
+        const gi = Math.min(STAGE_DEFS.length - 1, Math.floor(i * STAGE_DEFS.length / skills.length));
+        sk.stage = STAGE_DEFS[gi].id;
+        groups[gi].push(sk);
+      });
+    }
+
+    // 补齐：保证每个阶段至少有 2 个技能模块，避免出现「点击没反应」的空阶段
+    const STAGE_SKILL_TEMPLATES = {
+      s1: [
+        { name: '环境搭建与工具链', desc: '完成开发环境、版本管理与调试工具配置，跑通最小示例。', deliverable: '本地开发环境就绪 + Hello Demo', level: '入门', hours: 4, from: 25, to: 70 },
+        { name: '基础概念梳理', desc: '系统梳理本岗位高频考察的基础概念与术语，形成知识图谱。', deliverable: '基础知识笔记 + 速查卡片', level: '入门', hours: 6, from: 20, to: 75 },
+        { name: '动手实验 · Hello Demo', desc: '跟随教程完成第一个完整示例，覆盖「写代码 → 跑起来 → 看结果」全链路。', deliverable: '可演示的最小 Demo', level: '入门', hours: 6, from: 20, to: 70 }
+      ],
+      s2: [
+        { name: '核心能力精讲', desc: '围绕岗位高频考察点系统学习与练习，建立稳定的能力基线。', deliverable: '核心能力笔记 + 代码示例', level: '熟练', hours: 8, from: 30, to: 80 },
+        { name: '真实场景演练', desc: '在贴近业务的场景中应用所学技能，覆盖读、改、调三个层次。', deliverable: '业务场景实战报告', level: '熟练', hours: 10, from: 30, to: 78 },
+        { name: '调试与问题定位', desc: '掌握常见问题排查思路、调试工具与日志分析方法。', deliverable: '排错手册（10+ 案例）', level: '熟练', hours: 6, from: 25, to: 75 }
+      ],
+      s3: [
+        { name: '源码阅读与原理剖析', desc: '阅读主流框架/中间件源码，理解底层实现与设计取舍。', deliverable: '源码分析笔记 + 流程图', level: '进阶', hours: 10, from: 30, to: 78 },
+        { name: '性能优化与压测', desc: '对核心链路进行性能分析、压测与优化，掌握调优方法论。', deliverable: '性能优化报告 + 压测数据', level: '进阶', hours: 8, from: 28, to: 76 },
+        { name: '可扩展架构设计', desc: '掌握可扩展架构模式、容量评估与典型权衡。', deliverable: '架构设计文档 + 评审记录', level: '进阶', hours: 8, from: 25, to: 72 }
+      ],
+      s4: [
+        { name: '综合项目实战', desc: '串联所学技能完成一个完整项目，覆盖设计 → 落地 → 上线。', deliverable: '可演示的综合项目（含 README/Demo）', level: '高级', hours: 14, from: 30, to: 80 },
+        { name: '架构治理与可观测性', desc: '掌握微服务治理、监控告警、日志聚合与可观测性建设。', deliverable: '架构治理方案', level: '高级', hours: 10, from: 25, to: 72 },
+        { name: '简历沉淀与面试复盘', desc: '把项目经验转化为简历亮点与高质量面试表达。', deliverable: '面试故事卡片 + 简历升级版', level: '高级', hours: 6, from: 35, to: 82 }
+      ]
+    };
+    STAGE_DEFS.forEach((def, gi) => {
+      const grp = groups[gi];
+      if (grp.length >= 2) return;
+      const templates = STAGE_SKILL_TEMPLATES[def.id] || [];
+      let tIdx = 0;
+      while (grp.length < 2 && tIdx < templates.length) {
+        const tpl = templates[tIdx++];
+        const fake = {
+          id: 'lp-fake-' + def.id + '-' + tIdx,
+          name: tpl.name,
+          icon: '📘',
+          stage: def.id,
+          tags: ['学习路径', '能力补齐'],
+          status: 'gap',
+          from: tpl.from, to: tpl.to,
+          hours: tpl.hours,
+          level: tpl.level,
+          impact: '+匹配度',
+          desc: tpl.desc,
+          deliverable: tpl.deliverable,
+          _synthetic: true
+        };
+        grp.push(fake);
+        skills.push(fake);
+      }
+    });
+    const stages = STAGE_DEFS.map((def, gi) => {
+      const grp = groups[gi];
+      const masteredCount = grp.filter((s) => s.status === 'mastered').length;
+      return {
+        id: def.id,
+        name: def.name,
+        en: def.en,
+        progress: grp.length ? Math.round(masteredCount / grp.length * 100) : 0,
+        count: grp.length,
+        value: '+' + ((gi + 1) * 2) + '%'
+      };
+    });
     const m = (res.matches || [])[0] || {};
     const dims = m.dimensions || {};
     const radarValues = ['skills', 'semantics', 'projects', 'experience', 'graph']
@@ -3362,7 +3535,7 @@
         advice: ((m.match_reasons || [])[0]) || (m.reason || '基于真实匹配结果生成学习建议。'),
         tags: skills.slice(0, 3).map((s) => s.name)
       },
-      stages: [{ id: 's1', name: '学习路径', en: 'LEARNING PATH', progress: skills.length ? Math.round(skills.filter((s) => s.status === 'mastered').length / skills.length * 100) : 0, count: skills.length, value: '按需学习' }],
+      stages: stages,
       skills: skills
     };
   }
@@ -3513,15 +3686,39 @@
       else card.classList.add('is-hidden');
     });
     const os = getLearnOS();
+    const visible = qsa('.los-card').filter((c) => !c.classList.contains('is-hidden')).length;
     const cnt = $('los-cards-count');
-    if (cnt) {
-      const visible = qsa('.los-card').filter((c) => !c.classList.contains('is-hidden')).length;
-      cnt.innerHTML = `当前展示 <b>${visible}</b> / ${os.skills.length} 个技能模块`;
-    }
+    if (cnt) cnt.innerHTML = `当前展示 <b>${visible}</b> / ${os.skills.length} 个技能模块`;
     const allBtn = $('los-filter-all');
     if (allBtn) {
       const stageObj = os.stages.find((s) => s.id === stageId);
       allBtn.textContent = stageObj ? '回到全部阶段' : '显示全部阶段';
+    }
+
+    // 阶段无技能时给出友好提示，避免「点击没反应」的体验
+    const cardsContainer = $('los-cards');
+    if (cardsContainer) {
+      let empty = $('los-cards-empty');
+      if (visible === 0 && stageId !== 'all') {
+        const stageObj = os.stages.find((s) => s.id === stageId);
+        const stageName = stageObj ? stageObj.name : '此阶段';
+        const totalStages = os.stages.length;
+        const idx = stageObj ? os.stages.indexOf(stageObj) : 0;
+        const next = stageObj && idx >= 0 && idx + 1 < totalStages ? os.stages[idx + 1] : null;
+        if (!empty) {
+          empty = document.createElement('div');
+          empty.id = 'los-cards-empty';
+          empty.className = 'los-cards-empty';
+          cardsContainer.appendChild(empty);
+        }
+        empty.innerHTML = `
+          <div>「<b>${escapeHtml(stageName)}</b>」暂无技能模块</div>
+          <div>当前阶段是路线规划占位${next ? '，可先查看下一阶段「<b>' + escapeHtml(next.name) + '」' : ''}。</div>
+          <span class="los-empty-action" data-empty-action="all">← 回到全部阶段查看全部技能</span>`;
+        empty.hidden = false;
+      } else if (empty) {
+        empty.hidden = true;
+      }
     }
   }
 
@@ -4888,17 +5085,19 @@
    * ============================================================ */
   function bindInterview() {
     const exit = $('int-exit'); if (exit) exit.addEventListener('click', closeInterview);
+    // 下一题：必须先提交当前回答（回车提交），提交后由用户自行决定何时切下一题
     const next = $('int-next'); if (next) next.addEventListener('click', () => {
       const st = window.matchState.interview;
       if (!st) return;
-      submitInterviewAnswer().then((submitted) => {
-        if (!submitted) return;
-        if (st.index + 1 >= st.questions.length) { closeInterview(); return; }
-        askQuestion(st.index + 1);
-      });
+      if (!st.answers[st.index]) {
+        if (window.showToast) window.showToast('请先提交当前回答的 AI 测评', 'amber');
+        return;
+      }
+      if (st.index + 1 >= st.questions.length) { closeInterview(); return; }
+      askQuestion(st.index + 1);
     });
     const mic = $('btn-mic'), cam = $('btn-cam'), spk = $('btn-speaker');
-    if (mic) mic.addEventListener('click', () => toggleCtrl(mic));
+    if (mic) mic.addEventListener('click', () => toggleSpeechToText());
     if (cam) cam.addEventListener('click', () => toggleCtrl(cam));
     if (spk) spk.addEventListener('click', () => toggleCtrl(spk));
     // 查看回答建议 → 打开 AI 面试助手抽屉
@@ -4913,10 +5112,85 @@
       const count = $('int-answer-count'); if (count) count.textContent = String(answer.value.length);
       const state = $('int-answer-state'); if (state) state.textContent = '未提交';
     });
+    // 回车直接提交（Shift+Enter 换行），输入法组合态不触发
+    if (answer) answer.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) {
+        e.preventDefault();
+        submitInterviewAnswer();
+      }
+    });
   }
   function toggleCtrl(btn) {
     const on = btn.getAttribute('aria-pressed') === 'true';
     btn.setAttribute('aria-pressed', on ? 'false' : 'true');
+  }
+
+  /* ---- 语音转文字（Web Speech API · Chrome/Edge） ---- */
+  let _speechRec = null;
+  let _speechPrevCaption = '';
+  function toggleSpeechToText() {
+    if (_speechRec) { stopSpeechToText(); return; }
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) { if (window.showToast) window.showToast('当前浏览器不支持语音识别，请使用 Chrome / Edge', 'amber'); return; }
+    const input = $('int-answer');
+    const rec = new SR();
+    rec.lang = 'zh-CN';
+    rec.continuous = true;
+    rec.interimResults = true;
+    rec.maxAlternatives = 1;
+    const base = input ? input.value : '';
+    let finalText = '';
+    rec.onresult = (e) => {
+      let interim = '';
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        const r = e.results[i];
+        if (r.isFinal) finalText += r[0].transcript;
+        else interim += r[0].transcript;
+      }
+      if (input) {
+        input.value = base + finalText + (interim ? interim : '');
+        input.dispatchEvent(new Event('input'));
+        input.scrollTop = input.scrollHeight;
+      }
+    };
+    rec.onerror = (e) => {
+      if (e.error === 'not-allowed' || e.error === 'service-not-allowed') {
+        if (window.showToast) window.showToast('麦克风权限被拒绝，请允许后重试', 'amber');
+      } else if (e.error !== 'aborted' && e.error !== 'no-speech') {
+        if (window.showToast) window.showToast('语音识别出错：' + e.error, 'amber');
+      }
+      stopSpeechToText();
+    };
+    rec.onend = () => { stopSpeechToText(); };
+    _speechRec = rec;
+    try { rec.start(); } catch (err) { _speechRec = null; return; }
+    setSpeechUI(true);
+    if (window.showToast) window.showToast('正在聆听，请说出你的回答…', 'info');
+  }
+  function stopSpeechToText() {
+    if (_speechRec) {
+      const r = _speechRec;
+      _speechRec = null;
+      r.onend = null; r.onerror = null;
+      try { r.stop(); } catch (_) { /* noop */ }
+    }
+    setSpeechUI(false);
+  }
+  function setSpeechUI(recording) {
+    const mic = $('btn-mic');
+    if (mic) {
+      mic.classList.toggle('is-recording', recording);
+      const span = mic.querySelector('span');
+      if (span) span.textContent = recording ? '停止' : '麦克风';
+    }
+    const cap = $('int-live-caption');
+    if (recording) {
+      if (cap) { _speechPrevCaption = cap.textContent; cap.textContent = '正在聆听… 请说出你的回答'; }
+    } else {
+      if (cap && _speechPrevCaption) { cap.textContent = _speechPrevCaption; _speechPrevCaption = ''; }
+    }
+    const wave = $('int-voice-wave');
+    if (wave) wave.style.opacity = recording ? '1' : '';
   }
   function toggleIntDrawer(forceOpen) {
     const d = $('int-drawer'); if (!d) return;
@@ -4982,9 +5256,41 @@
   function renderIntAnalysis(item) {
     const kw = $('int-keywords'); if (kw) kw.innerHTML = (item.keywords || []).map((k) => `<span>${escapeHtml(k)}</span>`).join('');
     const det = $('int-detect'); if (det) det.innerHTML = (item.detect || []).map((d) => `<span>✓ ${escapeHtml(d)}</span>`).join('');
-    const score = item.evaluation ? item.evaluation.score : 0;
-    const sc = $('int-analysis-score'); if (sc) animateNumber(sc, score, 500);
-    const gauge = $('int-analysis-gauge'); if (gauge) requestAnimationFrame(() => requestAnimationFrame(() => { gauge.style.width = score + '%'; }));
+  }
+
+  /* ---- AI 测评反馈：提交后由后端 AI 生成的亮点 / 不足 / 改进建议 ---- */
+  function renderIntAIFeedback(answer) {
+    const box = $('int-ai-feedback'); if (!box) return;
+    const ansState = $('int-answer-state');
+    if (!answer) {
+      box.innerHTML = '<div class="md-int-fb-empty">提交回答后，AI 将基于岗位要求与关键词进行测评，并给出改进建议。</div>';
+      const head = $('int-analysis-state'); if (head) head.innerHTML = '<i></i>待提交';
+      if (ansState) ansState.textContent = '未提交';
+      return;
+    }
+    const ev = answer.evaluation || {};
+    const strengths = ev.strengths || ev.advantages || [];
+    const gaps = ev.gaps || ev.weaknesses || [];
+    const nextAction = ev.next_action || ev.advice || ev.suggestion || '';
+    const summary = ev.feedback || ev.summary || '';
+    const blocks = [];
+    if (summary) blocks.push(`<div class="md-int-fb-summary">${escapeHtml(summary)}</div>`);
+    if (strengths.length) {
+      blocks.push(`<div class="md-int-fb-sec"><div class="md-int-fb-label ok">✓ 亮点</div>${strengths.map((s) => `<div class="md-int-fb-li">${escapeHtml(s)}</div>`).join('')}</div>`);
+    }
+    if (gaps.length) {
+      blocks.push(`<div class="md-int-fb-sec"><div class="md-int-fb-label warn">⚠ 待改进</div>${gaps.map((g) => `<div class="md-int-fb-li">${escapeHtml(g)}</div>`).join('')}</div>`);
+    }
+    if (nextAction) {
+      blocks.push(`<div class="md-int-fb-sec"><div class="md-int-fb-label">→ 改进建议</div><div class="md-int-fb-li">${escapeHtml(nextAction)}</div></div>`);
+    }
+    if (!blocks.length) {
+      box.innerHTML = '<div class="md-int-fb-empty">AI 暂无更多文字点评，可结合右侧「面试助手」进一步分析。</div>';
+    } else {
+      box.innerHTML = blocks.join('');
+    }
+    const head = $('int-analysis-state'); if (head) head.innerHTML = '<i></i>已测评';
+    if (ansState) ansState.textContent = '已提交 · AI 已点评';
   }
 
   /* ---- AI 面试助手抽屉内容 ---- */
@@ -5012,11 +5318,51 @@
     const score = item.evaluation ? item.evaluation.score : 0;
     const liveEl = $('int-live-score'); if (liveEl) liveEl.textContent = String(score);
     const stateEl = $('int-live-state'); if (stateEl) stateEl.innerHTML = item.evaluation ? '<i></i>已评估' : '<i></i>等待回答';
-    const capEl = $('int-live-caption'); if (capEl) capEl.textContent = item.evaluation ? (item.evaluation.feedback || '已生成回答点评') : '请在下方输入回答，提交后生成评估';
+    const capEl = $('int-live-caption'); if (capEl) capEl.textContent = item.evaluation ? (item.evaluation.feedback || '已生成回答点评') : '输入回答后按回车提交，或点击麦克风语音输入';
   }
   function stopIntAnalysis() {
     const st = window.matchState.interview;
     if (st && st._intTimer) { clearInterval(st._intTimer); st._intTimer = null; }
+  }
+
+  /* ---- 讯飞数字人 · AI 面试官 ---- */
+  function startAvatarInterviewer() {
+    const ai = window.AvatarInterviewer;
+    if (!ai) return;
+    const container = $('int-avatar-container');
+    if (!container) return;
+    ai.onStatus = (state) => {
+      const status = $('int-ai-status');
+      const fb = $('int-avatar');
+      const ring = $('int-ai-ring');
+      const wave = $('int-ai-wave');
+      if (state === 'ready') {
+        if (status) status.textContent = 'AI 面试官 · 数字人已就绪';
+        if (fb) fb.style.display = 'none';
+        if (ring) ring.style.display = 'none';
+        if (wave) wave.style.display = 'none';
+        container.classList.add('is-live');
+      } else if (state === 'unconfigured') {
+        if (status) status.textContent = '正在聆听你的回答';
+        container.classList.remove('is-live');
+      } else if (state === 'error') {
+        if (status) status.textContent = '数字人连接失败 · 已回退文字模式';
+        if (fb) fb.style.display = '';
+        if (ring) ring.style.display = '';
+        if (wave) wave.style.display = '';
+        container.classList.remove('is-live');
+      }
+    };
+    if (!ai.configured) { container.classList.remove('is-live'); return; }
+    ai.ensureStarted(container);
+  }
+  function speakAvatar(text) {
+    const ai = window.AvatarInterviewer;
+    if (ai && ai.configured) ai.speak(text);
+  }
+  function stopAvatarInterviewer() {
+    const ai = window.AvatarInterviewer;
+    if (ai) ai.stop();
   }
 
   function openInterview() {
@@ -5027,6 +5373,7 @@
     renderIntSteps();
     toggleIntDrawer(false);
     startCamera();
+    startAvatarInterviewer();
     askQuestion(0);
     setView('interview');
   }
@@ -5034,6 +5381,7 @@
     const inter = $('md-interview'); if (inter) inter.hidden = true;
     stopCamera();
     stopIntAnalysis();
+    stopAvatarInterviewer();
     showReport();
   }
   function askQuestion(idx) {
@@ -5051,11 +5399,15 @@
     renderIntMetrics(answer && answer.evaluation ? { tech: answer.evaluation.metrics.technical, expr: answer.evaluation.metrics.structure, proj: answer.evaluation.metrics.evidence } : null);
     renderIntAnalysis(item);
     renderIntDrawerContent(item);
+    renderIntAIFeedback(answer || null);
     startIntAnalysis(item);
-    // 最后一题按钮文案切换为"查看报告"
-    const next = $('int-next'); if (next) next.textContent = (idx + 1 >= st.questions.length) ? '查看报告 →' : '提交并下一题 →';
+    // 按钮文案：提交 / 下一题分开
+    const submit = $('int-submit'); if (submit) submit.textContent = answer ? '重新测评' : '提交回答';
+    const next = $('int-next'); if (next) next.textContent = (idx + 1 >= st.questions.length) ? '查看报告 →' : '下一题 →';
     // 模拟 AI 语音波
     setTimeout(() => { const w = $('int-ai-wave'); if (w) w.style.opacity = '1'; }, 300);
+    // 讯飞数字人 · 朗读当前题目
+    speakAvatar(item.q);
   }
 
   function buildInterviewQuestions(match) {
@@ -5089,8 +5441,9 @@
     const local = evaluateInterviewAnswerLocal(text, item.keywords);
     const answer = { text, evaluation: local };
     st.answers[st.index] = answer;
-    const state = $('int-answer-state'); if (state) state.textContent = '已提交 · 规则评估';
+    const state = $('int-answer-state'); if (state) state.textContent = '已提交 · AI 测评中…';
     renderIntMetrics({ tech: local.metrics.technical, expr: local.metrics.structure, proj: local.metrics.evidence });
+    const head = $('int-analysis-state'); if (head) head.innerHTML = '<i></i>测评中…';
     try {
       const api = window.API_BASE || ((location.hostname === '127.0.0.1' || location.hostname === 'localhost') ? 'http://127.0.0.1:5000' : location.origin);
       const m = getSelectedJob();
@@ -5100,6 +5453,8 @@
     } catch (_) { /* 规则评估已完成，网络失败不阻断面试 */ }
     item.evaluation = answer.evaluation;
     renderIntAnalysis(item); renderIntDrawerContent(item);
+    renderIntAIFeedback(answer);
+    const submit = $('int-submit'); if (submit) submit.textContent = '重新测评';
     const live = $('int-live-score'); if (live) animateNumber(live, answer.evaluation.score, 450);
     return answer;
   }

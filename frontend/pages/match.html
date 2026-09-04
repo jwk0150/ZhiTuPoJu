@@ -30,7 +30,12 @@
         <nav class="wks-progress" id="wks-progress" aria-label="诊断进度">
           <!-- 由 JS 渲染进度节点 -->
         </nav>
-        <!-- 顶部右侧的"开始匹配"已迁移到右侧工具栏（仅本页显示）-->
+        <div class="wks-topbar-actions">
+          <button class="btn-sm btn-sm--ghost" id="md-rematch" type="button" style="display:inline-flex;align-items:center;gap:6px" title="清空当前进度，重新开始匹配">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+            <span>重新匹配</span>
+          </button>
+        </div>
       </header>
 
       <!-- 左窄导航 -->
@@ -476,19 +481,16 @@
               <span class="md-int-role-state"><i></i>正在提问</span>
             </div>
 
-            <div class="md-int-ai-stage">
+            <div class="md-int-ai-stage" id="int-ai-stage">
               <div class="md-int-ai-ring" id="int-ai-ring" aria-hidden="true"><span></span><span></span><span></span></div>
-              <div class="md-int-ai-core" id="int-avatar">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6"/><path d="M17 2l1 1-1 1M20 4l1 1-1 1M14 3l.7.7-.7.7"/></svg>
+              <!-- 讯飞数字人渲染容器（配置后自动启用；未配置时显示静态头像作为兜底） -->
+              <div class="md-int-avatar-container" id="int-avatar-container">
+                <div class="md-int-ai-core" id="int-avatar">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6"/><path d="M17 2l1 1-1 1M20 4l1 1-1 1M14 3l.7.7-.7.7"/></svg>
+                </div>
               </div>
               <div class="md-int-ai-wave" id="int-ai-wave" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span></div>
-              <div class="md-int-ai-status">正在聆听你的回答</div>
-            </div>
-
-            <div class="md-int-ai-metrics" id="int-ai-metrics">
-              <div class="md-int-metric" data-k="tech"><span>技术深度</span><span class="bar"><i data-w="75"></i></span><b data-w="75">0</b></div>
-              <div class="md-int-metric" data-k="expr"><span>表达能力</span><span class="bar"><i data-w="68"></i></span><b data-w="68">0</b></div>
-              <div class="md-int-metric" data-k="proj"><span>项目经验</span><span class="bar"><i data-w="82"></i></span><b data-w="82">0</b></div>
+              <div class="md-int-ai-status" id="int-ai-status">正在聆听你的回答</div>
             </div>
 
             <div class="md-int-question">
@@ -500,7 +502,7 @@
           <!-- 中 · AI 实时分析层 -->
           <div class="md-int-analysis">
             <div class="md-int-analysis-card">
-              <div class="md-int-analysis-head"><span class="ai-orb sm">AI</span><b>回答评估</b><span class="md-int-analysis-live"><i></i>规则</span></div>
+              <div class="md-int-analysis-head"><span class="ai-orb sm">AI</span><b>回答评估</b><span class="md-int-analysis-live" id="int-analysis-state"><i></i>待提交</span></div>
 
               <div class="md-int-analysis-sec">
                 <span class="md-int-analysis-label">题目关注点</span>
@@ -516,10 +518,17 @@
                 </div>
               </div>
 
-              <div class="md-int-analysis-score">
-                <span>本题得分</span>
-                <div class="md-int-analysis-score-num"><b id="int-analysis-score">0</b><small>/ 100</small></div>
-                <div class="md-int-analysis-gauge"><i data-w="78" id="int-analysis-gauge"></i></div>
+              <div class="md-int-analysis-sec">
+                <span class="md-int-analysis-label">能力评分</span>
+                <div class="md-int-ai-metrics" id="int-ai-metrics">
+                  <div class="md-int-metric" data-k="tech"><span>技术深度</span><span class="bar"><i data-w="75"></i></span><b data-w="75">0</b></div>
+                  <div class="md-int-metric" data-k="expr"><span>表达能力</span><span class="bar"><i data-w="68"></i></span><b data-w="68">0</b></div>
+                  <div class="md-int-metric" data-k="proj"><span>项目经验</span><span class="bar"><i data-w="82"></i></span><b data-w="82">0</b></div>
+                </div>
+              </div>
+
+              <div class="md-int-analysis-fb" id="int-ai-feedback">
+                <div class="md-int-fb-empty">提交回答后，AI 将基于岗位要求与关键词进行测评，并给出改进建议。</div>
               </div>
             </div>
           </div>
@@ -546,11 +555,11 @@
 
             <div class="md-int-caption">
               <span class="md-int-caption-dot"></span>
-              <span id="int-live-caption">请在下方输入回答，提交后生成评估</span>
+              <span id="int-live-caption">输入回答后按回车提交，或点击麦克风语音输入</span>
             </div>
             <label class="md-int-answer-label" for="int-answer">你的回答</label>
-            <textarea class="md-int-answer" id="int-answer" rows="5" maxlength="3000" placeholder="输入你对当前问题的回答（建议包含项目背景、你的行动和结果）"></textarea>
-            <div class="md-int-answer-meta"><span id="int-answer-state">未提交</span><span><b id="int-answer-count">0</b> / 3000</span></div>
+            <textarea class="md-int-answer" id="int-answer" rows="5" maxlength="3000" placeholder="输入你对当前问题的回答（回车提交 · Shift+Enter 换行，建议包含项目背景、行动和结果）"></textarea>
+            <div class="md-int-answer-meta"><span id="int-answer-state">未提交</span><span>回车提交 · Shift+Enter 换行</span><span><b id="int-answer-count">0</b> / 3000</span></div>
           </div>
         </div>
 
@@ -924,6 +933,25 @@
   <script src="../js/cinema-music.js"></script>
   <script src="../js/shell.js"></script>
   <script src="../js/pages/match.js?v=matchfix3"></script>
+
+  <!-- 讯飞数字人 · AI 面试官配置（填入凭据后自动启用，留空则回退为静态头像） -->
+  <script>
+    window.AVATAR_CONFIG = {
+      appId: 'd1a2c54f',            // 讯飞开放平台应用 APPID
+      apiKey: 'f486a99f4cd9c9cabf9eb1d18a485ce1',   // 应用 APIKey
+      apiSecret: 'NTc5OWRmYmRhZTE5MjExZDE4ZDA0MGZi', // 应用 APISecret
+      avatarId: '201365001',        // 数字人形象 ID
+      vcn: 'x4_yezi',             // 音色 ID
+      // 接口服务ID 354118931084087296：文本驱动模式暂不使用，如需 NLP 交互再作为 sceneId 填入
+      sceneId: '',
+      serverUrl: 'wss://avatar.cn-huadong-1.xf-yun.com/v1/interact', // 服务地址
+      width: 720,           // 视频宽
+      height: 1280,         // 视频高（竖屏）
+      speed: 50, pitch: 50, volume: 100
+    };
+  </script>
+  <script type="module" src="../js/avatar-interviewer.js?v=avatar1"></script>
+
   <script>
     window.Shell && window.Shell.mount({ pageId: 'match', title: '人岗匹配诊断', subtitle: '简历 → 匹配 → 岗位 → 学习 → 面试' });
     window.initMatch && window.initMatch();
