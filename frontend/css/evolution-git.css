@@ -80,27 +80,23 @@
   --gap-y: 14px;
 
   position: relative;
-  /* 单屏铺满：占满 topnav 之下的全部可视高度，三栏底边对齐视口底部 */
-  height: calc(100vh - var(--topbar-h, 64px));
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
+  min-height: 100vh;
   color: var(--text-1);
   font-family: var(--font-cn);
   font-size: 14px;
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  padding: 14px 28px 20px;
+  padding: 22px 36px 60px;
 
-  /* 背景透明：不再用大块米白渐变遮住站点的氛围背景图 */
-  background: transparent;
+  background:
+    radial-gradient(1100px 620px at 88% -12%, rgba(181, 138, 58, 0.16), transparent 55%),
+    radial-gradient(960px 540px at -8% 28%, rgba(115, 140, 136, 0.14), transparent 60%),
+    radial-gradient(800px 580px at 50% 105%, rgba(181, 138, 58, 0.06), transparent 55%),
+    linear-gradient(168deg, #F8F5EC 0%, #F4EFE3 48%, #ECE5D4 100%);
 }
 
-/* 注意：证据抽屉 / 遮罩 / Toast 为 fixed 弹层，排除在“提升为 relative”之外，
-   否则会掉进文档流底部（数据证据悬浮窗跑到屏幕下方的问题根源） */
-#ce-app > *:not(.git-drawer):not(.git-drawer-mask):not(.git-toast) { position: relative; z-index: 1; }
+#ce-app > * { position: relative; z-index: 1; }
 
 @keyframes ceFadeUp {
   from { opacity: 0; transform: translateY(10px); }
@@ -148,8 +144,8 @@
 .gh-title {
   font-family: var(--font-serif);
   font-weight: 600;
-  font-size: 26px;
-  line-height: 1.1;
+  font-size: 38px;
+  line-height: 1.05;
   margin: 0 0 6px;
   letter-spacing: -0.01em;
   color: var(--text-1);
@@ -387,15 +383,14 @@
 }
 
 /* ==========================================================================
-   状态胶囊 (Tiers) - 紧凑横排，放置于图谱上方
+   状态胶囊 (Tiers)
    ========================================================================== */
 .git-tiers {
   display: flex;
-  gap: 8px;
+  gap: 10px;
   max-width: var(--max-w);
   margin: 0 auto var(--gap-y);
   flex-wrap: wrap;
-  justify-content: center;
 }
 
 .tier {
@@ -445,13 +440,10 @@
 /* ==========================================================================
    主体布局
    ========================================================================== */
-/* ==========================================================================
-   主体布局:左 sidebar | 中 图谱主区 | 右 详情面板
-   ========================================================================== */
 .git-layout {
   display: grid;
-  grid-template-columns: 248px minmax(0, 1fr) 320px;
-  gap: 16px;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 22px;
   max-width: var(--max-w);
   margin: 0 auto;
   align-items: start;
@@ -474,180 +466,11 @@
   position: relative;
   width: 100%;
   aspect-ratio: 16 / 9;
-  min-height: 360px;
+  min-height: 380px;
   background:
-    radial-gradient(ellipse at 50% 50%, rgba(231, 76, 60, 0.04), transparent 65%),
-    linear-gradient(180deg, #FFFFFF 0%, #FBF7F1 100%);
+    radial-gradient(circle at 50% 50%, rgba(181, 138, 58, 0.04), transparent 60%),
+    var(--bg-2);
   overflow: hidden;
-  border-radius: 0;
-}
-
-/* ============================================================
-   左侧栏：岗位 picker（在 git-layout 左列）
-   ============================================================ */
-.git-job-picker {
-  background: var(--surface-strong);
-  border: 1px solid var(--border);
-  border-radius: var(--r-md);
-  padding: 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  position: sticky;
-  top: 80px;
-  max-height: calc(100vh - 100px);
-  overflow-y: auto;
-}
-.git-job-picker::-webkit-scrollbar { width: 5px; }
-.git-job-picker::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: 3px; }
-
-.git-job-picker-head {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-.git-job-picker-title {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--text-1);
-  letter-spacing: .3px;
-  font-family: var(--font-serif);
-}
-.git-job-picker-count {
-  font-size: 11px;
-  color: var(--text-3);
-  font-family: var(--font-num);
-}
-
-.git-job-search {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 10px;
-  background: rgba(255,255,255,0.65);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  font-size: 12.5px;
-}
-.git-job-search input {
-  flex: 1; min-width: 0;
-  background: transparent; border: none; outline: none;
-  color: var(--text-1); font-size: 12.5px; font-family: inherit;
-  padding: 2px 0;
-}
-.git-job-search input::placeholder { color: var(--text-3); }
-.git-job-search-clear {
-  display: none;
-  align-items: center; justify-content: center;
-  width: 16px; height: 16px; border-radius: 50%;
-  background: rgba(0, 0, 0, 0.08); color: var(--text-2);
-  font-size: 11px; line-height: 1; cursor: pointer; user-select: none;
-  transition: background .15s;
-}
-.git-job-search-clear:hover { background: rgba(231, 76, 60, 0.40); color: #fff; }
-
-.git-job-cats {
-  display: flex; flex-wrap: wrap; gap: 4px;
-}
-.git-cat-chip {
-  display: inline-flex; align-items: center; gap: 4px;
-  padding: 3px 8px; border-radius: 999px;
-  background: rgba(0, 0, 0, 0.03);
-  border: 1px solid var(--border-soft);
-  color: var(--text-2);
-  font-size: 11px; font-weight: 500;
-  white-space: nowrap;
-  cursor: pointer; user-select: none;
-  transition: all .15s;
-  font-family: inherit;
-}
-.git-cat-chip:hover {
-  background: rgba(231, 76, 60, 0.08);
-  border-color: rgba(231, 76, 60, 0.4);
-  color: #C0392B;
-}
-.git-cat-chip.active {
-  background: rgba(231, 76, 60, 0.14);
-  border-color: #E74C3C;
-  color: #C0392B;
-  font-weight: 600;
-}
-.git-cat-chip-count {
-  display: inline-flex; align-items: center; justify-content: center;
-  min-width: 14px; height: 14px; padding: 0 4px;
-  font-size: 9.5px; font-weight: 700;
-  border-radius: 7px;
-  background: rgba(0, 0, 0, 0.08);
-  color: var(--text-3);
-  font-family: var(--font-num);
-}
-.git-cat-chip.active .git-cat-chip-count {
-  background: rgba(231, 76, 60, 0.25);
-  color: #C0392B;
-}
-
-.git-job-list {
-  max-height: 360px;
-  overflow-y: auto;
-  scrollbar-width: thin;
-  display: flex; flex-direction: column; gap: 4px;
-}
-.git-job-list::-webkit-scrollbar { width: 5px; }
-.git-job-list::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: 3px; }
-
-.git-job-card {
-  padding: 7px 9px;
-  background: rgba(255, 255, 255, 0.5);
-  border: 1px solid var(--border-soft);
-  border-radius: 7px;
-  cursor: pointer;
-  transition: border-color .15s, background .15s;
-}
-.git-job-card:hover {
-  background: rgba(231, 76, 60, 0.06);
-  border-color: rgba(231, 76, 60, 0.3);
-}
-.git-job-card.active {
-  border-color: #E74C3C;
-  background: rgba(231, 76, 60, 0.10);
-}
-.git-job-name-row {
-  display: flex; align-items: center; gap: 5px;
-  margin-bottom: 2px;
-}
-.git-job-name {
-  font-size: 12.5px; font-weight: 600; color: var(--text-1);
-}
-.git-tag {
-  font-size: 9.5px; padding: 1px 5px; border-radius: 6px;
-  font-weight: 700; letter-spacing: .3px;
-}
-.git-tag-hot { background: rgba(231, 76, 60, 0.18); color: #c0392b; }
-.git-tag-new { background: rgba(46, 204, 113, 0.18); color: #16a085; }
-.git-job-cat {
-  font-size: 10.5px; color: var(--text-3);
-  display: inline-block;
-  padding: 1px 6px;
-  background: rgba(0, 0, 0, 0.04);
-  border-radius: 4px;
-  margin-right: 4px;
-}
-.git-job-growth {
-  font-size: 10.5px;
-  display: inline-flex; align-items: center; gap: 3px;
-  color: var(--add-deep);
-  font-family: var(--font-num);
-}
-.git-job-growth b { font-weight: 700; }
-.git-job-empty {
-  padding: 20px 10px;
-  display: flex; flex-direction: column; align-items: center; gap: 6px;
-  background: rgba(0, 0, 0, 0.02);
-  border: 1px dashed var(--border);
-  border-radius: 7px;
-  text-align: center;
-  font-size: 12px; color: var(--text-3);
 }
 
 #gg-svg {
@@ -662,11 +485,10 @@
   transition: opacity 0.3s ease;
 }
 .gg-node .gg-ring {
-  fill: rgba(255, 255, 255, 0.95);
-  stroke: #E74C3C;            /* 默认红色外环 - 学习画像风格 */
-  stroke-width: 2.2;
+  fill: rgba(255, 255, 255, 0.92);
+  stroke-width: 2;
   filter: url(#gg-node-shadow);
-  transition: stroke-width 0.25s, transform 0.25s, stroke 0.2s;
+  transition: stroke-width 0.25s, transform 0.25s;
   transform-origin: center;
   transform-box: fill-box;
 }
@@ -700,41 +522,41 @@
   font-feature-settings: "tnum" 1;
 }
 
-/* 节点状态着色 - 参考图风格:统一红色为主,语义通过细节传达 */
-.gg-node.s-add .gg-ring   { stroke: #E74C3C; }       /* 新增 - 红色实环 */
-.gg-node.s-add .gg-name   { fill: #C0392B; }
-.gg-node.s-add .gg-num    { fill: #C0392B; }
+/* 节点状态着色 */
+.gg-node.s-add .gg-ring { stroke: var(--add); }
+.gg-node.s-add .gg-fill { fill: var(--add); }
+.gg-node.s-add .gg-num { fill: var(--add-deep); }
 
-.gg-node.s-del .gg-ring   { stroke: #C95E54; opacity: 0.85; }       /* 移除 - 暗红 */
-.gg-node.s-del .gg-name   { text-decoration: line-through; text-decoration-color: #C95E54; fill: var(--text-3); }
-.gg-node.s-del .gg-num    { fill: #C95E54; }
+.gg-node.s-del .gg-ring { stroke: var(--del); }
+.gg-node.s-del .gg-fill { fill: var(--del); }
+.gg-node.s-del .gg-num { fill: var(--del-deep); }
+.gg-node.s-del .gg-name { text-decoration: line-through; text-decoration-color: var(--del); fill: var(--text-2); }
 
-.gg-node.s-mod .gg-ring   { stroke: #E74C3C; }       /* 调整 - 红色环 */
-.gg-node.s-mod .gg-name   { fill: var(--text-1); }
-.gg-node.s-mod .gg-num    { fill: #C0392B; }
+.gg-node.s-mod .gg-ring { stroke: var(--mod); }
+.gg-node.s-mod .gg-fill { fill: var(--mod); }
+.gg-node.s-mod .gg-num { fill: var(--mod-deep); }
 
-.gg-node.s-pred .gg-ring  { stroke: #E74C3C; stroke-dasharray: 2 2; }  /* 预测 - 红色虚环 */
-.gg-node.s-pred .gg-name  { fill: #C0392B; }
-.gg-node.s-pred .gg-num   { fill: #C0392B; }
+.gg-node.s-pred .gg-ring { stroke: var(--pred); stroke-dasharray: 2 2; }
+.gg-node.s-pred .gg-fill { fill: var(--pred); opacity: 0.32; }
+.gg-node.s-pred .gg-num { fill: var(--pred-deep); }
 
-.gg-node.s-stable .gg-ring { stroke: #BDC3C7; }      /* 稳定 - 灰色（弱化）*/
-.gg-node.s-stable .gg-name { fill: var(--text-2); }
-.gg-node.s-stable .gg-num  { fill: var(--text-3); }
+.gg-node.s-stable .gg-ring { stroke: var(--stable); }
+.gg-node.s-stable .gg-fill { fill: var(--stable); }
+.gg-node.s-stable .gg-num { fill: var(--stable-deep); }
 
-/* 中心节点 - 参考图红色实心大圆环 */
+/* 中心节点 */
 .gg-node.center .gg-ring {
-  stroke: #E74C3C;
-  stroke-width: 3.5;
-  fill: rgba(255, 255, 255, 0.96);
+  stroke: var(--gold-deep);
+  stroke-width: 3;
+  fill: var(--gold-wash);
 }
 .gg-node.center .gg-name {
   font-family: var(--font-serif);
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 700;
-  fill: #C0392B;
+  fill: var(--gold-deep);
 }
-.gg-node.center .gg-fill { fill: none; opacity: 0; }
-.gg-node.center .gg-halo { fill: rgba(231, 76, 60, 0.08); }
+.gg-node.center .gg-fill { fill: var(--gold); opacity: 0.12; }
 
 /* 节点淡入/淡出 */
 .gg-node.enter {
@@ -790,325 +612,14 @@
   fill: none;
   transition: opacity 0.25s;
 }
-.gg-edge.line-strong { stroke: var(--gold-deep); stroke-width: 1.8; }
-.gg-edge.line-mid { stroke: var(--mod); stroke-width: 1.2; stroke-dasharray: 5 3; }
-.gg-edge.line-weak { stroke: var(--text-4); stroke-width: 0.9; stroke-dasharray: 1 4; opacity: 0.55; }
+.gg-edge.line-strong { stroke: var(--text-4); stroke-width: 1.8; }
+.gg-edge.line-mid { stroke: var(--text-4); stroke-width: 1; stroke-dasharray: 4 3; }
+.gg-edge.line-weak { stroke: var(--text-4); stroke-width: 0.7; stroke-dasharray: 1 4; opacity: 0.55; }
 .gg-edge.appear { animation: ggEdgeIn 0.45s ease both; }
 @keyframes ggEdgeIn {
   from { stroke-dashoffset: 200; opacity: 0; }
   to { stroke-dashoffset: 0; opacity: 1; }
 }
-
-/* ============================================================
-   节点样式（统一红色主导 - "学习画像"风格）
-   - gg-fill: 节点内部白色填充
-   - gg-ring: 节点外环（默认红色，状态调整）
-   - gg-halo: 节点柔和底色环
-   - gg-pct: 节点底部的百分比徽章
-   ============================================================ */
-.gg-node { cursor: pointer; transition: opacity .25s, transform .25s; }
-.gg-node:hover { opacity: 0.92; }
-
-.gg-node .gg-halo {
-  fill: rgba(231, 76, 60, 0.06);
-  transition: opacity .2s, transform .2s, fill .2s;
-  transform-box: fill-box;
-  transform-origin: center;
-}
-.gg-node:hover .gg-halo { opacity: 0.20; transform: scale(1.08); fill: rgba(231, 76, 60, 0.16); }
-
-.gg-node .gg-fill {
-  fill: rgba(255, 255, 255, 0.96);
-  stroke-width: 0;
-  opacity: 1;
-  transition: opacity 0.3s;
-  filter: url(#gg-node-shadow);
-}
-
-.gg-node .gg-ring {
-  fill: rgba(255, 255, 255, 0.96);
-  stroke: #E74C3C;
-  stroke-width: 2.2;
-  filter: url(#gg-node-shadow);
-  transition: stroke-width 0.25s, stroke 0.2s;
-}
-.gg-node:hover .gg-ring { stroke-width: 2.8; stroke: #C0392B; }
-
-.gg-node .gg-name {
-  font-family: var(--font-cn);
-  font-size: 11.5px;
-  font-weight: 600;
-  text-anchor: middle;
-  dominant-baseline: middle;
-  fill: var(--text-1);
-  pointer-events: none;
-  user-select: none;
-}
-
-.gg-node .gg-pct-bg {
-  fill: rgba(255, 255, 255, 0.96);
-  stroke: #E74C3C;
-  stroke-width: 1;
-  stroke-opacity: 0.55;
-}
-.gg-node .gg-pct-label {
-  font-family: var(--font-num);
-  font-size: 10.5px;
-  font-weight: 700;
-  text-anchor: middle;
-  dominant-baseline: middle;
-  fill: #C0392B;
-  pointer-events: none;
-  user-select: none;
-}
-
-/* 中心节点（参考图风格：红色大圆环） */
-.gg-node.center .gg-fill {
-  fill: rgba(255, 255, 255, 0.96);
-  stroke-width: 0;
-  opacity: 1;
-}
-.gg-node.center .gg-ring {
-  stroke: #E74C3C;
-  stroke-width: 3.5;
-  fill: rgba(255, 255, 255, 0.96);
-}
-.gg-node.center .gg-name {
-  font-family: var(--font-serif);
-  font-size: 15px;
-  font-weight: 700;
-  fill: #C0392B;
-}
-.gg-node.center .gg-num {
-  font-family: var(--font-num);
-  font-size: 11px;
-  font-weight: 700;
-  fill: #C0392B;
-}
-.gg-node.center .gg-halo {
-  fill: rgba(231, 76, 60, 0.08);
-}
-.gg-node.center:hover .gg-halo {
-  opacity: 1;
-  fill: rgba(231, 76, 60, 0.20);
-}
-
-/* 状态颜色：统一红色主导，细节透出语义 */
-.gg-node.s-add   .gg-ring   { stroke: #E74C3C; }
-.gg-node.s-add   .gg-pct-bg { stroke: #E74C3C; }
-.gg-node.s-add   .gg-pct-label { fill: #C0392B; }
-.gg-node.s-add   .gg-halo   { fill: rgba(231, 76, 60, 0.10); }
-.gg-node.s-add   .gg-name   { fill: #2C3E50; }
-
-.gg-node.s-del   .gg-ring   { stroke: #C95E54; opacity: 0.85; }
-.gg-node.s-del   .gg-pct-bg { stroke: #C95E54; }
-.gg-node.s-del   .gg-pct-label { fill: #C95E54; }
-.gg-node.s-del   .gg-name   { text-decoration: line-through; text-decoration-color: #C95E54; fill: var(--text-3); }
-
-.gg-node.s-mod   .gg-ring   { stroke: #E74C3C; }
-.gg-node.s-mod   .gg-pct-bg { stroke: #E74C3C; }
-.gg-node.s-mod   .gg-pct-label { fill: #C0392B; }
-.gg-node.s-mod   .gg-halo   { fill: rgba(231, 76, 60, 0.10); }
-
-.gg-node.s-pred  .gg-ring   { stroke: #E74C3C; stroke-dasharray: 2 2; }
-.gg-node.s-pred  .gg-pct-bg { stroke: #E74C3C; stroke-dasharray: 2 2; }
-.gg-node.s-pred  .gg-pct-label { fill: #C0392B; }
-.gg-node.s-pred  .gg-halo   { fill: rgba(231, 76, 60, 0.05); }
-
-.gg-node.s-stable .gg-ring   { stroke: #BDC3C7; }
-.gg-node.s-stable .gg-pct-bg { stroke: #BDC3C7; }
-.gg-node.s-stable .gg-pct-label { fill: var(--text-3); }
-.gg-node.s-stable .gg-halo   { fill: rgba(189, 195, 199, 0.10); }
-
-.gg-node.selected .gg-ring { stroke-width: 4 !important; }
-.gg-node.enter { animation: ggNodeIn 0.5s cubic-bezier(.4,.0,.2,1) both; }
-@keyframes ggNodeIn {
-  from { opacity: 0; transform: scale(0.4); }
-  to   { opacity: 1; transform: scale(1); }
-}
-
-/* ============================================================
-   4 象限标题(参考图样式：胶囊 + 圆点)
-   ============================================================ */
-.gg-quad-label {
-  position: absolute;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 5px 10px;
-  font-family: var(--font-cn);
-  font-size: 13.5px;
-  font-weight: 700;
-  color: var(--text-1);
-  letter-spacing: 0.5px;
-  pointer-events: none;
-  user-select: none;
-  white-space: nowrap;
-  z-index: 4;
-}
-.gg-quad-label:hover { transform: scale(1.04); transition: transform 0.2s; }
-.gg-quad-label .gg-quad-ic {
-  font-size: 16px;
-  line-height: 1;
-  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.08));
-}
-.gg-quad-label .cn {
-  font-family: var(--font-cn);
-  font-weight: 700;
-  font-size: 13px;
-}
-.gg-quad-label.gg-quad-basic    .gg-quad-ic { color: #16a085; }
-.gg-quad-label.gg-quad-core     .gg-quad-ic { color: #d35400; }
-.gg-quad-label.gg-quad-practice .gg-quad-ic { color: #7f8c8d; }
-.gg-quad-label.gg-quad-migrate  .gg-quad-ic { color: #8e44ad; }
-
-/* ============================================================
-   岗位搜索/分类 chips + 卡片（强化版）
-   ============================================================ */
-.git-job-search {
-  position: relative;
-  display: flex; align-items: center; gap: 7px;
-  padding: 7px 10px;
-  background: rgba(0, 0, 0, 0.04);
-  border: 1px solid rgba(0, 0, 0, 0.10);
-  border-radius: 8px;
-  font-size: 13px;
-}
-.git-job-search:focus-within {
-  border-color: var(--gold-deep);
-  background: rgba(255, 255, 255, 0.55);
-}
-.git-job-search input {
-  flex: 1; min-width: 0;
-  background: transparent; border: none; outline: none;
-  color: var(--text-1); font-size: 13px; font-family: inherit;
-  padding: 2px 0;
-}
-.git-job-search input::placeholder { color: var(--text-3); }
-.git-job-search-clear {
-  display: none; align-items: center; justify-content: center;
-  width: 18px; height: 18px; border-radius: 50%;
-  background: rgba(0, 0, 0, 0.08); color: var(--text-2);
-  font-size: 12px; line-height: 1; cursor: pointer; user-select: none;
-  transition: background .15s;
-}
-.git-job-search-clear:hover { background: rgba(231, 76, 60, 0.40); color: #fff; }
-
-.git-job-cats {
-  display: flex; flex-wrap: wrap; gap: 6px;
-  margin: 6px 0 8px;
-}
-.git-cat-chip {
-  display: inline-flex; align-items: center; gap: 5px;
-  padding: 4px 9px 4px 10px; border-radius: 999px;
-  background: rgba(0, 0, 0, 0.03);
-  border: 1px solid rgba(0, 0, 0, 0.10);
-  color: var(--text-2);
-  font-size: 12px; font-weight: 500;
-  white-space: nowrap;
-  cursor: pointer; user-select: none;
-  transition: all .15s;
-  font-family: inherit;
-}
-.git-cat-chip:hover {
-  background: rgba(231, 180, 76, 0.10);
-  border-color: rgba(231, 180, 76, 0.45);
-  color: var(--gold-deep);
-}
-.git-cat-chip.active {
-  background: rgba(231, 180, 76, 0.20);
-  border-color: var(--gold-deep);
-  color: var(--gold-deep);
-  font-weight: 600;
-}
-.git-cat-chip-name { letter-spacing: .3px; }
-.git-cat-chip-count {
-  display: inline-flex; align-items: center; justify-content: center;
-  min-width: 16px; height: 15px; padding: 0 4px;
-  font-size: 10px; font-weight: 700;
-  border-radius: 8px;
-  background: rgba(0, 0, 0, 0.08);
-  color: var(--text-3);
-  font-family: var(--font-num);
-}
-.git-cat-chip.active .git-cat-chip-count {
-  background: rgba(231, 180, 76, 0.30);
-  color: var(--gold-deep);
-}
-
-/* 岗位卡（强化） */
-.git-job-card {
-  padding: 9px 11px;
-  background: rgba(0, 0, 0, 0.025);
-  border: 1px solid transparent;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: border-color .15s, background .15s, transform .15s;
-  margin-bottom: 5px;
-}
-.git-job-card:hover {
-  background: rgba(231, 180, 76, 0.10);
-  transform: translateX(2px);
-}
-.git-job-card.active {
-  border-color: var(--gold-deep);
-  background: rgba(231, 180, 76, 0.18);
-  box-shadow: 0 0 0 3px rgba(231, 180, 76, 0.08);
-}
-.git-job-name-row {
-  display: flex; align-items: center; gap: 6px;
-  margin-bottom: 3px;
-}
-.git-job-name {
-  font-size: 13px; font-weight: 600; color: var(--text-1);
-}
-.git-tag {
-  font-size: 9.5px; padding: 1.5px 6px; border-radius: 8px;
-  font-weight: 700; letter-spacing: .3px;
-}
-.git-tag-hot { background: rgba(231, 76, 60, 0.18); color: #c0392b; }
-.git-tag-new { background: rgba(46, 204, 113, 0.18); color: #16a085; }
-.git-job-cat {
-  font-size: 11px; color: var(--text-3);
-  display: inline-block;
-  padding: 1px 7px;
-  background: rgba(0, 0, 0, 0.04);
-  border-radius: 5px;
-  margin-bottom: 4px;
-}
-.git-job-growth {
-  font-size: 11px;
-  display: inline-flex; align-items: center; gap: 4px;
-  color: var(--mod-deep);
-  font-family: var(--font-num);
-}
-.git-job-growth b { font-weight: 700; }
-.git-job-growth span { color: var(--text-3); font-weight: 500; font-family: var(--font-cn); }
-.git-job-empty {
-  padding: 22px 10px;
-  display: flex; flex-direction: column; align-items: center; gap: 8px;
-  background: rgba(0, 0, 0, 0.02);
-  border: 1px dashed rgba(0, 0, 0, 0.10);
-  border-radius: 8px;
-}
-.git-job-empty-ic {
-  width: 36px; height: 36px; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  background: rgba(231, 180, 76, 0.10);
-  font-size: 16px;
-}
-.git-job-empty-tip {
-  font-size: 12.5px; color: var(--text-2); text-align: center;
-}
-
-/* 调整 git-job-list 最大高度 */
-.git-job-list {
-  max-height: 360px;
-  overflow-y: auto;
-  scrollbar-width: thin;
-}
-.git-job-list::-webkit-scrollbar { width: 5px; }
-.git-job-list::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: 3px; }
 
 /* Tooltip */
 .gg-tooltip {
@@ -1177,70 +688,59 @@
 .gg-tooltip .tt-row b.up { color: var(--add-deep); }
 .gg-tooltip .tt-row b.down { color: var(--del-deep); }
 
-/* ---- 底部图例（参考图风格:掌握程度 + 关联强度,两组并排 + 分隔） ---- */
+/* ---- 底部图例 ---- */
 .gg-legend {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 12px 18px;
+  gap: 22px;
   padding: 12px 18px;
   border-top: 1px solid var(--border-soft);
   background: var(--surface-soft);
   font-size: 11.5px;
   color: var(--text-2);
-  justify-content: center;
 }
-.gg-legend-group {
-  display: inline-flex;
-  align-items: center;
-  gap: 16px;
+.gg-legend-status, .gg-legend-edge {
+  display: flex;
+  gap: 14px;
   flex-wrap: wrap;
 }
-.gg-legend-label {
-  display: inline-flex;
-  align-items: center;
-  font-size: 11.5px;
-  font-weight: 700;
-  color: var(--text-1);
-  letter-spacing: 0.4px;
-  margin-right: 4px;
-}
-.gg-legend-item {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  color: var(--text-2);
-}
-.gg-legend-ring {
+.gg-legend > div:not(:last-child)::after {
+  content: "";
   display: inline-block;
-  width: 12px;
+  margin-left: 12px;
+  width: 1px;
   height: 12px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.96);
-  border: 2px solid currentColor;
+  background: var(--border-mid);
+  vertical-align: middle;
 }
-.gg-legend-ring.mastery-excellent { color: #27AE60; }       /* 优秀 80%+ 绿 */
-.gg-legend-ring.mastery-medium    { color: #F39C12; }       /* 中等 40-79% 黄 */
-.gg-legend-ring.mastery-weak      { color: #E74C3C; }       /* 薄弱 <40% 红 */
-.gg-legend-ring.mastery-new       { color: #BDC3C7; }       /* 待学习 灰 */
-.gg-legend-line {
+.gg-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.gg-legend .dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--text-2);
   display: inline-block;
-  width: 26px;
+}
+.gg-legend .dot.add { background: var(--add); }
+.gg-legend .dot.del { background: var(--del); }
+.gg-legend .dot.mod { background: var(--mod); }
+.gg-legend .dot.pred { background: var(--pred); border-radius: 2px; transform: rotate(45deg); }
+.gg-legend .dot.stable { background: var(--stable); }
+.gg-legend .line {
+  display: inline-block;
+  width: 24px;
   height: 0;
   vertical-align: middle;
 }
-.gg-legend-line.line-strong  { border-top: 2px solid #E74C3C; }            /* 强关联 红色实线 */
-.gg-legend-line.line-medium  { border-top: 1.5px dashed #E74C3C; opacity: 0.85; }   /* 中关联 红色虚线 */
-.gg-legend-line.line-weak    { border-top: 1.5px dotted #95A5A6; opacity: 0.8; }    /* 弱关联 灰色点线 */
-
-.gg-legend-sep {
-  display: inline-block;
-  width: 1px;
-  height: 16px;
-  background: var(--border);
-  vertical-align: middle;
-  align-self: center;
+.gg-legend .line.strong { border-top: 2px solid var(--text-4); }
+.gg-legend .line.mid { border-top: 1px dashed var(--text-4); }
+.gg-legend .line.weak { border-top: 1px dotted var(--text-4); }
+.gg-legend-hint {
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--text-3);
+  font-style: italic;
 }
 
 /* ==========================================================================
@@ -1931,150 +1431,23 @@
    响应式
    ========================================================================== */
 @media (max-width: 1280px) {
-  #ce-app { padding: 12px 24px 16px; }
+  #ce-app { padding: 18px 28px 60px; }
   .git-layout { grid-template-columns: minmax(0, 1fr) 300px; gap: 18px; }
   .gh-title { font-size: 32px; }
 }
 
-@media (max-width: 1280px) {
-  .git-layout { grid-template-columns: 220px minmax(0, 1fr) 280px; gap: 14px; }
-}
-
 @media (max-width: 1080px) {
   .git-layout { grid-template-columns: 1fr; }
-  .git-job-picker { max-height: none; }
-  .git-job-list { max-height: 320px; }
   .git-side { position: relative; top: 0; max-height: none; }
   .gg-canvas-wrap { aspect-ratio: 5 / 4; }
 }
-
-/* ==========================================================================
-   VIEWPORT-FIT · 单屏铺满（2026-09-03）
-   ① 主体三栏底边对齐、恰好铺满 topnav 之下的可视区域；
-   ② 数据证据悬浮窗 / 遮罩 / Toast 恢复 fixed 屏幕居中；
-   ③ #ce-app 米白渐变底已透明化，露出站点氛围背景图，去掉底部大块米白框。
-   ========================================================================== */
-
-/* 去除 page-main 默认内边距，让 #ce-app 精确占满可视高度 */
-body[data-page="evolution"] #page-main {
-  padding: 0;
-  overflow: hidden;
-}
-
-/* 顶部三块与主体同宽居中；header/slider/tiers 固定高度，主体吸收剩余空间 */
-.git-header,
-.git-slider-wrap,
-.git-tiers,
-.git-layout {
-  width: min(100%, var(--max-w));
-  margin-left: auto;
-  margin-right: auto;
-}
-.git-header  { flex: 0 0 auto; margin-bottom: 12px; }
-.git-slider-wrap { flex: 0 0 auto; margin-bottom: 12px; }
-.git-tiers   { flex: 0 0 auto; margin-bottom: 12px; }
-
-/* 主体：占满剩余高度，行高锁定为容器高，三列等高并底边对齐 */
-.git-layout {
-  flex: 1 1 auto;
-  min-height: 0;
-  align-items: stretch;
-  grid-template-rows: minmax(0, 1fr);
-}
-.git-layout > * { min-height: 0; }
-
-/* 左栏 / 右栏：去掉 sticky 与视口约束，改为随网格行高等高 + 内部滚动 */
-.git-job-picker,
-.git-side {
-  position: relative;
-  top: auto;
-  max-height: none;
-}
-.git-side { overflow-y: auto; }
-
-/* 左栏内岗位列表吸收剩余高度并内部滚动 */
-.git-job-picker { overflow: hidden; }
-.git-job-list {
-  flex: 1 1 auto;
-  min-height: 0;
-  max-height: none;
-  overflow-y: auto;
-}
-
-/* 中栏：图表画布弹性吸收剩余高度（不再锁 16:9），图例固定在底部 */
-.git-graph-side {
-  display: flex;
-  flex-direction: column;
-}
-.gg-canvas-wrap {
-  flex: 1 1 auto;
-  aspect-ratio: auto;
-  min-height: 180px;
-}
-.gg-legend { flex: 0 0 auto; }
-
-/* 证据抽屉与 Toast 必须保持 fixed（防止被 #ce-app 内部定位规则影响） */
-#ce-app > .git-drawer,
-#ce-app > .git-drawer-mask,
-#ce-app > .git-toast {
-  position: fixed;
-}
-
-/* 较矮视口：压缩头部间距，把高度让给主体图谱 */
-@media (max-height: 900px) {
-  #ce-app { padding-top: 10px; }
-  .git-header { margin-bottom: 8px; padding-bottom: 12px; }
-  .git-slider-wrap { margin-bottom: 8px; padding: 12px 20px; }
-  .git-slider-wrap .gs-meta { margin-bottom: 8px; }
-  .git-tiers { margin-bottom: 8px; }
-  .tier { padding: 6px 12px; }
-}
-@media (max-height: 800px) {
-  .git-header { margin-bottom: 6px; padding-bottom: 8px; }
-  .git-slider-wrap { margin-bottom: 6px; padding: 8px 18px; }
-  .gs-meta { margin-bottom: 6px; }
-  .git-slider-wrap .gs-track { height: 44px; padding-top: 6px; padding-bottom: 12px; }
-  .git-slider-wrap .gs-arrow { width: 28px; height: 28px; }
-  .git-tiers { margin-bottom: 6px; }
-  .tier { padding: 4px 10px; font-size: 11.5px; }
-  .gg-canvas-wrap { min-height: 140px; }
-}
-
-/* 窄屏(<1080)回退为纵向滚动：单列网格 + 固定画布比例，避免挤压 */
-@media (max-width: 1080px) {
-  body[data-page="evolution"] #page-main { overflow: auto; }
-  #ce-app {
-    display: block;
-    height: auto;
-    min-height: calc(100vh - var(--topbar-h, 64px));
-    overflow: visible;
-    padding: 18px 20px 40px;
-  }
-  .git-header,
-  .git-slider-wrap,
-  .git-tiers,
-  .git-layout {
-    width: 100%;
-    max-width: var(--max-w);
-    margin-left: auto;
-    margin-right: auto;
-  }
-  .git-header, .git-slider-wrap, .git-tiers { flex: none; }
-  .git-layout { flex: none; min-height: 0; grid-template-rows: none; }
-  .git-job-picker { overflow-y: auto; max-height: none; }
-  .git-job-list { flex: none; max-height: 320px; }
-  .git-graph-side { display: block; }
-  .gg-canvas-wrap { flex: none; aspect-ratio: 5 / 4; min-height: 320px; }
-  .gg-legend { flex: none; }
-}
-
 
 @media (max-width: 720px) {
   #ce-app { padding: 14px 16px 50px; }
   .git-header { flex-direction: column; align-items: flex-start; gap: 14px; }
   .gh-right { gap: 14px; }
   .gh-kpi { padding: 0 16px 0 0; }
-  .gh-title { font-size: 24px; }
+  .gh-title { font-size: 26px; }
   .git-tiers { gap: 6px; }
   .tier { font-size: 11.5px; padding: 6px 11px; }
   .gg-canvas-wrap { aspect-ratio: 1 / 1; min-height: 320px; }

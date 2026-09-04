@@ -962,10 +962,6 @@ window.renderDiscoveryList = function(opts) {
             '<div class="dh-skills">' + chips + '</div>' +
             trend +
             '<p class="dh-insight-line"><em>洞察</em>' + insightShort + '</p>' +
-            '<div class="dh-card-jumps" style="display:flex;gap:6px;margin-top:10px">' +
-              '<a href="evolution.html?v=2&job=' + encodeURIComponent(j.title || '') + '" onclick="event.stopPropagation()" style="flex:1;text-align:center;padding:6px 4px;border-radius:8px;border:1px solid rgba(212,175,55,.5);background:rgba(255,252,245,.92);color:#8F6B0E;font-size:11.5px;font-weight:600;text-decoration:none">◈ 洞察该岗位</a>' +
-              '<a href="map.html?v=fix25c5&layer=graph&job=' + encodeURIComponent(j.title || '') + '" onclick="event.stopPropagation()" style="flex:1;text-align:center;padding:6px 4px;border-radius:8px;border:1px solid rgba(119,141,169,.5);background:rgba(248,250,253,.92);color:#33557a;font-size:11.5px;font-weight:600;text-decoration:none">◱ 技能要求图谱</a>' +
-            '</div>' +
             '</article>';
     };
 
