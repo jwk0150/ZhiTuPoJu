@@ -355,6 +355,15 @@
     }
 
     const pageMain = findPageMainSibling(host);
+    // 防重入：app-shell 已挂载且 page-main 已被移入 shell 内时，
+    // 二次 mount 的 innerHTML 重写会把 page-main 一并销毁，导致整页空白。
+    // 此时只刷新导航激活态，不再重建 DOM。
+    if (!pageMain && host.dataset.shellMounted === '1') {
+      host.querySelectorAll('.nav-item').forEach(function (a) {
+        a.classList.toggle('active', a.getAttribute('data-nav') === pageId);
+      });
+      return;
+    }
     const user = readUser();
     const label = userLabel(user);
     const safeLabel = escapeHtml(label);
@@ -395,6 +404,7 @@
       if (embed) pageMain.classList.add('page-main--embed');
       column.appendChild(pageMain);
     }
+    host.dataset.shellMounted = '1';
 
     const logoutBtn = host.querySelector('#shell-logout');
     if (logoutBtn) {

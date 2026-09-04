@@ -295,16 +295,55 @@
   <script src="../js/pages/ev-app.js?v=2026090210"></script>
   <script src="../js/pages/ev-views.js?v=2026090210"></script>
   <script>
+    /* ============================================================
+     * 岗位洞察 · 岗位来源优先级：
+     *   1. URL ?job=       （从个人仓库/发现页跳转带来的岗位）
+     *   2. 上一次洞察岗位   （zhitu_last_insight_job，仓库点击时写入）
+     *   3. 本地收藏第一个   （兼容 id 数组 / 旧对象数组两种格式）
+     * 都没有 → 引导遮罩：前往个人仓库选择岗位。
+     * 注意：Shell.mount 只允许调用一次 —— 二次 mount 会重写 app-shell，
+     * 把已移入的 #page-main 一并销毁，导致整页空白（历史 bug）。
+     * ============================================================ */
     (function () {
       try {
         var qJob = new URLSearchParams(location.search).get('job');
         if (qJob && qJob.trim()) {
           window.__EV_JOB_TITLE = qJob.trim();
-          document.title = window.__EV_JOB_TITLE + ' · 岗位能力演化 · 执图破局';
+          try { localStorage.setItem('zhitu_last_insight_job', window.__EV_JOB_TITLE); } catch (_) {}
+        }
+        if (!window.__EV_JOB_TITLE) {
+          try {
+            var last = localStorage.getItem('zhitu_last_insight_job');
+            if (last && last.trim() && last !== '[object Object]') window.__EV_JOB_TITLE = last.trim();
+          } catch (_) {}
+        }
+        if (!window.__EV_JOB_TITLE) {
+          var u = JSON.parse(localStorage.getItem('zhitu_user') || 'null') || {};
+          var uid = String(u.username || u.user_id || u.id || 'guest');
+          var favs = [];
+          try { favs = JSON.parse(localStorage.getItem('zhitu_disc_favs') || localStorage.getItem('zhitu_disc_favs__' + uid) || '[]') || []; } catch (_) { favs = []; }
+          if (!Array.isArray(favs) || !favs.length) {
+            try { favs = JSON.parse(localStorage.getItem('zhitu_disc_favs__' + uid) || '[]') || []; } catch (_) { favs = []; }
+          }
+          if (Array.isArray(favs) && favs.length) {
+            var first = favs[0];
+            var meta = {};
+            try { meta = JSON.parse(localStorage.getItem('zhitu_disc_fav_meta') || localStorage.getItem('zhitu_disc_fav_meta__' + uid) || '{}') || {}; } catch (_) {}
+            if (first && typeof first === 'object') {
+              // 旧对象数组格式：直接取 title / id
+              window.__EV_JOB_TITLE = (first.title && String(first.title)) || (meta[String(first.id)] && meta[String(first.id)].title) || String(first.id || '');
+            } else {
+              var fid = String(first);
+              window.__EV_JOB_TITLE = (meta[fid] && meta[fid].title) || fid;
+            }
+          }
+        }
+        if (window.__EV_JOB_TITLE && window.__EV_JOB_TITLE !== 'Java开发工程师') {
+          document.title = window.__EV_JOB_TITLE + ' · 岗位洞察 · 执图破局';
         }
         window.__applyEvJobTitle = function () {
           try {
-            if (!window.__EV_JOB_TITLE || window.__EV_JOB_TITLE === 'Java开发工程师') return;
+            if (!window.__EV_JOB_TITLE) return;
             var t1 = document.getElementById('gh-job-title');
             if (t1) t1.textContent = window.__EV_JOB_TITLE;
             var t2 = document.getElementById('gs-role-name');
@@ -325,39 +364,16 @@
     (function () {
       try {
         if (window.__EV_JOB_TITLE) return;
-        var u = JSON.parse(localStorage.getItem('zhitu_user') || 'null') || {};
-        var uid = String(u.username || u.user_id || u.id || 'guest');
-        var favs = [];
-        try { favs = JSON.parse(localStorage.getItem('zhitu_disc_favs') || localStorage.getItem('zhitu_disc_favs__' + uid) || '[]') || []; } catch (_) { favs = []; }
-        if (!Array.isArray(favs) || !favs.length) {
-          try { favs = JSON.parse(localStorage.getItem('zhitu_disc_favs__' + uid) || '[]') || []; } catch (_) { favs = []; }
-        }
-        if (Array.isArray(favs) && favs.length) {
-          var first = String(favs[0]);
-          var meta = {};
-          try { meta = JSON.parse(localStorage.getItem('zhitu_disc_fav_meta__' + uid) || '{}') || {}; } catch (_) {}
-          window.__EV_JOB_TITLE = (meta[first] && meta[first].title) || first;
-          if (window.Shell) {
-            try {
-              window.Shell.mount({
-                pageId: 'evolution',
-                title: '岗位能力演化 · ' + window.__EV_JOB_TITLE,
-                subtitle: '「' + window.__EV_JOB_TITLE + '」的能力版本时序 · 按月真实粒度推演'
-              });
-            } catch (_) {}
-          }
-        } else {
-          var ov = document.createElement('div');
-          ov.id = 'evo-no-fav-overlay';
-          ov.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(250,247,240,.97);display:flex;align-items:center;justify-content:center;padding:24px';
-          ov.innerHTML = '<div style="width:min(430px,100%);background:#fff;border:1px solid #e8dfca;border-radius:18px;padding:36px 30px;text-align:center;box-shadow:0 24px 64px rgba(60,45,30,.18)">'
-            + '<div style="width:58px;height:58px;margin:0 auto 14px;border-radius:50%;background:linear-gradient(135deg,#c9a86a,#8c6f3e);color:#fff;display:grid;place-items:center;font-size:26px">☆</div>'
-            + '<h3 style="margin:0 0 8px;font:600 20px \'Noto Serif SC\',serif;color:#2a1f10">请先收藏岗位</h3>'
-            + '<p style="margin:0 0 20px;color:#6a6258;font-size:13px;line-height:1.8">岗位洞察基于你收藏的岗位生成。<br/>前往「新岗位发现」收藏感兴趣的岗位后，这里会展示对应的能力演化洞察。</p>'
-            + '<a href="discovery.html?v=fix25" style="display:block;padding:12px;border-radius:10px;background:linear-gradient(135deg,#c9a86a,#8c6f3e);color:#fff;font:600 14px sans-serif;text-decoration:none">前往新岗位发现</a>'
-            + '</div>';
-          document.body.appendChild(ov);
-        }
+        var ov = document.createElement('div');
+        ov.id = 'evo-no-fav-overlay';
+        ov.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(250,247,240,.97);display:flex;align-items:center;justify-content:center;padding:24px';
+        ov.innerHTML = '<div style="width:min(430px,100%);background:#fff;border:1px solid #e8dfca;border-radius:18px;padding:36px 30px;text-align:center;box-shadow:0 24px 64px rgba(60,45,30,.18)">'
+          + '<div style="width:58px;height:58px;margin:0 auto 14px;border-radius:50%;background:linear-gradient(135deg,#c9a86a,#8c6f3e);color:#fff;display:grid;place-items:center;font-size:26px">◎</div>'
+          + '<h3 style="margin:0 0 8px;font:600 20px \'Noto Serif SC\',serif;color:#2a1f10">请前往个人仓库选择岗位</h3>'
+          + '<p style="margin:0 0 20px;color:#6a6258;font-size:13px;line-height:1.8">岗位洞察基于你选择的岗位生成。<br/>前往「个人仓库」，在收藏岗位的气泡里点击「洞察该岗位」，<br/>这里就会展示对应的能力演化洞察，并记住你上次的选择。</p>'
+          + '<a href="warehouse.html?v=fix25c5" style="display:block;padding:12px;border-radius:10px;background:linear-gradient(135deg,#c9a86a,#8c6f3e);color:#fff;font:600 14px sans-serif;text-decoration:none">前往个人仓库</a>'
+          + '</div>';
+        document.body.appendChild(ov);
       } catch (_) {}
     })();
   </script>

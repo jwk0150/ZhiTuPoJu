@@ -168,7 +168,7 @@
             (metaLine.length ? '<p class="vault-item-m">' + esc(metaLine.join(' · ')) + '</p>' : '') +
             ((laneKey === 'discovery' || laneKey === 'forecast') ?
               '<span class="vault-item-jumps" style="display:flex;gap:6px;margin-top:10px">' +
-                '<span role="button" tabindex="0" onclick="event.preventDefault();event.stopPropagation();location.href=\'evolution.html?v=2&job=\' + encodeURIComponent(\'' + esc(it.title || '') + '\')" style="flex:1;text-align:center;padding:6px 4px;border-radius:8px;border:1px solid rgba(212,175,55,.5);background:rgba(255,252,245,.95);color:#8F6B0E;font-size:11.5px;font-weight:600;cursor:pointer">◈ 洞察该岗位</span>' +
+                '<span role="button" tabindex="0" onclick="event.preventDefault();event.stopPropagation();try{localStorage.setItem(\'zhitu_last_insight_job\', \'' + esc(it.title || '').replace(/'/g, "\\'") + '\')}catch(_){};location.href=\'evolution.html?v=2&job=\' + encodeURIComponent(\'' + esc(it.title || '') + '\')" style="flex:1;text-align:center;padding:6px 4px;border-radius:8px;border:1px solid rgba(212,175,55,.5);background:rgba(255,252,245,.95);color:#8F6B0E;font-size:11.5px;font-weight:600;cursor:pointer">◈ 洞察该岗位</span>' +
                 '<span role="button" tabindex="0" onclick="event.preventDefault();event.stopPropagation();location.href=\'map.html?v=fix25c5&layer=graph&job=\' + encodeURIComponent(\'' + esc(it.title || '') + '\')" style="flex:1;text-align:center;padding:6px 4px;border-radius:8px;border:1px solid rgba(119,141,169,.5);background:rgba(248,250,253,.95);color:#33557a;font-size:11.5px;font-weight:600;cursor:pointer">◱ 技能要求图谱</span>' +
               '</span>' : '') +
           '</a>'
