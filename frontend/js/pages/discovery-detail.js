@@ -330,7 +330,82 @@
     });
   }
 
-  function fillOverviewJumps(elId, mods, skipId) {
+  function frontierGroups(job) {
+    const title = job.title || '新兴岗位';
+    const skill =
+      (job.skillScores && job.skillScores[0] && job.skillScores[0].name) ||
+      (job.skills && job.skills[0] && (job.skills[0].name || job.skills[0])) ||
+      title;
+    const bing = (q) => 'https://www.bing.com/search?q=' + encodeURIComponent(q);
+    return [
+      {
+        label: '看趋势',
+        links: [
+          { t: title + ' · 发展趋势', u: bing(title + ' 岗位 发展趋势 2026') },
+          { t: '知乎 · 从业者讨论', u: 'https://www.zhihu.com/search?type=content&q=' + encodeURIComponent(title + ' 前景') },
+          { t: '36氪 · 行业动态', u: 'https://36kr.com/search/articles/' + encodeURIComponent(skill) }
+        ]
+      },
+      {
+        label: '学技能',
+        links: [
+          { t: 'B站 · ' + skill + ' 实战教程', u: 'https://search.bilibili.com/all?keyword=' + encodeURIComponent(skill + ' 教程') },
+          { t: '中国大学MOOC · 系统课', u: 'https://www.icourse163.org/web/search.htm?keyword=' + encodeURIComponent(skill) },
+          { t: 'GitHub · 学习路径', u: 'https://github.com/search?q=' + encodeURIComponent(skill + ' awesome') }
+        ]
+      },
+      {
+        label: '看行情',
+        links: [
+          { t: '猎聘 · 在招岗位', u: 'https://www.liepin.com/zhaopin/?key=' + encodeURIComponent(title) },
+          { t: 'BOSS直聘 · 薪酬行情', u: 'https://www.zhipin.com/web/geek/job?query=' + encodeURIComponent(title) },
+          { t: '脉脉 · 职场讨论', u: 'https://maimai.cn/search?q=' + encodeURIComponent(title) }
+        ]
+      },
+      {
+        label: '读政策',
+        links: [
+          { t: '人社部 · 相关政策', u: bing('site:mohrss.gov.cn ' + skill) },
+          { t: '工信部 · 产业规划', u: bing('site:miit.gov.cn ' + skill) },
+          { t: '各地 · 人才政策', u: bing(title + ' 人才政策 补贴') }
+        ]
+      },
+      {
+        label: '读研报',
+        links: [
+          { t: '机器之心 · 前沿论文', u: 'https://www.jiqizhixin.com/search?keywords=' + encodeURIComponent(skill) },
+          { t: '虎嗅 · 商业分析', u: 'https://www.huxiu.com/search?q=' + encodeURIComponent(title) },
+          { t: '艾瑞 · 行业报告', u: bing(title + ' 行业报告 2026 艾瑞 OR 亿欧 OR QuestMobile') }
+        ]
+      },
+      {
+        label: '刷面经',
+        links: [
+          { t: '牛客 · 面试题与面经', u: 'https://www.nowcoder.com/search?query=' + encodeURIComponent(title + ' 面经') },
+          { t: '看准网 · 薪资与面试', u: 'https://www.kanzhun.com/search/?query=' + encodeURIComponent(title) },
+          { t: '掘金 · 技术面试', u: 'https://juejin.cn/search?query=' + encodeURIComponent(skill + ' 面试') }
+        ]
+      },
+      {
+        label: '查东家',
+        links: [
+          { t: '天眼查 · 公司背景', u: 'https://www.tianyancha.com/search?key=' + encodeURIComponent(job.evidence_company || job.company || title) },
+          { t: '企查查 · 经营风险', u: 'https://www.qcc.com/web/search?key=' + encodeURIComponent(job.evidence_company || job.company || title) },
+          { t: '职友集 · 公司薪酬', u: bing(job.evidence_company || job.company || title + ' 招聘 薪酬 职友集') }
+        ]
+      },
+      {
+        label: '考认证',
+        links: [
+          { t: '软考 · 国家职业资格', u: bing(skill + ' 软考 认证 报考') },
+          { t: '1+X · 职业技能等级', u: bing(skill + ' 1+X 职业技能等级证书') },
+          { t: '厂商认证 · 入门路径', u: bing(skill + ' 官方认证 考试 大纲') }
+        ]
+      }
+    ];
+  }
+
+  function fillOverviewJumps(elId, mods, skipId, job) {
     const el = document.getElementById(elId);
     if (!el) return;
     const jumps = mods.filter((m) => m.id !== skipId);
@@ -367,6 +442,31 @@
     foot.querySelectorAll('.dd-mod-jumps [data-jump]').forEach((btn) => {
       btn.addEventListener('click', () => switchMod(btn.getAttribute('data-jump')));
     });
+    if (job) {
+      const groups = frontierGroups(job);
+      const frontierHtml =
+        '<span class="dd-insight-sec" style="display:block;margin-top:14px">前沿情报直达 · 站外权威渠道</span>' +
+        groups
+          .map(
+            (g) =>
+              '<div class="dd-frontier-group"><span class="dd-frontier-label">' +
+              esc(g.label) +
+              '</span><div class="dd-frontier-links">' +
+              g.links
+                .map(
+                  (l) =>
+                    '<a class="dd-frontier-link" href="' +
+                    esc(l.u) +
+                    '" target="_blank" rel="noopener noreferrer">' +
+                    esc(l.t) +
+                    ' ↗</a>'
+                )
+                .join('') +
+              '</div></div>'
+          )
+          .join('');
+      foot.insertAdjacentHTML('beforeend', frontierHtml);
+    }
   }
 
   function ensureModMain(modId, isForecast) {
@@ -1031,7 +1131,7 @@
         ]
       }
     );
-    fillOverviewJumps('dd-found-overview-insight', FOUND_MODS, 'overview');
+    fillOverviewJumps('dd-found-overview-insight', FOUND_MODS, 'overview', job);
 
     fillInsight(
       'dd-found-skills-insight',
@@ -1285,7 +1385,7 @@
         ]
       }
     );
-    fillOverviewJumps('dd-fc-overview-insight', FORECAST_MODS, 'overview');
+    fillOverviewJumps('dd-fc-overview-insight', FORECAST_MODS, 'overview', job);
 
     fillInsight(
       'dd-fc-skills-insight',

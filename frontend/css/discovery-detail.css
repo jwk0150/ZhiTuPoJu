@@ -8107,3 +8107,50 @@ body.dd-cockpit-page .page-main--cockpit:has(.dd-mod-layout) {
 @media (prefers-reduced-motion: reduce) {
   .dd-ev-chip { transition: none; }
 }
+
+/* ---- 前沿情报直达（站外权威渠道） ---- */
+.dd-frontier-group {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.dd-frontier-label {
+  flex: none;
+  min-width: 46px;
+  margin-top: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #8B7340;
+}
+
+.dd-frontier-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.dd-frontier-link {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(212, 176, 122, 0.22);
+  background: rgba(212, 176, 122, 0.06);
+  font-size: 11px;
+  color: #6B5A32;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: border-color .2s ease, background .2s ease, transform .2s ease;
+}
+
+.dd-frontier-link:hover {
+  border-color: rgba(212, 176, 122, 0.5);
+  background: rgba(212, 176, 122, 0.14);
+  transform: translateY(-1px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dd-frontier-link { transition: none; }
+  .dd-frontier-link:hover { transform: none; }
+}

@@ -1453,6 +1453,7 @@ window.openDiscoveryDrawer = function(job, opts) {
                 (isForecast?'<div class="kv"><label>预计窗口</label><span style="color:var(--amber)">'+esc(job.eta_months||'6-12')+' 个月</span></div>':'')+
                 '<div class="kv"><label>状态</label><span>'+statusLabel+'</span></div>'+
             '</div>'+
+            frontierDrawerHtml(job)+
             '<div class="disc-drawer-section" data-panel="overview"><h4>岗位概览</h4><p>'+(esc(job.definition||job.description)||'--')+'</p></div>'+
             '<div class="disc-drawer-section" data-panel="overview"><h4>核心职责</h4>'+list(job.responsibilities||job.duties)+'</div>'+
             '<div class="disc-drawer-section" data-panel="overview"><h4>典型场景</h4>'+list(job.scenarios||job.use_cases)+'</div>'+
@@ -1510,6 +1511,46 @@ window.openDiscoveryDrawer = function(job, opts) {
     drawer.setAttribute('aria-hidden','false');
     if (mask) mask.classList.add('open');
 };
+
+// 前沿情报直达：按岗位名 + TOP 技能生成站外权威渠道深链（求职者视角）
+function frontierDrawerHtml(job) {
+    const esc = s => String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    const title = job.title || '新兴岗位';
+    const firstSkill = (job.requiredSkills || job.core_skills || []);
+    const skill = (firstSkill[0] && (firstSkill[0].name || firstSkill[0])) || title;
+    const enc = encodeURIComponent;
+    const bing = q => 'https://www.bing.com/search?q=' + enc(q);
+    const groups = [
+        { label: '看趋势', links: [
+            { t: '发展趋势', u: bing(title + ' 岗位 发展趋势 2026') },
+            { t: '知乎讨论', u: 'https://www.zhihu.com/search?type=content&q=' + enc(title + ' 前景') },
+            { t: '36氪动态', u: 'https://36kr.com/search/articles/' + enc(skill) }
+        ]},
+        { label: '学技能', links: [
+            { t: 'B站教程', u: 'https://search.bilibili.com/all?keyword=' + enc(skill + ' 教程') },
+            { t: 'MOOC课程', u: 'https://www.icourse163.org/web/search.htm?keyword=' + enc(skill) },
+            { t: 'GitHub路径', u: 'https://github.com/search?q=' + enc(skill + ' awesome') }
+        ]},
+        { label: '看行情', links: [
+            { t: '猎聘在招', u: 'https://www.liepin.com/zhaopin/?key=' + enc(title) },
+            { t: 'BOSS薪酬', u: 'https://www.zhipin.com/web/geek/job?query=' + enc(title) },
+            { t: '脉脉讨论', u: 'https://maimai.cn/search?q=' + enc(title) }
+        ]},
+        { label: '刷面经', links: [
+            { t: '牛客面经', u: 'https://www.nowcoder.com/search?query=' + enc(title + ' 面经') },
+            { t: '看准网薪酬', u: 'https://www.kanzhun.com/search/?query=' + enc(title) },
+            { t: '掘金面试', u: 'https://juejin.cn/search?query=' + enc(skill + ' 面试') }
+        ]}
+    ];
+    return '<div class="disc-drawer-section disc-frontier" data-panel="overview"><h4>前沿情报直达 <i style="font-style:normal;font-size:11px;color:var(--text-muted)">· 站外权威渠道，新窗口打开</i></h4>' +
+        groups.map(g =>
+            '<div class="disc-frontier-row"><span class="disc-frontier-label">' + esc(g.label) + '</span>' +
+            '<span class="disc-frontier-links">' +
+            g.links.map(l => '<a class="disc-frontier-link" href="' + esc(l.u) + '" target="_blank" rel="noopener noreferrer">' + esc(l.t) + ' ↗</a>').join('') +
+            '</span></div>'
+        ).join('') +
+        '</div>';
+}
 
 window.closeDiscoveryDrawer = function() {
     window.ensureDiscoveryState();
