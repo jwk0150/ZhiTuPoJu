@@ -20,7 +20,7 @@
   const store = A.store;
 
   // 当前拖动到的版本索引（基于 VERSIONS）
-  const DEFAULT_VERSION_IDX = 3; // V2025.07
+  const DEFAULT_VERSION_IDX = 31; // 2026.08 当前月份
 
   // ============================================================
   // 工具函数
@@ -34,19 +34,20 @@
   }
   function setText(id, t) { const el = document.getElementById(id); if (el) el.textContent = t; }
   function capCountAt(versionId) {
-    const snap = D.getCapabilitySnapshot('Java开发工程师', versionId);
+    const snap = D.getCapabilitySnapshot(store.jobId || 'Java开发工程师', versionId);
     return snap.skills.filter(s => s.demand > 0 && s.status !== 'hidden' && s.status !== 'deleted').length;
   }
 
   // 当前版本下,每个 skill 的视觉状态
   function getVisualStatus(skill, versionId) {
-    const snap = D.getCapabilitySnapshot('Java开发工程师', versionId);
+    const snap = D.getCapabilitySnapshot(store.jobId || 'Java开发工程师', versionId);
     const item = snap.skills.find(s => s.id === skill.id);
     if (!item) return 'hidden';
     if (item.demand <= 0) return 'hidden';
     const st = item.status;
     if (st === 'hidden') return 'hidden';
     if (st === 'deleted' || st === 'declining') return 'del';
+    if (st === 'predicted') return 'pred';
     if (st === 'added') return 'add';
     if (st === 'modified') return 'mod';
     return 'stable';
@@ -54,8 +55,8 @@
 
   // 用于统计与顶部 5 个胶囊
   function countByStatus(versionId) {
-    const snap = D.getCapabilitySnapshot('Java开发工程师', versionId);
-    const counts = { add: 0, del: 0, mod: 0, stable: 0 };
+    const snap = D.getCapabilitySnapshot(store.jobId || 'Java开发工程师', versionId);
+    const counts = { add: 0, del: 0, mod: 0, stable: 0, pred: 0 };
     snap.skills.forEach(s => {
       if (s.demand <= 0) return;
       const v = getVisualStatus({ id: s.id }, versionId);
@@ -63,14 +64,19 @@
       else if (v === 'del') counts.del++;
       else if (v === 'mod') counts.mod++;
       else if (v === 'stable') counts.stable++;
+      else if (v === 'pred') counts.pred++;
     });
     return counts;
   }
 
   // 预测:在当前版本之后,基于 forecastRanking 取即将加入核心模型的能力
   function countPredictions(versionId) {
+    const currentVersion = D.versionById(versionId);
+    if (currentVersion && currentVersion.isForecast) {
+      return D.SKILLS.filter(s => s.status === 'added' && (s.forecast || []).length).slice(0, 6).length;
+    }
     // 简化: 从 forecastRanking 中筛 status==='added' 的未出现在当前 snapshot 中
-    const snap = D.getCapabilitySnapshot('Java开发工程师', versionId);
+    const snap = D.getCapabilitySnapshot(store.jobId || 'Java开发工程师', versionId);
     const visible = new Set(snap.skills.filter(s => s.demand > 0).map(s => s.id));
     const all = D.SKILLS.filter(s => s.status === 'added');
     // 出现在当前 + 后续版本的 added 数(via versionAdded > currentVersion)
@@ -81,7 +87,7 @@
       const aIdx = D.versionById(s.versionAdded || versionId).idx;
       if (aIdx > verIdx && !visible.has(s.id)) predCount++;
     });
-    return Math.min(predCount, 4);
+    return Math.max(Math.min(predCount, 4), Math.min(6, D.SKILLS.filter(s => s.status === 'added').length));
   }
 
   // ============================================================
@@ -89,6 +95,7 @@
   // ============================================================
   function init() {
     if (!store) return;
+    store.jobId = store.jobId || 'Java开发工程师';
     store.currentVersion = D.VERSIONS[DEFAULT_VERSION_IDX].id;
     store.currentVersionIdx = DEFAULT_VERSION_IDX;
     buildSlider();
@@ -109,6 +116,9 @@
   }
 
   function renderHeader() {
+    const roleTitle = (D.ROLE_CONFIG && D.ROLE_CONFIG[store.jobId] && D.ROLE_CONFIG[store.jobId].title) || store.jobId || 'Java 开发工程师';
+    setText('gh-title', roleTitle);
+    setText('gs-role-name', roleTitle);
     setText('gh-version', store.currentVersion);
     setText('gh-maturity', (D.versionById(store.currentVersion).maturity || 76) + '%');
     setText('gs-current-version', store.currentVersion);
@@ -127,16 +137,24 @@
     const ticksBox = document.getElementById('gs-ticks');
     if (!ticksBox) return;
     const total = D.VERSIONS.length;
+    const slider = document.getElementById('gs-slider');
+    if (slider) {
+      slider.max = String(total - 1);
+      slider.value = String(DEFAULT_VERSION_IDX);
+    }
     ticksBox.innerHTML = D.VERSIONS.map((v, i) => {
       const cls = ['gs-tick'];
       if (v.isForecast) cls.push('future');
       if (i === DEFAULT_VERSION_IDX) cls.push('active');
       // 绝对定位：6 个 tick 均匀分布
       const pct = total > 1 ? (i / (total - 1)) * 100 : 50;
-      const tag = (i === DEFAULT_VERSION_IDX) ? (v.isForecast ? 'PREDICTED' : 'CURRENT') : '';
+      const year = String(v.label || '').slice(0, 4);
+      const prevYear = i > 0 ? String(D.VERSIONS[i - 1].label || '').slice(0, 4) : '';
+      const showLabel = i === 0 || i === total - 1 || i === DEFAULT_VERSION_IDX || year !== prevYear;
+      const tag = (i === DEFAULT_VERSION_IDX) ? (v.isForecast ? 'PREDICTED' : 'CURRENT') : (v.isForecast && i === D.N ? 'FORECAST' : '');
       return `<div class="${cls.join(' ')}" data-idx="${i}" style="left:${pct.toFixed(2)}%;">
         <span class="dot"></span>
-        <span class="lbl">${v.label}${tag ? ' · ' + tag : ''}</span>
+        <span class="lbl">${showLabel ? year + (tag ? ' · ' + tag : '') : ''}</span>
       </div>`;
     }).join('');
 
@@ -161,11 +179,10 @@
       const lblEl = el.querySelector('.lbl');
       if (lblEl) {
         const v = D.VERSIONS[i];
-        if (isActive) {
-          lblEl.textContent = v.label + ' · ' + (v.isForecast ? 'PREDICTED' : 'CURRENT');
-        } else {
-          lblEl.textContent = v.label;
-        }
+        const year = String(v.label || '').slice(0, 4);
+        const prevYear = i > 0 ? String(D.VERSIONS[i - 1].label || '').slice(0, 4) : '';
+        const showLabel = i === 0 || i === D.VERSIONS.length - 1 || isActive || year !== prevYear;
+        lblEl.textContent = showLabel ? year + (isActive ? ' · ' + (v.isForecast ? 'PREDICTED' : 'CURRENT') : '') : '';
       }
     });
     // prev/next 按钮 disabled 状态
@@ -219,13 +236,12 @@
     '工程化': 'ENG · 工程化',
   };
 
-  // 4 象限布局:基础概念(新增) | 核心方法(稳定/调整) | 练习与辨析(待提升) | 综合与迁移(迁移类)
-  // 将原 6 个 category 重新映射到 4 个象限,保留视觉关系
+  // 四象限表达变化语义，而非技术分类：重点能力 / 新增能力 / 移除能力 / 演变能力。
   const QUADRANTS = [
-    { key: 'basic',     label: '基础概念',   cn: '基础概念', cats: ['AI'],                 statusFilter: ['add'] },
-    { key: 'core',      label: '核心方法',   cn: '核心方法', cats: ['后端', '架构'],       statusFilter: ['mod', 'stable'] },
-    { key: 'practice',  label: '练习与辨析', cn: '练习与辨析', cats: ['数据', '工程化'],   statusFilter: ['mod'] },
-    { key: 'migrate',   label: '综合与迁移', cn: '综合与迁移', cats: ['云原生'],           statusFilter: ['add', 'mod'] }
+    { key: 'priority', label: '最重要', cn: '最重要', statusFilter: ['stable', 'mod'], icon: '✦' },
+    { key: 'added',    label: '新增能力', cn: '新增能力', statusFilter: ['add', 'pred'], icon: '+' },
+    { key: 'removed',  label: '移除能力', cn: '移除能力', statusFilter: ['del'], icon: '−' },
+    { key: 'evolving', label: '能力演变', cn: '能力演变', statusFilter: ['mod'], icon: '↗' }
   ];
 
   function renderGraph() {
@@ -236,10 +252,14 @@
     isRendering = true;
 
     // 取当前版本快照
-    const snap = D.getCapabilitySnapshot('Java开发工程师', store.currentVersion);
-    const visible = snap.skills.filter(s => s.demand > 0 && s.status !== 'hidden' && s.status !== 'deleted');
-    visible.sort((a, b) => b.demand - a.demand);
+    const snap = D.getCapabilitySnapshot(store.jobId || 'Java开发工程师', store.currentVersion);
+    const visible = snap.skills.filter(s => s.demand > 0 && s.status !== 'hidden');
+    visible.sort((a, b) => (b.importance * 100 + b.demand) - (a.importance * 100 + a.demand));
+    // 重点能力占主体，新增/移除能力始终保留，避免低频变化被截掉。
     const top = visible.slice(0, 16);
+    visible.filter(s => s.status === 'deleted' || s.status === 'declining').slice(0, 3).forEach(s => {
+      if (!top.some(x => x.id === s.id)) top.push(s);
+    });
 
     // viewBox
     const VBW = 1000, VBH = 600;
@@ -255,44 +275,39 @@
     // 4 象限可用矩形（避开标题区+核心区）
     function quadRect(key) {
       switch (key) {
-        case 'basic':    return { x0: EDGE,                  y0: EDGE + TITLE_H,         x1: cx - 60,         y1: cy - 60 };
-        case 'core':     return { x0: cx + 60,               y0: EDGE + TITLE_H,         x1: VBW - EDGE,      y1: cy - 60 };
-        case 'practice': return { x0: EDGE,                  y0: cy + 60,                x1: cx - 60,         y1: VBH - EDGE };
-        case 'migrate':  return { x0: cx + 60,               y0: cy + 60,                x1: VBW - EDGE,      y1: VBH - EDGE };
+        case 'priority': return { x0: EDGE,                  y0: EDGE + TITLE_H,         x1: cx - 60,         y1: cy - 60 };
+        case 'added':    return { x0: cx + 60,               y0: EDGE + TITLE_H,         x1: VBW - EDGE,      y1: cy - 60 };
+        case 'removed':  return { x0: EDGE,                  y0: cy + 60,                x1: cx - 60,         y1: VBH - EDGE };
+        case 'evolving': return { x0: cx + 60,               y0: cy + 60,                x1: VBW - EDGE,      y1: VBH - EDGE };
       }
     }
 
     // 把 visible 按 category/status 映射到象限
-    const groups = { basic: [], core: [], practice: [], migrate: [] };
+    const groups = { priority: [], added: [], removed: [], evolving: [] };
     const usedIds = new Set();
     top.forEach(s => {
       const st = getVisualStatus({ id: s.id }, store.currentVersion);
       const cat = s.category || '其他';
-      for (const q of QUADRANTS) {
-        if (q.cats.includes(cat) && (q.statusFilter.includes(st) || (q.key === 'core' && st === 'stable'))) {
-          groups[q.key].push({ ...s, _cat: cat, _status: st });
-          usedIds.add(s.id);
-          break;
-        }
-      }
+      // 稳定能力都属于“最重要”；只有明确发生变化的能力才进入演变象限。
+      let qKey = st === 'del' ? 'removed' : st === 'add' || st === 'pred' ? 'added' : (st === 'stable' ? 'priority' : 'evolving');
+      groups[qKey].push({ ...s, _cat: cat, _status: st });
+      usedIds.add(s.id);
     });
     // 若仍有未分配的,按 demand 分散到对应 category 的第一象限
     top.forEach(s => {
       if (usedIds.has(s.id)) return;
-      const cat = s.category || '其他';
-      const q = QUADRANTS.find(q => q.cats.includes(cat)) || QUADRANTS[0];
-      groups[q.key].push({ ...s, _cat: cat, _status: getVisualStatus({ id: s.id }, store.currentVersion) });
+      groups.evolving.push({ ...s, _cat: s.category || '其他', _status: getVisualStatus({ id: s.id }, store.currentVersion) });
     });
 
     const nodes = [{
       id: 'center', x: cx, y: cy, r: CORE_R,
-      name: 'Java', demand: '', en: 'CORE · 中心节点',
+      name: ({ 'Java开发工程师': 'Java', '前端开发工程师': '前端', '算法工程师': '算法', '数据工程师': '数据', 'DevOps工程师': 'DevOps' })[store.jobId] || '岗位', demand: '', en: 'CORE · 中心节点',
       status: 'center', category: ''
     }];
 
     // 4 象限内计算节点位置（矩形均布）
     QUADRANTS.forEach(q => {
-      const list = groups[q.key].slice().sort((a, b) => b.demand - a.demand).slice(0, 4);
+        const list = groups[q.key].slice().sort((a, b) => (b.importance * 100 + b.demand) - (a.importance * 100 + a.demand)).slice(0, 4);
       const b = quadRect(q.key);
       const w = b.x1 - b.x0;
       const h = b.y1 - b.y0;
@@ -425,7 +440,7 @@
           <circle class="gg-fill" cx="${n.x.toFixed(1)}" cy="${n.y.toFixed(1)}" r="${(n.r - 2).toFixed(1)}" />
           <circle class="gg-ring" cx="${n.x.toFixed(1)}" cy="${n.y.toFixed(1)}" r="${n.r.toFixed(1)}" />
           <text class="gg-name" x="${n.x.toFixed(1)}" y="${(n.y - 1).toFixed(1)}">${esc(n.name)}</text>
-          <text class="gg-num" x="${n.x.toFixed(1)}" y="${(n.y + 14).toFixed(1)}">0%</text>
+          <text class="gg-num" x="${n.x.toFixed(1)}" y="${(n.y + 14).toFixed(1)}">${Math.round((D.versionById(store.currentVersion) || {}).demand || 0)}%</text>
         </g>`;
       }
       // 普通节点 - 模仿参考图：圆环 + 名称 + 底部百分比徽章
@@ -474,12 +489,12 @@
     const offsetY = (H - VBH * scale) / 2;
     // 4 角内边距（避开圆环节点）
     const positions = {
-      basic:    { fx: 0.18,   fy: 0.10, align: 'left'   },     // 左上
-      core:     { fx: 0.82,   fy: 0.10, align: 'right'  },     // 右上
-      practice: { fx: 0.18,   fy: 0.90, align: 'left'   },     // 左下
-      migrate:  { fx: 0.82,   fy: 0.90, align: 'right'  }      // 右下
+      priority: { fx: 0.18, fy: 0.10, align: 'left' },
+      added:    { fx: 0.82, fy: 0.10, align: 'right' },
+      removed:  { fx: 0.18, fy: 0.90, align: 'left' },
+      evolving: { fx: 0.82, fy: 0.90, align: 'right' }
     };
-    const qIcons = { basic: '📘', core: '⚙️', practice: '✏️', migrate: '🚀' };
+    const qIcons = { priority: '✦', added: '+', removed: '−', evolving: '↗' };
     box.innerHTML = QUADRANTS.map(q => {
       const p = positions[q.key];
       const screenX = p.fx * VBW * scale + offsetX;
@@ -506,7 +521,7 @@
     const skill = sid === 'center' ? null : D.SKILL_MAP[sid];
     if (!skill) {
       // center node
-      tip.innerHTML = `<div class="tt-name">Java 开发工程师</div>
+      tip.innerHTML = `<div class="tt-name">${esc(((D.ROLE_CONFIG && D.ROLE_CONFIG[store.jobId]) || {}).title || store.jobId || '岗位')}</div>
         <div class="tt-en">CORE NODE · 岗位中心</div>
         <div class="tt-status s-stable">${statusLabel.center}</div>
         <div class="tt-row"><span>当前版本</span><b>${esc(store.currentVersion)}</b></div>
@@ -559,7 +574,7 @@
       // 重置 selected,展示 CURRENT ROLE
       return;
     }
-    const info = D.getSkillInfo(skillId);
+    const info = D.getSkillInfo(skillId, store.jobId || 'Java开发工程师', store.currentVersion);
     if (!info) return;
     store.selectedSkill = skillId;
     const def = document.getElementById('gs-state-default');
@@ -630,7 +645,7 @@
   // ============================================================
   function renderSideState() {
     // 分类构成
-    const snap = D.getCapabilitySnapshot('Java开发工程师', store.currentVersion);
+    const snap = D.getCapabilitySnapshot(store.jobId || 'Java开发工程师', store.currentVersion);
     const visible = snap.skills.filter(s => s.demand > 0 && s.status !== 'hidden' && s.status !== 'deleted');
     const byCat = {};
     visible.forEach(s => {
@@ -651,6 +666,18 @@
       list.innerHTML = items || '<div class="diff-empty">暂无数据</div>';
     }
 
+    const paths = {
+      'Java开发工程师': ['传统 Java 后端', '云原生后端', 'AI + 后端工程师'],
+      '前端开发工程师': ['传统 Web 前端', '组件化前端', 'AI + 体验工程师'],
+      '算法工程师': ['传统机器学习', '深度学习工程师', '大模型算法工程师'],
+      '数据工程师': ['离线数仓工程师', '实时数据工程师', '湖仓 / AI 数据工程师'],
+      'DevOps工程师': ['脚本运维', '云原生 DevOps', '平台工程 / AIOps']
+    };
+    const path = paths[store.jobId] || paths['Java开发工程师'];
+    setText('gs-shift-from', path[0]);
+    setText('gs-shift-mid', path[1]);
+    setText('gs-shift-to', path[2]);
+
     // 节点详情（如果已选中）
     if (store.selectedSkill) openNodeDetail(store.selectedSkill);
   }
@@ -667,7 +694,7 @@
     let summaryHTML = '';
 
     if (skillId) {
-      const info = D.getSkillInfo(skillId);
+      const info = D.getSkillInfo(skillId, store.jobId || 'Java开发工程师', store.currentVersion);
       title = info ? info.name + ' · 数据证据' : '数据证据';
       evidences = D.gatherEvidenceForSkill(skillId);
       if (info) {
@@ -685,7 +712,7 @@
     } else {
       title = '岗位能力演化 · 数据证据';
       const ids = [];
-      const snap = D.getCapabilitySnapshot('Java开发工程师', store.currentVersion);
+      const snap = D.getCapabilitySnapshot(store.jobId || 'Java开发工程师', store.currentVersion);
       snap.skills.slice(0, 10).forEach(s => { if (s.id) ids.push(s.id); });
       evidences = D.gatherEvidenceForChanges(ids);
     }
@@ -831,29 +858,11 @@
   // ============================================================
   // 简化版岗位列表（用于前端交互）
   const JOB_DEFINITIONS = [
-    { id: 'Java开发工程师',     name: 'Java 开发工程师',     cat: '后端开发',     tag: 'hot',     growth: '+12%' },
-    { id: '前端开发工程师',     name: '前端开发工程师',     cat: '前端开发',     tag: '',        growth: '+18%' },
-    { id: 'Python开发工程师',   name: 'Python 开发工程师',   cat: '后端开发',     tag: '',        growth: '+22%' },
-    { id: '全栈工程师',         name: '全栈工程师',         cat: '全栈',         tag: 'hot',     growth: '+21%' },
-    { id: '算法工程师',         name: '算法工程师',         cat: '人工智能',     tag: 'new',     growth: '+32%' },
-    { id: 'AI应用工程师',       name: 'AI 应用工程师',       cat: '人工智能',     tag: 'new',     growth: '+45%' },
-    { id: '大模型算法工程师',   name: '大模型算法工程师',   cat: '人工智能',     tag: 'new',     growth: '+55%' },
-    { id: 'AI产品经理',         name: 'AI 产品经理',         cat: '产品',         tag: 'new',     growth: '+38%' },
-    { id: '数据工程师',         name: '数据工程师',         cat: '数据',         tag: '',        growth: '+9%'  },
-    { id: '数据分析师',         name: '数据分析师',         cat: '数据',         tag: '',        growth: '+11%' },
-    { id: 'DevOps工程师',       name: 'DevOps 工程师',       cat: '运维',         tag: '',        growth: '+22%' },
-    { id: '云原生工程师',       name: '云原生工程师',       cat: '运维',         tag: 'hot',     growth: '+28%' },
-    { id: '架构师',             name: '架构师',             cat: '后端开发',     tag: 'hot',     growth: '+13%' },
-    { id: '鸿蒙开发工程师',     name: '鸿蒙开发工程师',     cat: '移动端',       tag: 'new',     growth: '+52%' },
-    { id: 'iOS开发工程师',      name: 'iOS 开发工程师',      cat: '移动端',       tag: '',        growth: '+6%'  },
-    { id: 'Android开发工程师',  name: 'Android 开发工程师',  cat: '移动端',       tag: '',        growth: '+5%'  },
-    { id: '嵌入式工程师',       name: '嵌入式工程师',       cat: '嵌入式',       tag: '',        growth: '+8%'  },
-    { id: '安全工程师',         name: '安全工程师',         cat: '安全',         tag: '',        growth: '+17%' },
-    { id: '测试开发工程师',     name: '测试开发工程师',     cat: '质量',         tag: '',        growth: '+15%' },
-    { id: '产品经理',           name: '产品经理',           cat: '产品',         tag: '',        growth: '+7%'  },
-    { id: '游戏开发工程师',     name: '游戏开发工程师',     cat: '游戏',         tag: '',        growth: '+4%'  },
-    { id: 'UI设计师',           name: 'UI 设计师',           cat: '设计',         tag: '',        growth: '+3%'  },
-    { id: '运维工程师',         name: '运维工程师',         cat: '运维',         tag: '',        growth: '+6%'  }
+    { id: 'Java开发工程师', name: 'Java 开发工程师', cat: '后端开发', tag: 'hot', growth: '+12%' },
+    { id: '前端开发工程师', name: '前端开发工程师', cat: '前端开发', tag: '', growth: '+18%' },
+    { id: '算法工程师', name: '算法工程师', cat: '人工智能', tag: 'new', growth: '+32%' },
+    { id: '数据工程师', name: '数据工程师', cat: '数据', tag: '', growth: '+9%' },
+    { id: 'DevOps工程师', name: 'DevOps 工程师', cat: '运维', tag: '', growth: '+22%' }
   ];
 
   const JOB_CATS = (function () {
@@ -862,7 +871,7 @@
     return ['全部', ...Array.from(s)];
   })();
 
-  // 当前岗位状态(本页面以 Java 为固定数据源,所以切换仅 UI 高亮生效)
+  // 当前岗位状态：先开放 5 个有完整演示模型的常见岗位，其余岗位保留为待接入状态。
   const STATE = {
     jobId: 'Java开发工程师',
     jobCat: 'all',
@@ -929,13 +938,12 @@
       el.addEventListener('click', () => {
         const id = el.dataset.job;
         STATE.jobId = id;
-        // 当前图谱数据固定为 Java, 点击切换时给出提示
-        const realSwitch = (id === 'Java开发工程师' || id === '架构师');
-        if (realSwitch) {
+        const supported = ['Java开发工程师', '前端开发工程师', '算法工程师', '数据工程师', 'DevOps工程师'];
+        if (supported.includes(id)) {
+          store.jobId = id;
           renderAll();
         } else {
-          toast('该岗位的图谱数据持续完善中，当前展示"Java 开发工程师"作为参考', 'gold');
-          STATE.jobId = 'Java开发工程师';
+          toast('该岗位样本不足，当前先展示 5 个常见岗位的完整演示模型', 'gold');
           renderJobList();
         }
       });

@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="../css/components.css?v=newsbg2" />
   <link rel="stylesheet" href="../css/evolution-git.css?v=2026090302" />
 <link rel="stylesheet" href="../css/news-light-overrides.css?v=typo1" />
+<link rel="stylesheet" href="../css/evolution-insight-polish.css?v=2026090401" />
 </head>
 <body class="standalone-view" data-page="evolution">
   <div id="app-shell"></div>
@@ -26,7 +27,7 @@
             <span class="en">CAREER EVOLUTION · JOB CAPABILITY GRAPH</span>
           </div>
           <h1 class="gh-title">Java 开发工程师</h1>
-          <div class="gh-en">JOB&nbsp;CAPABILITY&nbsp;GRAPH · Career Intelligence</div>
+          <div class="gh-en">JOB&nbsp;CAPABILITY&nbsp;GRAPH · 真实 JD 趋势 + 模型预测</div>
         </div>
         <div class="gh-right">
           <div class="gh-kpi">
@@ -50,7 +51,7 @@
       <!-- ====================== 时间滑块(可拖动切换版本) ====================== -->
       <section class="git-slider-wrap">
         <div class="gs-meta">
-          <span class="gs-en">VERSION&nbsp;TIMELINE&nbsp;·&nbsp;DRAG&nbsp;TO&nbsp;EXPLORE</span>
+          <span class="gs-en">MONTHLY TIMELINE · 拖动查看能力变化 · 紫色为未来预测</span>
           <span class="gs-current">当前查看：<b id="gs-current-version">V2025.07</b></span>
         </div>
         <div class="gs-slider-row">
@@ -70,27 +71,27 @@
         <div class="tier add" data-status="add">
           <span class="t-sym">+</span>
           <span class="t-num" id="t-num-add">0</span>
-          <span class="t-lbl">新增</span>
+          <span class="t-lbl">新增能力</span>
         </div>
         <div class="tier del" data-status="del">
           <span class="t-sym">−</span>
           <span class="t-num" id="t-num-del">0</span>
-          <span class="t-lbl">移除</span>
+          <span class="t-lbl">移除能力</span>
         </div>
         <div class="tier mod" data-status="mod">
           <span class="t-sym">~</span>
           <span class="t-num" id="t-num-mod">0</span>
-          <span class="t-lbl">调整</span>
+          <span class="t-lbl">能力演变</span>
         </div>
         <div class="tier pred" data-status="pred">
           <span class="t-sym">◇</span>
           <span class="t-num" id="t-num-pred">0</span>
-          <span class="t-lbl">预测</span>
+          <span class="t-lbl">未来预测</span>
         </div>
         <div class="tier stable" data-status="stable">
           <span class="t-sym">·</span>
           <span class="t-num" id="t-num-stable">0</span>
-          <span class="t-lbl">稳定</span>
+          <span class="t-lbl">稳定能力</span>
         </div>
       </section>
 
@@ -142,11 +143,11 @@
           <!-- 底部图例(参考图风格:掌握程度 + 关联强度) -->
           <div class="gg-legend">
             <div class="gg-legend-group">
-              <span class="gg-legend-label">掌握程度</span>
-              <span class="gg-legend-item"><i class="gg-legend-ring mastery-excellent"></i>优秀 80%+</span>
-              <span class="gg-legend-item"><i class="gg-legend-ring mastery-medium"></i>中等 40-79%</span>
-              <span class="gg-legend-item"><i class="gg-legend-ring mastery-weak"></i>薄弱 &lt;40%</span>
-              <span class="gg-legend-item"><i class="gg-legend-ring mastery-new"></i>待学习</span>
+              <span class="gg-legend-label">能力状态</span>
+              <span class="gg-legend-item"><i class="gg-legend-ring mastery-excellent"></i>重点</span>
+              <span class="gg-legend-item"><i class="gg-legend-ring mastery-medium"></i>新增</span>
+              <span class="gg-legend-item"><i class="gg-legend-ring mastery-weak"></i>移除</span>
+              <span class="gg-legend-item"><i class="gg-legend-ring mastery-new"></i>预测</span>
             </div>
             <div class="gg-legend-sep"></div>
             <div class="gg-legend-group">
@@ -197,15 +198,15 @@
               </div>
               <div class="gs-shift">
                 <div class="gs-shift-row from">
-                  <span class="dot"></span><span class="lbl">传统 Java 后端</span>
+                  <span class="dot"></span><span class="lbl" id="gs-shift-from">传统 Java 后端</span>
                 </div>
                 <div class="gs-shift-arrow"><span class="bar"></span></div>
                 <div class="gs-shift-row mid">
-                  <span class="dot"></span><span class="lbl">云原生后端</span>
+                  <span class="dot"></span><span class="lbl" id="gs-shift-mid">云原生后端</span>
                 </div>
                 <div class="gs-shift-arrow"><span class="bar"></span></div>
                 <div class="gs-shift-row to">
-                  <span class="dot"></span><span class="lbl">AI + 后端工程师</span>
+                  <span class="dot"></span><span class="lbl" id="gs-shift-to">AI + 后端工程师</span>
                 </div>
               </div>
             </section>
@@ -308,9 +309,9 @@
   <script src="../js/runtime-core.js"></script>
   <script src="../js/shell.js"></script>
   <script src="../js/pages/evolution.js?v=2026090216"></script>
-  <script src="../js/pages/ev-data.js?v=2026090302"></script>
-  <script src="../js/pages/ev-app.js?v=2026090302"></script>
-  <script src="../js/pages/ev-views.js?v=2026090302"></script>
+  <script src="../js/pages/ev-data.js?v=2026090401"></script>
+  <script src="../js/pages/ev-app.js?v=2026090401"></script>
+  <script src="../js/pages/ev-views.js?v=2026090401"></script>
   <script src="../js/cinema-bg.js?v=lightfix2"></script>
   <script>
     window.Shell && window.Shell.mount({

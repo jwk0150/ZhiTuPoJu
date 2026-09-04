@@ -60,7 +60,8 @@
   function smoothCurve(arr) { return arr; }
 
   // ---------- 版本系统 ----------
-  const VERSIONS = [
+  /*MONTHLY_VERSIONS_PLACEHOLDER*/
+  const VERSIONS_LEGACY = [
     { id: 'V2024.01', date: '2024-01-15', label: '2024.01', idx: 0,  demand: 62, maturity: 52, added: 2, modified: 1, removed: 0, note: '单体 + SSH 传统栈时期' },
     { id: 'V2024.07', date: '2024-07-10', label: '2024.07', idx: 6,  demand: 68, maturity: 58, added: 3, modified: 2, removed: 1, note: '微服务与容器化起步' },
     { id: 'V2025.01', date: '2025-01-12', label: '2025.01', idx: 12, demand: 72, maturity: 64, added: 4, modified: 3, removed: 1, note: 'AI 辅助编程进入视野' },
@@ -68,6 +69,19 @@
     { id: 'V2026.01', date: '2026-01-10', label: '2026.01', idx: 24, demand: 84, maturity: 82, added: 7, modified: 10, removed: 4, note: 'AI 从加分项转为必备' },
     { id: 'V2026.08', date: '2026-08-28', label: '2026.08', idx: 31, demand: 92, maturity: 88, added: 8, modified: 12, removed: 5, note: '岗位进化完成新一轮升级', isForecast: true },
   ];
+  // 每月一个可拖动节点，末尾追加 6 个月预测段。
+  const VERSIONS = MONTHS.map((month, idx) => ({
+    id: 'V' + month.replace('-', '.'), date: month + '-15', label: month.replace('-', '.'), idx,
+    demand: Math.round(60 + (idx / Math.max(1, N - 1)) * 31),
+    maturity: Math.round(52 + (idx / Math.max(1, N - 1)) * 36),
+    added: Math.min(8, 2 + Math.floor(idx / 5)), modified: Math.min(12, 1 + Math.floor(idx / 3)),
+    removed: idx < 12 ? 0 : Math.min(5, Math.floor((idx - 10) / 5)),
+    note: idx < 12 ? '传统工程能力持续沉淀' : (idx < 24 ? '云原生与 AI 能力逐步进入岗位' : 'AI + 云原生成为能力主线')
+  })).concat(FORECAST_MONTHS.map((month, i) => ({
+    id: 'V' + month.replace('-', '.'), date: month + '-15', label: month.replace('-', '.'), idx: N - 1,
+    forecastIndex: i, isForecast: true, demand: Math.min(100, 94 + i), maturity: Math.min(99, 90 + i),
+    added: 5, modified: 8, removed: 2, note: '模型预测：基于近 12 个月需求趋势外推'
+  })));
 
   // 岗位元信息（Header / 洞察面板使用）
   const JOB_META = {
@@ -657,7 +671,7 @@
   function chartValue(node, colIdx) {
     const ver = VERSIONS[colIdx];
     if (ver.isForecast) {
-      const f = (node.forecast && node.forecast[0]) || 0;
+      const f = (node.forecast && node.forecast[ver.forecastIndex || 0]) || 0;
       return f || node.series[ver.idx] || 0;
     }
     return node.series[ver.idx] || 0;
@@ -729,20 +743,38 @@
   // ============================================================
 
   // getCapabilitySnapshot(occupationId, versionId) —— 某版本完整能力快照
+  const ROLE_CONFIG = {
+    'Java开发工程师': { title: 'Java 开发工程师', scale: 1, rename: {} },
+    '前端开发工程师': { title: '前端开发工程师', scale: 0.92, rename: { 'java-base': ['TypeScript 基础', 'TypeScript'], 'spring-boot': ['React / Vue 框架', 'Frontend Framework'], 'microservice': ['前端工程化', 'Frontend Engineering'], 'kubernetes': ['前端部署与 CDN', 'Web Delivery'], 'mysql': ['浏览器存储', 'Web Storage'] } },
+    '算法工程师': { title: '算法工程师', scale: 0.88, rename: { 'java-base': ['Python 与数学基础', 'Python & Math'], 'spring-boot': ['PyTorch / 深度学习', 'Deep Learning'], 'microservice': ['模型训练与服务化', 'Model Serving'], 'kubernetes': ['分布式训练', 'Distributed Training'], 'mysql': ['特征与数据处理', 'Feature Engineering'] } },
+    '数据工程师': { title: '数据工程师', scale: 0.9, rename: { 'java-base': ['SQL 与数据建模', 'SQL & Modeling'], 'spring-boot': ['Spark / Flink', 'Stream Processing'], 'microservice': ['数据管道架构', 'Data Pipeline'], 'kubernetes': ['数据平台运维', 'Data Platform'], 'mysql': ['数据仓库', 'Data Warehouse'] } },
+    'DevOps工程师': { title: 'DevOps 工程师', scale: 0.94, rename: { 'java-base': ['Linux 与脚本', 'Linux & Scripting'], 'spring-boot': ['CI/CD 流水线', 'CI/CD'], 'microservice': ['平台工程', 'Platform Engineering'], 'kubernetes': ['Kubernetes 集群', 'Kubernetes'], 'mysql': ['监控与告警', 'Observability'] } }
+  };
+  function roleSkill(skill, occupationId) {
+    const cfg = ROLE_CONFIG[occupationId] || ROLE_CONFIG['Java开发工程师'];
+    const pair = cfg.rename[skill.id];
+    return pair ? Object.assign({}, skill, { name: pair[0], en: pair[1], short: pair[0] }) : skill;
+  }
+
   function getCapabilitySnapshot(occupationId, versionId) {
     const ver = versionById(versionId);
+    const cfg = ROLE_CONFIG[occupationId] || ROLE_CONFIG['Java开发工程师'];
     const skills = SKILLS.map((s) => {
-      const val = s.series[ver.idx] || 0;
+      const rs = roleSkill(s, occupationId);
+      const val = ver.isForecast
+        ? (rs.forecast && rs.forecast[ver.forecastIndex] != null ? rs.forecast[ver.forecastIndex] : (rs.series[N - 1] || 0))
+        : Math.round((rs.series[ver.idx] || 0) * cfg.scale);
       return {
-        id: s.id, name: s.name, en: s.en, category: s.category,
-        demand: val, importance: s.importance, confidence: s.confidence,
-        status: nodeStatusAt(s, ver.idx),
-        validFrom: s.versionAdded, validTo: s.versionRemoved || null,
-        sourceIds: s.evidence,
+        id: rs.id, name: rs.name, en: rs.en, category: rs.category,
+        demand: val, importance: rs.importance, confidence: rs.confidence,
+        status: ver.isForecast ? (rs.status === 'deleted' ? 'declining' : 'predicted') : nodeStatusAt(rs, ver.idx),
+        validFrom: rs.versionAdded, validTo: rs.versionRemoved || null,
+        sourceIds: rs.evidence,
       };
     });
     return {
       occupationId: occupationId,
+      occupationTitle: cfg.title,
       version: ver.id,
       versionDate: ver.date,
       demandStrength: ver.demand,
@@ -1132,10 +1164,11 @@
   }
 
   // 获取指定技能用于详情面板
-  function getSkillInfo(skillId) {
-    const skill = SKILL_MAP[skillId];
+  function getSkillInfo(skillId, occupationId, versionId) {
+    const baseSkill = SKILL_MAP[skillId];
+    const skill = baseSkill ? roleSkill(baseSkill, occupationId || 'Java开发工程师') : null;
     if (!skill) return null;
-    const ver = versionById('V2025.07');
+    const ver = versionById(versionId || 'V2026.08');
     const val = (skill.series || [])[ver.idx] || 0;
     const growth = futureGrowth(skill);
     const rel = Math.min(99, Math.round(42 + val * 0.52));
@@ -1147,7 +1180,7 @@
       status: skill.status,
       reason: skill.reason,
       related: (skill.related || []).map(function (rid) {
-        const r = SKILL_MAP[rid];
+        const r = SKILL_MAP[rid] ? roleSkill(SKILL_MAP[rid], occupationId || 'Java开发工程师') : null;
         return r ? { id: r.id, name: r.name } : null;
       }).filter(Boolean),
       counts: counts,
@@ -1164,7 +1197,7 @@
     GAP, PATH, COMPARE_SKILLS, JOB_META, CHART_BANDS,
     versionById, getCapabilitySnapshot, getCapabilityHistory, compareVersions,
     forecastCapabilityTrend, forecastRanking, graphAt, indexOfMonth, versionForIndex,
-    chartNodeById, chartValue, chartStatusAt, chartFilterMatch,
+    chartNodeById, chartValue, chartStatusAt, chartFilterMatch, ROLE_CONFIG,
     evidenceCounts, relevance, futureGrowth,
     getFullDiff, getPredictions, getCoreSkills, getEmergingSkills,
     getAdjacentVersion, gatherEvidenceForSkill, gatherEvidenceForChanges,

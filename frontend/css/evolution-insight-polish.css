@@ -1,0 +1,63 @@
+/* 岗位洞察视觉覆写：参考暖白半透明门户与能力图谱布局 */
+#ce-app {
+  --surface: rgba(255,255,255,.68);
+  --surface-strong: rgba(255,255,255,.82);
+  --surface-soft: rgba(255,255,255,.48);
+  --border: rgba(123,102,65,.16);
+  --border-soft: rgba(123,102,65,.10);
+  --text-1: #24231f;
+  --text-2: #736f66;
+  --text-3: #a39b8e;
+  --text-4: #c7c0b5;
+  --gold: #b18a43;
+  --gold-deep: #886728;
+  --r-md: 8px;
+  --r-lg: 10px;
+  background: linear-gradient(135deg, rgba(255,255,255,.28), rgba(231,219,193,.18));
+}
+#ce-app .git-header { max-width: 1420px; width: 100%; }
+#ce-app .gh-title { font-size: clamp(26px, 2.4vw, 38px); letter-spacing: -.02em; }
+#ce-app .gh-kicker, #ce-app .gh-en, #ce-app .gs-en { letter-spacing: .16em; }
+#ce-app .git-slider-wrap { box-shadow: 0 12px 34px rgba(106,83,42,.08); }
+#ce-app .git-tiers { gap: 8px; }
+#ce-app .tier { padding: 7px 13px; border-radius: 999px; background: rgba(255,255,255,.72); border-color: rgba(123,102,65,.12); }
+#ce-app .git-layout { grid-template-columns: 220px minmax(0,1fr) 286px; gap: 14px; }
+#ce-app .git-job-picker, #ce-app .git-graph-side, #ce-app .git-side { border-radius: 9px; box-shadow: 0 10px 30px rgba(106,83,42,.08); }
+#ce-app .git-job-picker, #ce-app .git-side { background: rgba(255,255,255,.70); }
+#ce-app .gg-canvas-wrap {
+  min-height: 500px;
+  background: radial-gradient(circle at 50% 50%, rgba(255,248,235,.86), rgba(255,255,255,.48) 65%, rgba(242,233,215,.40));
+}
+#ce-app .gg-tier-label { background: rgba(255,255,255,.72); border-color: rgba(123,102,65,.12); }
+#ce-app .gg-quad-label { background: rgba(255,255,255,.56); border-radius: 6px; padding: 6px 10px; }
+#ce-app .gg-quad-label .gg-quad-ic { font-size: 16px; }
+#ce-app .gg-node .gg-ring { stroke-width: 2.4; }
+#ce-app .gg-node.s-add .gg-ring { stroke: #3f9b73; }
+#ce-app .gg-node.s-add .gg-pct-bg { stroke: #3f9b73; }
+#ce-app .gg-node.s-add .gg-pct-label { fill: #2e7a57; }
+#ce-app .gg-node.s-mod .gg-ring { stroke: #b18a43; }
+#ce-app .gg-node.s-mod .gg-pct-bg { stroke: #b18a43; }
+#ce-app .gg-node.s-mod .gg-pct-label { fill: #886728; }
+#ce-app .gg-node.s-del .gg-ring { stroke: #c95e54; stroke-dasharray: 5 3; }
+#ce-app .gg-node.s-pred .gg-ring, #ce-app .gg-node.s-pred .gg-pct-bg { stroke: #8b73b5; stroke-dasharray: 3 3; }
+#ce-app .gg-node.s-pred .gg-pct-label { fill: #6f5996; }
+#ce-app .gg-node.s-stable .gg-ring { stroke: #7894a1; }
+#ce-app .gg-node.center .gg-ring { stroke: #b24e43; stroke-width: 3.2; }
+#ce-app .gg-legend { background: rgba(255,255,255,.62); }
+#ce-app .gs-section { border-color: rgba(123,102,65,.12); }
+#ce-app .gs-role-card { background: rgba(255,250,239,.68); border-color: rgba(181,138,58,.30); }
+#ce-app .gs-ev-btn { background: #282621; border-color: #282621; }
+#ce-app .gs-ev-btn:hover { background: #55462b; border-color: #55462b; }
+#ce-app .gs-shift-row { border-radius: 6px; }
+#ce-app .gs-shift-row.to { background: rgba(139,115,181,.10); }
+#ce-app .gs-shift-row.mid { background: rgba(181,138,58,.10); }
+#ce-app .gs-shift-row.from { background: rgba(100,112,107,.09); }
+#ce-app .gs-tick.future .lbl { color: #7965a0; }
+#ce-app .gs-tick.future .dot { border-color: #8b73b5; }
+#ce-app .gs-progress { background: linear-gradient(90deg, #c5a15b 0 84%, #8b73b5 84% 100%); }
+#ce-app .git-job-card.active { border-color: rgba(181,138,58,.72); background: rgba(181,138,58,.14); }
+#ce-app .git-job-card:hover { background: rgba(181,138,58,.09); }
+#ce-app .git-job-name { font-weight: 650; }
+@media (max-width: 1180px) {
+  #ce-app .git-layout { grid-template-columns: 190px minmax(0,1fr) 260px; }
+}
