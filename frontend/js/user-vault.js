@@ -448,14 +448,17 @@
     var ids = readJson(KEYS.discFavs, []);
     if (!Array.isArray(ids)) ids = [];
     var meta = readJson(KEYS.discMeta, {}) || {};
-    return ids.map(function (id) {
-      var m = meta[String(id)] || {};
-      var lane = m.lane === 'forecast' ? 'discovery-forecast' : 'discovery';
+    return ids.map(function (rawId, i) {
+      // 兼容历史脏数据：元素可能是对象（含 title），而非纯 id 字符串
+      var isObj = rawId && typeof rawId === 'object';
+      var id = String(isObj ? (rawId.id != null ? rawId.id : 'legacy-' + i) : rawId);
+      var m = meta[id] || {};
+      var lane = (isObj ? rawId.lane : m.lane) === 'forecast' ? 'discovery-forecast' : 'discovery';
       return {
-        id: String(id),
-        title: m.title || '发现岗位',
-        lane: m.lane || 'found',
-        conf: m.conf || 0,
+        id: id,
+        title: (isObj && rawId.title) || m.title || '发现岗位',
+        lane: (isObj && rawId.lane) || m.lane || 'found',
+        conf: (isObj ? rawId.conf : 0) || m.conf || 0,
         source: lane,
         href: 'discovery-detail.html?id=' + encodeURIComponent(id)
       };
@@ -497,7 +500,20 @@
           var nl = readJson(scoped(KEYS.newsFavs), []) || []; if (nl.indexOf(id) < 0) nl.push(id); writeJson(scoped(KEYS.newsFavs), nl);
           var nm = readJson(KEYS.newsMeta, {}) || {}; nm[id] = Object.assign({}, nm[id] || {}, row.payload || {}, { id: id, title: row.title || nm[id] && nm[id].title || '新闻收藏' }); writeJson(KEYS.newsMeta, nm);
         } else {
-          var dl = readJson(KEYS.discFavs, []) || []; if (dl.indexOf(id) < 0) dl.push(id); writeJson(KEYS.discFavs, dl);
+          var dl = readJson(KEYS.discFavs, []) || [];
+          // 兼容脏数据：历史版本可能把对象数组写进 discFavs，先过滤出纯 id
+          dl = dl.filter(function (x) { return typeof x === 'string' || typeof x === 'number'; }).map(String);
+          if (dl.indexOf(id) < 0) dl.push(id); writeJson(KEYS.discFavs, dl);
+          // 同步写 meta：换设备/清缓存后本地没有该收藏的标题，
+          // 缺了会导致仓库显示"发现岗位"兜底、岗位洞察显示原始 id
+          var dm = readJson(KEYS.discMeta, {}) || {};
+          dm[id] = Object.assign({}, dm[id] || {}, row.payload || {}, {
+            id: id,
+            title: row.title || (row.payload || {}).title || dm[id] && dm[id].title || '发现岗位',
+            lane: src === 'forecast' ? 'forecast' : ((row.payload || {}).lane || dm[id] && dm[id].lane || 'found'),
+            conf: (row.payload || {}).conf || (dm[id] && dm[id].conf) || 0
+          });
+          writeJson(KEYS.discMeta, dm);
         }
       });
       emit('backend-hydrate'); return true;
