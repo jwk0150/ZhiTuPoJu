@@ -4436,3 +4436,15 @@
     });
   };
 })();
+
+
+/* —— 技术全景预测：跳转地图页并带上当前预测岗位 —— */
+document.addEventListener('click', function (e) {
+  var btn = e.target && e.target.closest && e.target.closest('#dd-fc-panorama-btn');
+  if (!btn) return;
+  try {
+    var titleEl = document.querySelector('#dd-forecast-shell .dd-fc-title') || document.getElementById('dd-found-title');
+    var job = (titleEl && titleEl.textContent || '').trim();
+    if (job) btn.setAttribute('href', '../pages/map.html?v=fix25c5&layer=graph&job=' + encodeURIComponent(job));
+  } catch (_) {}
+});

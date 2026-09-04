@@ -569,7 +569,15 @@ window.buildMockScanPayload = function() {
         mkDisc(5,'Prompt 工程师','人工智能',72,['Prompt设计','LLM','评测'],'成都'),
         mkDisc(6,'AI Infra 工程师','人工智能',70,['Triton','CUDA','AI编译器'],'北京'),
         mkDisc(7,'AIGC 内容工程师','人工智能',68,['Stable Diffusion','生成式','PyTorch'],'广州'),
-        mkDisc(8,'LLM 应用开发工程师','人工智能',66,['LangChain','API','Agent'],'远程')
+        mkDisc(8,'LLM 应用开发工程师','人工智能',66,['LangChain','API','Agent'],'远程'),
+        mkDisc(9,'AI 产品经理（大模型方向）','人工智能',76,['PRD','LLM','用户研究'],'北京'),
+        mkDisc(10,'LLM 评测工程师','人工智能',74,['Eval Harness','Benchmark','数据分析'],'上海'),
+        mkDisc(11,'智能驾驶数据运营工程师','智能汽车',72,['数据标注','场景库','回灌验证'],'苏州'),
+        mkDisc(12,'向量数据库运维专家','数据科学',69,['Milvus','Qdrant','K8s'],'杭州'),
+        mkDisc(13,'数字人交互设计师','人工智能',65,['TTS','数字人','动作合成'],'成都'),
+        mkDisc(14,'AI 合规治理专员','安全',62,['备案','数据安全','合规评估'],'北京'),
+        mkDisc(15,'智算中心调度工程师','算力基础设施',67,['Slurm','K8s','GPU 调度'],'贵安'),
+        mkDisc(16,'企业知识库运营工程师','人工智能',64,['RAG','内容运营','问答对治理'],'深圳')
     ];
     const mkFc = (i, title, cat, conf, eta, skills) => ({
         id: 'forecast_mock_' + i, title, category: cat, confidence: conf, eta_months: eta,
@@ -578,25 +586,29 @@ window.buildMockScanPayload = function() {
         requiredSkills: skills, description: 'Mock 预测岗位。', discoveredAt: now, is_forecast: true
     });
     const forecasts = [
-        mkFc(1,'具身智能工程师','人工智能',74,12,['ROS2','强化学习','SLAM']),
-        mkFc(2,'AI安全对齐工程师','安全',78,9,['RLHF','红队测试','对齐']),
-        mkFc(3,'端侧AI部署工程师','人工智能',80,6,['ONNX','TensorRT','量化']),
-        mkFc(4,'合成数据工程师','数据科学',75,8,['GAN','LLM','数据增强']),
-        mkFc(5,'AI芯片软件栈工程师','人工智能',70,15,['Triton','MLIR','TVM']),
-        mkFc(6,'AI研发效能工程师','运维测试',73,10,['AI Coding','CI/CD','DORA'])
+        mkFc(1,'世界模型对齐工程师','人工智能',74,12,['World Model','对齐','时序预测']),
+        mkFc(2,'神经符号推理架构师','安全',78,9,['Neuro-Symbolic','知识图谱','推理引擎']),
+        mkFc(3,'具身智能伦理审计师','人工智能',80,6,['VLA','伦理框架','行为审计']),
+        mkFc(4,'自主智能体仿真工程师','数据科学',75,8,['Agent Society','仿真推演','博弈论']),
+        mkFc(5,'量子机器学习编译工程师','人工智能',70,15,['QML','量子门','编译器']),
+        mkFc(6,'数字孪生城市治理官','智慧城市',73,10,['Digital Twin','城市计算','政策仿真']),
+        mkFc(7,'AI 意图审计师','安全',77,5,['意图识别','可解释性','红队测试']),
+        mkFc(8,'跨模态记忆系统架构师','人工智能',72,7,['多模态记忆','检索增强','终身学习']),
+        mkFc(9,'群体智能协调工程师','智能汽车',68,14,['群体智能','编队协同','通信拓扑']),
+        mkFc(10,'生物计算序列设计师','生物计算',61,16,['蛋白折叠','序列生成','分子模拟'])
     ];
     const chain = [
         {step:1,title:'🌐 多源数据接入',detail:'Mock：连接本地 PostgreSQL 招聘库，抽取最近 5000 条 IT 岗位记录。',status:'done',metrics:'数据规模: 5000 条 | 覆盖 320 家企业',elapsed_ms:420},
         {step:2,title:'🧠 语义消歧与实体归一化',detail:'Mock：标题字符级归一化，构建 N-gram 特征向量，识别语义聚类。',status:'done',metrics:'聚类压缩比: 6.2x | 技能词典: 480 词',elapsed_ms:510},
-        {step:3,title:'📈 多维度新兴度评分',detail:'Mock：三维度加权(标题0.5+技能0.3+溢出0.2)，扫描语义簇。',status:'done',metrics:'新兴候选 8 | 传统 IT 12 | 总簇 24',elapsed_ms:600},
-        {step:4,title:'📝 岗位定义生成与职责推理',detail:'Mock：基于真实 JD 摘要生成岗位定义、核心职责与典型场景。',status:'done',metrics:'输出 8 个岗位定义',elapsed_ms:520},
+        {step:3,title:'📈 多维度新兴度评分',detail:'Mock：三维度加权(标题0.5+技能0.3+溢出0.2)，扫描语义簇。',status:'done',metrics:'新兴候选 16 | 传统 IT 12 | 总簇 30',elapsed_ms:600},
+        {step:4,title:'📝 岗位定义生成与职责推理',detail:'Mock：基于真实 JD 摘要生成岗位定义、核心职责与典型场景。',status:'done',metrics:'输出 16 个岗位定义',elapsed_ms:520},
         {step:5,title:'🔮 时序趋势外推',detail:'Mock：指数平滑+线性回归外推 6-18 个月技能需求变化。',status:'done',metrics:'预测跨度: 6-18 个月 | 置信区间: 65%-80%',elapsed_ms:610},
-        {step:6,title:'🛡️ 幻觉检测与质量审计',detail:'Mock：交叉校验证据来源，检测定义-技能一致性，标记低证据项目。',status:'done',metrics:'审计通过 8 | 弱证据 2',elapsed_ms:330}
+        {step:6,title:'🛡️ 幻觉检测与质量审计',detail:'Mock：交叉校验证据来源，检测定义-技能一致性，标记低证据项目。',status:'done',metrics:'审计通过 16 | 弱证据 3',elapsed_ms:330}
     ];
     return {
         reasoning_chain: chain, discoveries, forecasts,
-        summary: 'Mock 扫描完毕：5000 条 → 24 簇 → 8 个发现 + 6 个预测。推理引擎: DiscoveryAgent (Mock)。',
-        stats: {total_scanned:5000,title_clusters:24,discoveries:8,forecasts:6,total_elapsed_ms:2990,avg_confidence:75.5},
+        summary: 'Mock 扫描完毕：5000 条 → 30 簇 → 16 个发现 + 10 个预测。推理引擎: DiscoveryAgent (Mock)。',
+        stats: {total_scanned:5000,title_clusters:30,discoveries:16,forecasts:10,total_elapsed_ms:3120,avg_confidence:73.8},
         model: {engine:'DiscoveryAgent v2.0 (Mock)',backed_by:'启发式(Mock)',llm:'none',llm_enriched:0,llm_error:null,knowledge_base:'PostgreSQL mock'}
     };
 };
@@ -950,6 +962,10 @@ window.renderDiscoveryList = function(opts) {
             '<div class="dh-skills">' + chips + '</div>' +
             trend +
             '<p class="dh-insight-line"><em>洞察</em>' + insightShort + '</p>' +
+            '<div class="dh-card-jumps" style="display:flex;gap:6px;margin-top:10px">' +
+              '<a href="evolution.html?v=2&job=' + encodeURIComponent(j.title || '') + '" onclick="event.stopPropagation()" style="flex:1;text-align:center;padding:6px 4px;border-radius:8px;border:1px solid rgba(212,175,55,.5);background:rgba(255,252,245,.92);color:#8F6B0E;font-size:11.5px;font-weight:600;text-decoration:none">◈ 洞察该岗位</a>' +
+              '<a href="map.html?v=fix25c5&layer=graph&job=' + encodeURIComponent(j.title || '') + '" onclick="event.stopPropagation()" style="flex:1;text-align:center;padding:6px 4px;border-radius:8px;border:1px solid rgba(119,141,169,.5);background:rgba(248,250,253,.92);color:#33557a;font-size:11.5px;font-weight:600;text-decoration:none">◱ 技能要求图谱</a>' +
+            '</div>' +
             '</article>';
     };
 
@@ -1666,3 +1682,30 @@ window.destroyDiscFX = function () {
 
 
 /* extracted for discovery */
+
+
+// ============ 默认收藏种子：保证演示环境永远有一个收藏岗位（RAG 知识工程师） ============
+(function () {
+  try {
+    var u = JSON.parse(localStorage.getItem('zhitu_user') || 'null') || {};
+    var uid = String(u.username || u.user_id || u.id || 'guest');
+    var fk = 'zhitu_disc_favs__' + uid;
+    var mk = 'zhitu_disc_fav_meta__' + uid;
+    // user-vault 读原始键（无 uid 后缀），双写保证 discovery 页与仓库一致
+    var rawFk = 'zhitu_disc_favs';
+    var rawMk = 'zhitu_disc_fav_meta';
+    var ids = [];
+    try { ids = JSON.parse(localStorage.getItem(rawFk) || localStorage.getItem(fk) || '[]') || []; } catch (_) { ids = []; }
+    if (!Array.isArray(ids)) ids = [];
+    if (!ids.length) {
+      var meta0 = { disc_mock_3: { title: 'RAG 知识工程师', lane: 'found', conf: 80, savedAt: new Date().toISOString() } };
+      localStorage.setItem(fk, JSON.stringify(['disc_mock_3']));
+      localStorage.setItem(rawFk, JSON.stringify(['disc_mock_3']));
+      localStorage.setItem(rawMk, JSON.stringify(meta0));
+      var meta = {};
+      try { meta = JSON.parse(localStorage.getItem(mk) || '{}') || {}; } catch (_) { meta = {}; }
+      meta['disc_mock_3'] = meta0['disc_mock_3'];
+      localStorage.setItem(mk, JSON.stringify(meta));
+    }
+  } catch (_) {}
+})();

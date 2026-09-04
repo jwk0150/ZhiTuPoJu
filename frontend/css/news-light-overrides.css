@@ -514,7 +514,7 @@ html, body {
 
 /* 新闻页同源的全屏氛围图，所有非新闻模块也保持同一张底图 */
 body:not(:has(.jn-page)) {
-  background-image: url('../assets/news/bg-atmosphere-light.png') !important;
+  background-image: url('../assets/admin-bg.jpg') !important;
   background-size: cover !important;
   background-position: center top !important;
   background-attachment: fixed !important;
@@ -678,7 +678,7 @@ body:not(:has(.jn-page)) #talent-map-canvas {
 /* 入口与登录页组件重做为新闻页纸感体系 */
 body:not(:has(.jn-page)) .video-stage,
 body:not(:has(.jn-page)) .bg-photo {
-  background-image: url('../assets/news/bg-atmosphere-light.png') !important;
+  background-image: url('../assets/admin-bg.jpg') !important;
   background-size: cover !important;
   background-position: center top !important;
 }
@@ -862,3 +862,215 @@ body:not(:has(.jn-page)) .qa-panel .btn-primary {
   body:not(:has(.jn-page)) .card,
   body:not(:has(.jn-page)) .panel { border-radius: 12px !important; }
 }
+
+/* =======================================================================
+   简历探索：浅色纸感控件与统一提示
+   resume-builder.css 仍含有早期终端皮肤，限定在嵌入向导内覆盖。
+   ======================================================================= */
+html.rb-embed .rb-profile-card,
+html.rb-embed .rb-ai-input-block,
+html.rb-embed .rb-photo-info,
+html.rb-embed .rb-include,
+html.rb-embed .rb-check,
+html.rb-embed .rb-progress-list {
+  background: #FFFFFF !important;
+  border-color: rgba(60, 45, 30, 0.12) !important;
+  color: #1A1A1A !important;
+  box-shadow: 0 6px 18px rgba(60, 45, 30, 0.06) !important;
+}
+
+html.rb-embed .rb-profile-card {
+  border-left: 3px solid #A88B4E !important;
+}
+html.rb-embed .rb-profile-card p,
+html.rb-embed .rb-ai-input-block textarea,
+html.rb-embed .rb-photo-info-row b,
+html.rb-embed .rb-include-row b,
+html.rb-embed .rb-check-item b,
+html.rb-embed .rb-progress-row b {
+  color: #29261F !important;
+}
+html.rb-embed .rb-profile-card-eyebrow,
+html.rb-embed .rb-include-head,
+html.rb-embed .rb-check-head,
+html.rb-embed .rb-progress-row-num {
+  color: #8B7340 !important;
+}
+html.rb-embed .rb-photo-frame {
+  background: #F7F2E9 !important;
+  border-color: rgba(168, 139, 78, 0.38) !important;
+}
+html.rb-embed .rb-photo-info-row span,
+html.rb-embed .rb-include-row span,
+html.rb-embed .rb-check-item small {
+  color: #5C6370 !important;
+}
+
+html.rb-embed .rb-job-search {
+  background: #FFFFFF !important;
+  border-color: #DED5C6 !important;
+  box-shadow: 0 2px 7px rgba(60, 45, 30, 0.04) !important;
+}
+html.rb-embed .rb-job-search:focus-within {
+  border-color: #A88B4E !important;
+  box-shadow: 0 0 0 3px rgba(168, 139, 78, 0.12) !important;
+}
+html.rb-embed .rb-job-search input {
+  color: #29261F !important;
+}
+html.rb-embed .rb-job-search input::placeholder {
+  color: #8A8175 !important;
+}
+html.rb-embed .rb-skill-chip,
+html.rb-embed .rb-job-cat {
+  background: #F7F2E9 !important;
+  border-color: #DED5C6 !important;
+  color: #5C6370 !important;
+  box-shadow: none !important;
+}
+html.rb-embed .rb-skill-chip:hover,
+html.rb-embed .rb-job-cat:hover {
+  background: #F1EADF !important;
+  border-color: #C8B49A !important;
+  color: #29261F !important;
+}
+html.rb-embed .rb-skill-chip.is-on,
+html.rb-embed .rb-job-cat.is-on {
+  background: #EFE4D5 !important;
+  border-color: #A88B4E !important;
+  color: #5C4A28 !important;
+  font-weight: 600 !important;
+}
+html.rb-embed .rb-skill-empty,
+html.rb-embed .rb-job-empty,
+html.rb-embed .rb-job-count {
+  color: #5C6370 !important;
+}
+html.rb-embed .rb-position-dot {
+  border-color: #C8B49A !important;
+}
+html.rb-embed .rb-position.is-on .rb-position-dot {
+  background: #A88B4E !important;
+  border-color: #A88B4E !important;
+}
+
+html.rb-embed .rb-tags-input {
+  background: #FFFFFF !important;
+  border-color: rgba(60, 45, 30, 0.14) !important;
+}
+html.rb-embed .rb-tag {
+  background: #F7F2E9 !important;
+  border-color: #DED5C6 !important;
+  border-radius: 999px !important;
+  color: #5C4A28 !important;
+}
+html.rb-embed .rb-tag-remove {
+  color: #8B7340 !important;
+}
+html.rb-embed .rb-icon-btn {
+  background: #FFFFFF !important;
+  border-color: rgba(60, 45, 30, 0.14) !important;
+  color: #5C6370 !important;
+}
+html.rb-embed .rb-icon-btn:hover {
+  border-color: #A88B4E !important;
+  color: #8B7340 !important;
+  background: #F7F2E9 !important;
+}
+
+html.rb-embed .rb-step-back {
+  background: #FFFFFF !important;
+  color: #4B5563 !important;
+  border-color: rgba(60, 45, 30, 0.16) !important;
+}
+html.rb-embed .rb-step-back:hover:not(:disabled) {
+  color: #8B7340 !important;
+  border-color: #A88B4E !important;
+  background: #F7F2E9 !important;
+}
+html.rb-embed .rb-step-back:disabled {
+  color: #9A948B !important;
+  border-color: rgba(60, 45, 30, 0.09) !important;
+  opacity: 0.72 !important;
+}
+html.rb-embed .rb-step-next {
+  background: linear-gradient(135deg, #C4A86B, #A88B4E) !important;
+  color: #241B0D !important;
+  border-color: transparent !important;
+  box-shadow: 0 5px 12px rgba(168, 139, 78, 0.18) !important;
+}
+html.rb-embed .rb-step-next:hover:not(:disabled) {
+  background: #8B7340 !important;
+  color: #FFFFFF !important;
+}
+html.rb-embed .rb-step-next:disabled {
+  background: #D8D1C6 !important;
+  color: #746E66 !important;
+  border-color: transparent !important;
+  opacity: 1 !important;
+  box-shadow: none !important;
+}
+html.rb-embed .rb-toast {
+  background: #29261F !important;
+  border-color: rgba(196, 168, 107, 0.55) !important;
+  color: #FFFDF8 !important;
+  box-shadow: 0 10px 28px rgba(60, 45, 30, 0.18) !important;
+}
+
+/* 动态说明使用主题气泡，避免浏览器 title 气泡与页面视觉冲突。 */
+html.rb-embed [data-tooltip] {
+  position: relative;
+}
+html.rb-embed [data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 8px);
+  z-index: 20;
+  max-width: 220px;
+  padding: 6px 9px;
+  border: 1px solid rgba(60, 45, 30, 0.14);
+  border-radius: 6px;
+  background: #29261F;
+  color: #FFFDF8;
+  box-shadow: 0 6px 16px rgba(60, 45, 30, 0.16);
+  font: 500 12px/1.4 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
+  letter-spacing: 0;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transform: translate(-50%, 4px);
+  transition: opacity 160ms ease, transform 160ms ease, visibility 160ms ease;
+}
+html.rb-embed [data-tooltip]:hover::after,
+html.rb-embed [data-tooltip]:focus-visible::after {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, 0);
+}
+html.rb-embed .rb-topnav,
+html.rb-embed .rb-topnav-steps,
+html.rb-embed .rb-bottombar {
+  overflow: visible;
+}
+html.rb-embed [data-tooltip]:focus-visible {
+  outline: 2px solid rgba(168, 139, 78, 0.65);
+  outline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  html.rb-embed [data-tooltip]::after { transition: none; }
+}
+
+/* —— 全站 toast 亮色化：纯黑提示与暖纸主题统一，字体保证可读 —— */
+#zhitu-toast, .zhitu-toast, .toast, .mp-toast, .rb-toast {
+  background: #fffdf8 !important;
+  color: #2a1f10 !important;
+  border: 1px solid #e8dfca !important;
+  box-shadow: 0 14px 40px rgba(60, 45, 30, .22) !important;
+  text-shadow: none !important;
+  font-family: 'Noto Sans SC', 'Microsoft YaHei', system-ui, sans-serif !important;
+  letter-spacing: 0 !important;
+}
+.mp-toast { background: #fffdf8 !important; color: #8c6f3e !important; }
+.mp-toast.error { color: #b91c1c !important; border-color: #e8b8b8 !important; }

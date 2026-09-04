@@ -1787,12 +1787,63 @@ body.project-detail-open .content-track { pointer-events: none; }
 
 .login-form[hidden],
 .login-error[hidden],
-.login-dev[hidden] {
+.login-endpoint[hidden] {
   display: none !important;
 }
 
-.login-dev-actions { display:flex; gap:10px; justify-content:center; align-items:center; flex-wrap:wrap; }
-.login-admin { border-color: rgba(236,201,132,.55); color:#f1d79d; }
+.login-endpoints { display: none; }
+.login-endpoint { display: none; }
+
+/* —— 端点横向 tab 栏 —— */
+.login-endpoint-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 22px; }
+.login-endpoint-tab {
+  appearance: none;
+  display: grid;
+  grid-template-columns: 32px 1fr;
+  grid-template-rows: auto auto;
+  column-gap: 10px;
+  align-items: center;
+  padding: 12px 14px;
+  color: var(--gold-body);
+  background: rgba(7, 12, 14, .42);
+  border: 1px solid rgba(236, 201, 132, .22);
+  border-radius: 8px;
+  font-family: var(--font-chart);
+  text-align: left;
+  cursor: pointer;
+  transition: all .2s var(--ease-silk);
+  position: relative;
+}
+.login-endpoint-tab:hover { background: rgba(20, 30, 36, .62); border-color: rgba(236, 201, 132, .45); }
+.login-endpoint-tab .endpoint-mark {
+  grid-row: span 2;
+  width: 32px; height: 32px;
+  display: grid; place-items: center;
+  color: #18120a;
+  background: linear-gradient(135deg, #f0d090, #c8a86a);
+  border-radius: 8px;
+  font: 600 14px var(--font-brand);
+  box-shadow: 0 2px 8px rgba(236, 201, 132, .28);
+}
+.login-endpoint-tab.is-admin .endpoint-mark { background: linear-gradient(135deg, #e89179, #c8745a); box-shadow: 0 2px 8px rgba(214, 117, 86, .35); }
+.login-endpoint-tab .endpoint-name { display: block; font: 600 13.5px var(--font-brand); color: #f1d79d; letter-spacing: .04em; }
+.login-endpoint-tab small { display: block; color: var(--gold-body-soft); font: 400 10.5px var(--font-chart); letter-spacing: .02em; line-height: 1.4; margin-top: 2px; }
+.login-endpoint-tab.is-active { background: rgba(236, 201, 132, .18); border-color: rgba(236, 201, 132, .7); box-shadow: 0 0 0 1px rgba(236, 201, 132, .25) inset, 0 6px 20px rgba(0, 0, 0, .25); }
+.login-endpoint-tab.is-active::after {
+  content: ""; position: absolute; left: 24%; right: 24%; bottom: -1px; height: 2px;
+  background: linear-gradient(90deg, transparent, #f0d090, transparent);
+}
+.login-endpoint-tab.is-admin.is-active::after { background: linear-gradient(90deg, transparent, #e89179, transparent); }
+
+/* 测试账号提示 */
+.login-test-hint { margin-top: 12px; padding: 10px 12px; color: var(--gold-body-soft); background: rgba(7, 12, 14, .32); border: 1px dashed rgba(236, 201, 132, .28); border-radius: 6px; font: 500 11px var(--font-chart); letter-spacing: .04em; }
+.login-test-hint b { color: #f1d79d; font-family: var(--font-mono); font-weight: 600; }
+.login-test-hint button { color: #f0d090; background: transparent; border: 0; padding: 0 0 0 8px; font: 600 11px var(--font-mono); cursor: pointer; text-decoration: underline; }
+
+.login-endpoint[disabled] { opacity: .5; cursor: wait; pointer-events: none; }
+.login-endpoint.is-emphasis { border-color: rgba(236, 201, 132, .55); box-shadow: 0 0 0 2px rgba(236, 201, 132, .18) inset; }
+.login-endpoint.is-emphasis .login-endpoint-arrow { animation: arrowNudge 1.6s ease-in-out infinite; }
+@keyframes arrowNudge { 0%, 100% { transform: translateX(0); opacity: .85; } 50% { transform: translateX(4px); opacity: 1; } }
 
 .login-form label {
   display: grid;

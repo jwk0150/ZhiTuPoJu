@@ -255,7 +255,23 @@ body {
   padding: 12px 24px 8px;
   flex-shrink: 0;
 }
-.rb-brandbar-meta {
+.rb-return-profile {
+  border: 1px solid rgba(168,139,78,.45);
+  border-radius: 4px;
+  background: transparent;
+  color: #8B7340;
+  min-height: 32px;
+  padding: 0 12px;
+  font: 600 12px inherit;
+  cursor: pointer;
+}
+.rb-return-profile:hover,
+.rb-return-profile:focus-visible {
+  background: rgba(168,139,78,.1);
+  outline: 2px solid rgba(168,139,78,.35);
+  outline-offset: 2px;
+}
+
   display: flex;
   align-items: center;
   gap: 16px;
@@ -2151,3 +2167,9 @@ html.rb-embed .rb-topnav-actions {
   position: static;
 }
 
+
+/* —— 输入栏防气泡/标签重叠 —— */
+.rb-fields-row { flex-wrap: wrap; }
+.rb-fields-row > * { min-width: 0; }
+.rb-field { position: relative; min-width: 0; }
+.rb-field input, .rb-field select { max-width: 100%; }

@@ -380,18 +380,18 @@
 
   /* 模拟发现的新资讯（点击"开始发现"后注入前 3 个槽位） */
   var DISCO_NEW_BATCH = [
-    { title: 'AI 智能体工程师·字节跳动 · 30-60K', summary: '负责智能体 Agent 架构设计与多模态接入，要求 LLM 调优、RAG 与工具调用经验。', source: 'BOSS直聘', sourceType: '招聘平台', category: '岗位变化', date: '刚刚发现', isNew: true },
-    { title: '人社部发布新职业目录：新增 AI 训练师、提示词工程师', summary: '人社部 19 个新职业中包含两个 AI 相关岗位，预计带动 30-80 万就业。', source: '人社部', sourceType: '政策文件', category: '政策资讯', date: '刚刚发现', isNew: true },
-    { title: '2026 智能体人才市场月报 · 6 月', summary: 'AI 人才需求同比增 12 倍，算法工程师薪资中位 45K，Agent 相关岗位占比 38%。', source: '智联研究院', sourceType: '行业报告', category: '行业趋势', date: '刚刚发现', isNew: true }
+    { title: 'AI 智能体工程师·字节跳动 · 30-60K', summary: '负责智能体 Agent 架构设计与多模态接入，要求 LLM 调优、RAG 与工具调用经验。', source: 'BOSS直聘', sourceType: '招聘平台', category: '岗位变化', date: '刚刚发现', isNew: true, url: 'https://www.zhipin.com/', keywords: ['AI产品经理', 'LLM', '智能体', 'RAG'] },
+    { title: '人社部发布新职业目录：新增 AI 训练师、提示词工程师', summary: '人社部 19 个新职业中包含两个 AI 相关岗位，预计带动 30-80 万就业。', source: '人社部', sourceType: '政策文件', category: '政策资讯', date: '刚刚发现', isNew: true, url: 'https://www.gov.cn/', keywords: ['新职业', 'AI训练师', '就业政策'] },
+    { title: '2026 智能体人才市场月报 · 6 月', summary: 'AI 人才需求同比增 12 倍，算法工程师薪资中位 45K，Agent 相关岗位占比 38%。', source: '智联研究院', sourceType: '行业报告', category: '行业趋势', date: '刚刚发现', isNew: true, url: 'https://www.zhaopin.com/', keywords: ['人才需求', '薪资', '行业趋势'] }
   ];
 
   /* 历史发现记录（启动时载入 + 每次发现后追加） */
   var DISCO_HISTORY = [
-    { date: '2026.08.31', time: '20:30:15', total: 142, duration: 31, status: '已完成' },
-    { date: '2026.08.31', time: '19:30:12', total: 156, duration: 29, status: '已完成' },
-    { date: '2026.08.31', time: '18:30:08', total: 134, duration: 32, status: '已完成' },
-    { date: '2026.08.31', time: '17:30:01', total: 161, duration: 27, status: '已完成' },
-    { date: '2026.08.31', time: '16:30:18', total: 128, duration: 35, status: '已完成' }
+    { date: '2026.08.31', time: '20:30:15', total: 6, duration: 26, status: '已完成' },
+    { date: '2026.08.31', time: '19:30:12', total: 4, duration: 24, status: '已完成' },
+    { date: '2026.08.31', time: '18:30:08', total: 8, duration: 28, status: '已完成' },
+    { date: '2026.08.31', time: '17:30:01', total: 5, duration: 25, status: '已完成' },
+    { date: '2026.08.31', time: '16:30:18', total: 7, duration: 30, status: '已完成' }
   ];
 
   /* ============================================================
@@ -436,16 +436,25 @@
     var seq = [
       { type: 'start',   t: 0,    payload: {} },
       { type: 'connect', t: 200,  payload: { sourceId: 'boss' } },
-      { type: 'fetched', t: 700,  payload: { sourceId: 'boss', count: 42 } },
+      { type: 'fetched', t: 700,  payload: { sourceId: 'boss', count: 14 } },
       { type: 'connect', t: 950,  payload: { sourceId: 'csdn' } },
-      { type: 'fetched', t: 1400, payload: { sourceId: 'csdn', count: 18 } },
+      { type: 'fetched', t: 1400, payload: { sourceId: 'csdn', count: 6 } },
       { type: 'connect', t: 1700, payload: { sourceId: 'co' } },
-      { type: 'fetched', t: 2200, payload: { sourceId: 'co', count: 27 } },
+      { type: 'fetched', t: 2200, payload: { sourceId: 'co', count: 9 } },
       { type: 'connect', t: 2500, payload: { sourceId: 'gov' } },
-      { type: 'fetched', t: 2900, payload: { sourceId: 'gov', count: 12 } },
+      { type: 'fetched', t: 2900, payload: { sourceId: 'gov', count: 5 } },
       { type: 'connect', t: 3200, payload: { sourceId: 'rpt' } },
-      { type: 'fetched', t: 3700, payload: { sourceId: 'rpt', count: 21 } },
-      { type: 'complete',t: 4100, payload: { total: 120, duration: 28, items: null, stats: null, sources: null } }
+      { type: 'fetched', t: 3700, payload: { sourceId: 'rpt', count: 8 } },
+      { type: 'parse',   t: 4100, payload: { text: '解析：标题提取 · 技能提取 · 企业识别 · 岗位分类' } },
+      { type: 'parse',   t: 4600, payload: { text: '数据去重：原始 42 → 有效 17' } },
+      { type: 'parse',   t: 5100, payload: { text: '去重后新增资讯 6 条' } },
+      { type: 'complete',t: 5600, payload: { total: 6, duration: 26, items: DISCO_NEW_BATCH, mode: 'demo',
+          stats: { sources: 5, pages: 18, raw: 42, valid: 17, new: 6, duration: '0:26' },
+          sources: [
+            { type: '招聘平台', count: 14, status: 'ok' }, { type: '学术论文', count: 6, status: 'ok' },
+            { type: '企业官网', count: 9, status: 'ok' }, { type: '政策文件', count: 5, status: 'ok' },
+            { type: '行业报告', count: 8, status: 'ok' }
+          ] } }
     ];
     var timers = [];
     seq.forEach(function (e) {
@@ -462,6 +471,7 @@
       sourceType: it.source_type || '',
       date: '刚刚发现',
       url: it.url || '',
+      keywords: it.keywords || [],
       isNew: true
     };
   }
@@ -484,9 +494,14 @@
       (idx != null ? '<span class="jn-news-rank">' + (idx < 10 ? '0' + idx : idx) + '</span>' : '') +
       '<div class="jn-news-body">' +
         '<span class="jn-disc-cat">' + esc(it.sourceType || '实时') + '</span>' +
+        (it.isNew ? '<span class="jn-disc-new-badge">刚刚发现</span>' : '') +
         '<h3 class="jn-news-title">' + esc(it.title || '(无标题)') + '</h3>' +
         (it.summary ? '<p class="jn-news-summary">' + esc(it.summary) + '</p>' : '') +
         '<div class="jn-news-meta">' + meta + '</div>' +
+        (it.keywords && it.keywords.length ?
+          '<div class="jn-disc-kws"><span class="jn-disc-kws-label">已提取</span>' +
+            it.keywords.map(function(k){ return '<span class="jn-disc-kw">' + esc(k) + '</span>'; }).join('') +
+          '</div>' : '') +
       '</div>' + close;
   }
 
@@ -575,6 +590,15 @@
             });
           }, 1200 + i * 260));
         });
+        // 解析阶段（过程呈现：与后端 stats 对齐）
+        var rawTotalSum = 0; sources.forEach(function (s) { rawTotalSum += (s.count || 0); });
+        timers.push(setTimeout(function () {
+          if (!cancelled) onEvent({ type: 'parse', payload: { text: '解析：标题提取 · 技能提取 · 企业识别 · 岗位分类' } });
+        }, 1200 + seq.length * 260 + 60));
+        timers.push(setTimeout(function () {
+          if (!cancelled) onEvent({ type: 'parse', payload: { text: '数据去重：原始 ' + rawTotalSum + ' → 有效 ' + ((data && data.stats && data.stats.valid) || '—') } });
+        }, 1200 + seq.length * 260 + 150));
+
         // 完成
         timers.push(setTimeout(function () {
           if (cancelled) return;
@@ -611,6 +635,27 @@
     var lastRunSummary = null;
     var currentCategory = null; // 由第一屏「五大信源」点击传入，用于过滤对应 source_type
     var discoveryCategoryActive = false; // 是否正处于「单信源实时发现」视图（隐藏新闻筛选 tab）
+
+    /* —— 恢复上次发现会话（刷新后抽屉/状态卡仍可见） —— */
+    function loadPersistedSessions() {
+      try { return JSON.parse(localStorage.getItem('zhitu_disc_sessions') || '[]') || []; } catch (_) { return []; }
+    }
+    function fmtDay(d) { return pad(d.getFullYear()).slice(2) + '.' + pad(d.getMonth() + 1) + '.' + pad(d.getDate()); }
+    (function restorePersisted() {
+      try {
+        var sess = loadPersistedSessions();
+        if (sess.length) {
+          sess.forEach(function (s) { DISCO_HISTORY.unshift(s); });
+        }
+        var last = JSON.parse(localStorage.getItem('zhitu_disc_last') || 'null');
+        if (last && last.events && last.events.length) {
+          lastRunSummary = last;
+          if (last.mode) setModeLabel(last.mode);
+          var cnt = last.totalCount || 6;
+          setStatusBarHtml('<span class="jn-disc-last-chip">最近发现：<b>' + cnt + '</b> 条新资讯</span><a href="javascript:void(0)" id="disc-status-log">查看发现日志</a>');
+        }
+      } catch (_) {}
+    })();
 
     function pad(n) { return String(n).padStart(2, '0'); }
     function fmtTime(d) { return pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds()); }
@@ -915,6 +960,8 @@
           totalDiscovered += e.payload.count;
           setBarCount(totalDiscovered);
           lastRunSummary.events.push({ time: timeStr, text: blocked ? (sourceLogName(e.payload.sourceId) + '：反爬限制 / 暂不可达') : ('发现 ' + e.payload.count + ' 条来自 ' + sourceLogName(e.payload.sourceId)) });
+        } else if (e.type === 'parse') {
+          lastRunSummary.events.push({ time: timeStr, text: e.payload.text });
         } else if (e.type === 'complete') {
           var dur = e.payload.duration;
           var realItems = (e.payload.items && e.payload.items.length) ? e.payload.items.map(mapRealItem) : DISCO_NEW_BATCH;
@@ -933,7 +980,12 @@
             srcs.forEach(function (s) { typeCount[s.type] = (typeCount[s.type] || 0) + (s.count || 0); });
             DISCO_SOURCES.forEach(function (s) { sourceCounts[s.id] = typeCount[typeOf[s.id]] || 0; });
           }
-          lastRunSummary.events.push({ time: timeStr, text: '完成本轮 · 共 ' + e.payload.total + ' 条' });
+          var runMode = e.payload.mode || 'real';
+          lastRunSummary.mode = runMode;
+          lastRunSummary.totalCount = e.payload.total;
+          lastRunSummary.events.push({ time: timeStr, text: '完成本轮 · 新增 ' + e.payload.total + ' 条资讯' });
+          setModeLabel(runMode);
+          setStatusBarHtml('<span class="jn-disc-last-chip">最近发现：<b>' + e.payload.total + '</b> 条新资讯</span><a href="javascript:void(0)" id="disc-status-log">查看发现日志</a>');
           setBarTitle(currentCategory ? ('「' + currentCategory + '」发现完成') : '本次发现完成', 'done');
           setBarCount(currentCategory ? Math.min(realItems.length, DISCO_MAX_ROWS) : e.payload.total);
           setBarEta(0);
@@ -962,8 +1014,9 @@
           }
           showToast(toastMsg);
           /* 历史日志追加 */
-          var newHist = { date: '2026.08.31', time: fmtTime(startedAt), total: e.payload.total, duration: dur, status: '已完成' };
+          var newHist = { date: fmtDay(startedAt), time: fmtTime(startedAt), total: e.payload.total, duration: dur, status: '已完成' };
           DISCO_HISTORY.unshift(newHist);
+          persistSessions(newHist, lastRunSummary);
           if (elapsedTimer) clearInterval(elapsedTimer);
           if (document.getElementById('home-disc-drawer').classList.contains('is-open')) renderDrawer();
         }
@@ -972,6 +1025,39 @@
           renderLatestLog();
         }
       });
+    }
+
+    /* —— 模式标注（REAL / DEMO，抽屉里小字） —— */
+    function setModeLabel(mode) {
+      var el = document.getElementById('home-disc-mode');
+      if (el) {
+        el.textContent = mode === 'demo' ? '演示数据源' : '真实数据源';
+        el.classList.toggle('is-demo', mode === 'demo');
+      }
+    }
+    /* —— 按钮下方「本轮发现」状态卡 —— */
+    function setStatusBarHtml(html) {
+      var el = document.getElementById('disc-status-bar');
+      if (el) el.innerHTML = html;
+    }
+    /* —— 会话持久化（刷新后仍可查看最近一次发现） —— */
+    function persistSessions(hist, lastSummary) {
+      try {
+        var arr = loadPersistedSessions();
+        arr.unshift(hist);
+        localStorage.setItem('zhitu_disc_sessions', JSON.stringify(arr.slice(0, 20)));
+        localStorage.setItem('zhitu_disc_last', JSON.stringify(lastSummary || {}));
+      } catch (_) {}
+    }
+    /* —— 第二滑块标题 / 按钮文案随所选数据源联动 —— */
+    function setSectionTitle(cat) {
+      var h = document.querySelector('#latest-cols .jn-section-title');
+      if (!h || !h.childNodes[0]) return;
+      h.childNodes[0].nodeValue = cat ? ('智能发现 · ' + cat) : '智能发现';
+    }
+    function setTriggerText(txt) {
+      var el = document.getElementById('home-disc-trigger-text');
+      if (el) el.textContent = txt;
     }
 
     function sourceName(id) {
@@ -1009,9 +1095,27 @@
         discoveryCategoryActive = false;
         var lc2 = document.getElementById('latest-cols');
         if (lc2) lc2.classList.remove('is-discovery-mode');
+        setSectionTitle(null);
+        setTriggerText('开始发现');
         startDiscovery();
         return;
       }
+      /* 数据源 chip → 选择发现范围（标题 / 按钮 / 扫描范围 / 列表联动） */
+      var chipEl = t.closest('#home-disc-chips .jn-disc-chip');
+      if (chipEl) {
+        var sid = chipEl.getAttribute('data-source');
+        var sObj = DISCO_SOURCES.filter(function(x){ return x.id === sid; })[0];
+        if (sObj) {
+          discoveryCategoryActive = true;
+          var lc3 = document.getElementById('latest-cols');
+          if (lc3) lc3.classList.add('is-discovery-mode');
+          setSectionTitle(sObj.type);
+          setTriggerText('发现' + sObj.name);
+          startDiscovery(sObj.type);
+        }
+        return;
+      }
+      if (t.closest('#disc-status-log')) { openDrawer(); return; }
       if (t.closest('#home-disc-trigger')) { startDiscovery(); return; }
       if (t.closest('#home-disc-log-btn')) { openDrawer(); return; }
       if (t.closest('#home-disc-close')) { closeDrawer(); return; }

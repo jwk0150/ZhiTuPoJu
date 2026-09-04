@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#F5F2ED" />
+  <title>执图破局 · 质量与可信</title>
+  <link rel="stylesheet" href="../css/tokens.css?v=lightfix1" />
+  <link rel="stylesheet" href="../css/admin.css?v=premium2" />
+</head>
+<body>
+  <div class="admin-app">
+    <aside class="admin-sidebar" id="adminSidebar">
+      <div class="sidebar-top">
+        <a class="admin-brand" href="../index.html" aria-label="返回执图破局首页">
+          <span class="brand-glyph">执</span><span class="brand-copy"><b>执图破局</b><small>ADMIN CONSOLE</small></span>
+        </a>
+        <button class="mobile-close" id="closeNav" type="button" aria-label="关闭导航">×</button>
+        <div class="operator-card"><span class="operator-mark">◆</span><div><strong id="operatorName">值班工作区</strong><small id="operatorRole">ADMIN / OPERATOR</small></div><span class="online-dot" data-state="live"></span></div>
+      </div>
+      <nav class="admin-nav" aria-label="管理端工作区">
+        <p class="nav-label">运营 · OPERATIONS</p>
+        <a href="admin.html"><span class="nav-icon">◈</span><span>指挥台</span><small>01</small></a>
+        <a href="pipeline.html"><span class="nav-icon">↗</span><span>数据管线</span><small>02</small></a>
+        <a href="knowledge.html"><span class="nav-icon">⌘</span><span>图谱与知识</span><small>03</small></a>
+        <a href="quality.html" class="active"><span class="nav-icon">◒</span><span>质量与可信</span><small>04</small></a>
+        <a href="jobs-pool.html"><span class="nav-icon">▤</span><span>岗位池</span><small>05</small></a>
+        <a href="crawler.html"><span class="nav-icon">⊕</span><span>采集源</span><small>06</small></a>
+        <a href="cleaning.html"><span class="nav-icon">◐</span><span>清洗仓</span><small>07</small></a>
+        <p class="nav-label nav-label-lower">治理 · GOVERNANCE</p>
+        <a href="permissions.html"><span class="nav-icon">♙</span><span>权限矩阵</span><small>08</small></a>
+        <a href="users.html"><span class="nav-icon">▦</span><span>用户与审计</span><small>09</small></a>
+        <a href="notice.html"><span class="nav-icon">✎</span><span>系统公告</span><small>10</small></a>
+        <a href="report.html"><span class="nav-icon">▥</span><span>运营日报</span><small>11</small></a>
+      </nav>
+      <div class="sidebar-foot"><span class="status-dot" data-state="live"></span><div><strong id="sideHealth">系统正常</strong><small id="sideUpdated">—</small></div></div>
+    </aside>
+    <div class="nav-scrim" id="navScrim"></div>
+
+    <main class="admin-main">
+      <header class="admin-topbar">
+        <button class="mobile-menu" id="openNav" type="button" aria-label="打开导航">☰</button>
+        <div class="topbar-title"><span class="eyebrow">ADMIN / OPERATIONS</span><h1>管理运营中枢</h1><p>采集、图谱、岗位、用户、公告，都在这。</p></div>
+        <div class="top-actions"><div class="sync-readout"><span>LAST SYNC</span><strong id="lastSync">—</strong></div><button class="ghost-btn" id="refreshBtn" type="button">↻ <span>同步数据</span></button><div class="user-chip" id="userChip">未登录 <span>READ ONLY</span></div></div>
+      </header>
+
+      <section id="evaluation" class="workspace section-block" aria-labelledby="evaluationTitle">
+        <div class="section-heading"><div><span class="eyebrow">04 / QUALITY &amp; TRUST</span><h2 id="evaluationTitle">质量与可信</h2><p>每条数据，都得说清从哪来。</p></div></div>
+        <div class="quality-grid">
+          <article class="panel quality-score reveal"><div class="panel-kicker">DATA QUALITY</div><strong id="qualityScore" data-count>0</strong><span>平均完整度</span><div class="score-track"><i class="bar-fill" data-w="0" id="qualityTrack"></i></div><small id="qualityFoot">以采集接口返回的完整度为准</small></article>
+          <article class="panel quality-alerts reveal"><div class="panel-head"><div><span class="eyebrow">GOVERNANCE GATES</span><h3>可信防线</h3></div><span class="guard-status" id="guardStatus" data-state="ok">运行中</span></div><div class="gate-list"><div><span class="gate-index">A</span><div><strong>字段完整性</strong><small>姓名、薪资、城市与技能字段</small></div><b id="gateData">已检查</b></div><div><span class="gate-index">B</span><div><strong>来源可回溯</strong><small>保留原始来源与采集时间</small></div><b>已启用</b></div><div><span class="gate-index">C</span><div><strong>回答事实校验</strong><small>Claim 对齐 Evidence 后放行</small></div><b>已启用</b></div></div><div class="field-bars"><div class="panel-head"><div><span class="eyebrow">FIELD COMPLETENESS</span><h3>关键字段完整度</h3></div></div><div class="entity-bar-row"><span>岗位名称</span><b><i class="bar-fill" data-w="98"></i></b><em>98%</em></div><div class="entity-bar-row"><span>薪资</span><b><i class="bar-fill" data-w="86"></i></b><em>86%</em></div><div class="entity-bar-row"><span>城市</span><b><i class="bar-fill" data-w="93"></i></b><em>93%</em></div><div class="entity-bar-row"><span>技能要求</span><b><i class="bar-fill" data-w="78"></i></b><em>78%</em></div></div></article>
+          <article class="panel baseline-card reveal"><div class="panel-kicker">EVALUATION</div><h3>离线评估指标</h3><div class="eval-rows"><div class="eval-row"><span>Precision@5</span><b>0.86</b></div><div class="eval-row"><span>Recall@10</span><b>0.79</b></div><div class="eval-row"><span>MRR</span><b>0.81</b></div><div class="eval-row"><span>Groundedness</span><b>0.92</b></div></div><button class="text-btn" type="button" data-action="eval">查看评估报告 ↗</button></article>
+        </div>
+      </section>
+
+      <footer class="admin-footer"><span>执图破局 · 管理运营中枢</span><span>© 2026 ZHITU · v3.2</span></footer>
+    </main>
+  </div>
+  <div class="toast-host" id="toastHost" aria-live="polite"></div>
+  <script src="../js/admin-guard.js?v=guard2"></script>
+  <script src="../js/admin-shell.js?v=shell2"></script>
+  <script src="../js/api.js?v=20260903"></script>
+  <script src="../js/admin.js?v=split1"></script>
+</body>
+</html>

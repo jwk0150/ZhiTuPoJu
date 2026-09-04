@@ -3,7 +3,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from backend.routers import agent, collection, discovery, evolution, graph, matching, data, talent_map, auth, profile, trends, ability, knowledge, career_evolution, global_agent
+from backend.routers import agent, collection, discovery, evolution, graph, matching, data, talent_map, auth, profile, trends, ability, knowledge, career_evolution, global_agent, admin
 from backend.db_async import close_pool
 from backend.config import config
 from backend.init_database import ensure_view_only
@@ -91,3 +91,4 @@ app.include_router(career_evolution.router, prefix="/api/career", tags=["career-
 
 # 新增：Global Agent（Phase 1 —— 统一鉴权 + 上下文读取；后续阶段扩展 Chat/Task）
 app.include_router(global_agent.router, prefix="/api/global-agent", tags=["global-agent"])
+app.include_router(admin.router, prefix="/api/admin", tags=["admin"])

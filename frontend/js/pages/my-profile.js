@@ -136,6 +136,63 @@
     return          { label: '刚刚开始', sub: '从基本信息开始填起', tone: 'low' };
   }
 
+  // 简历探索准入：基础资料必须真实可用，不能由加权完整度或已有简历绕过。
+  function profileGate(d) {
+    d = d || state.data;
+    var p = (d && d.userProfile) || {};
+    var checks = [
+      { id: 'name', label: '姓名', ok: !!String(p.name || '').trim() },
+      { id: 'phone', label: '手机号', ok: /^1[3-9]\d{9}$/.test(String(p.phone || '').replace(/\D/g, '')) },
+      { id: 'email', label: '邮箱', ok: /^\S+@\S+\.\S+$/.test(String(p.email || '').trim()) },
+      { id: 'city', label: '所在城市', ok: !!String(p.city || '').trim() }
+    ];
+    var missing = checks.filter(function (x) { return !x.ok; });
+    return { complete: missing.length === 0, checks: checks, missing: missing, next: missing[0] || null };
+  }
+
+  function settingsHref() {
+    var missing = profileGate().missing.map(function (x) { return x.label; }).join('、');
+    return 'account-settings.html?v=20260903&return=resume&missing=' + encodeURIComponent(missing);
+  }
+
+  function openResumeExplorer(mode) {
+    var gate = profileGate();
+    if (!gate.complete) {
+      try { sessionStorage.removeItem('zhitu_open_resume'); } catch (_) {}
+      location.href = settingsHref();
+      return;
+    }
+    try { sessionStorage.setItem('zhitu_open_resume', '1'); } catch (_) {}
+    location.href = 'resume.html?embed=1' + (mode === 'edit' ? '&mode=edit' : '') + '&v=20260826rx4';
+  }
+
+  function jumpToNextProfileStep() {
+    var gate = profileGate();
+    if (!gate.complete) {
+      if (gate.next.id === 'name' || gate.next.id === 'phone' || gate.next.id === 'email' || gate.next.id === 'city') {
+        enterEdit();
+        setTimeout(function () {
+          var field = document.querySelector('[data-field="' + gate.next.id + '"]');
+          if (field) field.focus();
+        }, 0);
+      }
+      return;
+    }
+    var ed = state.data.education || [];
+    if (!ed.length || !String(ed[0].school || '').trim() || !String(ed[0].major || '').trim()) {
+      var education = document.getElementById('mp-section-education');
+      if (education) education.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return;
+    }
+    var cp = state.data.careerPreference || {};
+    if (!cp.desiredJobs || !cp.desiredJobs.length) {
+      var career = document.getElementById('mp-section-career');
+      if (career) career.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return;
+    }
+    openResumeExplorer();
+  }
+
   // 临时：在 state 里加 editSnapshot
   function snapshotData()  { return JSON.parse(JSON.stringify(state.data)); }
   function restoreData(s)  { state.data = s; }
@@ -240,8 +297,11 @@
         '</div>' +
 
         '<div class="mp-id" data-open-avatar>' +
-          '<div class="mp-id-avatar" title="点击更换头像">' + avatarHtml + '</div>' +
-          '<div>' +
+          '<div class="mp-id-avatar-wrap">' +
+            '<div class="mp-id-avatar" title="点击更换头像">' + avatarHtml + '</div>' +
+            '<span class="mp-avatar-hint">点击更换头像</span>' +
+          '</div>' +
+          '<div class="mp-id-copy">' +
             '<div class="mp-id-name">' + esc(p.name) + '</div>' +
             '<div class="mp-id-role">' + esc(p.currentStatus) + '</div>' +
             '<div class="mp-id-badge">寻找实习机会</div>' +
@@ -253,11 +313,11 @@
         '<nav class="mp-nav" aria-label="资料目录">' + navHtml + '</nav>' +
 
         '<div class="mp-side-foot">' +
-          '<button class="mp-foot-link" data-jump="settings">' +
+          '<a class="mp-foot-link" href="account-settings.html?v=20260903">' +
             '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>' +
             '<span class="label">账户设置</span>' +
             '<span class="en">SETTINGS</span>' +
-          '</button>' +
+          '</a>' +
           '<button class="mp-foot-link" data-action="logout">' +
             '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>' +
             '<span class="label">退出登录</span>' +
@@ -284,6 +344,7 @@
 
     var pct = computeCompletion();
     var cx = completionText(pct);
+    var gate = profileGate();
     return (
       '<div class="mp-topbar">' +
         '<div class="mp-topbar-left">' +
@@ -294,18 +355,35 @@
           '<span class="mp-topbar-path">MY PROFILE · 我的职业档案</span>' +
         '</div>' +
         '<div class="mp-topbar-mid">' +
-          '<button class="mp-completion-chip tone-' + cx.tone + '" data-jump="completion-info" title="点击查看完整度详情">' +
+          '<button class="mp-completion-chip tone-' + cx.tone + '" data-jump="profile" title="点击查看下一步">' +
             '<span class="mp-completion-ring" style="--pct:' + pct + '"><span class="num">' + pct + '%</span></span>' +
-            '<span class="txt">' +
-              '<span class="lbl">资料完整度</span>' +
-              '<span class="sub">' + cx.label + '</span>' +
-            '</span>' +
+            '<span class="txt"><span class="lbl">资料完整度</span><span class="sub">' + cx.label + '</span></span>' +
           '</button>' +
         '</div>' +
-        '<div class="mp-topbar-actions">' +
-          editBtn + cancelBtn + saveBtn +
+        '<div class="mp-topbar-actions">' + editBtn + cancelBtn + saveBtn + '</div>' +
+      '</div>' +
+        '<section class="mp-onboarding" aria-labelledby="mp-onboarding-title">' +
+        '<div class="mp-onboarding-copy"><div class="mp-onboarding-kicker">NEXT STEP · 职业准备路径</div>' +
+        '<h2 id="mp-onboarding-title">' + (gate.complete ? '资料已就绪，开始简历探索' : '先完善职业档案，再开始简历探索') + '</h2>' +
+        '<p>' + (gate.complete ? '基础联系方式已完成。补充教育与求职偏好后，简历会更贴近目标岗位。' : '把常用信息集中填写在这里，保存后即可用于简历预填和人岗匹配。') + '</p></div>' +
+        '<div class="mp-quick-form" aria-label="快速完善基础资料">' +
+          '<label>姓名<input data-quick-field="name" value="' + esc(state.data.userProfile.name || '') + '" placeholder="你的姓名" /></label>' +
+          '<label>手机号<input data-quick-field="phone" type="tel" inputmode="numeric" value="' + esc(state.data.userProfile.phone || '') + '" placeholder="11 位手机号" /></label>' +
+          '<label>邮箱<input data-quick-field="email" type="email" value="' + esc(state.data.userProfile.email || '') + '" placeholder="name@example.com" /></label>' +
+          '<label>所在城市<select data-quick-field="city">' +
+            '<option value="">请选择城市</option>' +
+            ['北京','上海','广州','深圳','杭州','成都','南京','武汉','西安','重庆','苏州','天津','厦门','青岛','长沙','郑州','其他'].map(function (city) {
+              return '<option value="' + esc(city) + '"' + (state.data.userProfile.city === city ? ' selected' : '') + '>' + esc(city) + '</option>';
+            }).join('') +
+          '</select></label>' +
         '</div>' +
-      '</div>'
+        '<div class="mp-onboarding-checklist" aria-label="基础资料完成情况">' + gate.checks.map(function (item) {
+          return '<span class="mp-onboarding-item ' + (item.ok ? 'is-complete' : 'is-missing') + '">' + (item.ok ? '✓' : '○') + ' ' + item.label + '</span>';
+        }).join('') + '</div>' +
+        '<div class="mp-onboarding-actions"><button class="mp-btn mp-btn-primary" data-action="save-quick-profile">保存资料</button>' +
+        '<button class="mp-btn mp-btn-primary" data-action="load-sample-template" style="background:linear-gradient(135deg,#c9a86a,#8c6f3e)">🚀 一键加载示例模板</button>' +
+        '<button class="mp-btn mp-btn-ghost" data-action="next-profile-step">' + (gate.complete ? '开始简历探索 →' : '查看下一步 →') + '</button></div>' +
+      '</section>'
     );
   }
 
@@ -371,12 +449,16 @@
     var genderOpts = ['男', '女', '其他', '不便透露'].map(function (g) {
       return '<option value="' + esc(g) + '"' + (p.gender === g ? ' selected' : '') + '>' + g + '</option>';
     }).join('');
+    var cityOptions = ['北京','上海','广州','深圳','杭州','成都','南京','武汉','西安','重庆','苏州','天津','厦门','青岛','长沙','郑州','其他'];
+    var cityOpts = cityOptions.map(function (city) {
+      return '<option value="' + esc(city) + '"' + (p.city === city ? ' selected' : '') + '>' + city + '</option>';
+    }).join('');
     var rows = [
       ['姓名', '<input type="text" data-field="name" value="' + esc(p.name) + '" maxlength="24">'],
       ['性别', '<select data-field="gender">' + genderOpts + '</select>'],
       ['手机号', '<input type="tel" data-field="phone" value="' + esc(p.phone) + '" maxlength="11" placeholder="11位手机号">'],
       ['邮箱', '<input type="email" data-field="email" value="' + esc(p.email) + '" placeholder="name@example.com">'],
-      ['所在城市', '<input type="text" data-field="city" value="' + esc(p.city) + '" maxlength="20" placeholder="如：上海市">']
+      ['所在城市', '<select data-field="city"><option value="">请选择城市</option>' + cityOpts + '</select>']
     ];
     return rows.map(function (r) {
       return (
@@ -412,7 +494,11 @@
       );
     }).join('');
 
-    var firstEdu = state.data.education[0] || DEFAULTS.education[0];
+    var firstEdu = state.data.education[0] || {
+      school: '未填写学校',
+      major: '未填写专业',
+      degree: '—'
+    };
     return (
       '<section class="mp-section" id="mp-section-education">' +
         '<div class="mp-section-head mp-rise">' +
@@ -577,8 +663,7 @@
                 '<div class="mp-resume-meta-item">完整度 · <span class="num">' + completion + '%</span></div>' +
               '</div>' +
               '<div class="mp-resume-actions">' +
-                '<button class="mp-btn mp-btn-primary" data-action="resume-view">查看简历 →</button>' +
-                '<button class="mp-btn mp-btn-ghost" data-action="resume-edit">编辑简历 →</button>' +
+                '<button class="mp-btn mp-btn-primary" data-action="resume-open">查看并编辑简历 →</button>' +
               '</div>' +
             '</div>' +
             '<div class="mp-resume-preview" aria-hidden="true">' +
@@ -604,9 +689,9 @@
             '</div>' +
           '</div>' +
 
-          '<button class="mp-resume-create" data-action="resume-create">' +
+          '<button class="mp-resume-create" data-action="resume-open">' +
             '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>' +
-            '创建新的简历' +
+            '查看并编辑简历' +
           '</button>' +
         '</div>' +
       '</section>'
@@ -833,10 +918,44 @@
     syncSaveBtn();
   }
 
+  function profileContactReady() {
+    try {
+      var p = (state.data && state.data.userProfile) || {};
+      return !!(String(p.name || '').trim()
+        && /^1[3-9]\d{9}$/.test(String(p.phone || '').replace(/\D/g, ''))
+        && /^\S+@\S+\.\S+$/.test(String(p.email || '').trim())
+        && String(p.city || '').trim());
+    } catch (_) { return false; }
+  }
+
+  // 保存成功后：引导前往简历探索（基本信息会自动预填到向导首页）
+  function showGoResumeModal() {
+    if (document.getElementById('mp-go-resume-modal')) return;
+    var overlay = document.createElement('div');
+    overlay.id = 'mp-go-resume-modal';
+    overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(20,14,8,.45);display:flex;align-items:center;justify-content:center;padding:24px';
+    overlay.innerHTML =
+      '<div style="width:min(440px,100%);background:#fff;border-radius:16px;padding:26px 26px 22px;box-shadow:0 24px 64px rgba(60,45,30,.24);text-align:center">'
+      + '<div style="width:52px;height:52px;margin:0 auto 12px;border-radius:50%;background:#3D8B7A;color:#fff;display:grid;place-items:center;font:700 24px/1 sans-serif">✓</div>'
+      + '<h3 style="margin:0 0 8px;font:600 19px var(--font-serif,serif);color:#111">资料已保存</h3>'
+      + '<p style="margin:0 0 18px;color:#5a6472;font-size:13px;line-height:1.7">基本信息会自动同步到简历探索首页（姓名、联系方式、城市、学校专业与求职意向）。现在就可以开始完善简历。</p>'
+      + '<div style="display:flex;gap:10px;justify-content:center">'
+      + '<button id="mp-go-resume-now" style="flex:1;height:42px;border:0;border-radius:10px;background:linear-gradient(135deg,#B07A28,#8C5E1E);color:#fff;font:600 14px sans-serif;cursor:pointer">前往简历探索</button>'
+      + '<button id="mp-go-resume-later" style="flex:1;height:42px;border:1px solid #ddd;border-radius:10px;background:#fff;color:#333;font:600 14px sans-serif;cursor:pointer">留在此页</button>'
+      + '</div></div>';
+    document.body.appendChild(overlay);
+    overlay.querySelector('#mp-go-resume-now').addEventListener('click', function () {
+      try { sessionStorage.setItem('zhitu_open_resume', '1'); } catch (_) {}
+      window.location.href = 'news/index.html';
+    });
+    overlay.querySelector('#mp-go-resume-later').addEventListener('click', function () { overlay.remove(); });
+  }
+
   function saveEdit() {
     if (!validateFields()) { toast('请修正标红字段', 'error'); return; }
     var p = state.data.userProfile;
     var changed = isDirty();
+    var wasReady = profileContactReady();
     p.currentStatus = p.currentStatus || DEFAULTS.userProfile.currentStatus;
     if (changed) {
       saveAll(state.data);
@@ -844,6 +963,9 @@
       state.data.resume.completion = Math.max(state.data.resume.completion || 0, computeCompletion());
       saveAll(state.data);
       toast('已保存');
+      if (profileContactReady() && (!wasReady || new URLSearchParams(location.search).get('return') === 'resume')) {
+        setTimeout(showGoResumeModal, 350);
+      }
     } else {
       toast('没有需要保存的修改');
     }
@@ -1043,22 +1165,89 @@
   // -----------------------------------------------------
   // 简历动作（联动到既有 resume.html）
   // -----------------------------------------------------
-  function resumeView() {
+  // —— 一键加载示例模板：填资料 + 写入完整向导状态 + 跳简历探索 ——
+  function loadSampleTemplate() {
+    var p = state.data.userProfile;
+    p.name = '王储源';
+    p.phone = '13800138000';
+    p.email = 'wang.chuyuan@example.com';
+    p.city = '杭州';
+    p.currentStatus = p.currentStatus || '学生（在读）';
+    if (!Array.isArray(state.data.education) || !state.data.education.length) {
+      state.data.education = [{ school: '浙江大学', major: '计算机科学与技术', degree: '本科', graduateYear: '2026' }];
+    }
+    var pref = state.data.careerPreference || (state.data.careerPreference = {});
+    pref.desiredJobs = ['Java 开发工程师', '前端开发工程师', '数据分析师'];
+    pref.desiredIndustries = ['Python', 'PyTorch', 'LangChain', 'RAG', 'React', 'TypeScript', 'Docker', 'PostgreSQL'];
+    state.data.resume = state.data.resume || {};
+    state.data.resume.exists = true;
+    state.data.resume.completion = 92;
+    saveAll(state.data);
+    render();
+    var uid = currentUserId();
+    var rbState = {
+      currentStep: 1,
+      completedSteps: { 1: true, 2: true, 3: true, 4: true, 5: true },
+      basicInfo: { name: '王储源', phone: '13800138000', email: 'wang.chuyuan@example.com', city: '杭州', degree: '本科', school: '浙江大学', major: '计算机科学与技术', graduate: '2026-07' },
+      jobDirection: { positions: ['java', 'web', 'data'] },
+      experiences: [
+        { id: 'EXP-001', title: 'AI Agent 平台后端', org: '执图云算科技', role: '后端工程师（实习）', time: '2025-03 – 2025-08', brief: '负责 RAG 检索服务、Agent 编排 API 与多租户权限模块。', result: '平均检索响应从 480ms 降至 130ms；推理 QPS 提升 2.2 倍。' },
+        { id: 'EXP-002', title: '知识图谱可视化前端', org: '远见数据', role: '前端工程师（实习）', time: '2024-07 – 2024-12', brief: '用 React + ECharts 搭建岗位-技能-公司三层关系图谱。', result: '支撑 2 万节点、6 万边渲染稳定 60fps。' },
+        { id: 'EXP-003', title: '校园项目 · 智能问答', org: '学生创新项目', role: '队长 / 全栈', time: '2024-02 – 2024-06', brief: '基于 RAG + Prompt Engineering 的课程答疑 demo。', result: 'Top-3 命中率达 91%，获评校级优秀结题。' }
+      ],
+      starExperiences: [
+        { S: 'RAG 检索服务偶发返回空集。', T: '3 周内将时延与空集率降至可接受水位。', A: '重构检索链路，引入查询改写与重排。', R: '时延 480ms → 130ms，空集率 5.6% → 0.4%。' },
+        { S: '图谱 2 万节点首屏卡顿。', T: '首屏 1 秒内 60fps。', A: 'Canvas 渲染 + WebWorker 布局。', R: '长任务 1400ms → 220ms，入选优秀作品集。' },
+        { S: '答疑 demo 命中率低。', T: 'Top-3 命中率 ≥ 90%。', A: '优化切片与重排，补齐少样本。', R: '命中率 91%，校级优秀结题。' }
+      ],
+      profile: {
+        personality: '逻辑严谨、好奇心驱动；以数据说话、用可验证结果闭环。',
+        intent: '一线城市后端与全栈开发岗位，关注 AI / LLM 应用方向。',
+        dislike: '不接受无明确产出衡量的岗位。',
+        skills: ['Python', 'PyTorch', 'LangChain', 'RAG', 'React', 'Vue', 'TypeScript', 'Node.js', 'PostgreSQL', 'Docker', 'Kubernetes', 'Spark', 'AWS'],
+        summary: '具备全栈开发与机器学习项目落地经验的应届生；参与过 RAG 知识库、行业与技能图谱等真实数据驱动项目。'
+      },
+      photo: null,
+      ai: { expHint: '' },
+      polish: { complete: true, score: 96, coverage: 100, keywordHits: 100, langIssues: 0, readability: 'A', quality: 'excellent', badge: 'perfect' },
+      generated: true
+    };
+    try { localStorage.setItem('rb_builder_state_v2__' + uid, JSON.stringify(rbState)); } catch (_) {}
     try { sessionStorage.setItem('zhitu_open_resume', '1'); } catch (_) {}
-    location.href = 'resume.html?embed=1&v=20260826rx4';
+    toast('示例模板已加载，正在进入简历探索…');
+    setTimeout(function () { window.location.href = 'news/index.html'; }, 700);
   }
-  function resumeEdit() {
-    try { sessionStorage.setItem('zhitu_open_resume', '1'); } catch (_) {}
-    location.href = 'resume.html?embed=1&mode=edit&v=20260826rx4';
+
+  function saveQuickProfile() {
+    var fields = {};
+    document.querySelectorAll('[data-quick-field]').forEach(function (input) {
+      fields[input.getAttribute('data-quick-field')] = String(input.value || '').trim();
+    });
+    var next = profileGate({ userProfile: fields });
+    if (!next.complete) {
+      toast('请补充：' + next.missing.map(function (x) { return x.label; }).join('、'), 'error');
+      var first = document.querySelector('[data-quick-field="' + next.missing[0].id + '"]');
+      if (first) first.focus();
+      return;
+    }
+    state.data.userProfile = Object.assign({}, state.data.userProfile, fields);
+    saveAll(state.data);
+    render();
+    toast('基础资料已保存');
+    if (profileContactReady()) setTimeout(showGoResumeModal, 350);
   }
+
+  function resumeView() { openResumeExplorer('view'); }
+  function resumeEdit() { openResumeExplorer('edit'); }
   function resumeCreate() {
+    if (!profileGate().complete) { openResumeExplorer('create'); return; }
     state.data.resume.exists = true;
     state.data.resume.updatedAt = todayISO();
     state.data.resume.status = '草稿';
     state.data.resume.completion = Math.max(state.data.resume.completion || 0, 24);
     saveAll(state.data);
     toast('已创建简历草稿');
-    setTimeout(resumeEdit, 350);
+    setTimeout(function () { openResumeExplorer('edit'); }, 350);
   }
 
   // -----------------------------------------------------
@@ -1083,11 +1272,9 @@
     document.querySelectorAll('[data-jump]').forEach(function (b) {
       b.addEventListener('click', function () {
         var id = b.getAttribute('data-jump');
-        if (id === 'settings') { toast('账户设置 暂未开放', 'error'); return; }
         var el = document.getElementById('mp-section-' + id);
-        if (el) {
-          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
+        if (!el) return;
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
         state.section = id;
         // 重新高亮侧边栏
         document.querySelectorAll('.mp-nav-item').forEach(function (n) {
@@ -1107,6 +1294,15 @@
     // 编辑 / 取消 / 保存
     document.querySelectorAll('[data-action="edit-profile"]').forEach(function (b) {
       b.addEventListener('click', enterEdit);
+    });
+    document.querySelectorAll('[data-action="next-profile-step"]').forEach(function (b) {
+      b.addEventListener('click', jumpToNextProfileStep);
+    });
+    document.querySelectorAll('[data-action="save-quick-profile"]').forEach(function (b) {
+      b.addEventListener('click', saveQuickProfile);
+    });
+    document.querySelectorAll('[data-action="load-sample-template"]').forEach(function (b) {
+      b.addEventListener('click', loadSampleTemplate);
     });
     document.querySelectorAll('[data-action="cancel-edit"]').forEach(function (b) {
       b.addEventListener('click', cancelEdit);
@@ -1189,12 +1385,9 @@
     var eduCf = document.querySelector('[data-edu-confirm]');
     if (eduCf) eduCf.addEventListener('click', confirmEdu);
 
-    // 简历
-    document.querySelectorAll('[data-action="resume-view"]').forEach(function (b) {
-      b.addEventListener('click', resumeView);
-    });
-    document.querySelectorAll('[data-action="resume-edit"]').forEach(function (b) {
-      b.addEventListener('click', resumeEdit);
+    // 简历：单一入口，在向导中同时查看与编辑
+    document.querySelectorAll('[data-action="resume-open"]').forEach(function (b) {
+      b.addEventListener('click', function () { openResumeExplorer('edit'); });
     });
     document.querySelectorAll('[data-action="resume-create"]').forEach(function (b) {
       b.addEventListener('click', resumeCreate);

@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#F5F2ED" />
+  <title>执图破局 · 用户与审计</title>
+  <link rel="stylesheet" href="../css/tokens.css?v=lightfix1" />
+  <link rel="stylesheet" href="../css/admin.css?v=premium2" />
+</head>
+<body>
+  <div class="admin-app">
+    <aside class="admin-sidebar" id="adminSidebar">
+      <div class="sidebar-top">
+        <a class="admin-brand" href="../index.html" aria-label="返回执图破局首页">
+          <span class="brand-glyph">执</span><span class="brand-copy"><b>执图破局</b><small>ADMIN CONSOLE</small></span>
+        </a>
+        <button class="mobile-close" id="closeNav" type="button" aria-label="关闭导航">×</button>
+        <div class="operator-card"><span class="operator-mark">◆</span><div><strong id="operatorName">值班工作区</strong><small id="operatorRole">ADMIN / OPERATOR</small></div><span class="online-dot" data-state="live"></span></div>
+      </div>
+      <nav class="admin-nav" aria-label="管理端工作区">
+        <p class="nav-label">运营 · OPERATIONS</p>
+        <a href="admin.html"><span class="nav-icon">◈</span><span>指挥台</span><small>01</small></a>
+        <a href="pipeline.html"><span class="nav-icon">↗</span><span>数据管线</span><small>02</small></a>
+        <a href="knowledge.html"><span class="nav-icon">⌘</span><span>图谱与知识</span><small>03</small></a>
+        <a href="quality.html"><span class="nav-icon">◒</span><span>质量与可信</span><small>04</small></a>
+        <a href="jobs-pool.html"><span class="nav-icon">▤</span><span>岗位池</span><small>05</small></a>
+        <a href="crawler.html"><span class="nav-icon">⊕</span><span>采集源</span><small>06</small></a>
+        <a href="cleaning.html"><span class="nav-icon">◐</span><span>清洗仓</span><small>07</small></a>
+        <p class="nav-label nav-label-lower">治理 · GOVERNANCE</p>
+        <a href="permissions.html"><span class="nav-icon">♙</span><span>权限矩阵</span><small>08</small></a>
+        <a href="users.html" class="active"><span class="nav-icon">▦</span><span>用户与审计</span><small>09</small></a>
+        <a href="notice.html"><span class="nav-icon">✎</span><span>系统公告</span><small>10</small></a>
+        <a href="report.html"><span class="nav-icon">▥</span><span>运营日报</span><small>11</small></a>
+      </nav>
+      <div class="sidebar-foot"><span class="status-dot" data-state="live"></span><div><strong id="sideHealth">系统正常</strong><small id="sideUpdated">—</small></div></div>
+    </aside>
+    <div class="nav-scrim" id="navScrim"></div>
+
+    <main class="admin-main">
+      <header class="admin-topbar">
+        <button class="mobile-menu" id="openNav" type="button" aria-label="打开导航">☰</button>
+        <div class="topbar-title"><span class="eyebrow">ADMIN / OPERATIONS</span><h1>管理运营中枢</h1><p>采集、图谱、岗位、用户、公告，都在这。</p></div>
+        <div class="top-actions"><div class="sync-readout"><span>LAST SYNC</span><strong id="lastSync">—</strong></div><button class="ghost-btn" id="refreshBtn" type="button">↻ <span>同步数据</span></button><div class="user-chip" id="userChip">未登录 <span>READ ONLY</span></div></div>
+      </header>
+
+      <section id="users" class="workspace section-block" aria-labelledby="usersTitle">
+        <div class="section-heading"><div><span class="eyebrow">05 / IDENTITY &amp; AUDIT</span><h2 id="usersTitle">用户与审计</h2><p>账号管理 · 操作留痕。</p></div><span class="section-meta" id="usersSource">—</span></div>
+        <div class="identity-grid">
+          <article class="panel session-card reveal"><div class="panel-kicker">CURRENT SESSION</div><div class="session-identity"><span class="session-avatar" id="sessionAvatar">?</span><div><strong id="sessionName">未检测到登录会话</strong><small id="sessionRole">请通过认证入口进入</small></div></div><div class="session-line"><span>令牌状态</span><b id="tokenState">未提供</b></div><div class="session-line"><span>管理能力</span><b id="permissionState">只读观察</b></div></article>
+          <article class="panel audit-card reveal"><div class="panel-head"><div><span class="eyebrow">AUDIT TRAIL</span><h3>最近操作</h3></div><button class="outline-btn" id="auditExport" type="button">导出 CSV</button></div><div class="table-tools audit-tools"><label class="sr-only" for="auditFilter">筛选审计类型</label><select id="auditFilter"><option value="all">全部类型</option><option value="采集">采集</option><option value="账号">账号</option><option value="评测">评测</option><option value="系统">系统</option></select><span class="audit-count" id="auditCount">—</span></div><div class="audit-list" id="auditList"></div></article>
+        </div>
+        <article class="panel table-panel reveal">
+          <div class="panel-head"><div><span class="eyebrow">ADD INTERNAL USER</span><h3>添加内部用户</h3></div><span class="source-badge source-badge-muted">初始密码 123456</span></div>
+          <form id="addUserForm" class="add-user-form" autocomplete="off">
+            <div class="field-group"><label for="newUserName">姓名</label><input id="newUserName" type="text" placeholder="如：王一舟" required /></div>
+            <div class="field-group"><label for="newUserAccount">账号</label><input id="newUserAccount" type="text" placeholder="如：wangyz" required /></div>
+            <div class="field-group"><label for="newUserRole">身份</label><select id="newUserRole"><option value="operator">运营</option><option value="analyst">分析师</option><option value="admin">管理员</option></select></div>
+            <div class="field-group"><label for="newUserCity">城市</label><input id="newUserCity" type="text" placeholder="如：杭州" /></div>
+            <div class="field-group" style="align-self:end"><button type="submit" class="outline-btn" style="background:var(--accent-gold);color:#fff;border-color:var(--accent-gold)">+ 添加用户</button></div>
+          </form>
+        </article>
+        <article class="panel table-panel users-panel reveal"><div class="panel-head"><div><span class="eyebrow">USER MANAGEMENT</span><h3>用户管理</h3></div><div class="table-tools"><label class="sr-only" for="userSearch">搜索用户</label><input id="userSearch" type="search" placeholder="搜索姓名 / 账号…" autocomplete="off" /><label class="sr-only" for="userRoleFilter">筛选角色</label><select id="userRoleFilter"><option value="all">全部角色</option><option value="admin">管理员</option><option value="user">普通用户</option></select></div></div><div class="table-wrap"><table><thead><tr><th>用户</th><th>角色</th><th>状态</th><th>最近活跃</th><th>操作</th></tr></thead><tbody id="usersBody"><tr><td colspan="5" class="table-empty">正在读取用户列表…</td></tr></tbody></table></div></article>
+      </section>
+
+      <footer class="admin-footer"><span>执图破局 · 管理运营中枢</span><span>© 2026 ZHITU · v3.2</span></footer>
+    </main>
+  </div>
+  <div class="toast-host" id="toastHost" aria-live="polite"></div>
+  <script src="../js/admin-guard.js?v=guard2"></script>
+  <script src="../js/admin-shell.js?v=shell2"></script>
+  <script src="../js/api.js?v=20260903"></script>
+  <script src="../js/admin.js?v=split1"></script>
+  <script src="../js/admin-users.js?v=v1"></script>
+</body>
+</html>

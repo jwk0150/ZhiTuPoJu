@@ -736,7 +736,8 @@ async def run_discovery() -> dict:
 
     duration_ms = int((time.time() - started) * 1000)
     total = len(deduped)
-    valid = sum(1 for s in source_results if s.status == "ok")
+    # 有效资讯 = 去重后的条目数（≥ 新增数；此前误写为 OK 源个数，导致 valid < new 的口径矛盾）
+    valid = total
 
     stats = {
         "sources": len(CRAWLERS),

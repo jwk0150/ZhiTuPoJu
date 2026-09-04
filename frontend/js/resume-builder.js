@@ -10,6 +10,45 @@
   const STORAGE_KEY = 'rb_builder_state_v2';
   const LEGACY_STORAGE_KEY = 'rb_builder_state_v1';
 
+  function currentUserId() {
+    try {
+      const u = JSON.parse(localStorage.getItem('zhitu_user') || 'null');
+      if (u && (u.username || u.user_id || u.id)) return String(u.username || u.user_id || u.id);
+    } catch (_) {}
+    return 'guest';
+  }
+
+  function scopedStorageKey(base) { return base + '__' + currentUserId(); }
+  const USER_STORAGE_KEY = scopedStorageKey(STORAGE_KEY);
+  const USER_LEGACY_STORAGE_KEY = scopedStorageKey(LEGACY_STORAGE_KEY);
+
+  function seedFromProfile(target) {
+    try {
+      const profile = JSON.parse(localStorage.getItem('zhitu_my_profile_v1__' + currentUserId()) || 'null');
+      if (!profile || typeof profile !== 'object') return;
+      const p = profile.userProfile || {};
+      const info = target.basicInfo;
+      ['name', 'phone', 'email', 'city'].forEach((key) => {
+        if (!String(info[key] || '').trim() && String(p[key] || '').trim()) info[key] = p[key];
+      });
+      const edu = Array.isArray(profile.education) ? profile.education[0] : null;
+      if (edu) {
+        if (!String(info.school || '').trim()) info.school = edu.school || '';
+        if (!String(info.major || '').trim()) info.major = edu.major || '';
+        if (!String(info.degree || '').trim()) info.degree = edu.degree || '';
+        if (!String(info.graduate || '').trim()) info.graduate = edu.graduateYear || '';
+      }
+      const pref = profile.careerPreference || {};
+      if (!target.jobDirection.positions.length && Array.isArray(pref.desiredJobs)) {
+        const wanted = pref.desiredJobs.map((name) => POSITION_LIST.find((j) => j.name === name)).filter(Boolean).slice(0, 3);
+        target.jobDirection.positions = wanted.map((j) => j.id);
+      }
+      if (!target.profile.skills.length && Array.isArray(pref.desiredIndustries)) {
+        target.profile.skills = pref.desiredIndustries.slice(0, 8);
+      }
+    } catch (_) {}
+  }
+
   const defaultState = {
     currentStep: 1,
     completedSteps: {},
@@ -44,9 +83,15 @@
 
   function loadState() {
     try {
-      let raw = localStorage.getItem(STORAGE_KEY);
+      let raw = localStorage.getItem(USER_STORAGE_KEY);
+      let migratedGlobal = false;
       if (!raw) {
-        raw = localStorage.getItem(LEGACY_STORAGE_KEY);
+        raw = localStorage.getItem(USER_LEGACY_STORAGE_KEY);
+      }
+      // 兼容旧版本全局草稿：仅在当前用户没有用户级草稿时迁移一次。
+      if (!raw) {
+        raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem(LEGACY_STORAGE_KEY);
+        migratedGlobal = !!raw;
       }
       if (raw) {
         const obj = JSON.parse(raw);
@@ -68,6 +113,10 @@
         if (mapped.currentStep > 5) {
           mapped.currentStep = legacyMap[mapped.currentStep] || 1;
         }
+        seedFromProfile(mapped);
+        if (migratedGlobal) {
+          try { localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(mapped)); } catch (_) {}
+        }
         return mapped;
       }
     } catch (err) { console.warn('rb state load fail:', err); }
@@ -76,7 +125,7 @@
 
   function saveState() {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(state));
     } catch (err) { console.warn('rb state save fail:', err); }
   }
 
@@ -224,7 +273,8 @@
         type: 'button',
         'data-step': s.id,
         'aria-disabled': dis ? 'true' : 'false',
-        title: dis ? '请先完成前面的步骤' : ('前往：' + s.label)
+        'data-tooltip': dis ? '请先完成前面的步骤' : ('前往：' + s.label),
+        'aria-label': dis ? s.label + '，请先完成前面的步骤' : '前往：' + s.label
       },
         el('span', { class: 'rb-step-num' }, String(s.id).padStart(2, '0')),
         el('span', { class: 'rb-step-label' }, s.label),
@@ -529,7 +579,8 @@
       const btn = el('button', {
         class: 'rb-skill-chip' + (on ? ' is-on' : ''),
         type: 'button',
-        title: on ? '取消选择' : '选择技能'
+        'data-tooltip': on ? '取消选择' : '选择技能',
+        'aria-label': skill + '：' + (on ? '取消选择' : '选择技能')
       }, skill);
       btn.addEventListener('click', () => toggleSkill(skill));
       wrap.appendChild(btn);
@@ -661,9 +712,9 @@
             el('b', null, exp.title || '经历 ' + (i + 1))
           ),
           el('div', { class: 'rb-exp-controls' },
-            el('button', { class: 'rb-icon-btn', type: 'button', title: '上移', onclick: () => moveExp(i, -1) }, '↑'),
-            el('button', { class: 'rb-icon-btn', type: 'button', title: '下移', onclick: () => moveExp(i, +1) }, '↓'),
-            el('button', { class: 'rb-icon-btn', type: 'button', title: '删除', onclick: () => removeExp(i) }, '×')
+            el('button', { class: 'rb-icon-btn', type: 'button', 'data-tooltip': '上移', 'aria-label': '上移经历', onclick: () => moveExp(i, -1) }, '↑'),
+            el('button', { class: 'rb-icon-btn', type: 'button', 'data-tooltip': '下移', 'aria-label': '下移经历', onclick: () => moveExp(i, +1) }, '↓'),
+            el('button', { class: 'rb-icon-btn', type: 'button', 'data-tooltip': '删除', 'aria-label': '删除经历', onclick: () => removeExp(i) }, '×')
           )
         ),
         el('div', { class: 'rb-exp-row' },
@@ -1177,12 +1228,37 @@
     saveToLibrary();
     saveMatchResume();
     syncProfileToBackend().catch(function () {});
+    syncProfileLocal();
     succ.classList.add('is-on');
     paper.classList.add('is-on');
     paintPaper();
     renderBottom();
     renderTopnav();
     toast('✓ 简历已生成，可进入人岗匹配');
+    showVaultPromptModal();
+  }
+
+  // 生成完成：提示简历已存入个人仓库，可在仓库选岗位进行人岗匹配
+  function showVaultPromptModal() {
+    if (document.getElementById('rb-vault-prompt')) return;
+    var overlay = document.createElement('div');
+    overlay.id = 'rb-vault-prompt';
+    overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(20,14,8,.5);display:flex;align-items:center;justify-content:center;padding:24px';
+    overlay.innerHTML =
+      '<div style="width:min(460px,100%);background:#fff;border-radius:18px;padding:28px 28px 24px;box-shadow:0 24px 64px rgba(60,45,30,.28);text-align:center">'
+      + '<div style="width:56px;height:56px;margin:0 auto 14px;border-radius:50%;background:linear-gradient(135deg,#B07A28,#8C5E1E);color:#fff;display:grid;place-items:center;font-size:26px">⚑</div>'
+      + '<h3 style="margin:0 0 8px;font:600 20px var(--font-serif,serif);color:#111">简历已存入个人仓库</h3>'
+      + '<p style="margin:0 0 20px;color:#5a6472;font-size:13px;line-height:1.8">简历档案、技能画像与匹配报告都已保存。前往<b style="color:#8C5E1E">个人仓库</b>选择岗位，即可开始人岗匹配。</p>'
+      + '<div style="display:flex;gap:10px;justify-content:center">'
+      + '<button id="rb-vault-go" style="flex:1.2;height:44px;border:0;border-radius:10px;background:linear-gradient(135deg,#B07A28,#8C5E1E);color:#fff;font:600 14px sans-serif;cursor:pointer">前往个人仓库 · 选岗位匹配</button>'
+      + '<button id="rb-vault-stay" style="flex:1;height:44px;border:1px solid #ddd;border-radius:10px;background:#fff;color:#333;font:600 14px sans-serif;cursor:pointer">留在此页</button>'
+      + '</div></div>';
+    document.body.appendChild(overlay);
+    overlay.querySelector('#rb-vault-go').addEventListener('click', function () {
+      overlay.remove();
+      window.location.href = 'warehouse.html?tab=resumes';
+    });
+    overlay.querySelector('#rb-vault-stay').addEventListener('click', function () { overlay.remove(); });
   }
 
   function apiBase() {
@@ -1198,7 +1274,7 @@
       var u = JSON.parse(localStorage.getItem('zhitu_user') || 'null');
       if (u && (u.username || u.user_id || u.id)) return String(u.username || u.user_id || u.id);
     } catch (_) {}
-    return 'demo_user';
+    return 'guest';
   }
 
   async function syncProfileToBackend() {
@@ -1229,8 +1305,8 @@
   }
 
   /* ============== 14.5 简历库 + 人岗匹配桥接 ============== */
-  const LIB_STORAGE_KEY = 'rb_resume_library_v1';
-  const MATCH_RESUME_KEY = 'zhitu_match_resume_v1';
+  const LIB_STORAGE_KEY = 'rb_resume_library_v1__' + currentUserId();
+  const MATCH_RESUME_KEY = 'zhitu_match_resume_v1__' + currentUserId();
 
   function buildMatchSectionsFromState() {
     const b = state.basicInfo || {};
@@ -1278,6 +1354,37 @@
     ];
   }
 
+  function syncProfileLocal() {
+    try {
+      const key = 'zhitu_my_profile_v1__' + currentUserId();
+      const profile = JSON.parse(localStorage.getItem(key) || 'null') || {};
+      const p = profile.userProfile || {};
+      const b = state.basicInfo || {};
+      profile.userProfile = Object.assign({}, p, {
+        name: b.name || p.name || '', phone: b.phone || p.phone || '', email: b.email || p.email || '', city: b.city || p.city || ''
+      });
+      const edu = profile.education || [];
+      if (b.school || b.major || b.degree || b.graduate) {
+        const item = Object.assign({}, edu[0] || { id: 'edu-builder' }, {
+          school: b.school || '', major: b.major || '', degree: b.degree || '', graduateYear: b.graduate || ''
+        });
+        profile.education = [item].concat(edu.slice(1));
+      }
+      const pref = profile.careerPreference || {};
+      const posName = state.jobDirection.positions[0] ? ((findPosition(state.jobDirection.positions[0]) || {}).name || '') : '';
+      profile.careerPreference = Object.assign({}, pref, { desiredJobs: posName ? [posName] : (pref.desiredJobs || []) });
+      const text = buildMatchSectionsFromState().map((s) => s.content).join('\\n');
+      profile.resume = Object.assign({}, profile.resume || {}, { exists: true, updatedAt: todayISO(), status: '已生成', completion: Math.max(24, Math.min(100, Math.round((text.length / 8) + 40))), snapshot: { text: text, source: 'resume-builder' } });
+      localStorage.setItem(key, JSON.stringify(profile));
+      window.dispatchEvent(new CustomEvent('zhitu-profile-changed', { detail: { data: profile } }));
+    } catch (_) {}
+  }
+
+  function todayISO() {
+    const d = new Date();
+    return d.getFullYear() + '.' + String(d.getMonth() + 1).padStart(2, '0') + '.' + String(d.getDate()).padStart(2, '0');
+  }
+
   function saveMatchResume() {
     try {
       const sections = buildMatchSectionsFromState();
@@ -1308,6 +1415,18 @@
     } catch (err) {
       console.warn('saveMatchResume fail:', err);
     }
+  }
+
+  function returnFromResume() {
+    try {
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({ source: 'zhitu-resume', type: 'close' }, '*');
+        // 直接回到我的资料页（而不是停留在岗位大新闻）
+        try { window.parent.location.href = 'my-profile.html?v=fix25c5'; } catch (_) {}
+        return;
+      }
+    } catch (_) {}
+    window.location.href = 'my-profile.html?v=fix25c5';
   }
 
   function goMatchPage() {
@@ -1473,6 +1592,8 @@
   function bindEvents() {
     $('#rb-step-back').addEventListener('click', prevStep);
     $('#rb-step-next').addEventListener('click', nextStep);
+    const returnProfile = $('#rb-return-profile');
+    if (returnProfile) returnProfile.addEventListener('click', returnFromResume);
 
     // 步骤 1
     $('#rb-ai-basic').addEventListener('click', aiAutofillBasic);
@@ -1508,6 +1629,77 @@
     bindInputs();
   }
 
+  /* ============== 15.5 一键加载测试数据 · 直接生成完美简历 ============== */
+  window.loadTestData = function () {
+    // 1. 完整基本档案
+    state.basicInfo = {
+      name: '王储源',
+      phone: '13800138000',
+      email: 'wang.chuyuan@example.com',
+      city: '杭州',
+      degree: '本科',
+      school: '浙江大学',
+      major: '计算机科学与技术',
+      graduate: '2026-07'
+    };
+    // 2. 投递方向（多选）
+    state.jobDirection.positions = ['java', 'web', 'data'];
+    // 3. 个人画像
+    state.profile = {
+      personality: '逻辑严谨、好奇心驱动；偏好以数据说话、用可验证的结果闭环。',
+      intent: '寻求一线城市后端与全栈开发岗位，关注 AI / LLM 应用与数据平台方向。',
+      dislike: '不接受无明确产出衡量、与重复性事务消耗型岗位。',
+      skills: ['Python', 'PyTorch', 'LangChain', 'RAG', 'React', 'Vue', 'TypeScript', 'Node.js', 'PostgreSQL', 'Docker', 'Kubernetes', 'Spark', 'AWS'],
+      summary: '具备全栈开发与机器学习项目落地经验的应届生；参与过 RAG 知识库、行业与技能图谱等真实数据驱动项目的交付。'
+    };
+    // 4. 实践经历（原始 + STAR 对齐）
+    state.experiences = [
+      { id: 'EXP-001', title: 'AI Agent 平台后端', org: '执图云算科技', role: '后端工程师（实习）', time: '2025-03 – 2025-08',
+        brief: '负责 RAG 检索服务、Agent 编排 API 与多租户权限模块。',
+        result: '平均检索响应从 480ms 降至 130ms；推理 QPS 提升 2.2 倍。' },
+      { id: 'EXP-002', title: '知识图谱可视化前端', org: '远见数据', role: '前端工程师（实习）', time: '2024-07 – 2024-12',
+        brief: '用 React + ECharts 搭建岗位-技能-公司三层关系图谱。',
+        result: '支撑 2 万节点、6 万边渲染稳定 60fps；入选年度优秀实习生作品集。' },
+      { id: 'EXP-003', title: '校园项目 · 智能问答', org: '学生创新项目', role: '队长 / 全栈', time: '2024-02 – 2024-06',
+        brief: '基于 RAG + Prompt Engineering 的课程答疑 demo。',
+        result: 'Top-3 命中率达 91%，项目获评校级优秀结题。' }
+    ];
+    state.starExperiences = [
+      { S: 'RAG 检索服务偶发返回空集，业务侧多次反馈。', T: '3 周内将检索平均时延与空集率降至可接受水位。', A: '重构检索链路，引入查询改写与重排，并补充 fallback 策略。', R: '平均时延 480ms → 130ms，空集率由 5.6% 降至 0.4%，获评季度优秀工程实践。' },
+      { S: '图谱首屏在 2 万节点场景下卡顿明显、交互卡死。', T: '首屏 1 秒内帧率达 60fps 并保留可缩放能力。', A: '改用 Canvas 渲染并把布局任务迁到 WebWorker，主线程长任务由 1400ms 降至 220ms。', R: '入选年度优秀实习生作品集，并成为后续图谱组件基线方案。' },
+      { S: '课程答疑 demo 早期回答命中率低、用户体验差。', T: '校级验收前将 Top-3 命中率提升至 90% 以上。', A: '优化切片策略、补齐文档切分、补全少样本样例与重排模型。', R: 'Top-3 命中率 91%，项目获评校级优秀结题。' }
+    ];
+    // 5. 润色与质量（"完美简历"标记）
+    state.polish = {
+      complete: true,
+      score: 96,
+      coverage: 100,
+      keywordHits: 100,
+      langIssues: 0,
+      readability: 'A',
+      quality: 'excellent',
+      badge: 'perfect'
+    };
+    state.generated = true;
+    state.completedSteps = { 1: true, 2: true, 3: true, 4: true, 5: true };
+
+    // 6. 落库 + 同步
+    saveState();
+    if (typeof saveToLibrary === 'function') saveToLibrary();
+    if (typeof saveMatchResume === 'function') saveMatchResume();
+    if (typeof syncProfileLocal === 'function') syncProfileLocal();
+
+    // 7. 跳到第 5 步并渲染纸面 + 仓库提示
+    state.currentStep = 5;
+    if (typeof renderTopnav === 'function') renderTopnav();
+    if (typeof renderBottom === 'function') renderBottom();
+    if (typeof gotoStep === 'function') gotoStep(5);
+    if (typeof paintPaper === 'function') paintPaper();
+    if (typeof showVaultPromptModal === 'function') showVaultPromptModal();
+
+    if (typeof toast === 'function') toast('✓ 完美简历已生成 · 已存入个人仓库');
+  };
+
   /* ============== 16. 初始化 ============== */
   function init() {
     bindEvents();
@@ -1517,6 +1709,9 @@
     // 重新进入时，按当前 step 渲染；gotoStep 内部会触发 renderIllus
     gotoStep(state.currentStep);
     enrichJobPoolFromApi();
+    // 一键加载测试数据按钮（演示用）
+    var tdb = document.getElementById('rb-load-test-data');
+    if (tdb) tdb.addEventListener('click', window.loadTestData);
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
