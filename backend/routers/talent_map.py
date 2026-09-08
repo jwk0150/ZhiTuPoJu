@@ -24,6 +24,26 @@ router = APIRouter()
 # 数据非分钟级变化，缓存后首次 6s、后续毫秒级。演示/评审场景命中率为准。
 _PROV_CACHE = {"key": None, "ts": 0.0, "data": None}
 _PROV_CACHE_TTL = 180.0  # 秒
+_PROV_WARMING = False  # single-flight：预热进行中时并发请求等待，避免重复跑重查询
+
+
+async def warm_provinces_cache():
+    """启动预热：后台填充省份聚合缓存，用户首屏直接命中暖数据（省 4-6s 冷查询）"""
+    global _PROV_WARMING
+    if _PROV_WARMING:
+        return
+    _PROV_WARMING = True
+    try:
+        pool = await get_pool()
+        async with pool.acquire() as conn:
+            data = await fetch_provinces_summary(conn)
+        import time as _time
+        _PROV_CACHE.update({"key": "all", "ts": _time.time(), "data": data})
+        print("[talent_map] provinces 缓存预热完成")
+    except Exception as exc:
+        print("[talent_map] provinces 缓存预热失败:", exc)
+    finally:
+        _PROV_WARMING = False
 
 
 def ok(data):
@@ -54,6 +74,15 @@ async def get_provinces(
     now = _time.time()
     if not has_filter and _PROV_CACHE["key"] == cache_key and now - _PROV_CACHE["ts"] < _PROV_CACHE_TTL:
         return ok(_PROV_CACHE["data"])
+    if not has_filter and _PROV_WARMING:
+        # 预热进行中：等待其完成直接复用结果，避免并发重跑同一重查询
+        import asyncio as _asyncio
+        for _ in range(80):  # 最多等 20s
+            await _asyncio.sleep(0.25)
+            if _PROV_CACHE["key"] == cache_key and _time.time() - _PROV_CACHE["ts"] < _PROV_CACHE_TTL:
+                return ok(_PROV_CACHE["data"])
+            if not _PROV_WARMING:
+                break
     pool = await get_pool()
     async with pool.acquire() as conn:
         data = await fetch_provinces_summary(

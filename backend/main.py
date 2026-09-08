@@ -17,11 +17,18 @@ async def lifespan(app: FastAPI):
     except Exception:
         # 数据源未就绪时不阻断后端启动；后续请求会按情况报错
         pass
+    # 后台预热地图省份聚合缓存：服务就绪即数据就绪，用户首屏不撞冷查询
+    import asyncio as _asyncio
+    _asyncio.get_event_loop().create_task(talent_map.warm_provinces_cache())
     yield
     await close_pool()
 
 
 app = FastAPI(title="Job Ability Graph API", version="0.2.0", lifespan=lifespan)
+
+# 传输压缩：geojson/大体积 JS/JSON 响应 gzip 后体积降 60-80%（地图首屏关键）
+from fastapi.middleware.gzip import GZipMiddleware
+app.add_middleware(GZipMiddleware, minimum_size=1024)
 
 app.add_middleware(
     CORSMiddleware,
