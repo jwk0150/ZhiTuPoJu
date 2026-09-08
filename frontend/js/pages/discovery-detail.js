@@ -35,7 +35,7 @@
     { id: 'evidence', n: '09', label: '证据链', hint: '可信度与门控' }
   ];
 
-  var esc = window.zhesc; // 收口：共享实现见 js/api.js
+  var esc = window.zhesc || function (s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&quot;", "'": "&#39;" }[c]; }); }; // 收口：共享实现见 js/api.js
 
   function qs(name) {
     try {

@@ -7,7 +7,7 @@
   let sankeyChart = null;
   let ganttChart = null;
 
-  var esc = window.zhesc; // 收口：共享实现见 js/api.js
+  var esc = window.zhesc || function (s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&quot;", "'": "&#39;" }[c]; }); }; // 收口：共享实现见 js/api.js
 
   function qs(name) {
     try {

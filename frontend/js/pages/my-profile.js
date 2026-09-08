@@ -32,7 +32,7 @@
     try { localStorage.setItem(key, JSON.stringify(val)); return true; }
     catch (_) { return false; }
   }
-  var esc = window.zhesc; // 收口：共享实现见 js/api.js
+  var esc = window.zhesc || function (s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&quot;", "'": "&#39;" }[c]; }); }; // 收口：共享实现见 js/api.js
   function initial(label) {
     var t = String(label || '').trim();
     return t ? t.slice(0, 1) : '·';
