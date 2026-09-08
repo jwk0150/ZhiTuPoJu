@@ -764,6 +764,11 @@ window.talentCityApplyFilter = async function() {
         var cityObj = { name: cityRaw, displayName: displayName };
         // skipSync=true：保留用户已在筛选面板设置的 岗位/学历/经验/薪资 值
         await window.talentMapEnterCity(cityObj, { skipSync: true });
+    } else if (talentMapState.analysisMode === true && talentMapState.selectedProvince) {
+        // 省级岗位分析：地区=全部 → 按筛选重新渲染全省岗位（停留在分析页，不跳地图）
+        await window.renderProvinceJobList(talentMapState.selectedProvince);
+        window.Utils.showToast('筛选已应用', 'gold');
+        return;
     } else {
         // 地区未选择：停留在当前城市，仅应用 岗位/学历/经验/薪资 筛选
         if (!talentMapState.selectedCity) {
@@ -837,6 +842,9 @@ window.talentCityResetFilter = async function() {
         await window.talentMapEnterCity(city, { skipSync: true });
     } else if (talentMapState.selectedCity) {
         await window.renderProvinceJobList({ name: '' }, talentMapState.selectedCity);
+    } else if (talentMapState.analysisMode === true && talentMapState.selectedProvince) {
+        // 省级岗位分析：重置为 全省 + 全部岗位/不限筛选
+        await window.renderProvinceJobList(talentMapState.selectedProvince);
     }
     window.Utils.showToast('已重置筛选', 'gold');
 };
@@ -891,8 +899,9 @@ window.talentShowLayer = function(layer) {
     // 背板切换：地图层直接融入页面背景（无透明背板），岗位分析/技术脑图层保留透明背板
     var canvasEl = document.getElementById('talent-map-canvas');
     if (canvasEl) canvasEl.classList.toggle('canvas-panel', layer !== 'map');
-    // 市级岗位分析：三栏布局（筛选 | 岗位列表 | 数据分析），并隐藏旧的覆盖式悬浮筛选
-    var cityMode = layer === 'province' && talentMapState.mapLevel === 'city';
+    // 市级/省级岗位分析：三栏布局（筛选 | 岗位列表 | 数据分析），并隐藏旧的覆盖式悬浮筛选
+    if (layer !== 'province') talentMapState.analysisMode = false;
+    var cityMode = layer === 'province' && (talentMapState.mapLevel === 'city' || talentMapState.analysisMode === true);
     var provinceLayerEl = document.getElementById('talent-layer-province');
     if (provinceLayerEl) provinceLayerEl.classList.toggle('city-mode', cityMode);
     var mapViewEl = document.getElementById('view-map');
@@ -979,6 +988,7 @@ window.talentMapBack = function() {
             talentMapState.selectedCity = null;
             talentMapState.mapLevel = 'province';
             talentMapState.analysisLevel = 'province';
+            talentMapState.analysisMode = false;
             window.talentShowLayer('map');
             if (talentMapState.selectedProvince) {
                 window.talentRenderCityMap(talentMapState.currentProvinceName);
@@ -2344,6 +2354,42 @@ window.talentMapEnterProvince = function() {
     talentMapState.analysisLevel = 'province';
     talentMapState.selectedCity = null;
     talentMapState.mapLevel = 'province';
+    // 省级分析同样展开左侧筛选栏（与市级岗位分析同一布局体系）
+    talentMapState.analysisMode = true;
+    // 面板默认值：省份=当前省份、地区=全部地区、岗位/学历/经验/薪资=不限
+    (async function () {
+        try {
+            var provShort = prov.name;
+            var provSel = document.getElementById('talent-city-filter-province');
+            var citySel = document.getElementById('talent-city-filter-city');
+            var jobSel = document.getElementById('talent-city-filter-job');
+            var eduSel = document.getElementById('talent-city-filter-edu');
+            var expSel = document.getElementById('talent-city-filter-exp');
+            var salMin = document.getElementById('talent-city-filter-salary-min');
+            var salMax = document.getElementById('talent-city-filter-salary-max');
+            if (provSel) {
+                var has = Array.prototype.some.call(provSel.options, function (o) { return o.value === provShort; });
+                if (!has) {
+                    var opt = document.createElement('option');
+                    opt.value = provShort; opt.textContent = provShort;
+                    provSel.appendChild(opt);
+                }
+                provSel.value = provShort;
+            }
+            if (citySel) {
+                var cities = window.talentNormalizeCityList(await window.talentFetchCities(provShort), provShort);
+                var html = '<option value="">全部地区</option>';
+                cities.forEach(function (c) { html += '<option value="' + c + '">' + window.talentCityDisplay(c) + '</option>'; });
+                citySel.innerHTML = html;
+                citySel.value = '';
+            }
+            if (jobSel) jobSel.value = '';
+            if (eduSel) eduSel.value = '';
+            if (expSel) expSel.value = '';
+            if (salMin) salMin.value = '';
+            if (salMax) salMax.value = '';
+        } catch (e) { console.warn('[TalentMap] 省级筛选面板同步失败', e); }
+    })();
 
     // 防重复点击
     if (talentMapState.isEnteringProvince) return;
