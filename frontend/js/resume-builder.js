@@ -88,10 +88,17 @@
       if (!raw) {
         raw = localStorage.getItem(USER_LEGACY_STORAGE_KEY);
       }
-      // 兼容旧版本全局草稿：仅在当前用户没有用户级草稿时迁移一次。
+      // 兼容旧版本全局草稿：仅给当前账号一次性迁移，并立即清掉全局 key
+      // （否则下一个账号登录时会通过同一全局 key 继承前一个用户的草稿）。
       if (!raw) {
         raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem(LEGACY_STORAGE_KEY);
-        migratedGlobal = !!raw;
+        if (raw) {
+          migratedGlobal = true;
+          try {
+            localStorage.removeItem(STORAGE_KEY);
+            localStorage.removeItem(LEGACY_STORAGE_KEY);
+          } catch (_) {}
+        }
       }
       if (raw) {
         const obj = JSON.parse(raw);
@@ -108,9 +115,9 @@
           polish: Object.assign({}, defaultState.polish, obj.polish || {}),
           completedSteps: obj.completedSteps || {}
         });
-        // 旧 8 步 → 新 5 步
-        const legacyMap = { 1: 1, 2: 2, 3: 3, 4: 3, 5: 2, 6: 5, 7: 4, 8: 5 };
-        if (mapped.currentStep > 5) {
+        // 旧 8 步 → 新 6 步（加入了「技能评价」步 4）
+        const legacyMap = { 1: 1, 2: 2, 3: 3, 4: 3, 5: 4, 6: 6, 7: 5, 8: 6 };
+        if (mapped.currentStep > 6) {
           mapped.currentStep = legacyMap[mapped.currentStep] || 1;
         }
         seedFromProfile(mapped);
@@ -183,11 +190,12 @@
     { id: 1, label: '基础信息', short: '基础信息' },
     { id: 2, label: '方向技能', short: '方向技能' },
     { id: 3, label: '实践经历', short: '实践经历' },
-    { id: 4, label: '润色检查', short: '润色检查' },
-    { id: 5, label: '生成导出', short: '生成导出' }
+    { id: 4, label: '技能评价', short: '技能评价' },
+    { id: 5, label: '润色检查', short: '润色检查' },
+    { id: 6, label: '生成导出', short: '生成导出' }
   ];
 
-  const ILLUS_IMG = { 1: 1, 2: 2, 3: 3, 4: 7, 5: 8 };
+  const ILLUS_IMG = { 1: 1, 2: 2, 3: 3, 4: 7, 5: 7, 6: 8 };
 
   let POSITION_LIST = [];
   let jobFilter = { q: '', cat: '全部' };
@@ -315,8 +323,15 @@
       ensureExperienceSeed();
       return state.experiences.length > 0;
     }
-    if (stepId === 4) return !!state.polish.complete;
-    if (stepId === 5) return true;
+    if (stepId === 4) {
+      // 技能评价：技能标签至少 1 个，自我评价至少 20 字
+      const p = state.profile || {};
+      const hasTag = Array.isArray(p.skills) && p.skills.length > 0;
+      const hasSummary = String(p.summary || '').trim().length >= 20;
+      return hasTag && hasSummary;
+    }
+    if (stepId === 5) return !!state.polish.complete;
+    if (stepId === 6) return true;
     return true;
   }
 
@@ -330,17 +345,21 @@
     },
     2: {
       title: '方向<br/><em>技能</em>',
-      desc: '选 1–3 个投递方向，补充技能标签与自我评价。'
+      desc: '选 1–3 个投递方向，作为下一步经历的关键词线索。'
     },
     3: {
       title: '实践<br/><em>经历</em>',
       desc: '写实习、项目或校园实践，并用 STAR 改写要点。'
     },
     4: {
+      title: '技能<br/><em>评价</em>',
+      desc: '为简历补充技能标签和自我评价，让招聘匹配更精准。'
+    },
+    5: {
       title: '润色<br/><em>检查</em>',
       desc: '压缩空话，保留可量化结果与岗位相关关键词。'
     },
-    5: {
+    6: {
       title: '生成<br/><em>导出</em>',
       desc: '可选证件照，生成简历后下载或进入简历库。'
     }
@@ -421,16 +440,20 @@
       bindSkillFilters();
       renderJobCats();
       renderPositions();
-      renderSkillPool();
-      renderTags();
     }
     if (stepId === 3) {
       ensureExperienceSeed();
       renderExpList();
       syncAndPaintStars();
     }
-    if (stepId === 4) renderPolish();
-    if (stepId === 5) { renderPhoto(); renderExport(); }
+    if (stepId === 4) {
+      // 技能与自我评价：渲染技能池 / 自定义标签
+      bindSkillFilters();
+      renderSkillPool();
+      renderTags();
+    }
+    if (stepId === 5) renderPolish();
+    if (stepId === 6) { renderPhoto(); renderExport(); }
     if (stepId === 1) renderBasic();
   }
 

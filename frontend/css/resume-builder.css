@@ -1541,25 +1541,31 @@ body {
   opacity: 0.65;
 }
 
-.rb-photo-actions { display: flex; flex-direction: column; gap: 12px; }
+.rb-photo-actions { display: flex; flex-direction: column; gap: 14px; }
+.rb-photo-actions .rb-btn { width: 100%; justify-content: center; }
 
 .rb-photo-info {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 16px;
-  background: rgba(3, 16, 19, 0.42);
-  border: 1px solid var(--line-cool);
+  gap: 0;
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(168, 139, 78, 0.22);
   border-radius: var(--r-md);
 }
 .rb-photo-info-row {
   display: flex;
   justify-content: space-between;
-  font-size: 12.5px;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+  font-size: 13px;
   letter-spacing: 0.04em;
+  border-top: 1px dashed rgba(168, 139, 78, 0.18);
 }
-.rb-photo-info-row span { color: var(--mist-dim); }
-.rb-photo-info-row b { color: var(--ink-paper-warm); font-weight: 500; }
+.rb-photo-info-row:first-child { border-top: 0; }
+.rb-photo-info-row span { color: var(--ink-paper-warm); opacity: .65; font-weight: 500; }
+.rb-photo-info-row b { color: #1F1B16; font-weight: 600; }
 
 /* ============================================================
  * 12. 步骤 07：精简润色
@@ -1670,10 +1676,11 @@ body {
  * ============================================================ */
 .rb-include {
   padding: 22px 24px;
-  background: rgba(3, 16, 19, 0.36);
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(168, 139, 78, 0.22);
   border-radius: var(--r-md);
-  border: 1px solid var(--line-cool);
   margin-bottom: 28px;
+  box-shadow: 0 1px 0 rgba(168, 139, 78, 0.06);
 }
 .rb-include-head {
   font-family: var(--font-mono);
@@ -1691,22 +1698,38 @@ body {
 .rb-include-row {
   display: flex;
   justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
   font-size: 13.5px;
-  padding: 6px 0;
-  border-top: 1px dashed rgba(180, 205, 190, 0.10);
+  padding: 10px 0;
+  border-top: 1px dashed rgba(168, 139, 78, 0.18);
 }
 .rb-include-row:first-child { border-top: 0; }
-.rb-include-row span { color: var(--mist-dim); letter-spacing: 0.06em; }
-.rb-include-row b { color: var(--ink-paper-warm); font-weight: 500; }
+.rb-include-row > span {
+  flex: 0 0 auto;
+  color: var(--ink-paper-warm);
+  opacity: .65;
+  letter-spacing: 0.06em;
+  font-weight: 500;
+  padding-top: 1px;
+}
+.rb-include-row > b {
+  flex: 1 1 auto;
+  color: #1F1B16;
+  font-weight: 600;
+  text-align: right;
+  word-break: break-word;
+  line-height: 1.5;
+}
 
 .rb-check {
   display: flex;
   flex-direction: column;
   gap: 0;
   padding: 22px 24px;
-  background: rgba(3, 16, 19, 0.36);
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(168, 139, 78, 0.22);
   border-radius: var(--r-md);
-  border: 1px solid var(--line-cool);
   margin-bottom: 32px;
 }
 .rb-check-head {
@@ -1755,8 +1778,8 @@ body {
   flex-direction: column;
   gap: 0;
   padding: 22px 24px;
-  background: rgba(3, 16, 19, 0.42);
-  border: 1px solid rgba(217, 182, 111, 0.20);
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(168, 139, 78, 0.22);
   border-radius: var(--r-md);
 }
 .rb-progress-row {

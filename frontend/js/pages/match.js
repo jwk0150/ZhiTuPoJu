@@ -305,6 +305,67 @@
     ];
   }
 
+  /* ---------------- 简历片段改写：基于用户原文微调优化 ----------------
+   * 内置示例简历 → 走 RESUME_SUGGESTIONS 的高完成度示例稿；
+   * 用户真实内容  → buildGroundedVersion：保留原文事实与绝大部分措辞，
+   *                 仅做格式统一、弱词去掉“了”等安全微调，绝不整段替换成示例文案。
+   * ---------------------------------------------------------------- */
+  function cleanResumeLines(text) {
+    return String(text == null ? '' : text).split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+  }
+  function normResumeKey(str) {
+    return String(str || '').toLowerCase().replace(/[\s，。；：、,.!！?？·•·\-–—\d()（）]/g, '');
+  }
+  function resumeTextSimilarity(a, b) {
+    const A = normResumeKey(a), B = normResumeKey(b);
+    if (!A || !B) return 0;
+    const setA = new Set(A), setB = new Set(B);
+    let inter = 0;
+    setA.forEach((c) => { if (setB.has(c)) inter++; });
+    return inter / Math.max(1, setA.size + setB.size - inter);
+  }
+  // 内置示例/演示文稿的“标准原文”，用于判断当前片段是否为内置示例。
+  const DEMO_SECTION_TEMPLATES = (function () {
+    const out = {};
+    try { buildDefaultResumeSections().forEach((x) => { out[x.id] = String(x.content || ''); }); } catch (_) {}
+    return out;
+  })();
+  function isDemoSectionContent(section) {
+    const base = DEMO_SECTION_TEMPLATES[section && section.id];
+    if (!base) return false;
+    return resumeTextSimilarity(base, (section && section.content) || '') > 0.72;
+  }
+  // 安全微调：去掉“负责了→负责”这类弱化字，规整标点前空格，不增删任何事实。
+  function softenResumeLine(line) {
+    let out = String(line || '');
+    ['负责了', '主导了', '参与了', '开发了', '设计了', '实现了', '优化了', '重构了', '搭建了', '部署了', '编写了', '梳理了', '引入了', '推动了', '落地了', '完成了', '提出了'].forEach((w) => {
+      if (out.indexOf(w) >= 0) out = out.split(w).join(w.replace('了', ''));
+    });
+    out = out.replace(/\s+([，。；：、！？])/g, '$1');       // 中文标点前不留空格
+    out = out.replace(/（\s+/g, '（').replace(/\s+）/g, '）'); // 括号内不留首尾空格
+    return out;
+  }
+  function isListLikeSection(id) { return id === 'projects' || id === 'work'; }
+  // 基于用户原文生成“量化/冲击/精简”三档，均以原文为底稿，彼此高度接近、只是轻微差别。
+  function buildGroundedVersion(section, versionId) {
+    const lines = cleanResumeLines(section && section.content).map(softenResumeLine);
+    if (!lines.length) return '';
+    const listLike = isListLikeSection(section && section.id);
+    if (versionId === 'dense' && !listLike) {
+      // 非列表片段（基本信息/教育/技能/自我评价）压缩成要点式流水句
+      return lines.join('；');
+    }
+    // quant / impact / fix：结构统一后的完整优化稿，保留原文各句
+    return lines.join('\n');
+  }
+  // 统一取“当前片段”应使用的改写文本。
+  function rewriteTextForSection(section, versionId) {
+    const sug = RESUME_SUGGESTIONS[section && section.id];
+    if (!sug) return '';
+    if (!isDemoSectionContent(section)) return buildGroundedVersion(section, versionId || 'quant');
+    return (sug.versions && sug.versions[versionId]) || sug.versions.quant || '';
+  }
+
   /* ---------------- AI 改写建议（三个版本，mock） ---------------- */
   const RESUME_SUGGESTIONS = {
     basic: {
@@ -470,7 +531,7 @@
     const s = _diffGetSection();
     const sug = RESUME_SUGGESTIONS[s.id];
     if (!sug) return;
-    const newText = sug.versions[_diffVersion] || '';
+    const newText = rewriteTextForSection(s, _diffVersion);
     const orig = $('rw-diff-orig');
     const nw = $('rw-diff-new');
     // 左侧：原文（普通文本，不整段高亮）
@@ -482,53 +543,96 @@
     }
   }
 
-  // 把改写后的文字渲染成可编辑内容，其中"新增/变化的文字"用 mark 高亮并可点击
-  // 新增片段按行拆成短语级 mark，点击某一行即可同步到左侧简历
+  // 改写对比：把「原文→改写稿」切成只含真正变化的片段（slice），
+  // 右侧整句修改高亮整句、加词只高亮新增的词；点击某一片段把该段修改合入简历对应位置。
+  let _activeDiffSlices = {}; // sectionId -> [{ old, text, before }]
+
+  function _escDiffText(t) {
+    return escapeHtml(String(t == null ? '' : t)).replace(/\n/g, '<br>');
+  }
+
   function renderDiffEditableRight(s, newText) {
-    const { rightRaw } = tokenLCS(s.content || '', newText);
     const adopted = ((window.matchState && window.matchState.adoptedDiffTerms) || {})[s.id] || [];
-    let html = '';
-    let buf = '';
-    const flush = () => {
-      if (buf.trim()) {
-        const segs = buf.split('\n');
-        segs.forEach((seg, idx) => {
-          const t = seg.trim();
-          if (t) {
-            const cls = adopted.includes(t) ? 'hl-new is-adopted' : 'hl-new';
-            html += '<mark class="' + cls + '" data-section="' + s.id + '" data-add="' + escapeHtml(t).replace(/"/g, '&quot;') + '">' + escapeHtml(t) + '</mark>';
-          }
-          if (idx < segs.length - 1) html += '<br>';
-        });
-      }
-      buf = '';
+    const { leftRaw, rightRaw } = tokenLCS(s.content || '', newText);
+    const slices = (_activeDiffSlices[s.id] = []);
+    const n = Math.max(leftRaw.length, rightRaw.length);
+    const isEq = (idx) => {
+      const L = leftRaw[idx], R = rightRaw[idx];
+      return !!(L && R && L.type === 'eq' && R.type === 'eq');
     };
-    (rightRaw || []).forEach((it) => {
-      if (it && it.type === 'ins') { buf += it.t; }
-      else { flush(); if (it) html += escapeHtml(it.t).replace(/\n/g, '<br>'); }
-    });
-    flush();
+    let html = '';
+    let eqBefore = ''; // 紧邻改动的等值上下文，用于纯新增时定位插入点
+    let i = 0;
+    while (i < n) {
+      if (isEq(i)) {
+        const t = (leftRaw[i] && leftRaw[i].t) || '';
+        html += _escDiffText(t);
+        eqBefore = (eqBefore + t).slice(-48);
+        i++;
+        continue;
+      }
+      // 收集一段连续变化：old = 被替换的原文，text = 新内容
+      let oldT = '';
+      let textT = '';
+      while (i < n && !isEq(i)) {
+        const L = leftRaw[i], R = rightRaw[i];
+        if (L && L.type === 'del') oldT += (L.t || '');
+        if (R && R.type === 'ins') textT += (R.t || '');
+        i++;
+      }
+      if (textT) {
+        const slice = { old: oldT, text: textT, before: eqBefore };
+        const idx = slices.length;
+        slices.push(slice);
+        const cls = adopted.indexOf(textT) >= 0 ? 'hl-new is-adopted' : 'hl-new';
+        html += '<mark class="' + cls + '" data-section="' + s.id + '" data-slice="' + idx + '" title="点击把这段修改合入简历">' + _escDiffText(textT) + '</mark>';
+      }
+    }
     return html;
   }
 
-  // 点击弹窗里高亮的"不同文字"→ 同步到左侧简历
+  function recordAdoptedDiffTerm(secId, term) {
+    if (!window.matchState.adoptedDiffTerms) window.matchState.adoptedDiffTerms = {};
+    if (!window.matchState.adoptedDiffTerms[secId]) window.matchState.adoptedDiffTerms[secId] = [];
+    if (window.matchState.adoptedDiffTerms[secId].indexOf(term) < 0) window.matchState.adoptedDiffTerms[secId].push(term);
+  }
+
+  // 点击弹窗里绿色高亮片段 → 把该段“在对应位置”合入简历：
+  // 改整句 → 找到原文那句并替换；加单词 → 在紧邻的原文上下文后插入该词；找不到锚点时提示手动编辑。
   function bindDiffNewMarks(container) {
     qsa('mark.hl-new', container).forEach((mk) => {
       mk.addEventListener('click', (e) => {
         e.preventDefault(); e.stopPropagation();
         const secId = mk.dataset.section;
-        const term = mk.dataset.add;
+        const list = (_activeDiffSlices || {})[secId] || [];
+        const slice = list[Number(mk.dataset.slice)];
         const sec = (window.matchState.resumeSections || []).find((x) => x.id === secId);
-        if (!sec || !term) return;
-        if (sec.content && sec.content.includes(term)) { showToast('该文字已在简历中', 'amber'); return; }
-        sec.content = (sec.content ? sec.content + '\n' : '') + term;
-        if (!window.matchState.adoptedDiffTerms) window.matchState.adoptedDiffTerms = {};
-        if (!window.matchState.adoptedDiffTerms[secId]) window.matchState.adoptedDiffTerms[secId] = [];
-        if (!window.matchState.adoptedDiffTerms[secId].includes(term)) window.matchState.adoptedDiffTerms[secId].push(term);
+        if (!sec || !slice) return;
+        const oldT = String(slice.old || '');
+        const textT = String(slice.text || '');
+        if (!textT) return;
+        const content = sec.content || '';
+        if (content.indexOf(textT) >= 0) {
+          recordAdoptedDiffTerm(secId, textT);
+          mk.classList.add('is-adopted');
+          showToast('这段文字已在简历中', 'amber');
+          return;
+        }
+        let next = content;
+        if (oldT && next.indexOf(oldT) >= 0) {
+          next = next.replace(oldT, textT);            // 整句/词替换
+        } else if (slice.before && next.indexOf(slice.before) >= 0) {
+          next = next.replace(slice.before, slice.before + textT); // 纯新增：插在原文上下文后
+        } else {
+          showToast('未能定位原文位置，请在右侧手动编辑后采纳', 'amber');
+          return;
+        }
+        sec.content = next;
+        recordAdoptedDiffTerm(secId, textT);
         renderResumePreview();
         renderResumeEditor();
         mk.classList.add('is-adopted');
-        showToast('已同步「' + term.slice(0, 12) + '」到左侧简历', 'teal');
+        showToast('已把该段修改合入简历', 'teal');
       });
     });
   }
@@ -541,7 +645,8 @@
     if (!sug) { showToast('该词条暂无可用改写建议', 'amber'); return; }
     // 优先用调用方指定的版本，否则按"不足"段调用时用 fix，其他默认 quant
     if (!_diffVersion || (s.id !== 'projects' && _diffVersion === 'fix')) _diffVersion = 'quant';
-    const sub = $('rw-diff-sub'); if (sub) sub.textContent = sug.title;
+    const sub = $('rw-diff-sub');
+    if (sub) sub.textContent = isDemoSectionContent(s) ? sug.title : (sug.title + ' · 基于你的原文优化，保留事实');
     const tag = $('rw-diff-section'); if (tag) tag.textContent = s.label || s.id;
     // 控制 fix 按钮可见性（仅 projects 段）
     qsa('.rw-diff-version').forEach((b) => {
@@ -571,7 +676,7 @@
     const s = _diffGetSection();
     const sug = RESUME_SUGGESTIONS[s.id];
     if (!sug) return;
-    const newText = sug.versions[_diffVersion] || '';
+    const newText = rewriteTextForSection(s, _diffVersion);
     s.content = newText;
     renderResume();
     closeDiffModal();
@@ -605,7 +710,18 @@
    * 匹配进度持久化（localStorage）
    * 目标：匹配过一次后，刷新/重进页面保留之前的操作，不再重新匹配。
    * ============================================================ */
-  const MATCH_STORAGE_KEY = 'zhitu_match_progress_v1';
+  function matchResumeProgressUserId() {
+    try {
+      if (window.ZhituVault && typeof window.ZhituVault.currentUserId === 'function') return window.ZhituVault.currentUserId();
+    } catch (_) {}
+    try {
+      const u = JSON.parse(localStorage.getItem('zhitu_user') || 'null');
+      if (u && (u.username || u.user_id || u.id)) return String(u.username || u.user_id || u.id);
+    } catch (_) {}
+    return 'guest';
+  }
+  // 匹配进度按账号隔离，避免多账号共用一份快照。
+  const MATCH_STORAGE_KEY = 'zhitu_match_progress_v1__' + matchResumeProgressUserId();
 
   function persistMatchState() {
     try {
@@ -621,6 +737,7 @@
         resumeSections: st.resumeSections || null,
         activeSection: st.activeSection || 'basic',
         fileName: st.fileName || '',
+        fileSize: st.fileSize || 0,
         interview: st.interview || null
       };
       localStorage.setItem(MATCH_STORAGE_KEY, JSON.stringify(snapshot));
@@ -641,6 +758,12 @@
     try { s = JSON.parse(raw); } catch (e) { return null; }
     if (!s) return null;
     const st = window.matchState;
+    // 快照对应的简历与当前所选简历不一致（例如从个人仓库/简历库换选了另一份简历）：
+    // 旧进度不再适用于新简历，直接作废，避免页面仍显示上一份简历的内容。
+    if (s.fileName && st.fileName && s.fileName !== st.fileName) {
+      try { localStorage.removeItem(MATCH_STORAGE_KEY); } catch (_) {}
+      return null;
+    }
     if (s.mode) st.mode = s.mode;
     if (s.result) st.result = s.result;
     if (s.selectedJobId) st.selectedJobId = s.selectedJobId;
@@ -712,6 +835,13 @@
     }
     st.whatif = {};
     st.favJobs = (window.ZhituVault && window.ZhituVault.loadMatchFavs) ? window.ZhituVault.loadMatchFavs() : {};
+    // 从个人仓库 / 简历库“选完简历”跳转回来：即使文件名相同，也作废旧匹配进度，避免串用上一份简历。
+    try {
+      const qp = new URLSearchParams(location.search || '');
+      if (qp.get('from') === 'warehouse' || qp.get('auto') === '1' || qp.get('pick') === '1') {
+        localStorage.removeItem(MATCH_STORAGE_KEY);
+      }
+    } catch (_) {}
     bindGlobal();
     bindEntry();
     bindMatchCond();
