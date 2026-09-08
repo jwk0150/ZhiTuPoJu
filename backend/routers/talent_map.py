@@ -20,6 +20,11 @@ from backend.services import (
 
 router = APIRouter()
 
+# 进程内 TTL 缓存：首屏省份聚合查询重（视图 CAST + 全表聚合，实测 6s），
+# 数据非分钟级变化，缓存后首次 6s、后续毫秒级。演示/评审场景命中率为准。
+_PROV_CACHE = {"key": None, "ts": 0.0, "data": None}
+_PROV_CACHE_TTL = 180.0  # 秒
+
 
 def ok(data):
     return {"code": 0, "message": "success", "data": data}
@@ -42,7 +47,13 @@ async def get_provinces(
     education: Optional[str] = Query(None),
     experience: Optional[str] = Query(None),
 ):
-    """全国省份数据（支持5维组合筛选）"""
+    """全国省份数据（支持5维组合筛选；无筛选时走 TTL 缓存）"""
+    import time as _time
+    has_filter = any([region, industry, job, education, experience])
+    cache_key = "all" if not has_filter else "|".join(filter(None, [region, industry, job, education, experience]))
+    now = _time.time()
+    if not has_filter and _PROV_CACHE["key"] == cache_key and now - _PROV_CACHE["ts"] < _PROV_CACHE_TTL:
+        return ok(_PROV_CACHE["data"])
     pool = await get_pool()
     async with pool.acquire() as conn:
         data = await fetch_provinces_summary(
@@ -53,6 +64,8 @@ async def get_provinces(
             education=education,
             experience=experience,
         )
+    if not has_filter:
+        _PROV_CACHE.update({"key": cache_key, "ts": now, "data": data})
     return ok(data)
 
 

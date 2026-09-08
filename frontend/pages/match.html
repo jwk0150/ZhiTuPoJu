@@ -953,6 +953,13 @@
     };
   </script>
   <script type="module" src="../js/avatar-interviewer.js?v=avatar1"></script>
+  <script type="module">
+    // 数字人预连接（P3-4）：页面就绪 3s 后后台建立讯飞会话，
+    // 用户走到面试环节时数字人已就绪（省 3-8s 握手等待）
+    setTimeout(function () {
+      try { window.AvatarInterviewer && window.AvatarInterviewer.preload(); } catch (e) {}
+    }, 3000);
+  </script>
 
   <script>
     window.Shell && window.Shell.mount({ pageId: 'match', title: '人岗匹配诊断', subtitle: '简历 → 匹配 → 岗位 → 学习 → 面试' });
