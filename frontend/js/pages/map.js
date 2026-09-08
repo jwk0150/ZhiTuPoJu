@@ -1286,9 +1286,25 @@ window.talentRenderCityMap = function(provinceName) {
 
     var chart = talentMapState.mapChart;
     var cityData = talentMapState.cityData;
+    // 省级/市级视图隐藏全国地图专用的港澳放大引导框（内含演示写死值，且坐标在省图上错位）
+    ['ganga-zoom-box', 'ganga-guide-svg'].forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) el.style.display = 'none';
+    });
     var mapData = [];
+    // 着色名与 geoJSON 实际区域名对齐（geojson 为全名"包头市"，接口为短名"包头"，
+    // 直接用数据名会精确匹配失败导致城市灰色无数据）；以 geojson features 为主键反查数据
+    var geoFeatures = (talentMapState.cityGeoJSON && talentMapState.cityGeoJSON.features) || [];
+    var matched = {};
+    geoFeatures.forEach(function(f) {
+        var nm = f.properties && f.properties.name;
+        if (!nm) return;
+        var c = window.talentFindCityData(cityData, nm);
+        if (c) { mapData.push({ name: nm, value: c.jobCount || 0, avgSalary: c.avgSalary || 0, rawName: c.name }); matched[c.name] = 1; }
+    });
+    // geojson 没有的数据条目（如"北京·朝阳区"区级名）按原逻辑兜底
     cityData.forEach(function(c) {
-        // 直辖市区级条目（"北京·朝阳区"）在 geoJSON 中的区域名为区名（"朝阳区"），rawName 保留数据库完整名
+        if (matched[c.name]) return;
         var geoName = String(c.name).indexOf('·') >= 0 ? String(c.name).split('·').pop() : c.name;
         mapData.push({ name: geoName, value: c.jobCount || 0, avgSalary: c.avgSalary || 0, rawName: c.name });
     });
@@ -2270,7 +2286,6 @@ window.talentRenderJobCards = function() {
             + '<div class="talent-job-hot">🔥 热度 ' + (j.hot || 0) + '</div>'
             + '</div>'
             + '<div class="talent-job-actions">'
-            + '<button class="talent-job-btn" onclick="event.stopPropagation();window.talentSelectJob(' + i + ')">查看详情</button>'
             + '<button class="talent-job-btn secondary" onclick="event.stopPropagation();window.talentSelectJob(' + i + ');window.talentMapEnterGraph()">进入知识图谱 →</button>'
             + '</div>'
             + '</div>';
