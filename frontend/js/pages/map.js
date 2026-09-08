@@ -1208,13 +1208,33 @@ window.talentLoadCityGeo = function(provinceName) {
     if (talentMapState.cityGeoLoaded === provinceName) return Promise.resolve(talentMapState.cityGeoJSON);
     const adcode = PROVINCE_CODE[provinceName];
     if (!adcode) return Promise.resolve(null);
-    const url = 'https://geo.datav.aliyun.com/areas_v3/bound/' + adcode + '_full.json';
-    return fetch(url).then(function(r) { return r.json(); }).then(function(geo) {
+    // 本地优先（assets/geo/ 随仓库分发，离线可用）；本地缺失时回退在线数据源；全程 8s 超时防止挂起卡死
+    const localUrl = '../assets/geo/' + adcode + '_full.json';
+    const remoteUrl = 'https://geo.datav.aliyun.com/areas_v3/bound/' + adcode + '_full.json';
+    function fetchWithTimeout(url) {
+        const ctl = new AbortController();
+        const timer = setTimeout(function() { ctl.abort(); }, 8000);
+        return fetch(url, { signal: ctl.signal }).finally(function() { clearTimeout(timer); });
+    }
+    function apply(geo) {
         talentMapState.cityGeoJSON = geo;
         talentMapState.cityGeoLoaded = provinceName;
         echarts.registerMap(provinceName + '-cities', geo);
         return geo;
-    }).catch(function() { return null; });
+    }
+    return fetchWithTimeout(localUrl)
+        .then(function(r) { if (!r.ok) throw new Error('local ' + r.status); return r.json(); })
+        .then(apply)
+        .catch(function() {
+            // 本地缺失（如 710000 台湾 datav 本身无市级数据）→ 在线兜底
+            return fetchWithTimeout(remoteUrl)
+                .then(function(r) { if (!r.ok) throw new Error('remote ' + r.status); return r.json(); })
+                .then(apply)
+                .catch(function(e) {
+                    console.warn('[TalentMap] 省级地图数据加载失败 ' + provinceName + ':', e.message);
+                    return null;
+                });
+        });
 };
 
 window.talentFetchCityData = function(provinceName) {

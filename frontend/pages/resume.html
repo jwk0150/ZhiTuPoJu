@@ -30,9 +30,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&family=Noto+Serif+SC:wght@500;600;700&family=Outfit:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../css/tokens.css" />
-  <link rel="stylesheet" href="../css/resume-builder.css?v=lightfix2" />
-  <link rel="stylesheet" href="../css/auth-transit.css?v=4" />
-<link rel="stylesheet" href="../css/news-light-overrides.css?v=typo1" />
+  <link rel="stylesheet" href="../css/resume-builder.css" />
+  <link rel="stylesheet" href="../css/auth-transit.css" />
+<link rel="stylesheet" href="../css/news-light-overrides.css" />
 </head>
 <body>
 
@@ -376,15 +376,15 @@
   <!-- ============== Toast ============== -->
   <div class="rb-toast" id="rb-toast"></div>
 
-  <script src="../js/data/job-pool.js?v=20260826rx3"></script>
-  <script src="../js/user-vault.js?v=20260826vd1"></script>
-  <script src="../js/auth-transit.js?v=4"></script>
+  <script src="../js/data/job-pool.js"></script>
+  <script src="../js/user-vault.js"></script>
+  <script src="../js/auth-transit.js"></script>
   <script>
     // 进入向导：不再做强制的档案完整性守卫。
     // 理由：向导本身有 step 1 字段校验；seedFromProfile 已在 init 时把已保存的档案预填进来；
     //       即使用户档案尚未完整，也应允许直接进入向导内部填写（避免被反向踢回资料页）。
   </script>
-  <script src="../js/resume-builder.js?v=20260826vd1"></script>
+  <script src="../js/resume-builder.js"></script>
   <script>
     if (window.ZhituAuthTransit) window.ZhituAuthTransit.playEnterIfNeeded();
   </script>

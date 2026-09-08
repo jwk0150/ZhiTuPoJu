@@ -92,3 +92,28 @@ app.include_router(career_evolution.router, prefix="/api/career", tags=["career-
 # 新增：Global Agent（Phase 1 —— 统一鉴权 + 上下文读取；后续阶段扩展 Chat/Task）
 app.include_router(global_agent.router, prefix="/api/global-agent", tags=["global-agent"])
 app.include_router(admin.router, prefix="/api/admin", tags=["admin"])
+
+
+# ============================================================
+# 前端静态托管（P3-9）：uvicorn 单服务跑全站
+# 部署形态：http://<host>:5000/ 直接打开前端，API 同源无需跨域
+# 保留 8888 静态服务作为开发用途不受影响
+# ============================================================
+from fastapi.staticfiles import StaticFiles
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.responses import FileResponse
+from pathlib import Path as _Path
+
+_FRONTEND_DIR = _Path(__file__).resolve().parent.parent / "frontend"
+if _FRONTEND_DIR.is_dir():
+    class NoCacheStaticFiles(StaticFiles):
+        """静态文件响应统一加 no-cache：页面/脚本更新即时生效，避免 ？v= 手动清缓存"""
+
+        def file_response(self, *args, **kwargs):
+            resp = super().file_response(*args, **kwargs)
+            resp.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+            resp.headers["Pragma"] = "no-cache"
+            resp.headers["Expires"] = "0"
+            return resp
+
+    app.mount("/", NoCacheStaticFiles(directory=str(_FRONTEND_DIR), html=True), name="frontend")

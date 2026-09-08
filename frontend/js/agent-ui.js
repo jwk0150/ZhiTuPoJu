@@ -586,11 +586,7 @@
     var m = /tab=([^&]+)/.exec(location.search);
     return m ? m[1] : '';
   }
-  function esc(s) {
-    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
-      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
-    });
-  }
+  var esc = window.zhesc; // 收口：共享实现见 js/api.js
 
   /* ---------- 初始化 ---------- */
   ensureUi();

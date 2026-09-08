@@ -3,13 +3,7 @@
   const FAV_KEY = 'zhitu_disc_favs';
   const META_KEY = 'zhitu_disc_fav_meta';
 
-  function esc(s) {
-    return String(s == null ? '' : s)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
-  }
+  var esc = window.zhesc; // 收口：共享实现见 js/api.js
 
   function readMetaMap() {
     try {

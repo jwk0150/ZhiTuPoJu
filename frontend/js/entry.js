@@ -882,6 +882,7 @@
 
   const finishAuth = (payload) => {
     const data = payload && typeof payload === 'object' ? payload : {};
+    const role = String((data.role || '')).toLowerCase();
     if (data.token) {
       try { localStorage.setItem('zhitu_token', data.token); } catch (_) {}
     }
@@ -890,16 +891,30 @@
       role: data.role || 'user',
       loginTime: Date.now()
     }));
-    // 1) 若来自管理端守卫的 return 回跳，优先使用
+    // 1) 若来自管理端守卫的 return 回跳，优先使用（非管理员禁止进管理端）
     const ret = new URLSearchParams(location.search).get('return');
-    if (ret) { window.location.href = ret; return; }
+    if (ret) {
+      if (/admin\.html/i.test(ret) && role !== 'admin' && role !== 'administrator') {
+        sessionStorage.removeItem('zhitu_next_endpoint');
+        showAuthError(document.getElementById('entryLoginError'), '该账号无管理端权限，请使用管理员账号登录');
+        return;
+      }
+      window.location.href = ret;
+      return;
+    }
     // 2) 用户在端点卡片上的选择
     const next = sessionStorage.getItem('zhitu_next_endpoint');
-    if (next === 'admin') { sessionStorage.removeItem('zhitu_next_endpoint'); return goDest('pages/admin.html'); }
+    if (next === 'admin') {
+      sessionStorage.removeItem('zhitu_next_endpoint');
+      if (role !== 'admin' && role !== 'administrator') {
+        showAuthError(document.getElementById('entryLoginError'), '该账号无管理端权限，请使用管理员账号登录');
+        return;
+      }
+      return goDest('pages/admin.html');
+    }
     if (next === 'user') { sessionStorage.removeItem('zhitu_next_endpoint'); return goDest('pages/news/index.html'); }
     // 3) 根据角色默认跳
-    const role = String((data.role || '')).toLowerCase();
-    return goDest(role === 'admin' ? 'pages/admin.html' : 'pages/news/index.html');
+    return goDest(role === 'admin' || role === 'administrator' ? 'pages/admin.html' : 'pages/news/index.html');
   };
 
   const goDest = (url) => {
@@ -907,19 +922,19 @@
     else window.location.href = url;
   };
 
-  // 测试账号 / 离线兜底：本地没有后端时也能进两端
+  // 仅本机离线兜底；公网必须以服务端账号为准
   var TEST_ACCOUNTS = {
-    admin: { username: 'admin', password: 'admin123', role: 'admin', displayName: '系统管理员' },
-    operator: { username: 'operator', password: 'operator123', role: 'operator', displayName: '运营专员' },
-    analyst: { username: 'analyst', password: 'analyst123', role: 'analyst', displayName: '数据分析师' },
+    shangshanruoshui: { username: 'shangshanruoshui', password: 'ssrs123', role: 'admin', displayName: '系统管理员' },
     user: { username: 'user', password: 'user123', role: 'user', displayName: '体验用户' }
   };
 
   function tryLocalAccount(username, password) {
+    if (!isLocalHost()) return { ok: false };
     var u = String(username || '').trim().toLowerCase();
     var p = String(password || '');
-    if (TEST_ACCOUNTS[u] && TEST_ACCOUNTS[u].password === p) {
-      var acc = TEST_ACCOUNTS[u];
+    var key = Object.keys(TEST_ACCOUNTS).find((k) => k.toLowerCase() === u);
+    if (key && TEST_ACCOUNTS[key].password === p) {
+      var acc = TEST_ACCOUNTS[key];
       return { ok: true, payload: { username: acc.username, role: acc.role, displayName: acc.displayName, token: 'local-' + acc.role, source: 'local' } };
     }
     return { ok: false };
@@ -934,18 +949,22 @@
     return res.json();
   };
 
+  const setAuthTab = (name) => {
+    document.querySelectorAll('[data-auth-tab]').forEach((el) => {
+      const on = el.dataset.authTab === name;
+      el.classList.toggle('is-active', on);
+      el.setAttribute('aria-selected', on ? 'true' : 'false');
+    });
+    if (loginForm) loginForm.hidden = name !== 'login';
+    if (registerForm) registerForm.hidden = name !== 'register';
+  };
+
   document.querySelectorAll('[data-auth-tab]').forEach((tab) => {
     tab.addEventListener('click', (event) => {
       event.preventDefault();
       event.stopPropagation();
-      const name = tab.dataset.authTab;
-      document.querySelectorAll('[data-auth-tab]').forEach((el) => {
-        const on = el === tab;
-        el.classList.toggle('is-active', on);
-        el.setAttribute('aria-selected', on ? 'true' : 'false');
-      });
-      if (loginForm) loginForm.hidden = name !== 'login';
-      if (registerForm) registerForm.hidden = name !== 'register';
+      if (tab.hidden || tab.disabled) return;
+      setAuthTab(tab.dataset.authTab);
     });
   });
 
@@ -959,19 +978,20 @@
       return;
     }
     showAuthError(errorEl, '');
-    // 1) 先试测试账号（本地 / 离线可用）
-    var local = tryLocalAccount(username, password);
-    if (local.ok) {
-      finishAuth(local.payload);
-      return;
-    }
-    // 2) 走真实后端
     try {
       const result = await postAuth('/api/auth/login', { username, password });
-      if (result && result.code === 0) finishAuth(result.data);
-      else showAuthError(errorEl, (result && result.message) || '登录失败 · 请使用测试账号 admin/admin123 或 user/user123');
+      if (result && result.code === 0) {
+        finishAuth(result.data);
+        return;
+      }
+      showAuthError(errorEl, (result && result.message) || '用户名或密码错误');
     } catch (_) {
-      showAuthError(errorEl, '后端未连接 · 已切换为本地测试账号，请使用 admin/admin123 或 user/user123');
+      var local = tryLocalAccount(username, password);
+      if (local.ok) {
+        finishAuth(local.payload);
+        return;
+      }
+      showAuthError(errorEl, '无法连接服务器，请稍后重试');
     }
   });
 
@@ -1009,13 +1029,14 @@
   });
 
   const endpointTabs = Array.from(document.querySelectorAll('.login-endpoint-tab'));
+  const registerTabBtn = document.querySelector('[data-auth-tab="register"]');
   // 若来自管理端守卫的 return 回跳，默认高亮「管理员」tab
   const retParam = new URLSearchParams(location.search).get('return');
   const isAdminReturn = retParam && /admin\.html/i.test(retParam);
 
   var LEADS = {
-    user: '登录后从岗位大新闻进入地图、洞察、发现、匹配与个人仓库。',
-    admin: '登录后进入内部运营端：指挥台、数据管线、清洗仓、岗位池与治理。'
+    user: '登录或注册后进入岗位大新闻、地图与匹配。',
+    admin: '管理员登录（不可自助注册）。'
   };
 
   function selectEndpoint(which) {
@@ -1025,17 +1046,15 @@
       t.classList.toggle('is-active', on);
       t.setAttribute('aria-selected', on ? 'true' : 'false');
     });
-    const lead = document.getElementById('loginLead');
+    const lead = document.querySelector('.login-lead');
     if (lead) lead.textContent = LEADS[which] || LEADS.user;
-    // 预填测试账号：仅当当前值是默认值之一（未手动输入自定义账号）时切换
-    if (loginForm) {
-      const u = loginForm.querySelector('[name="username"]');
-      const p = loginForm.querySelector('[name="password"]');
-      const defaultUsers = ['', 'admin', 'user'];
-      const defaultPwds = ['', 'admin123', 'user123'];
-      if (u && defaultUsers.indexOf(u.value.trim()) >= 0) u.value = which === 'admin' ? 'admin' : 'user';
-      if (p && defaultPwds.indexOf(p.value) >= 0) p.value = which === 'admin' ? 'admin123' : 'user123';
+    // 内部端：隐藏注册（无管理员自助注册）
+    if (registerTabBtn) {
+      registerTabBtn.hidden = which === 'admin';
+      registerTabBtn.setAttribute('aria-hidden', which === 'admin' ? 'true' : 'false');
     }
+    if (which === 'admin') setAuthTab('login');
+    // 不预填账号密码，保持输入框为空
   }
 
   endpointTabs.forEach((tab) => {

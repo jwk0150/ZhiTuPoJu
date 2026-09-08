@@ -2041,7 +2041,7 @@ body[data-page="match"] .match-page-backdrop {
   display: block;
   opacity: .9;
   filter: none;
-  background-image: url('../assets/news/bg-atmosphere-light.png');
+  background-image: url('../assets/news/bg-atmosphere-light.webp');
   background-size: cover;
   background-position: center top;
   background-repeat: no-repeat;
@@ -2113,7 +2113,7 @@ body[data-page="match"] .resume-focus-grid > div { background: #FBF8F1; }
 body[data-page="match"] .mod-resume {
   background-image:
     linear-gradient(90deg, #FBF8F1 0%, #FBF8F1 55%, #FBF8F1 100%),
-    url("../assets/match/scene-canopy.png");
+    url("../assets/match/scene-canopy.webp");
   background-position: center, 70% center;
   background-size: cover, cover;
 }
@@ -2139,7 +2139,7 @@ body[data-page="match"] .resume-quickstrip {
   background-size: cover, cover;
 }
 body[data-page="match"] .resume-focus-grid > div:nth-child(1) {
-  background-image: linear-gradient(135deg, #FBF8F1, #FBF8F1), url("../assets/match/scene-canopy.png");
+  background-image: linear-gradient(135deg, #FBF8F1, #FBF8F1), url("../assets/match/scene-canopy.webp");
   background-position: center, 22% center;
   background-size: cover, cover;
 }
@@ -2154,7 +2154,7 @@ body[data-page="match"] .resume-focus-grid > div:nth-child(3) {
   background-size: cover, cover;
 }
 body[data-page="match"] .job-row:nth-child(odd) {
-  background-image: linear-gradient(90deg, #FBF8F1, #FBF8F1), url("../assets/match/scene-canopy.png");
+  background-image: linear-gradient(90deg, #FBF8F1, #FBF8F1), url("../assets/match/scene-canopy.webp");
   background-position: center, 72% center;
   background-size: cover, cover;
 }
@@ -2175,7 +2175,7 @@ body[data-page="match"] .resume-summary {
   background-size: cover, cover;
 }
 body[data-page="match"] .analysis-grid > .mod:first-child {
-  background-image: linear-gradient(135deg, #FBF8F1, #FBF8F1), url("../assets/match/scene-canopy.png");
+  background-image: linear-gradient(135deg, #FBF8F1, #FBF8F1), url("../assets/match/scene-canopy.webp");
   background-position: center, 60% center;
   background-size: cover, cover;
 }
@@ -2190,7 +2190,7 @@ body[data-page="match"] .jobs-insight-strip {
   background-size: cover, cover;
 }
 body[data-page="match"] .detail-col:nth-child(1) {
-  background-image: linear-gradient(135deg, #FBF8F1, #FBF8F1), url("../assets/match/scene-canopy.png");
+  background-image: linear-gradient(135deg, #FBF8F1, #FBF8F1), url("../assets/match/scene-canopy.webp");
   background-position: center, 25% center;
   background-size: cover, cover;
 }
@@ -2204,7 +2204,7 @@ body[data-page="match"] .detail-col:nth-child(3) {
   background-position: center, center;
   background-size: cover, cover;
 }
-body[data-page="match"] .detail-next-item:nth-child(1) { background-image: linear-gradient(135deg, #FBF8F1, #FBF8F1), url("../assets/match/scene-canopy.png"); background-size: cover, cover; }
+body[data-page="match"] .detail-next-item:nth-child(1) { background-image: linear-gradient(135deg, #FBF8F1, #FBF8F1), url("../assets/match/scene-canopy.webp"); background-size: cover, cover; }
 body[data-page="match"] .detail-next-item:nth-child(2) { background-image: linear-gradient(135deg, #FBF8F1, #FBF8F1), url("../assets/match/scene-studio.png"); background-size: cover, cover; }
 body[data-page="match"] .detail-next-item:nth-child(3) { background-image: linear-gradient(135deg, #FBF8F1, #FBF8F1), url("../assets/match/scene-sunset.png"); background-size: cover, cover; }
 body[data-page="match"] .aip-empty {
@@ -2220,7 +2220,7 @@ body[data-page="match"] .aip-block {
   padding: 14px;
   border: 1px solid rgba(105, 85, 60, .14);
   border-radius: 9px;
-  background-image: linear-gradient(135deg, #FBF8F1, #FBF8F1), url("../assets/match/scene-canopy.png");
+  background-image: linear-gradient(135deg, #FBF8F1, #FBF8F1), url("../assets/match/scene-canopy.webp");
   background-position: center, 70% center;
   background-size: cover, cover;
 }
@@ -3044,7 +3044,7 @@ mark.hl-good.is-adopted { background: rgba(120, 100, 75, 0.1); color: #7f9c8c; t
  * ============================================================ */
 .md-report {
   position: fixed; inset: 56px 0 0 0; z-index: 1300; overflow-y: auto;
-  background: #FAF8F5 url('../assets/news/bg-atmosphere-light.png') center top / cover no-repeat;
+  background: #FAF8F5 url('../assets/news/bg-atmosphere-light.webp') center top / cover no-repeat;
   background-attachment: fixed;
 }
 .md-report::before {

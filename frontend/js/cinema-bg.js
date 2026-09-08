@@ -117,7 +117,7 @@
   if (document.getElementById('cinema-theme')) return;
   const style = document.createElement('style');
   style.id = 'cinema-theme';
-  const atm = B + 'assets/news/bg-atmosphere-light.png';
+  const atm = B + 'assets/news/bg-atmosphere-light.webp';
   style.textContent = [
     /* —— 全站背景 = 新闻页原亮色氛围 —— */
     '.cinema-bg{position:fixed;inset:0;z-index:-1;overflow:hidden;background:#F5F2ED;pointer-events:none;contain:strict;transform:translateZ(0);}',

@@ -285,8 +285,11 @@ async def fetch_province_detail(
             "demand": round(c / max_cnt * 60 + 5, 1) if max_cnt else 5.0,
         })
 
-    # 3) 统计
-    province_total = sum(j["count"] for j in top_jobs)
+    # 3) 统计（totalJobs 用全省真实记录数，而非 top20 岗位数之和 —— 口径修正）
+    province_total = await conn.fetchval(f"""
+        SELECT count(*)::int FROM the_total_table
+        WHERE city = ANY(ARRAY[{c_holders}]) AND ({where_shifted})
+    """, *all_params) or 0
     avg_salaries = [j["avgSalary"] for j in top_jobs if j["avgSalary"] > 0]
     avg_salary = sum(avg_salaries) / len(avg_salaries) if avg_salaries else 0
 

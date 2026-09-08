@@ -32,11 +32,7 @@
     try { localStorage.setItem(LIB_KEY, JSON.stringify(lib)); } catch (_) {}
   }
 
-  function esc(s) {
-    return String(s == null ? '' : s)
-      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
-  }
+  var esc = window.zhesc; // 收口：共享实现见 js/api.js
 
   /* ============ 渲染列表 ============ */
   function render() {

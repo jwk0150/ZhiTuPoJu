@@ -227,7 +227,7 @@
     var visual =
       '<div class="jn-hero-visual jn-hero-anim" style="--d:.18s">' +
         '<div class="jn-hero-visual-frame">' +
-          '<img class="jn-hero-visual-img" src="../../assets/news/hero-magazine.png" alt="未来城市职业入口" />' +
+          '<img class="jn-hero-visual-img" src="../../assets/news/hero-magazine.webp" alt="未来城市职业入口" />' +
         '</div>' +
         '<span class="jn-hero-visual-tag">本期封面</span>' +
         '<div class="jn-hero-visual-caption">' +

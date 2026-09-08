@@ -89,7 +89,7 @@
   z-index: 0;
   pointer-events: none;
   background-color: #F5F2ED; /* 与 jn --jn-bg 一致的兜底色 */
-  background-image: url('../assets/news/bg-atmosphere-light.png');
+  background-image: url('../assets/news/bg-atmosphere-light.webp');
   background-size: cover;
   background-position: center top;
   background-repeat: no-repeat;
@@ -106,7 +106,7 @@
   inset: 0;
   pointer-events: none;
   background-color: var(--mp-ink-1);
-  background-image: url('../assets/news/bg-atmosphere.png');
+  background-image: url('../assets/news/bg-atmosphere.webp');
   background-size: cover;
   background-position: center top;
   background-repeat: no-repeat;
