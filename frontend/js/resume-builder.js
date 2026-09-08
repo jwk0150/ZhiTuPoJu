@@ -1279,7 +1279,17 @@
     document.body.appendChild(overlay);
     overlay.querySelector('#rb-vault-go').addEventListener('click', function () {
       overlay.remove();
-      window.location.href = 'warehouse.html?tab=resumes';
+      // 简历向导运行在 shell 的 iframe 窗口（rx-frame）内：
+      // 必须在父窗口导航，否则个人仓库会被塞进 iframe 小窗
+      var target = new URL('warehouse.html', location.href).href + '?tab=resumes';
+      try {
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage({ source: 'zhitu-resume', type: 'close' }, '*');
+          window.parent.location.href = target;
+          return;
+        }
+      } catch (_) {}
+      window.location.href = target;
     });
     overlay.querySelector('#rb-vault-stay').addEventListener('click', function () { overlay.remove(); });
   }
