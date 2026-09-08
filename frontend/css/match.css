@@ -975,6 +975,19 @@ body.standalone-view {
   display: flex; align-items: center; justify-content: center; padding: 20px;
 }
 .rp-modal[hidden] { display: none; }
+/* ---- 高对比度覆盖（修复文字模糊、看不清）---- */
+.rp-modal { --ink-soft: #2c3540; --ink-faint: #3a4554; }
+.rp-modal .rp-kpi-label { font-size: 11.5px; font-weight: 500; }
+.rp-modal .rp-sub { font-size: 11.5px; }
+.rp-modal .rp-ev-cell .l,
+.rp-modal .rp-dg-stat span { font-size: 10.5px; font-weight: 500; }
+.rp-modal .rp-ai-kicker { font-weight: 600; font-size: 10.5px; }
+.rp-modal .rp-ai-note { font-size: 11.5px; }
+.rp-modal .rp-gap-row .gap-v,
+.rp-modal .rp-lp-total { font-size: 11px; }
+.rp-modal .rp-lp-step .h,
+.rp-modal .rp-gap-group-label,
+.rp-modal .rp-graph-legend { font-size: 10.5px; }
 .rp-mask {
   position: absolute; inset: 0;
   background:
@@ -2867,6 +2880,26 @@ mark.hl-good.is-adopted { background: rgba(120, 100, 75, 0.1); color: #7f9c8c; t
 
 /* AI 面试官 · 动态头像 + 环形能量 */
 .md-int-ai-stage { position: relative; display: grid; place-items: center; height: 210px; flex: 0 0 auto; }
+/* 讯飞数字人就绪后，舞台扩展以容纳竖屏形象 */
+.md-int-ai-stage:has(.md-int-avatar-container.is-live) { height: auto; flex: 1 1 auto; min-height: 300px; }
+.md-int-avatar-container {
+  position: relative;
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+}
+.md-int-avatar-container.is-live {
+  width: 100%;
+  height: 100%;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #000;
+  box-shadow: 0 10px 36px rgba(200, 71, 56, 0.16), 0 0 0 1px rgba(200, 71, 56, 0.10);
+}
+.md-int-avatar-container video {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover;
+}
 .md-int-ai-ring { position: absolute; inset: 6px 40px; }
 .md-int-ai-ring span { position: absolute; inset: 0; border-radius: 50%; border: 1px solid rgba(200, 71, 56, .28); animation: ring-spin 14s linear infinite; }
 .md-int-ai-ring span:nth-child(2) { inset: 18px; border-style: dashed; border-color: rgba(200, 71, 56, .22); animation-duration: 9s; animation-direction: reverse; }
@@ -2914,7 +2947,7 @@ mark.hl-good.is-adopted { background: rgba(120, 100, 75, 0.1); color: #7f9c8c; t
 /* ---------- 中间 · AI 实时分析层 ---------- */
 .md-int-analysis { display: flex; flex-direction: column; min-height: 0; min-width: 0; }
 .md-int-analysis-card {
-  flex: 1 1 auto; display: flex; flex-direction: column; gap: 12px;
+  flex: 1 1 auto; display: flex; flex-direction: column; gap: 10px;
   padding: 13px 14px; border-radius: 9px;
   background: linear-gradient(165deg, rgba(200, 71, 56, .08), rgba(181, 138, 74, .04) 60%, #FBF8F1);
   border: 1px solid rgba(200, 71, 56, .25);
@@ -2952,6 +2985,40 @@ mark.hl-good.is-adopted { background: rgba(120, 100, 75, 0.1); color: #7f9c8c; t
 .md-int-analysis-score-num small { font-size: 11px; color: var(--ink-faint); }
 .md-int-analysis-gauge { height: 5px; border-radius: 6px; background: rgba(120, 100, 75, 0.05); overflow: hidden; }
 .md-int-analysis-gauge i { display: block; height: 100%; width: 0; border-radius: 6px; background: linear-gradient(90deg, var(--signal), var(--accent-gold)); transition: width 1.1s cubic-bezier(.2, .8, .3, 1); }
+
+/* AI 测评反馈区（提交回答后由后端 AI 生成） */
+.md-int-analysis-fb {
+  flex: 1 1 auto;
+  margin-top: 2px;
+  padding: 13px 14px;
+  background: rgba(120, 100, 75, 0.04);
+  border: 1px solid rgba(120, 100, 75, 0.1);
+  border-radius: 8px;
+  font-size: 12.5px;
+  line-height: 1.7;
+  color: var(--ink-soft);
+  min-height: 280px;
+  overflow-y: auto;
+}
+.md-int-fb-empty { color: var(--ink-faint); font-style: italic; }
+.md-int-fb-summary {
+  padding: 0 0 8px;
+  border-bottom: 1px dashed rgba(120, 100, 75, 0.15);
+  margin-bottom: 8px;
+  color: var(--ink);
+}
+.md-int-fb-sec { margin-top: 8px; }
+.md-int-fb-label {
+  font-size: 10.5px;
+  letter-spacing: .5px;
+  color: var(--ink-faint);
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+.md-int-fb-label.ok { color: #2F7D6B; }
+.md-int-fb-label.warn { color: #B58A4A; }
+.md-int-fb-li { padding: 2px 0; }
 
 /* ---------- 右 · 候选人 ---------- */
 .md-int-user-stage { position: relative; flex: 1 1 auto; min-height: 0; border-radius: 9px; overflow: hidden; background: #FBF8F1; border: 1px solid rgba(120, 100, 75, 0.05); }
@@ -2992,12 +3059,16 @@ mark.hl-good.is-adopted { background: rgba(120, 100, 75, 0.1); color: #7f9c8c; t
 }
 .md-int-ctrl:hover { border-color: var(--signal); color: var(--signal); }
 .md-int-ctrl[aria-pressed="false"] { opacity: .4; }
+.md-int-ctrl.is-recording { border-color: var(--rose); color: var(--rose); background: rgba(200, 71, 56, .08); box-shadow: 0 0 0 3px rgba(200, 71, 56, .12); }
+.md-int-ctrl.is-recording svg { animation: rec-pulse 1.1s ease infinite; }
 .md-int-console-actions { display: flex; gap: 9px; }
 .md-int-btn { font-size: 12.5px; padding: 9px 20px; border-radius: 9px; cursor: pointer; font-weight: 600; transition: all .15s; border: 1px solid transparent; display: inline-flex; align-items: center; gap: 6px; }
 .md-int-btn--ghost { background: rgba(120, 100, 75, 0.03); border-color: rgba(120, 100, 75, 0.08); color: var(--ink-soft); }
 .md-int-btn--ghost:hover { border-color: var(--rose); color: #E5C7C0; }
 .md-int-btn--hint { background: rgba(181, 138, 74, .1); border-color: rgba(181, 138, 74, .35); color: var(--accent-gold); }
 .md-int-btn--hint:hover { background: rgba(181, 138, 74, .18); box-shadow: 0 0 18px rgba(181, 138, 74, .2); }
+.md-int-btn--primary { background: linear-gradient(135deg, #C4A86B, #A88B4E); color: #FFF9EE; border-color: #A88B4E; }
+.md-int-btn--primary:hover { background: #96783F; border-color: #96783F; }
 .md-int-btn--solid {
   background: linear-gradient(135deg, var(--signal), var(--signal-deep)); color: #FBF8F1;
   box-shadow: 0 8px 22px rgba(200, 71, 56, .28);

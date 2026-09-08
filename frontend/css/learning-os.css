@@ -279,33 +279,37 @@
 }
 .los-btn--ghost:hover { color: var(--los-ink); border-color: var(--los-line-strong); background: rgba(255, 255, 255, 0.07); }
 
-/* ============ ② 学习路径主体：Timeline + Skill Cards ============ */
+/* ============ ② 学习路径主体：横向 Timeline + Skill Cards ============ */
 .los-main {
-  display: grid;
-  grid-template-columns: 300px minmax(0, 1fr);
+  display: flex;
+  flex-direction: column;
   gap: 18px;
-  align-items: start;
+  align-items: stretch;
 }
 
-/* ---- 左侧 · 垂直成长时间轴 ---- */
+/* ---- 顶部 · 横向成长时间轴 ---- */
 .los-timeline {
   position: relative;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: 12px;
-  padding: 6px 0 6px 34px;
+  padding: 30px 8px 10px;
+  overflow-x: auto;
 }
 .los-timeline::before {
   content: "";
   position: absolute;
-  left: 13px; top: 16px; bottom: 16px;
-  width: 2px;
-  background: linear-gradient(180deg, rgba(53, 224, 200, 0.6), rgba(240, 180, 41, 0.4));
+  left: 24px; right: 24px;
+  top: 18px;
+  height: 2px;
+  background: linear-gradient(90deg, rgba(53, 224, 200, 0.6), rgba(240, 180, 41, 0.4));
   border-radius: 2px;
 }
 .los-stage {
   position: relative;
-  padding: 14px 16px;
+  flex: 1 1 0;
+  min-width: 160px;
+  padding: 14px 14px;
   cursor: pointer;
   border-radius: 14px;
   background: rgba(11, 19, 38, 0.5);
@@ -315,7 +319,9 @@
 .los-stage::before {
   content: "";
   position: absolute;
-  left: -27px; top: 19px;
+  left: 50%;
+  top: -22px;
+  transform: translateX(-50%);
   width: 13px; height: 13px;
   border-radius: 50%;
   background: #0b1428;
@@ -323,7 +329,7 @@
   box-shadow: 0 0 0 4px rgba(53, 224, 200, 0.1);
   transition: all 0.3s;
 }
-.los-stage:hover { border-color: var(--los-line-strong); transform: translateX(3px); }
+.los-stage:hover { border-color: var(--los-line-strong); transform: translateY(-3px); }
 .los-stage.is-active {
   border-color: rgba(53, 224, 200, 0.4);
   background: linear-gradient(150deg, rgba(53, 224, 200, 0.12), rgba(11, 19, 38, 0.6));
@@ -368,6 +374,34 @@
 }
 .los-cards-count { font-size: 11.5px; color: var(--los-ink-faint); }
 .los-cards-count b { color: var(--los-teal); font-weight: 700; }
+
+/* 空阶段占位（阶段无技能时给出引导，避免「点了没反应」）*/
+.los-cards-empty {
+  grid-column: 1 / -1;
+  padding: 28px 24px;
+  text-align: center;
+  border-radius: 14px;
+  background: rgba(120, 100, 75, 0.04);
+  border: 1px dashed rgba(105, 85, 60, .22);
+  color: var(--los-ink-soft);
+  font-size: 12.5px;
+  line-height: 1.7;
+}
+.los-cards-empty[hidden] { display: none; }
+.los-cards-empty b { color: var(--los-ink); font-weight: 600; }
+.los-cards-empty .los-empty-action {
+  margin-top: 10px;
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(42, 138, 140, .12);
+  border: 1px solid rgba(42, 138, 140, .35);
+  color: var(--los-teal);
+  font-size: 11.5px;
+  cursor: pointer;
+  transition: all .2s;
+}
+.los-cards-empty .los-empty-action:hover { background: rgba(42, 138, 140, .22); }
 
 .los-card {
   position: relative;
@@ -1230,23 +1264,27 @@ body.standalone-view .los-eyebrow {
 body.standalone-view .los-h2 { font-size: 16px; }
 
 body.standalone-view .los-main {
-  grid-template-columns: 230px minmax(0, 1fr);
   gap: 14px;
 }
 
-/* timeline stages — 紧凑卡片 */
+/* timeline stages — 横向紧凑卡片 */
 body.standalone-view .los-timeline {
-  padding: 6px 0 6px 32px;
-  gap: 9px;
+  padding: 30px 8px 10px;
+  gap: 10px;
 }
 body.standalone-view .los-timeline::before {
-  background: linear-gradient(180deg, rgba(42, 138, 140, 0.45), rgba(168, 139, 78, 0.4));
+  background: linear-gradient(90deg, rgba(42, 138, 140, 0.45), rgba(168, 139, 78, 0.4));
+  left: 24px; right: 24px;
+  top: 18px;
+  width: auto;
+  height: 2px;
 }
 body.standalone-view .los-stage {
   background: #FFFFFF;
   border: 1px solid var(--los-line);
-  padding: 11px 14px;
+  padding: 11px 12px;
   color: var(--los-ink);
+  min-width: 0;
 }
 body.standalone-view .los-stage:hover {
   border-color: var(--los-line-strong);
@@ -1254,6 +1292,9 @@ body.standalone-view .los-stage:hover {
 body.standalone-view .los-stage::before {
   background: #F7F1E4;
   border: 2px solid rgba(42, 138, 140, 0.5);
+  left: 50%;
+  top: -22px;
+  transform: translateX(-50%);
 }
 body.standalone-view .los-stage.is-active {
   background: linear-gradient(150deg, rgba(42, 138, 140, 0.10), #FFFFFF);
@@ -1607,9 +1648,8 @@ body.standalone-view .los-modal-body .los-forecast { padding: 0; background: tra
   body.standalone-view .los-hero { grid-template-columns: 1fr 1fr; }
   body.standalone-view .los-advice { grid-column: 1 / -1; }
   body.standalone-view .los-advice-text { margin: 10px 0; }
-  body.standalone-view .los-main { grid-template-columns: 1fr; }
-  body.standalone-view .los-timeline { flex-direction: row; flex-wrap: wrap; padding: 6px 0; }
-  body.standalone-view .los-timeline::before { display: none; }
-  body.standalone-view .los-stage { flex: 1 1 220px; }
-  body.standalone-view .los-stage::before { display: none; }
+}
+@media (max-width: 760px) {
+  body.standalone-view .los-timeline { flex-wrap: wrap; }
+  body.standalone-view .los-stage { flex: 1 1 calc(50% - 10px); }
 }

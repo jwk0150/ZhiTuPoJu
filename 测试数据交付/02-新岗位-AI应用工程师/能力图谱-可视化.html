@@ -1,0 +1,21 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
+<title>能力图谱 · AI应用工程师</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+<style>body{margin:0;font-family:'Microsoft YaHei',sans-serif;background:#faf8f4;color:#222}
+h1{padding:18px 24px 0;font-size:20px}.sub{padding:0 24px;color:#555;font-size:13px;line-height:1.8}
+.card{margin:16px 24px;background:#fff;border:1px solid #e7e1d2;border-radius:10px;padding:8px}
+.h{font-weight:600;padding:10px 12px 2px}.chart{width:100%;height:360px}</style></head><body>
+<h1>AI应用工程师 能力图谱</h1>
+<p class="sub">数据源：the_total_table · 52 条岗位（含技能 51 条）· 时间 2026-07-26-2026-07-26 · 方法 从 job_description/job_requirement 原文按技能词典抽取技能点（词典含 193 词）</p>
+<div class="card"><div class="h">技能分类分布</div><div id="c0" class="chart"></div></div>
+<div class="card"><div class="h">高频技能 TOP 20</div><div id="c1" class="chart"></div></div>
+<script>
+var c0=echarts.init(document.getElementById('c0'));
+c0.setOption({tooltip:{trigger:'item'},color:['#0d9488','#0ea5e9','#f59e0b','#6366f1','#ec4899','#84cc16','#8b5cf6','#ef4444','#14b8a6','#64748b'],
+series:[{type:'pie',radius:['35%','70%'],label:{fontSize:12},data:[{"name": "AI与算法", "value": 311}, {"name": "编程语言", "value": 62}, {"name": "框架与开发", "value": 48}, {"name": "数据存储与处理", "value": 37}, {"name": "架构设计", "value": 25}, {"name": "工程化与运维", "value": 20}, {"name": "数据处理", "value": 10}, {"name": "后端技术", "value": 5}, {"name": "测试技术", "value": 2}, {"name": "前端技术", "value": 2}]}]});
+var c1=echarts.init(document.getElementById('c1'));
+c1.setOption({tooltip:{},grid:{left:110,right:40},xAxis:{type:'value'},
+yAxis:{type:'category',data:["python", "rag", "大模型", "agent", "langchain", "向量数据库", "深度学习", "机器学习", "微调", "智能体", "prompt", "llm", "java", "dify", "docker", "postgresql", "fastapi", "mysql", "react", "flask"],axisLabel:{fontSize:11}},
+series:[{type:'bar',data:[39, 32, 31, 28, 19, 19, 19, 18, 17, 16, 14, 13, 12, 11, 10, 9, 8, 8, 7, 6],itemStyle:{color:'#0d9488'},barMaxWidth:16}]});
+window.addEventListener('resize',function(){c0.resize();c1.resize();});
+</script></body></html>

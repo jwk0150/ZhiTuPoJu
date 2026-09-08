@@ -1,0 +1,877 @@
+{
+  "kind": "new",
+  "jobTitle": "AI应用工程师",
+  "dataSource": {
+    "table": "the_total_table",
+    "方法": "从 job_description/job_requirement 原文按技能词典抽取技能点（词典含 193 词）",
+    "岗位标题匹配": [
+      "ai应用工程师",
+      "ai应用开发工程师",
+      "ai应用研发工程师"
+    ],
+    "records": 52,
+    "withSkills": 51,
+    "来源平台": [
+      "51job",
+      "boss_zhipin"
+    ],
+    "时间范围(发布时间/入库时间)": [
+      "2026-07-26",
+      "2026-07-26"
+    ]
+  },
+  "skillCount": 71,
+  "uniqueSkills": [
+    "python",
+    "rag",
+    "大模型",
+    "agent",
+    "langchain",
+    "向量数据库",
+    "深度学习",
+    "机器学习",
+    "微调",
+    "智能体",
+    "prompt",
+    "llm",
+    "java",
+    "dify",
+    "pytorch",
+    "tensorflow",
+    "docker",
+    "postgresql",
+    "fastapi",
+    "mysql",
+    "nlp",
+    "react",
+    "flask",
+    "linux",
+    "mcp",
+    "fine-tuning",
+    "node.js",
+    "spring boot",
+    "接口开发",
+    "提示词工程",
+    "计算机视觉",
+    "embedding",
+    "go",
+    "mongodb",
+    "mybatis",
+    "numpy",
+    "pandas",
+    "redis",
+    "spring cloud",
+    "vllm",
+    "vue",
+    "数据清洗",
+    "缓存",
+    "高并发",
+    "c#",
+    "django",
+    "etl",
+    "scikit-learn",
+    "中台",
+    "分布式",
+    "微服务",
+    "数据可视化",
+    "自然语言处理",
+    "ci/cd",
+    "ddd",
+    "elasticsearch",
+    "javascript",
+    "ocr",
+    "spring",
+    "transformer",
+    "typescript",
+    "vite",
+    "单元测试",
+    "小程序",
+    "强化学习",
+    "数据仓库",
+    "消息队列",
+    "目标检测",
+    "语音识别",
+    "降级",
+    "限流"
+  ],
+  "categories": [
+    {
+      "name": "AI与算法",
+      "type": "category",
+      "skillCount": 28,
+      "technologies": [
+        {
+          "name": "rag",
+          "type": "technology",
+          "frequency": 32,
+          "ratio": 62.7
+        },
+        {
+          "name": "大模型",
+          "type": "technology",
+          "frequency": 31,
+          "ratio": 60.8
+        },
+        {
+          "name": "agent",
+          "type": "technology",
+          "frequency": 28,
+          "ratio": 54.9
+        },
+        {
+          "name": "langchain",
+          "type": "technology",
+          "frequency": 19,
+          "ratio": 37.3
+        },
+        {
+          "name": "向量数据库",
+          "type": "technology",
+          "frequency": 19,
+          "ratio": 37.3
+        },
+        {
+          "name": "深度学习",
+          "type": "technology",
+          "frequency": 19,
+          "ratio": 37.3
+        },
+        {
+          "name": "机器学习",
+          "type": "technology",
+          "frequency": 18,
+          "ratio": 35.3
+        },
+        {
+          "name": "微调",
+          "type": "technology",
+          "frequency": 17,
+          "ratio": 33.3
+        },
+        {
+          "name": "智能体",
+          "type": "technology",
+          "frequency": 16,
+          "ratio": 31.4
+        },
+        {
+          "name": "prompt",
+          "type": "technology",
+          "frequency": 14,
+          "ratio": 27.5
+        },
+        {
+          "name": "llm",
+          "type": "technology",
+          "frequency": 13,
+          "ratio": 25.5
+        },
+        {
+          "name": "dify",
+          "type": "technology",
+          "frequency": 11,
+          "ratio": 21.6
+        },
+        {
+          "name": "pytorch",
+          "type": "technology",
+          "frequency": 11,
+          "ratio": 21.6
+        },
+        {
+          "name": "tensorflow",
+          "type": "technology",
+          "frequency": 11,
+          "ratio": 21.6
+        },
+        {
+          "name": "nlp",
+          "type": "technology",
+          "frequency": 7,
+          "ratio": 13.7
+        },
+        {
+          "name": "mcp",
+          "type": "technology",
+          "frequency": 6,
+          "ratio": 11.8
+        },
+        {
+          "name": "fine-tuning",
+          "type": "technology",
+          "frequency": 5,
+          "ratio": 9.8
+        },
+        {
+          "name": "提示词工程",
+          "type": "technology",
+          "frequency": 5,
+          "ratio": 9.8
+        },
+        {
+          "name": "计算机视觉",
+          "type": "technology",
+          "frequency": 5,
+          "ratio": 9.8
+        },
+        {
+          "name": "embedding",
+          "type": "technology",
+          "frequency": 4,
+          "ratio": 7.8
+        },
+        {
+          "name": "vllm",
+          "type": "technology",
+          "frequency": 4,
+          "ratio": 7.8
+        },
+        {
+          "name": "scikit-learn",
+          "type": "technology",
+          "frequency": 3,
+          "ratio": 5.9
+        },
+        {
+          "name": "自然语言处理",
+          "type": "technology",
+          "frequency": 3,
+          "ratio": 5.9
+        },
+        {
+          "name": "ocr",
+          "type": "technology",
+          "frequency": 2,
+          "ratio": 3.9
+        },
+        {
+          "name": "transformer",
+          "type": "technology",
+          "frequency": 2,
+          "ratio": 3.9
+        },
+        {
+          "name": "强化学习",
+          "type": "technology",
+          "frequency": 2,
+          "ratio": 3.9
+        },
+        {
+          "name": "目标检测",
+          "type": "technology",
+          "frequency": 2,
+          "ratio": 3.9
+        },
+        {
+          "name": "语音识别",
+          "type": "technology",
+          "frequency": 2,
+          "ratio": 3.9
+        }
+      ]
+    },
+    {
+      "name": "编程语言",
+      "type": "category",
+      "skillCount": 6,
+      "technologies": [
+        {
+          "name": "python",
+          "type": "technology",
+          "frequency": 39,
+          "ratio": 76.5
+        },
+        {
+          "name": "java",
+          "type": "technology",
+          "frequency": 12,
+          "ratio": 23.5
+        },
+        {
+          "name": "go",
+          "type": "technology",
+          "frequency": 4,
+          "ratio": 7.8
+        },
+        {
+          "name": "c#",
+          "type": "technology",
+          "frequency": 3,
+          "ratio": 5.9
+        },
+        {
+          "name": "javascript",
+          "type": "technology",
+          "frequency": 2,
+          "ratio": 3.9
+        },
+        {
+          "name": "typescript",
+          "type": "technology",
+          "frequency": 2,
+          "ratio": 3.9
+        }
+      ]
+    },
+    {
+      "name": "框架与开发",
+      "type": "category",
+      "skillCount": 10,
+      "technologies": [
+        {
+          "name": "fastapi",
+          "type": "technology",
+          "frequency": 8,
+          "ratio": 15.7
+        },
+        {
+          "name": "react",
+          "type": "technology",
+          "frequency": 7,
+          "ratio": 13.7
+        },
+        {
+          "name": "flask",
+          "type": "technology",
+          "frequency": 6,
+          "ratio": 11.8
+        },
+        {
+          "name": "node.js",
+          "type": "technology",
+          "frequency": 5,
+          "ratio": 9.8
+        },
+        {
+          "name": "spring boot",
+          "type": "technology",
+          "frequency": 5,
+          "ratio": 9.8
+        },
+        {
+          "name": "mybatis",
+          "type": "technology",
+          "frequency": 4,
+          "ratio": 7.8
+        },
+        {
+          "name": "spring cloud",
+          "type": "technology",
+          "frequency": 4,
+          "ratio": 7.8
+        },
+        {
+          "name": "vue",
+          "type": "technology",
+          "frequency": 4,
+          "ratio": 7.8
+        },
+        {
+          "name": "django",
+          "type": "technology",
+          "frequency": 3,
+          "ratio": 5.9
+        },
+        {
+          "name": "spring",
+          "type": "technology",
+          "frequency": 2,
+          "ratio": 3.9
+        }
+      ]
+    },
+    {
+      "name": "数据存储与处理",
+      "type": "category",
+      "skillCount": 8,
+      "technologies": [
+        {
+          "name": "postgresql",
+          "type": "technology",
+          "frequency": 9,
+          "ratio": 17.6
+        },
+        {
+          "name": "mysql",
+          "type": "technology",
+          "frequency": 8,
+          "ratio": 15.7
+        },
+        {
+          "name": "mongodb",
+          "type": "technology",
+          "frequency": 4,
+          "ratio": 7.8
+        },
+        {
+          "name": "numpy",
+          "type": "technology",
+          "frequency": 4,
+          "ratio": 7.8
+        },
+        {
+          "name": "pandas",
+          "type": "technology",
+          "frequency": 4,
+          "ratio": 7.8
+        },
+        {
+          "name": "redis",
+          "type": "technology",
+          "frequency": 4,
+          "ratio": 7.8
+        },
+        {
+          "name": "elasticsearch",
+          "type": "technology",
+          "frequency": 2,
+          "ratio": 3.9
+        },
+        {
+          "name": "数据仓库",
+          "type": "technology",
+          "frequency": 2,
+          "ratio": 3.9
+        }
+      ]
+    },
+    {
+      "name": "架构设计",
+      "type": "category",
+      "skillCount": 9,
+      "technologies": [
+        {
+          "name": "缓存",
+          "type": "technology",
+          "frequency": 4,
+          "ratio": 7.8
+        },
+        {
+          "name": "高并发",
+          "type": "technology",
+          "frequency": 4,
+          "ratio": 7.8
+        },
+        {
+          "name": "中台",
+          "type": "technology",
+          "frequency": 3,
+          "ratio": 5.9
+        },
+        {
+          "name": "分布式",
+          "type": "technology",
+          "frequency": 3,
+          "ratio": 5.9
+        },
+        {
+          "name": "微服务",
+          "type": "technology",
+          "frequency": 3,
+          "ratio": 5.9
+        },
+        {
+          "name": "ddd",
+          "type": "technology",
+          "frequency": 2,
+          "ratio": 3.9
+        },
+        {
+          "name": "消息队列",
+          "type": "technology",
+          "frequency": 2,
+          "ratio": 3.9
+        },
+        {
+          "name": "降级",
+          "type": "technology",
+          "frequency": 2,
+          "ratio": 3.9
+        },
+        {
+          "name": "限流",
+          "type": "technology",
+          "frequency": 2,
+          "ratio": 3.9
+        }
+      ]
+    },
+    {
+      "name": "工程化与运维",
+      "type": "category",
+      "skillCount": 4,
+      "technologies": [
+        {
+          "name": "docker",
+          "type": "technology",
+          "frequency": 10,
+          "ratio": 19.6
+        },
+        {
+          "name": "linux",
+          "type": "technology",
+          "frequency": 6,
+          "ratio": 11.8
+        },
+        {
+          "name": "ci/cd",
+          "type": "technology",
+          "frequency": 2,
+          "ratio": 3.9
+        },
+        {
+          "name": "vite",
+          "type": "technology",
+          "frequency": 2,
+          "ratio": 3.9
+        }
+      ]
+    },
+    {
+      "name": "数据处理",
+      "type": "category",
+      "skillCount": 3,
+      "technologies": [
+        {
+          "name": "数据清洗",
+          "type": "technology",
+          "frequency": 4,
+          "ratio": 7.8
+        },
+        {
+          "name": "etl",
+          "type": "technology",
+          "frequency": 3,
+          "ratio": 5.9
+        },
+        {
+          "name": "数据可视化",
+          "type": "technology",
+          "frequency": 3,
+          "ratio": 5.9
+        }
+      ]
+    },
+    {
+      "name": "后端技术",
+      "type": "category",
+      "skillCount": 1,
+      "technologies": [
+        {
+          "name": "接口开发",
+          "type": "technology",
+          "frequency": 5,
+          "ratio": 9.8
+        }
+      ]
+    },
+    {
+      "name": "测试技术",
+      "type": "category",
+      "skillCount": 1,
+      "technologies": [
+        {
+          "name": "单元测试",
+          "type": "technology",
+          "frequency": 2,
+          "ratio": 3.9
+        }
+      ]
+    },
+    {
+      "name": "前端技术",
+      "type": "category",
+      "skillCount": 1,
+      "technologies": [
+        {
+          "name": "小程序",
+          "type": "technology",
+          "frequency": 2,
+          "ratio": 3.9
+        }
+      ]
+    }
+  ],
+  "levels": [
+    {
+      "name": "初级",
+      "type": "level",
+      "recordCount": 6,
+      "technologies": [
+        {
+          "name": "python",
+          "frequency": 3
+        },
+        {
+          "name": "深度学习",
+          "frequency": 3
+        },
+        {
+          "name": "langchain",
+          "frequency": 3
+        },
+        {
+          "name": "机器学习",
+          "frequency": 3
+        },
+        {
+          "name": "rag",
+          "frequency": 3
+        },
+        {
+          "name": "agent",
+          "frequency": 3
+        },
+        {
+          "name": "prompt",
+          "frequency": 2
+        },
+        {
+          "name": "nlp",
+          "frequency": 2
+        },
+        {
+          "name": "mcp",
+          "frequency": 2
+        },
+        {
+          "name": "分布式",
+          "frequency": 2
+        },
+        {
+          "name": "高并发",
+          "frequency": 2
+        },
+        {
+          "name": "spring",
+          "frequency": 2
+        },
+        {
+          "name": "mybatis",
+          "frequency": 2
+        },
+        {
+          "name": "ddd",
+          "frequency": 2
+        },
+        {
+          "name": "java",
+          "frequency": 2
+        }
+      ]
+    },
+    {
+      "name": "中级",
+      "type": "level",
+      "recordCount": 22,
+      "technologies": [
+        {
+          "name": "大模型",
+          "frequency": 18
+        },
+        {
+          "name": "python",
+          "frequency": 17
+        },
+        {
+          "name": "rag",
+          "frequency": 16
+        },
+        {
+          "name": "agent",
+          "frequency": 14
+        },
+        {
+          "name": "向量数据库",
+          "frequency": 12
+        },
+        {
+          "name": "智能体",
+          "frequency": 9
+        },
+        {
+          "name": "微调",
+          "frequency": 9
+        },
+        {
+          "name": "langchain",
+          "frequency": 8
+        },
+        {
+          "name": "深度学习",
+          "frequency": 8
+        },
+        {
+          "name": "llm",
+          "frequency": 7
+        },
+        {
+          "name": "机器学习",
+          "frequency": 7
+        },
+        {
+          "name": "java",
+          "frequency": 6
+        },
+        {
+          "name": "dify",
+          "frequency": 6
+        },
+        {
+          "name": "pytorch",
+          "frequency": 6
+        },
+        {
+          "name": "postgresql",
+          "frequency": 5
+        },
+        {
+          "name": "docker",
+          "frequency": 5
+        },
+        {
+          "name": "tensorflow",
+          "frequency": 5
+        },
+        {
+          "name": "prompt",
+          "frequency": 5
+        },
+        {
+          "name": "fastapi",
+          "frequency": 5
+        },
+        {
+          "name": "go",
+          "frequency": 4
+        },
+        {
+          "name": "embedding",
+          "frequency": 4
+        },
+        {
+          "name": "mysql",
+          "frequency": 4
+        },
+        {
+          "name": "提示词工程",
+          "frequency": 4
+        },
+        {
+          "name": "react",
+          "frequency": 4
+        }
+      ]
+    },
+    {
+      "name": "高级",
+      "type": "level",
+      "recordCount": 1,
+      "technologies": []
+    },
+    {
+      "name": "不限/其他",
+      "type": "level",
+      "recordCount": 22,
+      "technologies": [
+        {
+          "name": "python",
+          "frequency": 19
+        },
+        {
+          "name": "rag",
+          "frequency": 13
+        },
+        {
+          "name": "大模型",
+          "frequency": 12
+        },
+        {
+          "name": "agent",
+          "frequency": 11
+        },
+        {
+          "name": "微调",
+          "frequency": 8
+        },
+        {
+          "name": "langchain",
+          "frequency": 8
+        },
+        {
+          "name": "深度学习",
+          "frequency": 8
+        },
+        {
+          "name": "机器学习",
+          "frequency": 8
+        },
+        {
+          "name": "prompt",
+          "frequency": 7
+        },
+        {
+          "name": "向量数据库",
+          "frequency": 7
+        },
+        {
+          "name": "智能体",
+          "frequency": 6
+        },
+        {
+          "name": "llm",
+          "frequency": 6
+        },
+        {
+          "name": "tensorflow",
+          "frequency": 5
+        },
+        {
+          "name": "java",
+          "frequency": 4
+        },
+        {
+          "name": "dify",
+          "frequency": 4
+        },
+        {
+          "name": "pytorch",
+          "frequency": 4
+        },
+        {
+          "name": "linux",
+          "frequency": 4
+        },
+        {
+          "name": "nlp",
+          "frequency": 4
+        },
+        {
+          "name": "mysql",
+          "frequency": 4
+        },
+        {
+          "name": "fine-tuning",
+          "frequency": 3
+        },
+        {
+          "name": "mcp",
+          "frequency": 3
+        },
+        {
+          "name": "spring cloud",
+          "frequency": 3
+        },
+        {
+          "name": "mongodb",
+          "frequency": 3
+        },
+        {
+          "name": "spring boot",
+          "frequency": 3
+        }
+      ]
+    }
+  ],
+  "maxFrequency": 39
+}

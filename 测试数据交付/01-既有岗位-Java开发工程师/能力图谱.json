@@ -1,0 +1,908 @@
+{
+  "kind": "existing",
+  "jobTitle": "Java开发工程师",
+  "dataSource": {
+    "table": "the_total_table",
+    "方法": "从 job_description/job_requirement 原文按技能词典抽取技能点（词典含 193 词）",
+    "岗位标题匹配": [
+      "java开发工程师"
+    ],
+    "records": 99,
+    "withSkills": 98,
+    "来源平台": [
+      "51job",
+      "boss"
+    ],
+    "时间范围(发布时间/入库时间)": [
+      "2026-07-25",
+      "2026-07-26"
+    ]
+  },
+  "skillCount": 66,
+  "uniqueSkills": [
+    "java",
+    "spring boot",
+    "mysql",
+    "redis",
+    "mybatis",
+    "spring cloud",
+    "微服务",
+    "分布式",
+    "linux",
+    "oracle",
+    "git",
+    "单元测试",
+    "高并发",
+    "kafka",
+    "nginx",
+    "docker",
+    "缓存",
+    "rabbitmq",
+    "maven",
+    "消息队列",
+    "tomcat",
+    "javascript",
+    "css",
+    "vue",
+    "html",
+    "dubbo",
+    "hibernate",
+    "jquery",
+    "rocketmq",
+    "sql优化",
+    "jenkins",
+    "restful",
+    "接口开发",
+    "gradle",
+    "mongodb",
+    "python",
+    "spring",
+    "elasticsearch",
+    "ci/cd",
+    "gitlab",
+    "postgresql",
+    "zookeeper",
+    "负载均衡",
+    "agent",
+    "c++",
+    "etl",
+    "sql server",
+    "智能体",
+    "clickhouse",
+    "doris",
+    "flink",
+    "hadoop",
+    "hive",
+    "kubernetes",
+    "modbus",
+    "plc",
+    "postman",
+    "react",
+    "scala",
+    "shell",
+    "spark",
+    "uniapp",
+    "中台",
+    "功能测试",
+    "降级",
+    "限流"
+  ],
+  "categories": [
+    {
+      "name": "数据存储与处理",
+      "type": "category",
+      "skillCount": 17,
+      "technologies": [
+        {
+          "name": "mysql",
+          "type": "technology",
+          "frequency": 72,
+          "ratio": 73.5
+        },
+        {
+          "name": "redis",
+          "type": "technology",
+          "frequency": 60,
+          "ratio": 61.2
+        },
+        {
+          "name": "oracle",
+          "type": "technology",
+          "frequency": 27,
+          "ratio": 27.6
+        },
+        {
+          "name": "kafka",
+          "type": "technology",
+          "frequency": 21,
+          "ratio": 21.4
+        },
+        {
+          "name": "rabbitmq",
+          "type": "technology",
+          "frequency": 17,
+          "ratio": 17.3
+        },
+        {
+          "name": "rocketmq",
+          "type": "technology",
+          "frequency": 8,
+          "ratio": 8.2
+        },
+        {
+          "name": "mongodb",
+          "type": "technology",
+          "frequency": 6,
+          "ratio": 6.1
+        },
+        {
+          "name": "elasticsearch",
+          "type": "technology",
+          "frequency": 5,
+          "ratio": 5.1
+        },
+        {
+          "name": "postgresql",
+          "type": "technology",
+          "frequency": 4,
+          "ratio": 4.1
+        },
+        {
+          "name": "zookeeper",
+          "type": "technology",
+          "frequency": 4,
+          "ratio": 4.1
+        },
+        {
+          "name": "sql server",
+          "type": "technology",
+          "frequency": 3,
+          "ratio": 3.1
+        },
+        {
+          "name": "clickhouse",
+          "type": "technology",
+          "frequency": 2,
+          "ratio": 2.0
+        },
+        {
+          "name": "doris",
+          "type": "technology",
+          "frequency": 2,
+          "ratio": 2.0
+        },
+        {
+          "name": "flink",
+          "type": "technology",
+          "frequency": 2,
+          "ratio": 2.0
+        },
+        {
+          "name": "hadoop",
+          "type": "technology",
+          "frequency": 2,
+          "ratio": 2.0
+        },
+        {
+          "name": "hive",
+          "type": "technology",
+          "frequency": 2,
+          "ratio": 2.0
+        },
+        {
+          "name": "spark",
+          "type": "technology",
+          "frequency": 2,
+          "ratio": 2.0
+        }
+      ]
+    },
+    {
+      "name": "框架与开发",
+      "type": "category",
+      "skillCount": 10,
+      "technologies": [
+        {
+          "name": "spring boot",
+          "type": "technology",
+          "frequency": 82,
+          "ratio": 83.7
+        },
+        {
+          "name": "mybatis",
+          "type": "technology",
+          "frequency": 56,
+          "ratio": 57.1
+        },
+        {
+          "name": "spring cloud",
+          "type": "technology",
+          "frequency": 40,
+          "ratio": 40.8
+        },
+        {
+          "name": "vue",
+          "type": "technology",
+          "frequency": 10,
+          "ratio": 10.2
+        },
+        {
+          "name": "dubbo",
+          "type": "technology",
+          "frequency": 8,
+          "ratio": 8.2
+        },
+        {
+          "name": "hibernate",
+          "type": "technology",
+          "frequency": 8,
+          "ratio": 8.2
+        },
+        {
+          "name": "jquery",
+          "type": "technology",
+          "frequency": 8,
+          "ratio": 8.2
+        },
+        {
+          "name": "spring",
+          "type": "technology",
+          "frequency": 6,
+          "ratio": 6.1
+        },
+        {
+          "name": "react",
+          "type": "technology",
+          "frequency": 2,
+          "ratio": 2.0
+        },
+        {
+          "name": "uniapp",
+          "type": "technology",
+          "frequency": 2,
+          "ratio": 2.0
+        }
+      ]
+    },
+    {
+      "name": "工程化与运维",
+      "type": "category",
+      "skillCount": 11,
+      "technologies": [
+        {
+          "name": "linux",
+          "type": "technology",
+          "frequency": 29,
+          "ratio": 29.6
+        },
+        {
+          "name": "git",
+          "type": "technology",
+          "frequency": 24,
+          "ratio": 24.5
+        },
+        {
+          "name": "nginx",
+          "type": "technology",
+          "frequency": 21,
+          "ratio": 21.4
+        },
+        {
+          "name": "docker",
+          "type": "technology",
+          "frequency": 20,
+          "ratio": 20.4
+        },
+        {
+          "name": "maven",
+          "type": "technology",
+          "frequency": 15,
+          "ratio": 15.3
+        },
+        {
+          "name": "tomcat",
+          "type": "technology",
+          "frequency": 13,
+          "ratio": 13.3
+        },
+        {
+          "name": "jenkins",
+          "type": "technology",
+          "frequency": 7,
+          "ratio": 7.1
+        },
+        {
+          "name": "gradle",
+          "type": "technology",
+          "frequency": 6,
+          "ratio": 6.1
+        },
+        {
+          "name": "ci/cd",
+          "type": "technology",
+          "frequency": 4,
+          "ratio": 4.1
+        },
+        {
+          "name": "gitlab",
+          "type": "technology",
+          "frequency": 4,
+          "ratio": 4.1
+        },
+        {
+          "name": "kubernetes",
+          "type": "technology",
+          "frequency": 2,
+          "ratio": 2.0
+        }
+      ]
+    },
+    {
+      "name": "架构设计",
+      "type": "category",
+      "skillCount": 9,
+      "technologies": [
+        {
+          "name": "微服务",
+          "type": "technology",
+          "frequency": 37,
+          "ratio": 37.8
+        },
+        {
+          "name": "分布式",
+          "type": "technology",
+          "frequency": 31,
+          "ratio": 31.6
+        },
+        {
+          "name": "高并发",
+          "type": "technology",
+          "frequency": 22,
+          "ratio": 22.4
+        },
+        {
+          "name": "缓存",
+          "type": "technology",
+          "frequency": 19,
+          "ratio": 19.4
+        },
+        {
+          "name": "消息队列",
+          "type": "technology",
+          "frequency": 14,
+          "ratio": 14.3
+        },
+        {
+          "name": "负载均衡",
+          "type": "technology",
+          "frequency": 4,
+          "ratio": 4.1
+        },
+        {
+          "name": "中台",
+          "type": "technology",
+          "frequency": 2,
+          "ratio": 2.0
+        },
+        {
+          "name": "降级",
+          "type": "technology",
+          "frequency": 2,
+          "ratio": 2.0
+        },
+        {
+          "name": "限流",
+          "type": "technology",
+          "frequency": 2,
+          "ratio": 2.0
+        }
+      ]
+    },
+    {
+      "name": "编程语言",
+      "type": "category",
+      "skillCount": 6,
+      "technologies": [
+        {
+          "name": "java",
+          "type": "technology",
+          "frequency": 95,
+          "ratio": 96.9
+        },
+        {
+          "name": "javascript",
+          "type": "technology",
+          "frequency": 11,
+          "ratio": 11.2
+        },
+        {
+          "name": "python",
+          "type": "technology",
+          "frequency": 6,
+          "ratio": 6.1
+        },
+        {
+          "name": "c++",
+          "type": "technology",
+          "frequency": 3,
+          "ratio": 3.1
+        },
+        {
+          "name": "scala",
+          "type": "technology",
+          "frequency": 2,
+          "ratio": 2.0
+        },
+        {
+          "name": "shell",
+          "type": "technology",
+          "frequency": 2,
+          "ratio": 2.0
+        }
+      ]
+    },
+    {
+      "name": "测试技术",
+      "type": "category",
+      "skillCount": 3,
+      "technologies": [
+        {
+          "name": "单元测试",
+          "type": "technology",
+          "frequency": 24,
+          "ratio": 24.5
+        },
+        {
+          "name": "postman",
+          "type": "technology",
+          "frequency": 2,
+          "ratio": 2.0
+        },
+        {
+          "name": "功能测试",
+          "type": "technology",
+          "frequency": 2,
+          "ratio": 2.0
+        }
+      ]
+    },
+    {
+      "name": "前端技术",
+      "type": "category",
+      "skillCount": 2,
+      "technologies": [
+        {
+          "name": "css",
+          "type": "technology",
+          "frequency": 10,
+          "ratio": 10.2
+        },
+        {
+          "name": "html",
+          "type": "technology",
+          "frequency": 9,
+          "ratio": 9.2
+        }
+      ]
+    },
+    {
+      "name": "后端技术",
+      "type": "category",
+      "skillCount": 2,
+      "technologies": [
+        {
+          "name": "restful",
+          "type": "technology",
+          "frequency": 7,
+          "ratio": 7.1
+        },
+        {
+          "name": "接口开发",
+          "type": "technology",
+          "frequency": 7,
+          "ratio": 7.1
+        }
+      ]
+    },
+    {
+      "name": "数据处理",
+      "type": "category",
+      "skillCount": 2,
+      "technologies": [
+        {
+          "name": "sql优化",
+          "type": "technology",
+          "frequency": 8,
+          "ratio": 8.2
+        },
+        {
+          "name": "etl",
+          "type": "technology",
+          "frequency": 3,
+          "ratio": 3.1
+        }
+      ]
+    },
+    {
+      "name": "AI与算法",
+      "type": "category",
+      "skillCount": 2,
+      "technologies": [
+        {
+          "name": "agent",
+          "type": "technology",
+          "frequency": 3,
+          "ratio": 3.1
+        },
+        {
+          "name": "智能体",
+          "type": "technology",
+          "frequency": 3,
+          "ratio": 3.1
+        }
+      ]
+    },
+    {
+      "name": "嵌入式/硬件",
+      "type": "category",
+      "skillCount": 2,
+      "technologies": [
+        {
+          "name": "modbus",
+          "type": "technology",
+          "frequency": 2,
+          "ratio": 2.0
+        },
+        {
+          "name": "plc",
+          "type": "technology",
+          "frequency": 2,
+          "ratio": 2.0
+        }
+      ]
+    }
+  ],
+  "levels": [
+    {
+      "name": "初级",
+      "type": "level",
+      "recordCount": 15,
+      "technologies": [
+        {
+          "name": "java",
+          "frequency": 15
+        },
+        {
+          "name": "spring boot",
+          "frequency": 12
+        },
+        {
+          "name": "mybatis",
+          "frequency": 10
+        },
+        {
+          "name": "mysql",
+          "frequency": 6
+        },
+        {
+          "name": "redis",
+          "frequency": 5
+        },
+        {
+          "name": "单元测试",
+          "frequency": 5
+        },
+        {
+          "name": "微服务",
+          "frequency": 5
+        },
+        {
+          "name": "oracle",
+          "frequency": 3
+        },
+        {
+          "name": "分布式",
+          "frequency": 3
+        },
+        {
+          "name": "git",
+          "frequency": 2
+        },
+        {
+          "name": "restful",
+          "frequency": 2
+        },
+        {
+          "name": "spring cloud",
+          "frequency": 2
+        },
+        {
+          "name": "缓存",
+          "frequency": 2
+        }
+      ]
+    },
+    {
+      "name": "中级",
+      "type": "level",
+      "recordCount": 34,
+      "technologies": [
+        {
+          "name": "java",
+          "frequency": 34
+        },
+        {
+          "name": "spring boot",
+          "frequency": 29
+        },
+        {
+          "name": "mysql",
+          "frequency": 26
+        },
+        {
+          "name": "redis",
+          "frequency": 25
+        },
+        {
+          "name": "mybatis",
+          "frequency": 21
+        },
+        {
+          "name": "spring cloud",
+          "frequency": 21
+        },
+        {
+          "name": "微服务",
+          "frequency": 16
+        },
+        {
+          "name": "linux",
+          "frequency": 15
+        },
+        {
+          "name": "oracle",
+          "frequency": 13
+        },
+        {
+          "name": "kafka",
+          "frequency": 12
+        },
+        {
+          "name": "缓存",
+          "frequency": 11
+        },
+        {
+          "name": "nginx",
+          "frequency": 9
+        },
+        {
+          "name": "git",
+          "frequency": 9
+        },
+        {
+          "name": "高并发",
+          "frequency": 9
+        },
+        {
+          "name": "分布式",
+          "frequency": 9
+        },
+        {
+          "name": "消息队列",
+          "frequency": 8
+        },
+        {
+          "name": "rabbitmq",
+          "frequency": 8
+        },
+        {
+          "name": "css",
+          "frequency": 7
+        },
+        {
+          "name": "vue",
+          "frequency": 7
+        },
+        {
+          "name": "dubbo",
+          "frequency": 6
+        },
+        {
+          "name": "jquery",
+          "frequency": 5
+        },
+        {
+          "name": "hibernate",
+          "frequency": 5
+        },
+        {
+          "name": "docker",
+          "frequency": 5
+        },
+        {
+          "name": "javascript",
+          "frequency": 5
+        }
+      ]
+    },
+    {
+      "name": "高级",
+      "type": "level",
+      "recordCount": 9,
+      "technologies": [
+        {
+          "name": "java",
+          "frequency": 8
+        },
+        {
+          "name": "spring boot",
+          "frequency": 8
+        },
+        {
+          "name": "mysql",
+          "frequency": 7
+        },
+        {
+          "name": "分布式",
+          "frequency": 6
+        },
+        {
+          "name": "linux",
+          "frequency": 6
+        },
+        {
+          "name": "spring cloud",
+          "frequency": 5
+        },
+        {
+          "name": "redis",
+          "frequency": 5
+        },
+        {
+          "name": "微服务",
+          "frequency": 5
+        },
+        {
+          "name": "高并发",
+          "frequency": 4
+        },
+        {
+          "name": "mybatis",
+          "frequency": 4
+        },
+        {
+          "name": "git",
+          "frequency": 3
+        },
+        {
+          "name": "maven",
+          "frequency": 3
+        },
+        {
+          "name": "缓存",
+          "frequency": 3
+        },
+        {
+          "name": "单元测试",
+          "frequency": 2
+        },
+        {
+          "name": "sql优化",
+          "frequency": 2
+        },
+        {
+          "name": "rabbitmq",
+          "frequency": 2
+        },
+        {
+          "name": "jenkins",
+          "frequency": 2
+        }
+      ]
+    },
+    {
+      "name": "不限/其他",
+      "type": "level",
+      "recordCount": 40,
+      "technologies": [
+        {
+          "name": "java",
+          "frequency": 38
+        },
+        {
+          "name": "mysql",
+          "frequency": 33
+        },
+        {
+          "name": "spring boot",
+          "frequency": 33
+        },
+        {
+          "name": "redis",
+          "frequency": 25
+        },
+        {
+          "name": "mybatis",
+          "frequency": 21
+        },
+        {
+          "name": "docker",
+          "frequency": 14
+        },
+        {
+          "name": "分布式",
+          "frequency": 13
+        },
+        {
+          "name": "spring cloud",
+          "frequency": 12
+        },
+        {
+          "name": "单元测试",
+          "frequency": 12
+        },
+        {
+          "name": "微服务",
+          "frequency": 11
+        },
+        {
+          "name": "nginx",
+          "frequency": 11
+        },
+        {
+          "name": "oracle",
+          "frequency": 10
+        },
+        {
+          "name": "git",
+          "frequency": 10
+        },
+        {
+          "name": "高并发",
+          "frequency": 9
+        },
+        {
+          "name": "tomcat",
+          "frequency": 9
+        },
+        {
+          "name": "kafka",
+          "frequency": 8
+        },
+        {
+          "name": "linux",
+          "frequency": 8
+        },
+        {
+          "name": "rabbitmq",
+          "frequency": 7
+        },
+        {
+          "name": "maven",
+          "frequency": 7
+        },
+        {
+          "name": "消息队列",
+          "frequency": 6
+        },
+        {
+          "name": "javascript",
+          "frequency": 5
+        },
+        {
+          "name": "restful",
+          "frequency": 5
+        },
+        {
+          "name": "html",
+          "frequency": 4
+        },
+        {
+          "name": "spring",
+          "frequency": 4
+        }
+      ]
+    }
+  ],
+  "maxFrequency": 95
+}
