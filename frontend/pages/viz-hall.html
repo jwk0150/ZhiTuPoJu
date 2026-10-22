@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>执图破局 · 可视化大厅</title>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <link rel="stylesheet" href="../css/tokens.css" />
+  <link rel="stylesheet" href="../css/shell.css?v=vh8" />
+  <link rel="stylesheet" href="../css/components.css" />
+  <link rel="stylesheet" href="../css/news-light-overrides.css" />
+  <link rel="stylesheet" href="../css/viz-hall.css?v=vh8" />
+  <script src="../js/vendor/echarts.min.js"></script>
+</head>
+<body class="standalone-view" data-page="vizHall">
+  <div id="app-shell"></div>
+  <main class="page-main vh-root" id="page-main">
+    <div class="vh-ambient" aria-hidden="true">
+      <span class="vh-veil"></span>
+      <span class="vh-grain"></span>
+      <span class="vh-orb vh-orb-a"></span>
+      <span class="vh-orb vh-orb-b"></span>
+    </div>
+
+    <header class="vh-head">
+      <div class="vh-head-copy">
+        <h1 class="vh-brand">可视化大厅</h1>
+        <p class="vh-sub">岗位 · 能力 · 匹配</p>
+      </div>
+      <div class="vh-kpi">
+        <div class="vh-kpi-item">
+          <b data-byte="ingest">0</b>
+          <span>岗位语料</span>
+        </div>
+        <div class="vh-kpi-item">
+          <b data-byte="graph">0</b>
+          <span>能力关联</span>
+        </div>
+        <div class="vh-kpi-item">
+          <b data-byte="match">0</b>
+          <span>诊断次数</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="vh-byte-rail" aria-hidden="true">
+      <div class="vh-byte-track" id="vh-byte-track"></div>
+    </div>
+
+    <section class="vh-grid" id="vh-grid" aria-label="可视化看板">
+      <article class="vh-panel" data-panel="city" tabindex="0" role="button" aria-label="放大城市热度">
+        <header class="vh-panel-bar">
+          <h2>城市热度</h2>
+          <span class="vh-zoom" aria-hidden="true">放大</span>
+        </header>
+        <div class="vh-chart" id="vh-chart-city"></div>
+      </article>
+      <article class="vh-panel" data-panel="skill" tabindex="0" role="button" aria-label="放大能力结构">
+        <header class="vh-panel-bar">
+          <h2>能力结构</h2>
+          <span class="vh-zoom" aria-hidden="true">放大</span>
+        </header>
+        <div class="vh-chart" id="vh-chart-skill"></div>
+      </article>
+      <article class="vh-panel" data-panel="match" tabindex="0" role="button" aria-label="放大匹配得分">
+        <header class="vh-panel-bar">
+          <h2>匹配得分</h2>
+          <span class="vh-zoom" aria-hidden="true">放大</span>
+        </header>
+        <div class="vh-chart" id="vh-chart-match"></div>
+      </article>
+      <article class="vh-panel" data-panel="role" tabindex="0" role="button" aria-label="放大职类占比">
+        <header class="vh-panel-bar">
+          <h2>职类占比</h2>
+          <span class="vh-zoom" aria-hidden="true">放大</span>
+        </header>
+        <div class="vh-chart" id="vh-chart-role"></div>
+      </article>
+      <article class="vh-panel" data-panel="salary" tabindex="0" role="button" aria-label="放大薪资区间">
+        <header class="vh-panel-bar">
+          <h2>薪资区间</h2>
+          <span class="vh-zoom" aria-hidden="true">放大</span>
+        </header>
+        <div class="vh-chart" id="vh-chart-salary"></div>
+      </article>
+      <article class="vh-panel" data-panel="supply" tabindex="0" role="button" aria-label="放大供需对比">
+        <header class="vh-panel-bar">
+          <h2>供需对比</h2>
+          <span class="vh-zoom" aria-hidden="true">放大</span>
+        </header>
+        <div class="vh-chart" id="vh-chart-supply"></div>
+      </article>
+    </section>
+
+    <footer class="vh-foot">
+      <span>执图破局</span>
+      <a href="map.html">数字人才地图</a>
+    </footer>
+  </main>
+
+  <div class="vh-lightbox" id="vh-lightbox" hidden>
+    <div class="vh-lightbox-backdrop" data-vh-close></div>
+    <div class="vh-lightbox-card" role="dialog" aria-modal="true" aria-labelledby="vh-lightbox-title">
+      <header class="vh-lightbox-head">
+        <h2 id="vh-lightbox-title">图表</h2>
+        <button type="button" class="vh-lightbox-close" data-vh-close aria-label="关闭">×</button>
+      </header>
+      <div class="vh-lightbox-chart" id="vh-lightbox-chart"></div>
+    </div>
+  </div>
+
+  <script src="../js/api.js"></script>
+  <script src="../js/runtime-core.js"></script>
+  <script src="../js/shell.js"></script>
+  <script src="../js/pages/viz-hall.js?v=vh8"></script>
+  <script>
+    window.Shell && window.Shell.mount({ pageId: 'vizHall', title: '可视化大厅', subtitle: '实时看板' });
+    window.initVizHall && window.initVizHall();
+  </script>
+</body>
+</html>

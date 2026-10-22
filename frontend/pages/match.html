@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="../css/shell.css" />
   <link rel="stylesheet" href="../css/components.css" />
   <link rel="stylesheet" href="../css/legacy-views.css" />
-  <link rel="stylesheet" href="../css/match.css" />
+  <link rel="stylesheet" href="../css/match.css?v=matchcss10" />
   <link rel="stylesheet" href="../css/match-paper.css" />
   <link rel="stylesheet" href="../css/learning-os.css" />
   <script src="../js/vendor/echarts.min.js" defer></script>
@@ -605,10 +605,10 @@
           <button class="md-int-drawer-close" id="int-drawer-close" type="button" aria-label="关闭">
             <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
           </button>
-        </div>
+</div>
         <div class="md-int-drawer-body" id="int-drawer-body"></div>
-      </div>
-    </div>
+</div>
+</div>
 
     <!-- AI 面试分析报告 · 职业能力分析 Dashboard -->
     <div class="md-report" id="md-report" hidden>
@@ -617,12 +617,12 @@
           <div>
             <div class="md-report-kicker">AI INTERVIEW REPORT · 人才评估报告</div>
             <div class="md-report-title">职业能力分析 Dashboard</div>
-          </div>
+</div>
           <div class="md-report-actions">
             <button class="btn-sm btn-sm--ghost" id="report-restart" type="button">再面一次</button>
             <button class="btn-sm btn-sm--solid" id="report-back" type="button">返回岗位分析</button>
-          </div>
-        </div>
+</div>
+</div>
 
         <div class="md-report-scroll">
 
@@ -633,32 +633,32 @@
                 <span class="rpt-metric-lbl">综合评分</span>
                 <div class="rpt-metric-val"><b id="report-score">0</b><small>分</small></div>
                 <span class="rpt-metric-sub" id="report-score-tag">良好 · 具备竞争力</span>
-              </div>
+</div>
               <div class="rpt-metric">
                 <span class="rpt-metric-lbl">岗位匹配</span>
                 <div class="rpt-metric-val gold"><b id="report-match">0</b><small>%</small></div>
                 <span class="rpt-metric-sub">高于同岗位平均</span>
-              </div>
+</div>
               <div class="rpt-metric">
                 <span class="rpt-metric-lbl">面试等级</span>
                 <div class="rpt-metric-val lvl" id="report-level">中级 Java 工程师</div>
                 <span class="rpt-metric-sub" id="report-level-sub">可冲刺高级岗位</span>
-              </div>
-            </div>
+</div>
+</div>
             <div class="rpt-ai-summary">
               <span class="ai-orb">AI</span>
               <div class="rpt-ai-summary-text">
                 <b>AI 总结</b>
                 <p id="report-summary">候选人具备企业级 Java 开发能力，但系统设计经验不足。</p>
-              </div>
-            </div>
-          </div>
+</div>
+</div>
+</div>
 
           <!-- 能力雷达图 -->
           <div class="rpt-card rpt-radar-card">
             <div class="rpt-sec-head"><b>能力雷达</b><small>六维职业能力画像 · 基于面试实时评估</small></div>
             <div class="rpt-radar" id="report-radar"></div>
-          </div>
+</div>
 
           <!-- 能力分析列表 -->
           <div class="rpt-sec-head"><b>能力分析</b><small>点击卡片展开详细报告</small></div>
@@ -673,11 +673,11 @@
             <div class="rpt-sec-head"><b>职业发展路径</b><small>Career Path · 下一站</small></div>
             <div class="rpt-career-path" id="report-career"></div>
             <button class="btn-sm btn-sm--solid rpt-career-btn" id="report-path-btn" type="button">生成学习路线 →</button>
-          </div>
+</div>
 
-        </div>
-      </div>
-    </div>
+</div>
+</div>
+</div>
 
     <!-- 优秀简历对比悬浮窗（纸质版双栏 + 部分高亮） -->
     <div class="rb-modal" id="rb-modal" hidden role="dialog" aria-modal="true" aria-label="优秀简历对比">
@@ -706,9 +706,9 @@
             <span class="rb-legend-item"><span class="rb-dot mine"></span>我的简历</span>
           </div>
           <button class="btn-sm btn-sm--solid" id="rb-goto-learn" type="button">查看差距与学习路径 →</button>
-        </div>
-      </div>
-    </div>
+</div>
+</div>
+</div>
 
     <!-- ===== AI 人岗能力诊断工作台（学习画像重构） ===== -->
     <div class="rp-modal" id="rp-modal" hidden role="dialog" aria-modal="true" aria-label="AI 人岗能力诊断工作台">
@@ -773,17 +773,17 @@
                   <option value="alpha">名称</option>
                 </select>
               </div>
-            </div>
+</div>
             <div class="rp-graph" id="rp-graph">
               <div class="rp-graph-legend" aria-hidden="true">
                 <span><i class="d teal"></i>已达标</span>
                 <span><i class="d orange"></i>存在缺口</span>
                 <span><i class="d gray"></i>未学习</span>
                 <span class="rp-graph-hint">点击节点查看 AI 诊断</span>
-              </div>
+</div>
               <div class="rp-search-hint" id="rp-search-hint" hidden></div>
-            </div>
-          </section>
+</div>
+</section>
 
           <aside class="rp-ai-pane" id="rp-ai-pane" aria-label="AI 能力诊断"></aside>
         </div>
@@ -901,8 +901,8 @@
           <button class="rw-diff-btn rw-diff-btn--ghost" id="rw-diff-cancel" type="button">取消</button>
           <button class="rw-diff-btn rw-diff-btn--primary" id="rw-diff-apply" type="button">采纳并应用</button>
         </div>
-      </div>
-    </div>
+</div>
+</div>
 
     <div class="resume-source-modal" id="resume-source-modal" hidden role="dialog" aria-modal="true" aria-labelledby="resume-source-title">
       <div class="resume-source-mask" id="resume-source-mask"></div>
@@ -920,9 +920,9 @@
             <span class="resume-source-icon">▣</span>
             <span><b>从个人仓库选择</b><small>使用已保存的简历版本</small></span>
           </button>
-        </div>
-      </div>
-    </div>
+</div>
+</div>
+</div>
     <input type="file" id="resume-file-input" accept=".pdf,.doc,.docx,.txt" hidden />
   </main>
 
@@ -932,34 +932,28 @@
   <script src="../js/cinema-bg.js"></script>
   <script src="../js/cinema-music.js"></script>
   <script src="../js/shell.js"></script>
-  <script src="../js/pages/match.js"></script>
-
-  <script src="../js/pages/match.js?v=matchfix6"></script>
+  <script src="../js/pages/match.js?v=matchfix10"></script>
 
   <!-- 讯飞数字人 · AI 面试官配置（填入凭据后自动启用，留空则回退为静态头像） -->
   <script>
     window.AVATAR_CONFIG = {
-      appId: 'd1a2c54f',            // 讯飞开放平台应用 APPID
-      apiKey: 'f486a99f4cd9c9cabf9eb1d18a485ce1',   // 应用 APIKey
-      apiSecret: 'NTc5OWRmYmRhZTE5MjExZDE4ZDA0MGZi', // 应用 APISecret
-      avatarId: '201365001',        // 数字人形象 ID
-      vcn: 'x4_yezi',             // 音色 ID
-      // 接口服务ID 354118931084087296：文本驱动模式暂不使用，如需 NLP 交互再作为 sceneId 填入
+      appId: 'd1a2c54f',
+      apiKey: 'f486a99f4cd9c9cabf9eb1d18a485ce1',
+      apiSecret: 'NTc5OWRmYmRhZTE5MjExZDE4ZDA0MGZi',
+      avatarId: '201365001',
+      vcn: 'x4_yezi',
       sceneId: '',
-      serverUrl: 'wss://avatar.cn-huadong-1.xf-yun.com/v1/interact', // 服务地址
-      width: 720,           // 视频宽
-      height: 1280,         // 视频高（竖屏）
+      serverUrl: 'wss://avatar.cn-huadong-1.xf-yun.com/v1/interact',
+      // 超拟人默认竖屏；码率/帧率降低以适配弱网
+      width: 720,
+      height: 1280,
+      bitrate: 1000000,
+      fps: 20,
       speed: 50, pitch: 50, volume: 100
     };
   </script>
-  <script type="module" src="../js/avatar-interviewer.js?v=avatar1"></script>
-  <script type="module">
-    // 数字人预连接（P3-4）：页面就绪 3s 后后台建立讯飞会话，
-    // 用户走到面试环节时数字人已就绪（省 3-8s 握手等待）
-    setTimeout(function () {
-      try { window.AvatarInterviewer && window.AvatarInterviewer.preload(); } catch (e) {}
-    }, 3000);
-  </script>
+  <script type="module" src="../js/avatar-interviewer.js?v=avatar5"></script>
+  <!-- 不在页面空闲时预连接：无用户手势会触发浏览器 0x4043 自动播放限制，反而易失败 -->
 
   <script>
     window.Shell && window.Shell.mount({ pageId: 'match', title: '人岗匹配诊断', subtitle: '简历 → 匹配 → 岗位 → 学习 → 面试' });

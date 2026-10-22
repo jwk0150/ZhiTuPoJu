@@ -60,6 +60,16 @@ h1, h2, h3, h4, .page-title, .vault-title {
   letter-spacing: 0.01em;
 }
 
+/* 右下角资料提示卡是深色底，不能套用全局深色标题，否则标题几乎看不见 */
+.shell-profile-prompt h1,
+.shell-profile-prompt h2,
+.shell-profile-prompt h3,
+.shell-profile-prompt h4,
+#shell-profile-prompt-title {
+  color: #FFE7B0 !important;
+  letter-spacing: 0.04em !important;
+}
+
 button, .btn, .vault-btn, .vault-tab {
   font-weight: 500;
 }

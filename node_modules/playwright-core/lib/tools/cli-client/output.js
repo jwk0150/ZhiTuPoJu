@@ -80,6 +80,10 @@ class TextOutput {
     console.error(`Error: no target specified for attach command; use one of [name], --cdp, --endpoint, or --extension to specify the target to attach to.`);
     return process.exit(1);
   }
+  errorInstallGlobalRequiresSkills() {
+    console.error(`Error: --global requires --skills`);
+    return process.exit(1);
+  }
   list({ all, browsers, servers, channelSessions }) {
     const byWorkspace = /* @__PURE__ */ new Map();
     for (const browser of browsers) {
@@ -161,7 +165,7 @@ class TextOutput {
   attach(session, pid, endpoint, toolResult) {
     if (endpoint) {
       console.log(`### Session \`${session}\` created, attached to \`${endpoint}\`.`);
-      console.log(`Run commands with: playwright-cli --s=${session} <command>`);
+      console.log(`Run commands with: playwright-cli -s=${session} <command>`);
       console.log("");
     } else {
       console.log(`### Browser \`${session}\` opened with pid ${pid}.`);
@@ -234,6 +238,10 @@ class JsonOutput {
   }
   errorAttachNoTarget() {
     this._emit({ isError: true, error: `no target specified for attach command; use one of [name], --cdp, --endpoint, or --extension to specify the target to attach to.` });
+    return process.exit(1);
+  }
+  errorInstallGlobalRequiresSkills() {
+    this._emit({ isError: true, error: `--global requires --skills` });
     return process.exit(1);
   }
   list({ all, browsers, servers, channelSessions }) {

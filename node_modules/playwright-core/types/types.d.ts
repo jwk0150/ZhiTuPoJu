@@ -1047,6 +1047,14 @@ export interface Page {
   on(event: 'dialog', listener: (dialog: Dialog) => any): this;
 
   /**
+   * Emitted when a JavaScript dialog has been closed, either by
+   * [dialog.accept([promptText])](https://playwright.dev/docs/api/class-dialog#dialog-accept), by
+   * [dialog.dismiss()](https://playwright.dev/docs/api/class-dialog#dialog-dismiss), or manually by the user in the
+   * headed browser.
+   */
+  on(event: 'dialogclosed', listener: (dialog: Dialog) => any): this;
+
+  /**
    * Emitted when the JavaScript
    * [`DOMContentLoaded`](https://developer.mozilla.org/en-US/docs/Web/Events/DOMContentLoaded) event is dispatched.
    */
@@ -1210,6 +1218,11 @@ export interface Page {
   /**
    * Adds an event listener that will be automatically removed after it is triggered once. See `addListener` for more information about this event.
    */
+  once(event: 'dialogclosed', listener: (dialog: Dialog) => any): this;
+
+  /**
+   * Adds an event listener that will be automatically removed after it is triggered once. See `addListener` for more information about this event.
+   */
   once(event: 'domcontentloaded', listener: (page: Page) => any): this;
 
   /**
@@ -1347,6 +1360,14 @@ export interface Page {
    *
    */
   addListener(event: 'dialog', listener: (dialog: Dialog) => any): this;
+
+  /**
+   * Emitted when a JavaScript dialog has been closed, either by
+   * [dialog.accept([promptText])](https://playwright.dev/docs/api/class-dialog#dialog-accept), by
+   * [dialog.dismiss()](https://playwright.dev/docs/api/class-dialog#dialog-dismiss), or manually by the user in the
+   * headed browser.
+   */
+  addListener(event: 'dialogclosed', listener: (dialog: Dialog) => any): this;
 
   /**
    * Emitted when the JavaScript
@@ -1512,6 +1533,11 @@ export interface Page {
   /**
    * Removes an event listener added by `on` or `addListener`.
    */
+  removeListener(event: 'dialogclosed', listener: (dialog: Dialog) => any): this;
+
+  /**
+   * Removes an event listener added by `on` or `addListener`.
+   */
   removeListener(event: 'domcontentloaded', listener: (page: Page) => any): this;
 
   /**
@@ -1603,6 +1629,11 @@ export interface Page {
    * Removes an event listener added by `on` or `addListener`.
    */
   off(event: 'dialog', listener: (dialog: Dialog) => any): this;
+
+  /**
+   * Removes an event listener added by `on` or `addListener`.
+   */
+  off(event: 'dialogclosed', listener: (dialog: Dialog) => any): this;
 
   /**
    * Removes an event listener added by `on` or `addListener`.
@@ -1744,6 +1775,14 @@ export interface Page {
    *
    */
   prependListener(event: 'dialog', listener: (dialog: Dialog) => any): this;
+
+  /**
+   * Emitted when a JavaScript dialog has been closed, either by
+   * [dialog.accept([promptText])](https://playwright.dev/docs/api/class-dialog#dialog-accept), by
+   * [dialog.dismiss()](https://playwright.dev/docs/api/class-dialog#dialog-dismiss), or manually by the user in the
+   * headed browser.
+   */
+  prependListener(event: 'dialogclosed', listener: (dialog: Dialog) => any): this;
 
   /**
    * Emitted when the JavaScript
@@ -2098,6 +2137,54 @@ export interface Page {
      */
     timeout?: number;
   }): Promise<string>;
+
+  /**
+   * Captures the aria snapshot of the page as a free form JSON object. Returns the same tree as
+   * [page.ariaSnapshot([options])](https://playwright.dev/docs/api/class-page#page-aria-snapshot), serialized as a JSON
+   * value instead of YAML markup. See
+   * [locator.ariaSnapshotJSON([options])](https://playwright.dev/docs/api/class-locator#locator-aria-snapshot-json) for
+   * the details of the format.
+   * @param options
+   */
+  ariaSnapshotJSON(options?: {
+    /**
+     * When `true`, includes each element's bounding box as a `box` property with `x`, `y`, `width` and `height`.
+     * Coordinates are relative to the viewport, in CSS pixels, as returned by
+     * [`Element.getBoundingClientRect()`](https://developer.mozilla.org/en-US/docs/Web/API/Element/getBoundingClientRect).
+     * Defaults to `false`.
+     */
+    boxes?: boolean;
+
+    /**
+     * When specified, limits the depth of the snapshot.
+     */
+    depth?: number;
+
+    /**
+     * When set to `"ai"`, returns a snapshot optimized for AI consumption: including element references like `[ref=e2]`
+     * and snapshots of `<iframe>`s. Defaults to `"default"`.
+     */
+    mode?: "ai"|"default";
+
+    /**
+     * Allows to cancel the operation using an
+     * [`AbortSignal`](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal). If the signal is aborted, the
+     * operation will be aborted and throw an error. Note that providing a signal does not disable the default timeout,
+     * which can be changed using
+     * [browserContext.setDefaultTimeout(timeout)](https://playwright.dev/docs/api/class-browsercontext#browser-context-set-default-timeout)
+     * or [page.setDefaultTimeout(timeout)](https://playwright.dev/docs/api/class-page#page-set-default-timeout); pass
+     * `timeout: 0` to disable the timeout entirely.
+     */
+    signal?: AbortSignal;
+
+    /**
+     * Maximum time in milliseconds. Defaults to `0` - no timeout. The default value can be changed via `actionTimeout`
+     * option in the config, or by using the
+     * [browserContext.setDefaultTimeout(timeout)](https://playwright.dev/docs/api/class-browsercontext#browser-context-set-default-timeout)
+     * or [page.setDefaultTimeout(timeout)](https://playwright.dev/docs/api/class-page#page-set-default-timeout) methods.
+     */
+    timeout?: number;
+  }): Promise<Serializable>;
 
   /**
    * Brings page to front (activates tab).
@@ -2905,6 +2992,11 @@ export interface Page {
    * When working with iframes, you can create a frame locator that will enter the iframe and allow selecting elements
    * in that iframe.
    *
+   * When called without [`selector`](https://playwright.dev/docs/api/class-page#page-frame-locator-option-selector),
+   * the search starts in any frame on the page - the main frame or any of the iframes - so that you don't need to
+   * locate each iframe first. Note that the rest of the locator is resolved inside a single frame, just like any other
+   * locator. If it matches elements inside multiple frames, an error is thrown.
+   *
    * **Usage**
    *
    * Following snippet locates element with text "Submit" in the iframe with id `my-frame`, like `<iframe
@@ -2915,9 +3007,16 @@ export interface Page {
    * await locator.click();
    * ```
    *
-   * @param selector A selector to use when resolving DOM element.
+   * Following snippet locates a button, either in the main frame or in one of the iframes:
+   *
+   * ```js
+   * const locator = page.frameLocator().getByRole('button');
+   * await locator.click();
+   * ```
+   *
+   * @param selector A selector that matches the frame element. When not specified, locator is matched in any frame on the page.
    */
-  frameLocator(selector: string): FrameLocator;
+  frameLocator(selector?: string): FrameLocator;
 
   /**
    * An array of all frames attached to the page.
@@ -3293,7 +3392,7 @@ export interface Page {
    *
    * Navigate to the previous page in history.
    *
-   * **NOTE** **Testing Back/Forward Cache (BFCache) is not supported.**  By default, Playwright disables the
+   * **NOTE** **Testing Back/Forward Cache (BFCache) is not supported.** By default, Playwright disables the
    * Back/Forward Cache across all browsers. Even if explicitly enabled, Playwright's internal state relies on
    * network-level navigation events. Because BFCache restores unfreeze the DOM without firing these events, using
    * `page.goBack()` or `page.goForward()` to trigger a BFCache restore will result in timeouts and a desynchronized
@@ -3341,7 +3440,7 @@ export interface Page {
    *
    * Navigate to the next page in history.
    *
-   * **NOTE** **Testing Back/Forward Cache (BFCache) is not supported.**  By default, Playwright disables the
+   * **NOTE** **Testing Back/Forward Cache (BFCache) is not supported.** By default, Playwright disables the
    * Back/Forward Cache across all browsers. Even if explicitly enabled, Playwright's internal state relies on
    * network-level navigation events. Because BFCache restores unfreeze the DOM without firing these events, using
    * `page.goBack()` or `page.goForward()` to trigger a BFCache restore will result in timeouts and a desynchronized
@@ -5266,6 +5365,14 @@ export interface Page {
    *
    */
   waitForEvent(event: 'dialog', optionsOrPredicate?: { predicate?: (dialog: Dialog) => boolean | Promise<boolean>, timeout?: number, signal?: AbortSignal } | ((dialog: Dialog) => boolean | Promise<boolean>)): Promise<Dialog>;
+
+  /**
+   * Emitted when a JavaScript dialog has been closed, either by
+   * [dialog.accept([promptText])](https://playwright.dev/docs/api/class-dialog#dialog-accept), by
+   * [dialog.dismiss()](https://playwright.dev/docs/api/class-dialog#dialog-dismiss), or manually by the user in the
+   * headed browser.
+   */
+  waitForEvent(event: 'dialogclosed', optionsOrPredicate?: { predicate?: (dialog: Dialog) => boolean | Promise<boolean>, timeout?: number, signal?: AbortSignal } | ((dialog: Dialog) => boolean | Promise<boolean>)): Promise<Dialog>;
 
   /**
    * Emitted when the JavaScript
@@ -7224,6 +7331,11 @@ export interface Frame {
    * When working with iframes, you can create a frame locator that will enter the iframe and allow selecting elements
    * in that iframe.
    *
+   * When called without [`selector`](https://playwright.dev/docs/api/class-frame#frame-frame-locator-option-selector),
+   * the search starts in this frame or in any of the iframes inside it, so that you don't need to locate each iframe
+   * first. Note that the rest of the locator is resolved inside a single frame, just like any other locator. If it
+   * matches elements inside multiple frames, an error is thrown.
+   *
    * **Usage**
    *
    * Following snippet locates element with text "Submit" in the iframe with id `my-frame`, like `<iframe
@@ -7234,9 +7346,17 @@ export interface Frame {
    * await locator.click();
    * ```
    *
-   * @param selector A selector to use when resolving DOM element.
+   * Following snippet locates a button, either in the frame or in one of the iframes inside it:
+   *
+   * ```js
+   * const locator = frame.frameLocator().getByRole('button');
+   * await locator.click();
+   * ```
+   *
+   * @param selector A selector that matches the frame element. When not specified, locator is matched in this frame or in any of the
+   * iframes inside it.
    */
-  frameLocator(selector: string): FrameLocator;
+  frameLocator(selector?: string): FrameLocator;
 
   /**
    * **NOTE** Use locator-based
@@ -9183,6 +9303,14 @@ export interface BrowserContext {
   on(event: 'dialog', listener: (dialog: Dialog) => any): this;
 
   /**
+   * Emitted when a JavaScript dialog in any page belonging to this context has been closed, either by
+   * [dialog.accept([promptText])](https://playwright.dev/docs/api/class-dialog#dialog-accept), by
+   * [dialog.dismiss()](https://playwright.dev/docs/api/class-dialog#dialog-dismiss), or manually by the user in the
+   * headed browser.
+   */
+  on(event: 'dialogclosed', listener: (dialog: Dialog) => any): this;
+
+  /**
    * Emitted when attachment download started in any page belonging to this context. User can access basic file
    * operations on downloaded content via the passed [Download](https://playwright.dev/docs/api/class-download)
    * instance. See also [page.on('download')](https://playwright.dev/docs/api/class-page#page-event-download) to receive
@@ -9330,6 +9458,11 @@ export interface BrowserContext {
   /**
    * Adds an event listener that will be automatically removed after it is triggered once. See `addListener` for more information about this event.
    */
+  once(event: 'dialogclosed', listener: (dialog: Dialog) => any): this;
+
+  /**
+   * Adds an event listener that will be automatically removed after it is triggered once. See `addListener` for more information about this event.
+   */
   once(event: 'download', listener: (download: Download) => any): this;
 
   /**
@@ -9447,6 +9580,14 @@ export interface BrowserContext {
    *
    */
   addListener(event: 'dialog', listener: (dialog: Dialog) => any): this;
+
+  /**
+   * Emitted when a JavaScript dialog in any page belonging to this context has been closed, either by
+   * [dialog.accept([promptText])](https://playwright.dev/docs/api/class-dialog#dialog-accept), by
+   * [dialog.dismiss()](https://playwright.dev/docs/api/class-dialog#dialog-dismiss), or manually by the user in the
+   * headed browser.
+   */
+  addListener(event: 'dialogclosed', listener: (dialog: Dialog) => any): this;
 
   /**
    * Emitted when attachment download started in any page belonging to this context. User can access basic file
@@ -9596,6 +9737,11 @@ export interface BrowserContext {
   /**
    * Removes an event listener added by `on` or `addListener`.
    */
+  removeListener(event: 'dialogclosed', listener: (dialog: Dialog) => any): this;
+
+  /**
+   * Removes an event listener added by `on` or `addListener`.
+   */
   removeListener(event: 'download', listener: (download: Download) => any): this;
 
   /**
@@ -9677,6 +9823,11 @@ export interface BrowserContext {
    * Removes an event listener added by `on` or `addListener`.
    */
   off(event: 'dialog', listener: (dialog: Dialog) => any): this;
+
+  /**
+   * Removes an event listener added by `on` or `addListener`.
+   */
+  off(event: 'dialogclosed', listener: (dialog: Dialog) => any): this;
 
   /**
    * Removes an event listener added by `on` or `addListener`.
@@ -9798,6 +9949,14 @@ export interface BrowserContext {
    *
    */
   prependListener(event: 'dialog', listener: (dialog: Dialog) => any): this;
+
+  /**
+   * Emitted when a JavaScript dialog in any page belonging to this context has been closed, either by
+   * [dialog.accept([promptText])](https://playwright.dev/docs/api/class-dialog#dialog-accept), by
+   * [dialog.dismiss()](https://playwright.dev/docs/api/class-dialog#dialog-dismiss), or manually by the user in the
+   * headed browser.
+   */
+  prependListener(event: 'dialogclosed', listener: (dialog: Dialog) => any): this;
 
   /**
    * Emitted when attachment download started in any page belonging to this context. User can access basic file
@@ -10412,14 +10571,33 @@ export interface BrowserContext {
   }): Promise<void>;
 
   /**
-   * @deprecated Browsers may cache credentials after successful authentication. Create a new browser context instead.
-   * @param httpCredentials
+   * Sets the credentials for HTTP authentication for this browser context.
+   *
+   * **NOTE** Browsers may cache credentials per origin after a successful authentication, so changing credentials for
+   * an origin that has already been authenticated may have no effect.
+   *
+   * @param httpCredentials Pass an array to use different credentials for different origins. The first entry that matches the request origin
+   * is used, and entries with no origin match any request.
    */
   setHTTPCredentials(httpCredentials: null|{
     username: string;
 
     password: string;
-  }): Promise<void>;
+
+    /**
+     * Restrain sending http credentials on specific origin (scheme://host:port).
+     */
+    origin?: string;
+  }|ReadonlyArray<{
+    username: string;
+
+    password: string;
+
+    /**
+     * Restrain sending http credentials on specific origin (scheme://host:port).
+     */
+    origin?: string;
+  }>): Promise<void>;
 
   /**
    * @param offline Whether to emulate network being offline for the browser context.
@@ -10427,10 +10605,11 @@ export interface BrowserContext {
   setOffline(offline: boolean): Promise<void>;
 
   /**
-   * Clears the existing cookies, local storage, IndexedDB entries and virtual WebAuthn credentials, and sets the new
-   * storage state. When the storage state contains credentials, the virtual WebAuthn authenticator is installed
-   * (equivalent to [credentials.install()](https://playwright.dev/docs/api/class-credentials#credentials-install)),
-   * preventing all real authenticators from working in this context.
+   * Clears the existing cookies, local storage, IndexedDB entries, origin private file system entries and virtual
+   * WebAuthn credentials, and sets the new storage state. When the storage state contains credentials, the virtual
+   * WebAuthn authenticator is installed (equivalent to
+   * [credentials.install()](https://playwright.dev/docs/api/class-credentials#credentials-install)), preventing all
+   * real authenticators from working in this context.
    *
    * **Usage**
    *
@@ -10496,7 +10675,7 @@ export interface BrowserContext {
 
   /**
    * Returns storage state for this browser context, contains current cookies, local storage snapshot, IndexedDB
-   * snapshot and virtual WebAuthn credentials.
+   * snapshot, origin private file system snapshot and virtual WebAuthn credentials.
    * @param options
    */
   storageState(options?: {
@@ -10519,6 +10698,16 @@ export interface BrowserContext {
      * enable this.
      */
     indexedDB?: boolean;
+
+    /**
+     * Set to `true` to include the
+     * [origin private file system](https://developer.mozilla.org/en-US/docs/Web/API/File_System_API/Origin_private_file_system)
+     * in the storage state snapshot.
+     *
+     * **NOTE** OPFS is currently not supported in ephemeral WebKit contexts.
+     *
+     */
+    opfs?: boolean;
 
     /**
      * The file path to save the storage state to. If
@@ -10647,6 +10836,14 @@ export interface BrowserContext {
    *
    */
   waitForEvent(event: 'dialog', optionsOrPredicate?: { predicate?: (dialog: Dialog) => boolean | Promise<boolean>, timeout?: number, signal?: AbortSignal } | ((dialog: Dialog) => boolean | Promise<boolean>)): Promise<Dialog>;
+
+  /**
+   * Emitted when a JavaScript dialog in any page belonging to this context has been closed, either by
+   * [dialog.accept([promptText])](https://playwright.dev/docs/api/class-dialog#dialog-accept), by
+   * [dialog.dismiss()](https://playwright.dev/docs/api/class-dialog#dialog-dismiss), or manually by the user in the
+   * headed browser.
+   */
+  waitForEvent(event: 'dialogclosed', optionsOrPredicate?: { predicate?: (dialog: Dialog) => boolean | Promise<boolean>, timeout?: number, signal?: AbortSignal } | ((dialog: Dialog) => boolean | Promise<boolean>)): Promise<Dialog>;
 
   /**
    * Emitted when attachment download started in any page belonging to this context. User can access basic file
@@ -11189,6 +11386,9 @@ export interface Browser {
     /**
      * Credentials for [HTTP authentication](https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication). If no
      * origin is specified, the username and password are sent to any servers upon unauthorized responses.
+     *
+     * Pass an array to use different credentials for different origins. The first entry that matches the request origin
+     * is used, and entries with no origin match any request.
      */
     httpCredentials?: {
       username: string;
@@ -11208,7 +11408,25 @@ export interface Browser {
        * `WWW-Authenticate` header is received. Defaults to `'unauthorized'`.
        */
       send?: "unauthorized"|"always";
-    };
+    }|Array<{
+      username: string;
+
+      password: string;
+
+      /**
+       * Restrain sending http credentials on specific origin (scheme://host:port).
+       */
+      origin?: string;
+
+      /**
+       * This option only applies to the requests sent from corresponding
+       * [APIRequestContext](https://playwright.dev/docs/api/class-apirequestcontext) and does not affect requests sent from
+       * the browser. `'always'` - `Authorization` header with basic authentication credentials will be sent with the each
+       * API request. `'unauthorized` - the credentials are only sent when 401 (Unauthorized) response with
+       * `WWW-Authenticate` header is received. Defaults to `'unauthorized'`.
+       */
+      send?: "unauthorized"|"always";
+    }>;
 
     /**
      * Whether to ignore HTTPS errors when sending network requests. Defaults to `false`.
@@ -11907,6 +12125,185 @@ export interface JSHandle<T = any> {
    * @param propertyName property to get
    */
   getProperty(propertyName: string): Promise<JSHandle>;
+
+  [Symbol.asyncDispose](): Promise<void>;
+}
+
+/**
+ * [APIResponse](https://playwright.dev/docs/api/class-apiresponse) class represents responses returned by
+ * [apiRequestContext.get(url[, options])](https://playwright.dev/docs/api/class-apirequestcontext#api-request-context-get)
+ * and similar methods.
+ */
+export interface APIResponse<T = any> {
+  /**
+   * Returns the JSON representation of response body.
+   *
+   * This method will throw if the response body is not parsable via `JSON.parse`.
+   */
+  json(): Promise<T>;
+  /**
+   * Returns the buffer with response body.
+   */
+  body(): Promise<Buffer>;
+
+  /**
+   * Disposes the body of this response. If not called then the body will stay in memory until the context closes.
+   */
+  dispose(): Promise<void>;
+
+  /**
+   * An object with all the response HTTP headers associated with this response.
+   */
+  headers(): { [key: string]: string; };
+
+  /**
+   * An array with all the response HTTP headers associated with this response. Header names are not lower-cased.
+   * Headers with multiple entries, such as `Set-Cookie`, appear in the array multiple times.
+   */
+  headersArray(): Array<{
+    /**
+     * Name of the header.
+     */
+    name: string;
+
+    /**
+     * Value of the header.
+     */
+    value: string;
+  }>;
+
+  /**
+   * Contains a boolean stating whether the response was successful (status in the range 200-299) or not.
+   */
+  ok(): boolean;
+
+  /**
+   * Returns SSL and other security information. Resolves to `null` for non-HTTPS responses. For redirected requests,
+   * returns the information for the last request in the redirect chain.
+   */
+  securityDetails(): Promise<null|{
+    /**
+     * Common Name component of the Issuer field. from the certificate. This should only be used for informational
+     * purposes. Optional.
+     */
+    issuer?: string;
+
+    /**
+     * The specific TLS protocol used. (e.g. `TLS 1.3`). Optional.
+     */
+    protocol?: string;
+
+    /**
+     * Common Name component of the Subject field from the certificate. This should only be used for informational
+     * purposes. Optional.
+     */
+    subjectName?: string;
+
+    /**
+     * Unix timestamp (in seconds) specifying when this cert becomes valid. Optional.
+     */
+    validFrom?: number;
+
+    /**
+     * Unix timestamp (in seconds) specifying when this cert becomes invalid. Optional.
+     */
+    validTo?: number;
+  }>;
+
+  /**
+   * Returns the IP address and port of the server. Resolves to `null` if the server address is not available. For
+   * redirected requests, returns the information for the last request in the redirect chain.
+   */
+  serverAddr(): Promise<null|{
+    /**
+     * IPv4 or IPV6 address of the server.
+     */
+    ipAddress: string;
+
+    port: number;
+  }>;
+
+  /**
+   * Contains the status code of the response (e.g., 200 for a success).
+   */
+  status(): number;
+
+  /**
+   * Contains the status text of the response (e.g. usually an "OK" for a success).
+   */
+  statusText(): string;
+
+  /**
+   * Returns the text representation of response body.
+   */
+  text(): Promise<string>;
+
+  /**
+   * Returns resource timing information for given response. For redirected requests, returns the information for the
+   * last request in the redirect chain. When the response is served [from the HAR file](https://playwright.dev/docs/mock#replaying-from-har),
+   * timing information is not available and all the values are -1. Find more information at
+   * [Resource Timing API](https://developer.mozilla.org/en-US/docs/Web/API/PerformanceResourceTiming).
+   */
+  timing(): {
+    /**
+     * Request start time in milliseconds elapsed since January 1, 1970 00:00:00 UTC
+     */
+    startTime: number;
+
+    /**
+     * Time immediately before the client starts the domain name lookup for the resource. The value is given in
+     * milliseconds relative to `startTime`, -1 if not available.
+     */
+    domainLookupStart: number;
+
+    /**
+     * Time immediately after the client ends the domain name lookup for the resource. The value is given in milliseconds
+     * relative to `startTime`, -1 if not available.
+     */
+    domainLookupEnd: number;
+
+    /**
+     * Time immediately before the client starts establishing the connection to the server to retrieve the resource. The
+     * value is given in milliseconds relative to `startTime`, -1 if not available.
+     */
+    connectStart: number;
+
+    /**
+     * Time immediately before the client starts the handshake process to secure the current connection. The value is
+     * given in milliseconds relative to `startTime`, -1 if not available.
+     */
+    secureConnectionStart: number;
+
+    /**
+     * Time immediately after the client establishes the connection to the server to retrieve the resource. The value is
+     * given in milliseconds relative to `startTime`, -1 if not available.
+     */
+    connectEnd: number;
+
+    /**
+     * Time immediately before the client starts requesting the resource from the server, cache, or local resource. The
+     * value is given in milliseconds relative to `startTime`, -1 if not available.
+     */
+    requestStart: number;
+
+    /**
+     * Time immediately after the client receives the first byte of the response from the server, cache, or local
+     * resource. The value is given in milliseconds relative to `startTime`, -1 if not available.
+     */
+    responseStart: number;
+
+    /**
+     * Time immediately after the client receives the last byte of the resource or immediately before the transport
+     * connection is closed, whichever comes first. The value is given in milliseconds relative to `startTime`, -1 if not
+     * available.
+     */
+    responseEnd: number;
+  };
+
+  /**
+   * Contains the URL of the response.
+   */
+  url(): string;
 
   [Symbol.asyncDispose](): Promise<void>;
 }
@@ -14158,6 +14555,74 @@ export interface Locator {
   }): Promise<string>;
 
   /**
+   * Captures the aria snapshot of the given element as a free form JSON object.
+   *
+   * **Usage**
+   *
+   * ```js
+   * await page.getByRole('list').ariaSnapshotJSON();
+   * ```
+   *
+   * **Details**
+   *
+   * This method returns the same tree as
+   * [locator.ariaSnapshot([options])](https://playwright.dev/docs/api/class-locator#locator-aria-snapshot), serialized
+   * as a JSON value instead of YAML markup. The result is a list of nodes, each node being an object with the following
+   * properties:
+   * - `role` Aria role of the element, or `"text"` for a static text fragment.
+   * - `name` Accessible name of the element, if any.
+   * - `text` Text content of the element when it is the only child, or the content of a static text fragment.
+   * - `children` Child nodes and text fragments.
+   * - Boolean and value properties for element state flags: `checked`, `disabled`, `expanded`, `active`, `invalid`,
+   *   `level`, `pressed` and `selected`.
+   * - Additional element properties, for example `url` for links and `placeholder` for text boxes.
+   * - `ref` Element reference for AI-optimized snapshots.
+   * - `cursor` Set to `"pointer"` for clickable elements in AI-optimized snapshots.
+   * - `box` Bounding box of the element when
+   *   [`boxes`](https://playwright.dev/docs/api/class-locator#locator-aria-snapshot-json-option-boxes) is set.
+   * @param options
+   */
+  ariaSnapshotJSON(options?: {
+    /**
+     * When `true`, includes each element's bounding box as a `box` property with `x`, `y`, `width` and `height`.
+     * Coordinates are relative to the viewport, in CSS pixels, as returned by
+     * [`Element.getBoundingClientRect()`](https://developer.mozilla.org/en-US/docs/Web/API/Element/getBoundingClientRect).
+     * Defaults to `false`.
+     */
+    boxes?: boolean;
+
+    /**
+     * When specified, limits the depth of the snapshot.
+     */
+    depth?: number;
+
+    /**
+     * When set to `"ai"`, returns a snapshot optimized for AI consumption. Defaults to `"default"`. See details in
+     * [locator.ariaSnapshot([options])](https://playwright.dev/docs/api/class-locator#locator-aria-snapshot).
+     */
+    mode?: "ai"|"default";
+
+    /**
+     * Allows to cancel the operation using an
+     * [`AbortSignal`](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal). If the signal is aborted, the
+     * operation will be aborted and throw an error. Note that providing a signal does not disable the default timeout,
+     * which can be changed using
+     * [browserContext.setDefaultTimeout(timeout)](https://playwright.dev/docs/api/class-browsercontext#browser-context-set-default-timeout)
+     * or [page.setDefaultTimeout(timeout)](https://playwright.dev/docs/api/class-page#page-set-default-timeout); pass
+     * `timeout: 0` to disable the timeout entirely.
+     */
+    signal?: AbortSignal;
+
+    /**
+     * Maximum time in milliseconds. Defaults to `0` - no timeout. The default value can be changed via `actionTimeout`
+     * option in the config, or by using the
+     * [browserContext.setDefaultTimeout(timeout)](https://playwright.dev/docs/api/class-browsercontext#browser-context-set-default-timeout)
+     * or [page.setDefaultTimeout(timeout)](https://playwright.dev/docs/api/class-page#page-set-default-timeout) methods.
+     */
+    timeout?: number;
+  }): Promise<Serializable>;
+
+  /**
    * Calls [blur](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/blur) on the element.
    * @param options
    */
@@ -15078,7 +15543,9 @@ export interface Locator {
     hasText?: string|RegExp;
 
     /**
-     * Only matches visible or invisible elements.
+     * Only matches visible or invisible elements. Prefer the
+     * [locator.visible()](https://playwright.dev/docs/api/class-locator#locator-visible) shortcut when matching only
+     * visible elements.
      */
     visible?: boolean;
   }): Locator;
@@ -16752,6 +17219,34 @@ export interface Locator {
   }): Promise<void>;
 
   /**
+   * Returns a locator that matches only [visible](https://playwright.dev/docs/actionability#visible) elements, ignoring the invisible ones.
+   * This is the recommended way to distinguish elements by visibility, as opposed to the `:visible` CSS pseudo-class.
+   *
+   * Note that visibility is checked every time the locator is used, and not at the moment of the
+   * [locator.visible()](https://playwright.dev/docs/api/class-locator#locator-visible) call.
+   *
+   * **Usage**
+   *
+   * Consider a page with two buttons, the first invisible and the second visible.
+   *
+   * ```html
+   * <button style='display: none'>Invisible</button>
+   * <button>Visible</button>
+   * ```
+   *
+   * This will only find the second button, because it is visible, and then click it.
+   *
+   * ```js
+   * await page.locator('button').visible().click();
+   * ```
+   *
+   * To match invisible elements instead, use
+   * [locator.filter([options])](https://playwright.dev/docs/api/class-locator#locator-filter) with the
+   * [`visible`](https://playwright.dev/docs/api/class-locator#locator-filter-option-visible) option set to `false`.
+   */
+  visible(): Locator;
+
+  /**
    * Returns when element specified by locator satisfies the
    * [`state`](https://playwright.dev/docs/api/class-locator#locator-wait-for-option-state) option.
    *
@@ -17230,6 +17725,9 @@ export interface BrowserType<Unused = {}> {
     /**
      * Credentials for [HTTP authentication](https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication). If no
      * origin is specified, the username and password are sent to any servers upon unauthorized responses.
+     *
+     * Pass an array to use different credentials for different origins. The first entry that matches the request origin
+     * is used, and entries with no origin match any request.
      */
     httpCredentials?: {
       username: string;
@@ -17249,7 +17747,25 @@ export interface BrowserType<Unused = {}> {
        * `WWW-Authenticate` header is received. Defaults to `'unauthorized'`.
        */
       send?: "unauthorized"|"always";
-    };
+    }|Array<{
+      username: string;
+
+      password: string;
+
+      /**
+       * Restrain sending http credentials on specific origin (scheme://host:port).
+       */
+      origin?: string;
+
+      /**
+       * This option only applies to the requests sent from corresponding
+       * [APIRequestContext](https://playwright.dev/docs/api/class-apirequestcontext) and does not affect requests sent from
+       * the browser. `'always'` - `Authorization` header with basic authentication credentials will be sent with the each
+       * API request. `'unauthorized` - the credentials are only sent when 401 (Unauthorized) response with
+       * `WWW-Authenticate` header is received. Defaults to `'unauthorized'`.
+       */
+      send?: "unauthorized"|"always";
+    }>;
 
     /**
      * If `true`, Playwright does not pass its own configurations args and only uses the ones from
@@ -18140,11 +18656,6 @@ export interface Screencast {
       height: number;
     };
     quality?: number;
-    annotate?: {
-      duration?: number;
-      position?: 'top-left' | 'top' | 'top-right' | 'bottom-left' | 'bottom' | 'bottom-right';
-      fontSize?: number;
-    };
   }): Promise<Disposable>;
   /**
    * Removes action decorations.
@@ -18845,6 +19356,9 @@ export interface APIRequest {
     /**
      * Credentials for [HTTP authentication](https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication). If no
      * origin is specified, the username and password are sent to any servers upon unauthorized responses.
+     *
+     * Pass an array to use different credentials for different origins. The first entry that matches the request origin
+     * is used, and entries with no origin match any request.
      */
     httpCredentials?: {
       username: string;
@@ -18864,7 +19378,25 @@ export interface APIRequest {
        * `WWW-Authenticate` header is received. Defaults to `'unauthorized'`.
        */
       send?: "unauthorized"|"always";
-    };
+    }|Array<{
+      username: string;
+
+      password: string;
+
+      /**
+       * Restrain sending http credentials on specific origin (scheme://host:port).
+       */
+      origin?: string;
+
+      /**
+       * This option only applies to the requests sent from corresponding
+       * [APIRequestContext](https://playwright.dev/docs/api/class-apirequestcontext) and does not affect requests sent from
+       * the browser. `'always'` - `Authorization` header with basic authentication credentials will be sent with the each
+       * API request. `'unauthorized` - the credentials are only sent when 401 (Unauthorized) response with
+       * `WWW-Authenticate` header is received. Defaults to `'unauthorized'`.
+       */
+      send?: "unauthorized"|"always";
+    }>;
 
     /**
      * Whether to ignore HTTPS errors when sending network requests. Defaults to `false`.
@@ -18995,7 +19527,7 @@ export interface APIRequestContext {
    * @param url Target URL.
    * @param options
    */
-  delete(url: string, options?: {
+  delete<T = any>(url: string, options?: {
     /**
      * Allows to set post data of the request. If the data parameter is an object, it will be serialized to json string
      * and `content-type` header will be set to `application/json` if not explicitly set. Otherwise the `content-type`
@@ -19083,7 +19615,7 @@ export interface APIRequestContext {
      * Request timeout in milliseconds. Defaults to `30000` (30 seconds). Pass `0` to disable timeout.
      */
     timeout?: number;
-  }): Promise<APIResponse>;
+  }): Promise<APIResponse<T>>;
 
   /**
    * All responses returned by
@@ -19137,7 +19669,7 @@ export interface APIRequestContext {
    * @param urlOrRequest Target URL or Request to get all parameters from.
    * @param options
    */
-  fetch(urlOrRequest: string|Request, options?: {
+  fetch<T = any>(urlOrRequest: string|Request, options?: {
     /**
      * Allows to set post data of the request. If the data parameter is an object, it will be serialized to json string
      * and `content-type` header will be set to `application/json` if not explicitly set. Otherwise the `content-type`
@@ -19231,7 +19763,7 @@ export interface APIRequestContext {
      * Request timeout in milliseconds. Defaults to `30000` (30 seconds). Pass `0` to disable timeout.
      */
     timeout?: number;
-  }): Promise<APIResponse>;
+  }): Promise<APIResponse<T>>;
 
   /**
    * Sends HTTP(S) [GET](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/GET) request and returns its
@@ -19266,7 +19798,7 @@ export interface APIRequestContext {
    * @param url Target URL.
    * @param options
    */
-  get(url: string, options?: {
+  get<T = any>(url: string, options?: {
     /**
      * Allows to set post data of the request. If the data parameter is an object, it will be serialized to json string
      * and `content-type` header will be set to `application/json` if not explicitly set. Otherwise the `content-type`
@@ -19354,7 +19886,7 @@ export interface APIRequestContext {
      * Request timeout in milliseconds. Defaults to `30000` (30 seconds). Pass `0` to disable timeout.
      */
     timeout?: number;
-  }): Promise<APIResponse>;
+  }): Promise<APIResponse<T>>;
 
   /**
    * Sends HTTP(S) [HEAD](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/HEAD) request and returns its
@@ -19363,7 +19895,7 @@ export interface APIRequestContext {
    * @param url Target URL.
    * @param options
    */
-  head(url: string, options?: {
+  head<T = any>(url: string, options?: {
     /**
      * Allows to set post data of the request. If the data parameter is an object, it will be serialized to json string
      * and `content-type` header will be set to `application/json` if not explicitly set. Otherwise the `content-type`
@@ -19451,7 +19983,7 @@ export interface APIRequestContext {
      * Request timeout in milliseconds. Defaults to `30000` (30 seconds). Pass `0` to disable timeout.
      */
     timeout?: number;
-  }): Promise<APIResponse>;
+  }): Promise<APIResponse<T>>;
 
   /**
    * Sends HTTP(S) [PATCH](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/PATCH) request and returns its
@@ -19460,7 +19992,7 @@ export interface APIRequestContext {
    * @param url Target URL.
    * @param options
    */
-  patch(url: string, options?: {
+  patch<T = any>(url: string, options?: {
     /**
      * Allows to set post data of the request. If the data parameter is an object, it will be serialized to json string
      * and `content-type` header will be set to `application/json` if not explicitly set. Otherwise the `content-type`
@@ -19548,7 +20080,7 @@ export interface APIRequestContext {
      * Request timeout in milliseconds. Defaults to `30000` (30 seconds). Pass `0` to disable timeout.
      */
     timeout?: number;
-  }): Promise<APIResponse>;
+  }): Promise<APIResponse<T>>;
 
   /**
    * Sends HTTP(S) [POST](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/POST) request and returns its
@@ -19599,7 +20131,7 @@ export interface APIRequestContext {
    * @param url Target URL.
    * @param options
    */
-  post(url: string, options?: {
+  post<T = any>(url: string, options?: {
     /**
      * Allows to set post data of the request. If the data parameter is an object, it will be serialized to json string
      * and `content-type` header will be set to `application/json` if not explicitly set. Otherwise the `content-type`
@@ -19687,7 +20219,7 @@ export interface APIRequestContext {
      * Request timeout in milliseconds. Defaults to `30000` (30 seconds). Pass `0` to disable timeout.
      */
     timeout?: number;
-  }): Promise<APIResponse>;
+  }): Promise<APIResponse<T>>;
 
   /**
    * Sends HTTP(S) [PUT](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/PUT) request and returns its
@@ -19696,7 +20228,7 @@ export interface APIRequestContext {
    * @param url Target URL.
    * @param options
    */
-  put(url: string, options?: {
+  put<T = any>(url: string, options?: {
     /**
      * Allows to set post data of the request. If the data parameter is an object, it will be serialized to json string
      * and `content-type` header will be set to `application/json` if not explicitly set. Otherwise the `content-type`
@@ -19784,7 +20316,7 @@ export interface APIRequestContext {
      * Request timeout in milliseconds. Defaults to `30000` (30 seconds). Pass `0` to disable timeout.
      */
     timeout?: number;
-  }): Promise<APIResponse>;
+  }): Promise<APIResponse<T>>;
 
   /**
    * Returns storage state for this request context, contains current cookies and local storage snapshot if it was
@@ -19796,6 +20328,11 @@ export interface APIRequestContext {
      * Set to `true` to include IndexedDB in the storage state snapshot.
      */
     indexedDB?: boolean;
+
+    /**
+     * Set to `true` to include the origin private file system in the storage state snapshot.
+     */
+    opfs?: boolean;
 
     /**
      * The file path to save the storage state to. If
@@ -19837,187 +20374,10 @@ export interface APIRequestContext {
     }>;
   }>;
 
+  /**
+   * Tracing recorder for requests made through this API request context.
+   */
   tracing: Tracing;
-
-  [Symbol.asyncDispose](): Promise<void>;
-}
-
-/**
- * [APIResponse](https://playwright.dev/docs/api/class-apiresponse) class represents responses returned by
- * [apiRequestContext.get(url[, options])](https://playwright.dev/docs/api/class-apirequestcontext#api-request-context-get)
- * and similar methods.
- */
-export interface APIResponse {
-  /**
-   * Returns the buffer with response body.
-   */
-  body(): Promise<Buffer>;
-
-  /**
-   * Disposes the body of this response. If not called then the body will stay in memory until the context closes.
-   */
-  dispose(): Promise<void>;
-
-  /**
-   * An object with all the response HTTP headers associated with this response.
-   */
-  headers(): { [key: string]: string; };
-
-  /**
-   * An array with all the response HTTP headers associated with this response. Header names are not lower-cased.
-   * Headers with multiple entries, such as `Set-Cookie`, appear in the array multiple times.
-   */
-  headersArray(): Array<{
-    /**
-     * Name of the header.
-     */
-    name: string;
-
-    /**
-     * Value of the header.
-     */
-    value: string;
-  }>;
-
-  /**
-   * Returns the JSON representation of response body.
-   *
-   * This method will throw if the response body is not parsable via `JSON.parse`.
-   */
-  json(): Promise<Serializable>;
-
-  /**
-   * Contains a boolean stating whether the response was successful (status in the range 200-299) or not.
-   */
-  ok(): boolean;
-
-  /**
-   * Returns SSL and other security information. Resolves to `null` for non-HTTPS responses. For redirected requests,
-   * returns the information for the last request in the redirect chain.
-   */
-  securityDetails(): Promise<null|{
-    /**
-     * Common Name component of the Issuer field. from the certificate. This should only be used for informational
-     * purposes. Optional.
-     */
-    issuer?: string;
-
-    /**
-     * The specific TLS protocol used. (e.g. `TLS 1.3`). Optional.
-     */
-    protocol?: string;
-
-    /**
-     * Common Name component of the Subject field from the certificate. This should only be used for informational
-     * purposes. Optional.
-     */
-    subjectName?: string;
-
-    /**
-     * Unix timestamp (in seconds) specifying when this cert becomes valid. Optional.
-     */
-    validFrom?: number;
-
-    /**
-     * Unix timestamp (in seconds) specifying when this cert becomes invalid. Optional.
-     */
-    validTo?: number;
-  }>;
-
-  /**
-   * Returns the IP address and port of the server. Resolves to `null` if the server address is not available. For
-   * redirected requests, returns the information for the last request in the redirect chain.
-   */
-  serverAddr(): Promise<null|{
-    /**
-     * IPv4 or IPV6 address of the server.
-     */
-    ipAddress: string;
-
-    port: number;
-  }>;
-
-  /**
-   * Contains the status code of the response (e.g., 200 for a success).
-   */
-  status(): number;
-
-  /**
-   * Contains the status text of the response (e.g. usually an "OK" for a success).
-   */
-  statusText(): string;
-
-  /**
-   * Returns the text representation of response body.
-   */
-  text(): Promise<string>;
-
-  /**
-   * Returns resource timing information for given response. For redirected requests, returns the information for the
-   * last request in the redirect chain. When the response is served [from the HAR file](https://playwright.dev/docs/mock#replaying-from-har),
-   * timing information is not available and all the values are -1. Find more information at
-   * [Resource Timing API](https://developer.mozilla.org/en-US/docs/Web/API/PerformanceResourceTiming).
-   */
-  timing(): {
-    /**
-     * Request start time in milliseconds elapsed since January 1, 1970 00:00:00 UTC
-     */
-    startTime: number;
-
-    /**
-     * Time immediately before the client starts the domain name lookup for the resource. The value is given in
-     * milliseconds relative to `startTime`, -1 if not available.
-     */
-    domainLookupStart: number;
-
-    /**
-     * Time immediately after the client ends the domain name lookup for the resource. The value is given in milliseconds
-     * relative to `startTime`, -1 if not available.
-     */
-    domainLookupEnd: number;
-
-    /**
-     * Time immediately before the client starts establishing the connection to the server to retrieve the resource. The
-     * value is given in milliseconds relative to `startTime`, -1 if not available.
-     */
-    connectStart: number;
-
-    /**
-     * Time immediately before the client starts the handshake process to secure the current connection. The value is
-     * given in milliseconds relative to `startTime`, -1 if not available.
-     */
-    secureConnectionStart: number;
-
-    /**
-     * Time immediately after the client establishes the connection to the server to retrieve the resource. The value is
-     * given in milliseconds relative to `startTime`, -1 if not available.
-     */
-    connectEnd: number;
-
-    /**
-     * Time immediately before the client starts requesting the resource from the server, cache, or local resource. The
-     * value is given in milliseconds relative to `startTime`, -1 if not available.
-     */
-    requestStart: number;
-
-    /**
-     * Time immediately after the client receives the first byte of the response from the server, cache, or local
-     * resource. The value is given in milliseconds relative to `startTime`, -1 if not available.
-     */
-    responseStart: number;
-
-    /**
-     * Time immediately after the client receives the last byte of the resource or immediately before the transport
-     * connection is closed, whichever comes first. The value is given in milliseconds relative to `startTime`, -1 if not
-     * available.
-     */
-    responseEnd: number;
-  };
-
-  /**
-   * Contains the URL of the response.
-   */
-  url(): string;
 
   [Symbol.asyncDispose](): Promise<void>;
 }
@@ -20988,7 +21348,7 @@ export interface FileChooser {
  * FrameLocator represents a view to the `iframe` on the page. It captures the logic sufficient to retrieve the
  * `iframe` and locate elements in that iframe. FrameLocator can be created with either
  * [locator.contentFrame()](https://playwright.dev/docs/api/class-locator#locator-content-frame),
- * [page.frameLocator(selector)](https://playwright.dev/docs/api/class-page#page-frame-locator) or
+ * [page.frameLocator([selector])](https://playwright.dev/docs/api/class-page#page-frame-locator) or
  * [locator.frameLocator(selector)](https://playwright.dev/docs/api/class-locator#locator-frame-locator) method.
  *
  * ```js
@@ -21008,6 +21368,32 @@ export interface FileChooser {
  * // Works because we explicitly tell locator to pick the first frame:
  * await page.locator('.result-frame').contentFrame().first().getByRole('button').click();
  * ```
+ *
+ * **Any frame**
+ *
+ * Calling [page.frameLocator([selector])](https://playwright.dev/docs/api/class-page#page-frame-locator) or
+ * [frame.frameLocator([selector])](https://playwright.dev/docs/api/class-frame#frame-frame-locator) without a
+ * selector creates a frame locator that starts the search in any frame of the subtree - so that you don't need to
+ * locate the iframe first.
+ *
+ * ```js
+ * // Finds the button in any frame on the page:
+ * await page.frameLocator().getByRole('button').click();
+ *
+ * // Finds the iframe with id "my-frame" anywhere on the page, and clicks the button inside it:
+ * await page.frameLocator().locator('#my-frame').contentFrame().getByRole('button').click();
+ * ```
+ *
+ * Only the start of the search is affected - the rest of the locator is resolved inside a single frame, just like any
+ * other locator. Following the strictness rules above, an error is thrown when elements are matched in multiple
+ * frames.
+ *
+ * Such a frame locator does not point to a particular `iframe`, so
+ * [frameLocator.owner()](https://playwright.dev/docs/api/class-framelocator#frame-locator-owner),
+ * [frameLocator.first()](https://playwright.dev/docs/api/class-framelocator#frame-locator-first),
+ * [frameLocator.last()](https://playwright.dev/docs/api/class-framelocator#frame-locator-last) and
+ * [frameLocator.nth(index)](https://playwright.dev/docs/api/class-framelocator#frame-locator-nth) are not supported
+ * on it.
  *
  * **Converting Locator to FrameLocator**
  *
@@ -22521,7 +22907,7 @@ export interface Route {
    * instead.
    * @param options
    */
-  fetch(options?: {
+  fetch<T = any>(options?: {
     /**
      * If set changes the request HTTP headers. Header values will be converted to a string.
      */
@@ -22571,7 +22957,7 @@ export interface Route {
      * If set changes the request URL. New URL must have same protocol as original one.
      */
     url?: string;
-  }): Promise<APIResponse>;
+  }): Promise<APIResponse<T>>;
 
   /**
    * Fulfills route's request with given response.
@@ -22861,11 +23247,24 @@ export interface Tracing {
     screenshots?: boolean;
 
     /**
-     * If this option is true tracing will
-     * - capture DOM snapshot on every action
-     * - record network activity
+     * Which snapshots to capture on every action. Passing `true` is a shortcut for `{ dom: true }`.
      */
-    snapshots?: boolean;
+    snapshots?: boolean|{
+      /**
+       * Capture DOM snapshot on every action and record network activity. Optional.
+       */
+      dom?: boolean;
+
+      /**
+       * Capture aria snapshot of the page on every action. Optional.
+       */
+      aria?: boolean;
+
+      /**
+       * Capture a screenshot of the page on every action. Optional.
+       */
+      screen?: boolean;
+    };
 
     /**
      * Whether to include source files for trace actions.
@@ -22928,8 +23327,8 @@ export interface Tracing {
    * [tracing.stopHar()](https://playwright.dev/docs/api/class-tracing#tracing-stop-har) is called, or when the returned
    * [Disposable](https://playwright.dev/docs/api/class-disposable) is disposed.
    *
-   * Only one HAR recording can be active at a time per
-   * [BrowserContext](https://playwright.dev/docs/api/class-browsercontext).
+   * Only one HAR recording can be active at a time per [Tracing](https://playwright.dev/docs/api/class-tracing)
+   * instance.
    *
    * **Usage**
    *
@@ -23548,6 +23947,9 @@ export interface Electron {
     /**
      * Credentials for [HTTP authentication](https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication). If no
      * origin is specified, the username and password are sent to any servers upon unauthorized responses.
+     *
+     * Pass an array to use different credentials for different origins. The first entry that matches the request origin
+     * is used, and entries with no origin match any request.
      */
     httpCredentials?: {
       username: string;
@@ -23567,7 +23969,25 @@ export interface Electron {
        * `WWW-Authenticate` header is received. Defaults to `'unauthorized'`.
        */
       send?: "unauthorized"|"always";
-    };
+    }|Array<{
+      username: string;
+
+      password: string;
+
+      /**
+       * Restrain sending http credentials on specific origin (scheme://host:port).
+       */
+      origin?: string;
+
+      /**
+       * This option only applies to the requests sent from corresponding
+       * [APIRequestContext](https://playwright.dev/docs/api/class-apirequestcontext) and does not affect requests sent from
+       * the browser. `'always'` - `Authorization` header with basic authentication credentials will be sent with the each
+       * API request. `'unauthorized` - the credentials are only sent when 401 (Unauthorized) response with
+       * `WWW-Authenticate` header is received. Defaults to `'unauthorized'`.
+       */
+      send?: "unauthorized"|"always";
+    }>;
 
     /**
      * Whether to ignore HTTPS errors when sending network requests. Defaults to `false`.
@@ -24185,6 +24605,9 @@ export interface AndroidDevice {
     /**
      * Credentials for [HTTP authentication](https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication). If no
      * origin is specified, the username and password are sent to any servers upon unauthorized responses.
+     *
+     * Pass an array to use different credentials for different origins. The first entry that matches the request origin
+     * is used, and entries with no origin match any request.
      */
     httpCredentials?: {
       username: string;
@@ -24204,7 +24627,25 @@ export interface AndroidDevice {
        * `WWW-Authenticate` header is received. Defaults to `'unauthorized'`.
        */
       send?: "unauthorized"|"always";
-    };
+    }|Array<{
+      username: string;
+
+      password: string;
+
+      /**
+       * Restrain sending http credentials on specific origin (scheme://host:port).
+       */
+      origin?: string;
+
+      /**
+       * This option only applies to the requests sent from corresponding
+       * [APIRequestContext](https://playwright.dev/docs/api/class-apirequestcontext) and does not affect requests sent from
+       * the browser. `'always'` - `Authorization` header with basic authentication credentials will be sent with the each
+       * API request. `'unauthorized` - the credentials are only sent when 401 (Unauthorized) response with
+       * `WWW-Authenticate` header is received. Defaults to `'unauthorized'`.
+       */
+      send?: "unauthorized"|"always";
+    }>;
 
     /**
      * Whether to ignore HTTPS errors when sending network requests. Defaults to `false`.
@@ -25417,8 +25858,11 @@ export interface BrowserContextOptions {
   /**
    * Credentials for [HTTP authentication](https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication). If no
    * origin is specified, the username and password are sent to any servers upon unauthorized responses.
+   *
+   * Pass an array to use different credentials for different origins. The first entry that matches the request origin
+   * is used, and entries with no origin match any request.
    */
-  httpCredentials?: HTTPCredentials;
+  httpCredentials?: HTTPCredentials|Array<HTTPCredentials>;
 
   /**
    * Whether to ignore HTTPS errors when sending network requests. Defaults to `false`.

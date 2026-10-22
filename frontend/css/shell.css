@@ -121,6 +121,7 @@ body:has(#cinema-bg) .topnav {
   align-items: center;
   justify-content: center;
   min-width: 0;
+  overflow: hidden;
 }
 
 .topnav-right {
@@ -129,6 +130,9 @@ body:has(#cinema-bg) .topnav {
   justify-content: flex-end;
   gap: 10px;
   min-width: 0;
+  position: relative;
+  z-index: 3;
+  isolation: isolate;
 }
 
 .topnav-brand {
@@ -550,9 +554,16 @@ body:has(#cinema-bg) .page-main {
   font: 600 10px/1.4 "IBM Plex Mono", monospace;
   letter-spacing: .15em;
 }
-.shell-profile-prompt h2 {
-  margin: 8px 0 7px;
-  font: 600 22px/1.25 "Noto Serif SC", serif;
+.shell-profile-prompt h2,
+#shell-profile-prompt-title {
+  margin: 10px 0 8px;
+  color: #FFE7B0 !important;
+  font-family: "Noto Serif SC", "Source Han Serif SC", "Songti SC", serif !important;
+  font-size: 28px !important;
+  font-weight: 700 !important;
+  line-height: 1.28 !important;
+  letter-spacing: 0.04em !important;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .45), 0 0 28px rgba(255, 231, 176, .28);
 }
 .shell-profile-prompt p {
   margin: 0;
@@ -745,6 +756,11 @@ body:has(#cinema-bg) .page-main {
   }
 }
 
+/* 导航项增多：窄屏隐藏简历按钮，避免与「可视化」叠字 */
+@media (max-width: 1480px) {
+  .topnav-resume { display: none; }
+}
+
 @media (max-width: 720px) {
   .rx-modal {
     width: 100vw;
@@ -754,5 +770,5 @@ body:has(#cinema-bg) .page-main {
   .rx-btn-skip span.rx-skip-full { display: none; }
   .topnav-resume span { display: none; }
   .topnav-resume { padding: 0 10px; width: 36px; justify-content: center; }
-  .topnav-resume::before { content: '简历'; font-size: 12px; }
+  .topnav-resume::before { content: '档'; font-size: 12px; }
 }

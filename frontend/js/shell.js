@@ -45,6 +45,7 @@
       analysis: b + 'evolution.html?v=2&tab=trends',
       discovery: b + 'discovery.html?v=' + v,
       match: b + 'match.html?v=' + v,
+      vizHall: b + 'viz-hall.html?v=' + v,
       warehouse: b + 'warehouse.html?v=' + v,
       news: b + 'news/index.html',
       // 「我的资料」独立页面：编辑式数字职业档案，点击顶部头像进入
@@ -69,6 +70,7 @@
       { id: 'insight', label: '岗位洞察' },
       { id: 'discovery', label: '新岗位发现' },
       { id: 'match', label: '人岗匹配' },
+      { id: 'vizHall', label: '可视化' },
       { id: 'warehouse', label: '个人仓库' }
     ],
     more: []
@@ -90,6 +92,7 @@
     insight: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 17 9 11 13 15 21 7"/><polyline points="14 7 21 7 21 14"/></svg>',
     discovery: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/><path d="M11 8v6M8 11h6"/></svg>',
     match: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7h-7l-2-2H4a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="m9 14 2 2 4-4"/></svg>',
+    vizHall: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>',
     warehouse: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9.5 12 3l9 6.5V21a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z"/><path d="M9 22V12h6v10"/></svg>',
     news: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-4 0Z"/><path d="M18 14h-8M18 18h-8M8 6h6v6H8z"/></svg>',
     data: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>',
@@ -237,7 +240,7 @@
     prompt.setAttribute('aria-labelledby', 'shell-profile-prompt-title');
     prompt.innerHTML =
       '<div class="shell-profile-prompt-mark">PROFILE / 01</div>' +
-      '<h2 id="shell-profile-prompt-title">先把你的职业资料补齐</h2>' +
+      '<h2 id="shell-profile-prompt-title" style="color:#FFE7B0!important;font-size:28px!important;font-weight:700!important;letter-spacing:.04em!important;line-height:1.28;margin:10px 0 8px;font-family:\'Noto Serif SC\',\'Source Han Serif SC\',serif">先把你的职业资料补齐</h2>' +
       '<p>姓名、手机号、邮箱和所在城市会预填到简历，并帮助人岗匹配给出更可靠的结果。</p>' +
       '<div class="shell-profile-prompt-actions">' +
         '<button type="button" class="shell-profile-prompt-primary" id="shell-profile-prompt-go">现在完善</button>' +

@@ -151,8 +151,9 @@ to start the browser session.`);
     const child = (0, import_child_process.spawn)(process.execPath, args, {
       detached: true,
       stdio: ["ignore", "pipe", err],
-      cwd: process.cwd()
+      cwd: process.cwd(),
       // Will be used as root.
+      windowsHide: true
     });
     let signalled = false;
     const sigintHandler = () => {

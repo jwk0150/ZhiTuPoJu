@@ -8,6 +8,8 @@ Thumbs.db
 # 临时文件
 *.tmp
 *.log
+*.err
+*.log.bak
 
 # Python
 __pycache__/
@@ -15,6 +17,7 @@ __pycache__/
 *.pyo
 .venv/
 *.egg-info/
+.pytest_cache/
 
 # 敏感配置 —— 千万别入库
 .env
@@ -25,12 +28,17 @@ crawler/.pw_profile/
 
 # 爬虫导出的包（产物，不入库；从其他途径分发）
 crawler/exports/
+exports/
 
-# IDE / 编辑器
+# IDE / 编辑器 / 本地助手缓存
 .vscode/
 .idea/
 *.swp
-.DS_Store
+.claude/
+.codebuddy/
+.workbuddy/
+.superpowers/
+.cursor/
 
 # 本地数据库导入脚本输出
 *.bak
@@ -39,33 +47,47 @@ crawler/exports/
 # 本地注册用户（含密码，禁止入库）
 backend/data/
 
-# 本地 UI QA 截图（Playwright 调试产物，不入库）
-frontend/_qa/
+# 服务器自签 HTTPS 证书（勿入库）
+certs/
 
-# dsy 等分支误带的调试产物（勿入库）
-node_modules/
+# 本地 UI QA / 调试产物
+frontend/_qa/
 .playwright-cli/
-temp-debug-*.cjs
-temp-techrel-*.cjs
-temp-verify-*.cjs
+node_modules/
+
+# 调试脚本与截图（已从仓库移除，防止再入库）
+scripts/devtools/
+scripts/shots/
+temp-*/
+temp-*.cjs
 temp-echarts-src/
-backend.err
-backend_new.err
-frontend.err
+u1.json
+u2.json
+u3.json
+serve_nocache.py
+serve_8080.js
+serve_profile.js
+_serve.js
+_cg_preview.js
+test-match.html
+frontend/index_backup_old.html
+
+# 根目录误放截图
 /after-back.png
 /current-state.png
 /graph-*.png
 /map-*.png
-/u1.json
-/u2.json
-/u3.json
-serve_nocache.py
-frontend/index_backup_old.html
-
+/*.png
 
 # 运行日志（本地）
+backend.err
+backend_new.err
+frontend.err
 backend_run*.err
 backend_run*.log
 frontend_run*.err
 ingest_all.*
-*.log.bak
+
+# 上传临时
+uploads/*
+!uploads/.gitkeep

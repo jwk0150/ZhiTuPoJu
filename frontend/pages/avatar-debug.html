@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>数字人联调</title>
+  <style>
+    body { margin: 0; font-family: "Noto Sans SC", sans-serif; background: #111; color: #eee; }
+    #wrap { display: grid; grid-template-columns: 360px 1fr; min-height: 100vh; }
+    #log { padding: 16px; overflow: auto; font: 12px/1.5 ui-monospace, monospace; white-space: pre-wrap; border-right: 1px solid #333; }
+    #stage { position: relative; background: #000; min-height: 80vh; }
+    #stage video { width: 100%; height: 100%; object-fit: contain; }
+    .ok { color: #7dcea0; } .err { color: #f5a3a3; } .info { color: #ecc984; }
+    button { margin: 8px 8px 0 0; padding: 8px 12px; }
+  </style>
+</head>
+<body>
+  <div id="wrap">
+    <div>
+      <div style="padding:12px">
+        <button id="btn-start" type="button">开始连接</button>
+        <button id="btn-speak" type="button">播报测试</button>
+        <button id="btn-resume" type="button">恢复声音</button>
+      </div>
+      <div id="log"></div>
+    </div>
+    <div id="stage"></div>
+  </div>
+  <script>
+    window.AVATAR_CONFIG = {
+      appId: 'd1a2c54f',
+      apiKey: 'f486a99f4cd9c9cabf9eb1d18a485ce1',
+      apiSecret: 'NTc5OWRmYmRhZTE5MjExZDE4ZDA0MGZi',
+      avatarId: '201365001',
+      vcn: 'x4_yezi',
+      sceneId: '',
+      serverUrl: 'wss://avatar.cn-huadong-1.xf-yun.com/v1/interact',
+      width: 720, height: 1280, bitrate: 1000000, fps: 20,
+      speed: 50, pitch: 50, volume: 100
+    };
+    function log(msg, cls) {
+      const el = document.createElement('div');
+      el.className = cls || 'info';
+      el.textContent = '[' + new Date().toLocaleTimeString() + '] ' + msg;
+      document.getElementById('log').prepend(el);
+    }
+    window.addEventListener('error', (e) => log('window.error: ' + e.message, 'err'));
+    window.addEventListener('unhandledrejection', (e) => log('rejection: ' + (e.reason && (e.reason.message || e.reason)), 'err'));
+  </script>
+  <script type="module">
+    import '../js/avatar-interviewer.js?v=avatar5';
+    const stage = document.getElementById('stage');
+    const ai = window.AvatarInterviewer;
+    ai.onStatus = (state, err) => {
+      const tip = err && (err.message || err.code || JSON.stringify(err));
+      log('status=' + state + (tip ? (' · ' + tip) : ''), state === 'error' ? 'err' : 'ok');
+    };
+    async function start() {
+      log('secureContext=' + window.isSecureContext + ' configured=' + ai.configured, 'info');
+      const ok = await ai.ensureStarted(stage);
+      log('ensureStarted => ' + ok, ok ? 'ok' : 'err');
+      ai.resumeAudio();
+      ai.speak('你好，我是 AI 面试官，联调播报测试。');
+    }
+    document.getElementById('btn-start').onclick = start;
+    document.getElementById('btn-speak').onclick = () => ai.speak('请介绍一下你最有代表性的项目。');
+    document.getElementById('btn-resume').onclick = () => ai.resumeAudio();
+    // 自动开连（本页点击进入也可手动）
+    if (window.isSecureContext) setTimeout(start, 300);
+    else log('非 HTTPS，浏览器会拦截摄像头/WebRTC', 'err');
+  </script>
+</body>
+</html>
