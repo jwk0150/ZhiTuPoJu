@@ -52,7 +52,7 @@
   }
 
   /* ---------------- 全局状态 ---------------- */
-  window.matchState = {
+window.matchState = {
     // Phase 08-D：模式开关。默认 real；仅用户显式触发 Demo 才置为 demo。
     mode: 'real',
     stage: 'resume',
@@ -1098,7 +1098,7 @@
             <div class="rw-empty-t">请先上传简历</div>
             <div class="rw-empty-d">上传简历后,这里会显示 AI 自动生成的简历诊断、改写建议与岗位匹配分析。</div>
             <button class="btn-sm btn-sm--solid rw-empty-btn" id="rw-empty-upload" type="button">前往左侧上传 →</button>
-          </div>`;
+        </div>`;
         const eb = $('rw-empty-upload');
         if (eb) eb.onclick = () => {
           const zone = $('resume-upload-zone');
@@ -1930,7 +1930,7 @@
         if (i >= 0) pref.jobTypes.splice(i, 1); else pref.jobTypes.push(tb.dataset.type);
         tb.classList.toggle('is-on');
         return;
-      }
+    }
       const del = e.target.closest('#cjob-skills [data-skill]');
       if (del) {
         delete window.matchState.preferences.skillMeta[del.dataset.skill];
@@ -1938,7 +1938,7 @@
         const sel = $('cjob-skill-add');
         if (sel) sel.innerHTML = '<option value="">+ 添加技能…</option>' + SKILL_POOL.filter((s) => !window.matchState.preferences.skillMeta[s]).map((s) => `<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join('');
         return;
-      }
+    }
       const sel = e.target.closest('#cjob-skill-add');
       if (sel && sel.value) {
         const pref = window.matchState.preferences;
@@ -2571,7 +2571,7 @@
           <div class="rec-profile-meta">
             <span>当前能力 <b class="gold" data-cap="${cap}">0</b></span>
             <span>期望薪资 <b>${smin}-${smax}K</b></span>
-          </div>
+        </div>
         </div>
       </div>
       <div class="rec-profile-reason">
@@ -2689,7 +2689,7 @@
             <p class="ai-match-up-hint">补齐短板后预计提升 <b>${target - (m.score || 0)}%</b> 匹配度</p>
           </div>
         </div>
-      </div>`;
+        </div>`;
   }
 
   function renderDetail() {
@@ -2741,7 +2741,7 @@
               <div class="detail-kv"><span class="k">置信度</span><span>${escapeHtml((m.confidence || '—'))}${(m.confidence ? ' · ' + ((m.evidence || []).length) + ' 条证据' : '')}</span></div>
               <div class="jd-sub">${job.source_url ? '<a href="' + escapeHtml(job.source_url) + '" target="_blank" rel="noreferrer">' + escapeHtml(job.source_url) + '</a>' : '暂无原始链接'}</div>
               <div class="jd-sub">${job.source ? '来源：' + escapeHtml(job.source) + '　' : ''}${((m.match_reasons || []).join('；') || '—')}</div>
-            </div>
+                </div>
 
             <div class="detail-section-title mt">福利待遇</div>
             <div class="jd-welfare">${welfare.map((b) => escapeHtml(b)).join(' · ') || '暂无福利信息'}</div>
@@ -2754,7 +2754,7 @@
             <div id="detail-graph"></div>
           </div>
         </div>
-      </div>`;
+            </div>`;
     const badge = el.querySelector('.ai-match-badge b');
     if (badge) animateNumber(badge, m.score || 0, 1000, '%');
     const bar = el.querySelector('.ai-match-up-bar .bar i');
@@ -2896,7 +2896,7 @@
               <span class="train-module-prog"><i style="width:${pct}%"></i></span>
               <span class="train-module-go">展开问题 ▾</span>
             </button>`;
-          }).join('')}
+        }).join('')}
         </div>
       </div>`).join('');
     qsa('.train-module', box).forEach((btn) => btn.addEventListener('click', () => {
@@ -2921,7 +2921,7 @@
             <div class="train-q-targets"><span>考察：</span>${q.targets.map((t) => `<i>${escapeHtml(t)}</i>`).join('')}</div>
             <button class="train-q-btn" type="button">开始练习 →</button>
           </div>`).join('')}
-      </div>`;
+        </div>`;
     qsa('.train-q-btn', box).forEach((btn) => btn.addEventListener('click', () => openInterview()));
   }
 
@@ -3144,7 +3144,7 @@
       const chart = echarts.init(container);
       cgRadarChart = chart;
       const show = rows.slice(0, 5);
-      chart.setOption({
+    chart.setOption({
         radar: {
           indicator: show.map((r) => ({ name: r.skill, max: 100 })),
           radius: '66%', center: ['50%', '54%'], splitNumber: 3,
@@ -3332,7 +3332,7 @@
     // Phase 08-D：Real Mode 无真实结果时显示空态，不展示演示学习路径
     if (window.matchState.mode !== 'demo' && !isRealLearningPath(res)) {
       wrap.innerHTML = '<div class="los-empty">请先完成一次真实人岗匹配，生成你的学习路径。</div>';
-      return;
+        return;
     }
     renderLearnHero(m, res);
     renderLearnStages();
@@ -3790,7 +3790,7 @@
           <span>技能 <b>${s.count}</b> 项</span>
         </div>
         <div class="los-stage-bar"><i style="width:${s.progress}%"></i></div>
-      </div>`).join('');
+    </div>`).join('');
   }
 
   function observeLosStages() {
@@ -4696,21 +4696,21 @@
       <div class="rp-ai-block">
         <div class="rp-ai-kicker">AI 能力诊断 · 整体概览</div>
         <div class="rp-ai-note" style="margin-top:0">当前岗位匹配 <b style="color:var(--ok)">${j.matchScore}%</b>，核心能力扎实；${j.gapCount} 项能力存在缺口，建议按优先级补强 <b style="color:var(--rose)">${gaps.map((g) => escapeHtml(g.name)).join(' / ')}</b>。</div>
-      </div>
+            </div>
       <div class="rp-ai-block">
         <div class="rp-ai-kicker">判断依据</div>
         <div class="rp-ev-grid">
           ${j.dataSources.overview.map((d) => `<div class="rp-ev-cell"><div class="v">${escapeHtml(d.value)}</div><div class="l">${escapeHtml(d.label)}</div></div>`).join('')}
-        </div>
+            </div>
         <div class="rp-ai-note">证据来自简历 / 项目 / 练习 / 对话 / 测验数据源，点击顶部「数据来源」可查看明细。</div>
-      </div>
+        </div>
       <div class="rp-ai-block">
         <div class="rp-ai-kicker">优先提升</div>
         ${gaps.map((g) => `<div class="rp-gap-row" data-id="${g.id}">
           <span class="nm">${escapeHtml(g.name)}</span>
           <span class="bar"><i style="width:${Math.max(4, Math.round(g.currentScore / g.requiredScore * 100))}%"></i></span>
           <span class="gap-v">${g.currentScore}% / ${g.requiredScore}%</span></div>`).join('')}
-      </div>
+        </div>
       <div class="rp-ai-block">
         <div class="rp-ai-kicker">推荐学习路径</div>
         ${profilePathStepsHTML(model, path.steps)}
@@ -5228,8 +5228,8 @@
     });
     const mic = $('btn-mic'), cam = $('btn-cam'), spk = $('btn-speaker');
     if (mic) mic.addEventListener('click', () => toggleSpeechToText());
-    if (cam) cam.addEventListener('click', () => toggleCtrl(cam));
-    if (spk) spk.addEventListener('click', () => toggleCtrl(spk));
+    if (cam) cam.addEventListener('click', () => toggleCamera());
+    if (spk) spk.addEventListener('click', () => toggleSpeaker());
     // 查看回答建议 → 打开 AI 面试助手抽屉
     const hint = $('int-hint');
     if (hint) hint.addEventListener('click', () => toggleIntDrawer(true));
@@ -5237,6 +5237,10 @@
     if (tog) tog.addEventListener('click', () => toggleIntDrawer());
     const dc = $('int-drawer-close');
     if (dc) dc.addEventListener('click', () => toggleIntDrawer(false));
+    const consoleEl = document.querySelector('.md-int-console');
+    if (consoleEl) {
+      consoleEl.addEventListener('click', () => { tryPlayAvatarMedia(); }, true);
+    }
     const answer = $('int-answer');
     if (answer) answer.addEventListener('input', () => {
       const count = $('int-answer-count'); if (count) count.textContent = String(answer.value.length);
@@ -5250,9 +5254,92 @@
       }
     });
   }
-  function toggleCtrl(btn) {
-    const on = btn.getAttribute('aria-pressed') === 'true';
-    btn.setAttribute('aria-pressed', on ? 'false' : 'true');
+  function setCtrlPressed(btn, on) {
+    if (!btn) return;
+    btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+  }
+  function mediaErrorHint(err) {
+    if (!window.isSecureContext) {
+      return '当前不是 HTTPS 安全环境，浏览器禁止摄像头/麦克风。请用 https:// 打开本站';
+    }
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      return '当前浏览器不支持摄像头接口，请用 Chrome / Edge 打开';
+    }
+    const name = (err && (err.name || err.code)) || '';
+    if (name === 'NotAllowedError' || name === 'PermissionDeniedError') {
+      return '摄像头权限被拒绝：请点地址栏锁图标允许摄像头后重试';
+    }
+    if (name === 'NotFoundError' || name === 'DevicesNotFoundError') {
+      return '未检测到摄像头设备';
+    }
+    if (name === 'NotReadableError' || name === 'TrackStartError') {
+      return '摄像头被其它应用占用，请关闭后重试';
+    }
+    return '无法打开摄像头' + (err && err.message ? '：' + err.message : '');
+  }
+  function setCamPlaceholder(text, failed) {
+    const ph = $('int-user-placeholder');
+    if (!ph) return;
+    const span = ph.querySelector('span');
+    if (span) span.textContent = text;
+    ph.style.display = '';
+    ph.classList.toggle('is-failed', !!failed);
+  }
+  function syncCamButton(on) {
+    setCtrlPressed($('btn-cam'), !!on);
+  }
+  function syncSpeakerButton(on) {
+    setCtrlPressed($('btn-speaker'), !!on);
+  }
+  function tryPlayAvatarMedia(forceMute) {
+    const box = $('int-avatar-container');
+    if (!box) return;
+    const muted = forceMute === true ? true : (window.matchState._avatarMuted === true);
+    qsa('video, audio', box).forEach((el) => {
+      try {
+        el.setAttribute('playsinline', 'true');
+        el.playsInline = true;
+        el.muted = muted;
+        const p = el.play && el.play();
+        if (p && typeof p.catch === 'function') p.catch(() => {});
+      } catch (_) { /* noop */ }
+    });
+  }
+  async function toggleCamera() {
+    const stream = window.matchState._mediaStream;
+    const live = !!(stream && stream.getVideoTracks().some((t) => t.readyState === 'live' && t.enabled));
+    if (live) {
+      try { stream.getTracks().forEach((t) => t.stop()); } catch (_) { /* noop */ }
+      window.matchState._mediaStream = null;
+      const v = $('int-user-video');
+      if (v) v.srcObject = null;
+      setCamPlaceholder('摄像头已关闭 · 点击底部「摄像头」重新开启', false);
+      syncCamButton(false);
+      return;
+    }
+    await startCamera({ interactive: true });
+  }
+  function toggleSpeaker() {
+    const nextMuted = !(window.matchState._avatarMuted === true);
+    window.matchState._avatarMuted = nextMuted;
+    syncSpeakerButton(!nextMuted);
+    const ai = window.AvatarInterviewer;
+    if (!nextMuted) {
+      if (ai && typeof ai.resumeAudio === 'function') ai.resumeAudio();
+      else if (ai && typeof ai.unlock === 'function') ai.unlock();
+    } else if (ai && typeof ai.setMuted === 'function') {
+      ai.setMuted(true);
+    }
+    const box = $('int-avatar-container');
+    if (box) {
+      qsa('video, audio', box).forEach((el) => {
+        try { el.muted = nextMuted; } catch (_) { /* noop */ }
+      });
+    }
+    if (window.showToast) {
+      window.showToast(nextMuted ? '数字人语音已静音' : '数字人语音已开启', 'info');
+    }
+    if (!nextMuted) tryPlayAvatarMedia(false);
   }
 
   /* ---- 语音转文字（Web Speech API · Chrome/Edge） ---- */
@@ -5260,6 +5347,10 @@
   let _speechPrevCaption = '';
   function toggleSpeechToText() {
     if (_speechRec) { stopSpeechToText(); return; }
+    if (!window.isSecureContext) {
+      if (window.showToast) window.showToast('语音识别需要 HTTPS，请用 https:// 打开本站', 'amber');
+      return;
+    }
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SR) { if (window.showToast) window.showToast('当前浏览器不支持语音识别，请使用 Chrome / Edge', 'amber'); return; }
     const input = $('int-answer');
@@ -5310,6 +5401,7 @@
     const mic = $('btn-mic');
     if (mic) {
       mic.classList.toggle('is-recording', recording);
+      setCtrlPressed(mic, !!recording);
       const span = mic.querySelector('span');
       if (span) span.textContent = recording ? '停止' : '麦克风';
     }
@@ -5396,8 +5488,8 @@
       box.innerHTML = '<div class="md-int-fb-empty">提交回答后，AI 将基于岗位要求与关键词进行测评，并给出改进建议。</div>';
       const head = $('int-analysis-state'); if (head) head.innerHTML = '<i></i>待提交';
       if (ansState) ansState.textContent = '未提交';
-      return;
-    }
+    return;
+  }
     const ev = answer.evaluation || {};
     const strengths = ev.strengths || ev.advantages || [];
     const gaps = ev.gaps || ev.weaknesses || [];
@@ -5461,34 +5553,80 @@
     if (!ai) return;
     const container = $('int-avatar-container');
     if (!container) return;
-    ai.onStatus = (state) => {
+    const statusHint = $('int-ai-status');
+    const oldGate = container.querySelector('.md-int-avatar-unlock');
+    if (oldGate) oldGate.remove();
+    window.matchState._avatarMuted = true;
+    syncSpeakerButton(false);
+
+    ai.onStatus = (state, err) => {
       const status = $('int-ai-status');
       const fb = $('int-avatar');
       const ring = $('int-ai-ring');
       const wave = $('int-ai-wave');
-      if (state === 'ready') {
-        if (status) status.textContent = 'AI 面试官 · 数字人已就绪';
+      if (state === 'ready' || state === 'stream' || state === 'playing') {
+        if (status) {
+          status.textContent = ai.isUnlocked
+            ? 'AI 面试官 · 数字人播报中'
+            : 'AI 面试官 · 数字人已就位';
+        }
         if (fb) fb.style.display = 'none';
         if (ring) ring.style.display = 'none';
         if (wave) wave.style.display = 'none';
         container.classList.add('is-live');
+        tryPlayAvatarMedia(true);
+      } else if (state === 'unlocked') {
+        window.matchState._avatarMuted = false;
+        syncSpeakerButton(true);
+        if (status) status.textContent = 'AI 面试官 · 数字人播报中';
+        container.classList.add('is-live');
+        tryPlayAvatarMedia(false);
+      } else if (state === 'needs_gesture') {
+        if (status) status.textContent = 'AI 面试官 · 数字人已就位';
+        if (fb) fb.style.display = 'none';
+        container.classList.add('is-live');
+        tryPlayAvatarMedia(true);
       } else if (state === 'unconfigured') {
         if (status) status.textContent = '正在聆听你的回答';
         container.classList.remove('is-live');
       } else if (state === 'error') {
-        if (status) status.textContent = '数字人连接失败 · 已回退文字模式';
-        if (fb) fb.style.display = '';
-        if (ring) ring.style.display = '';
-        if (wave) wave.style.display = '';
-        container.classList.remove('is-live');
+        const tip = (err && err.message) ? String(err.message) : '';
+        if (status) status.textContent = tip
+          ? ('数字人异常 · ' + tip.slice(0, 80))
+          : '数字人连接失败 · 已回退文字模式';
+        const hasVideo = !!container.querySelector('video');
+        if (!hasVideo) {
+          if (fb) fb.style.display = '';
+          if (ring) ring.style.display = '';
+          if (wave) wave.style.display = '';
+          container.classList.remove('is-live');
+        }
       }
     };
     if (!ai.configured) { container.classList.remove('is-live'); return; }
-    ai.ensureStarted(container);
+    if (statusHint) statusHint.textContent = 'AI 面试官 · 正在连接数字人…';
+    try { ai.resumeAudio && ai.resumeAudio(); } catch (_) {}
+    Promise.resolve(ai.ensureStarted(container)).then((ok) => {
+      tryPlayAvatarMedia(true);
+      if (ok) {
+        const st = window.matchState.interview;
+        const item = st && st.questions && st.questions[st.index];
+        if (item && item.q) speakAvatar(item.q);
+        return;
+      }
+      if (statusHint && String(statusHint.textContent || '').indexOf('异常') < 0 && String(statusHint.textContent || '').indexOf('失败') < 0) {
+        statusHint.textContent = window.isSecureContext
+          ? '数字人连接失败 · 请检查讯飞额度/形象ID'
+          : '数字人需要 HTTPS · 请用 https:// 打开本站';
+      }
+    });
   }
   function speakAvatar(text) {
     const ai = window.AvatarInterviewer;
-    if (ai && ai.configured) ai.speak(text);
+    if (ai && ai.configured) {
+      ai.speak(text);
+      tryPlayAvatarMedia(ai.isUnlocked ? false : true);
+    }
   }
   function stopAvatarInterviewer() {
     const ai = window.AvatarInterviewer;
@@ -5500,9 +5638,13 @@
     const jobLabel = $('int-job-text'); if (jobLabel) jobLabel.textContent = m ? (m.job.title + ' · 模拟面试') : '模拟面试';
     const inter = $('md-interview'); if (inter) inter.hidden = false;
     window.matchState.interview = { index: 0, answers: [], questions: buildInterviewQuestions(m), _liveScore: 0, _intTimer: null };
+    window.matchState._avatarMuted = true;
+    syncSpeakerButton(false);
+    syncCamButton(false);
+    setCtrlPressed($('btn-mic'), false);
     renderIntSteps();
     toggleIntDrawer(false);
-    startCamera();
+    startCamera({ interactive: true });
     startAvatarInterviewer();
     askQuestion(0);
     setView('interview');
@@ -5588,16 +5730,58 @@
     const live = $('int-live-score'); if (live) animateNumber(live, answer.evaluation.score, 450);
     return answer;
   }
-  function startCamera() {
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return;
-    navigator.mediaDevices.getUserMedia({ video: true, audio: false }).then((stream) => {
+  async function startCamera(opts) {
+    const interactive = !!(opts && opts.interactive);
+    const ph = $('int-user-placeholder');
+    const v = $('int-user-video');
+    if (!window.isSecureContext) {
+      setCamPlaceholder('需 HTTPS 才能打开摄像头', true);
+      syncCamButton(false);
+      if (interactive && window.showToast) window.showToast(mediaErrorHint(null), 'amber');
+      return false;
+    }
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      setCamPlaceholder('浏览器不支持摄像头', true);
+      syncCamButton(false);
+      if (interactive && window.showToast) window.showToast(mediaErrorHint(null), 'amber');
+      return false;
+    }
+    setCamPlaceholder('正在连接摄像头...', false);
+    try {
+      if (window.matchState._mediaStream) {
+        try { window.matchState._mediaStream.getTracks().forEach((t) => t.stop()); } catch (_) { /* noop */ }
+        window.matchState._mediaStream = null;
+      }
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } },
+        audio: false
+      });
       window.matchState._mediaStream = stream;
-      const v = $('int-user-video'); const ph = $('int-user-placeholder');
-      if (v) { v.srcObject = stream; if (ph) ph.style.display = 'none'; }
-    }).catch(() => {});
+      if (v) {
+        v.srcObject = stream;
+        v.muted = true;
+        v.playsInline = true;
+        try { await v.play(); } catch (_) { /* autoplay may still need gesture; stream is bound */ }
+      }
+      if (ph) ph.style.display = 'none';
+      syncCamButton(true);
+      return true;
+    } catch (err) {
+      console.warn('[interview] camera failed:', err);
+      setCamPlaceholder(mediaErrorHint(err), true);
+      syncCamButton(false);
+      if (interactive && window.showToast) window.showToast(mediaErrorHint(err), 'amber');
+      return false;
+    }
   }
   function stopCamera() {
-    if (window.matchState._mediaStream) { window.matchState._mediaStream.getTracks().forEach((t) => t.stop()); window.matchState._mediaStream = null; }
+    if (window.matchState._mediaStream) {
+      window.matchState._mediaStream.getTracks().forEach((t) => t.stop());
+      window.matchState._mediaStream = null;
+    }
+    const v = $('int-user-video');
+    if (v) v.srcObject = null;
+    syncCamButton(false);
   }
 
   /* ============================================================

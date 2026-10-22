@@ -22,6 +22,20 @@ router = APIRouter()
 USERS_PATH = Path(__file__).resolve().parent.parent / "data" / "users.json"
 USERS: dict[str, dict] = {}
 
+# 演示/生产默认账号（仅在缺失时写入；管理员不可自助注册）
+DEFAULT_ACCOUNTS: tuple[dict[str, str], ...] = (
+    {"username": "shangshanruoshui", "password": "ssrs123", "role": "admin"},
+    {"username": "user", "password": "user123", "role": "user"},
+)
+RESERVED_USERNAMES = frozenset(
+    {
+        "admin",
+        "administrator",
+        "root",
+        "shangshanruoshui",
+    }
+)
+
 
 class LoginRequest(BaseModel):
     username: str
@@ -59,7 +73,32 @@ def save_users() -> None:
     )
 
 
+def ensure_default_accounts() -> None:
+    """保证默认管理员与体验用户存在；已存在的账号不覆盖密码。"""
+    changed = False
+    for acc in DEFAULT_ACCOUNTS:
+        username = acc["username"]
+        if username in USERS:
+            # 管理员种子：角色被误改时纠正，但不改密码
+            if acc["role"] == "admin" and str(USERS[username].get("role") or "").lower() not in {
+                "admin",
+                "administrator",
+            }:
+                USERS[username]["role"] = "admin"
+                changed = True
+            continue
+        USERS[username] = {
+            "username": username,
+            "password": acc["password"],
+            "role": acc["role"],
+        }
+        changed = True
+    if changed:
+        save_users()
+
+
 load_users()
+ensure_default_accounts()
 
 
 def ok(data):
@@ -182,6 +221,7 @@ def login(req: LoginRequest):
 
 @router.post("/register")
 def register(req: RegisterRequest):
+    """公开注册：始终创建普通用户。不提供管理员注册通道。"""
     username = req.username.strip()
     password = req.password
 
@@ -190,6 +230,9 @@ def register(req: RegisterRequest):
 
     if not password or len(password) < 6:
         return error(40001, "密码长度至少6位")
+
+    if username.lower() in {n.lower() for n in RESERVED_USERNAMES}:
+        return error(40301, "该用户名不可用于注册，请更换")
 
     if username in USERS:
         return error(40901, "用户名已存在")

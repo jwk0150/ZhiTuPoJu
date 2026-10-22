@@ -536,7 +536,7 @@ window.talentInitProvinceOptions = function(regions) {
         const sel = document.getElementById(id);
         if (!sel || sel.dataset.inited) return;
         sel.dataset.inited = '1';
-        sel.innerHTML = html;
+    sel.innerHTML = html;
     });
 };
 // 请求省份下城市列表（/map/cities/{province}）
@@ -1976,7 +1976,7 @@ function talentShowHover(p) {
     const gEl = document.getElementById('talent-hover-growth');
     if (window.talentHasGrowth(p)) {
         const growth = p.growthRate;
-        gEl.textContent = (growth >= 0 ? '↑' : '↓') + Math.abs(growth) + '%';
+    gEl.textContent = (growth >= 0 ? '↑' : '↓') + Math.abs(growth) + '%';
         gEl.style.color = growth >= 0 ? '#8F6B0E' : '#f87171';
     }
     document.getElementById('talent-hover-salary').textContent = talentFormatSalary(p.avgSalary);
@@ -2110,7 +2110,7 @@ window.renderProvinceDetail = async function(province) {
 // 渲染统一高度的横向岗位卡片（不展示技术标签），并自动选中第一条结果。
 window.renderProvinceJobList = async function(province, selectedCity) {
     if (!province) return;
-
+    
     var isCity = talentMapState.mapLevel === 'city' && selectedCity;
     var displayName = isCity ? (selectedCity.displayName || selectedCity.name) : province.name;
     var fetchProvName = isCity ? talentMapState.currentProvinceName : province.name;
@@ -2894,12 +2894,12 @@ window.renderCityTechGraph = async function(cityName, jobName, keepMode, viewMod
         container.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:rgba(255,255,255,.5);font-size:13px">正在生成' + labelText + '技术知识图谱...</div>';
         try {
             var apiUrl = API_BASE + '/map/job-tech-graph/?job_title=' + encodeURIComponent(jobName || cityName);
-            var res = await fetch(apiUrl);
-            var json = await res.json();
-            graphData = (json.data || json);
+        var res = await fetch(apiUrl);
+        var json = await res.json();
+        graphData = (json.data || json);
             techDetailState.graphDataCache[cacheKey] = graphData;
-        } catch(e) {
-            console.warn('[TechGraph] API失败', e);
+    } catch(e) {
+        console.warn('[TechGraph] API失败', e);
         }
     }
 
@@ -2933,26 +2933,26 @@ window.renderCityTechGraph = async function(cityName, jobName, keepMode, viewMod
 
     // overview：扁平化所有类别技术，直接连中心
     if (view === 'overview') {
-        graphData.categories.forEach(function(cat) {
-            (cat.technologies || []).forEach(function(tech) {
-                var catColor = TECH_CATEGORY_COLORS_MAP[cat.name] || '#6366F1';
-                allTechNodes.push({
-                    name: tech.name,
+    graphData.categories.forEach(function(cat) {
+        (cat.technologies || []).forEach(function(tech) {
+            var catColor = TECH_CATEGORY_COLORS_MAP[cat.name] || '#6366F1';
+            allTechNodes.push({
+                name: tech.name,
                     size: Math.max(12, Math.min(34, (tech.size || 24) * 0.88)),
-                    frequency: tech.frequency || 1,
-                    ratio: tech.ratio || 0.5,
-                    catColor: catColor,
+                frequency: tech.frequency || 1,
+                ratio: tech.ratio || 0.5,
+                catColor: catColor,
                     catName: cat.name,
                     parentId: 'center'
-                });
             });
         });
-        // 如果技术节点过少，追加通用技术
-        if (allTechNodes.length < 8) {
-            var extraTechs = ['Git', 'Linux', 'Docker', 'MySQL', 'Redis', 'Python', 'Java', 'JavaScript', 'Vue'];
-            for (var ei = 0; ei < extraTechs.length && allTechNodes.length < 15; ei++) {
-                var alreadyExists = allTechNodes.some(function(t) { return t.name === extraTechs[ei]; });
-                if (!alreadyExists) {
+    });
+    // 如果技术节点过少，追加通用技术
+    if (allTechNodes.length < 8) {
+        var extraTechs = ['Git', 'Linux', 'Docker', 'MySQL', 'Redis', 'Python', 'Java', 'JavaScript', 'Vue'];
+        for (var ei = 0; ei < extraTechs.length && allTechNodes.length < 15; ei++) {
+            var alreadyExists = allTechNodes.some(function(t) { return t.name === extraTechs[ei]; });
+            if (!alreadyExists) {
                     allTechNodes.push({ name: extraTechs[ei], size: 20, frequency: 3, ratio: 0.4, catColor: '#6366F1', catName: '通用技术', parentId: 'center' });
                 }
             }
@@ -3005,20 +3005,20 @@ window.renderCityTechGraph = async function(cityName, jobName, keepMode, viewMod
 
     if (view === 'overview') {
         // ---------- 径向布局（单层级，技术直接挂中心） ----------
-        var maxFreq = 0;
-        allTechNodes.forEach(function(t) { if (t.frequency > maxFreq) maxFreq = t.frequency; });
-        allTechNodes.sort(function(a, b) { return b.frequency - a.frequency; });
-        var totalTechs = allTechNodes.length;
-        var rings = [];
-        if (totalTechs <= 10) {
-            rings = [totalTechs];
-        } else if (totalTechs <= 20) {
-            var inner = Math.ceil(totalTechs * 0.4);
-            rings = [inner, totalTechs - inner];
+    var maxFreq = 0;
+    allTechNodes.forEach(function(t) { if (t.frequency > maxFreq) maxFreq = t.frequency; });
+    allTechNodes.sort(function(a, b) { return b.frequency - a.frequency; });
+    var totalTechs = allTechNodes.length;
+    var rings = [];
+    if (totalTechs <= 10) {
+        rings = [totalTechs];
+    } else if (totalTechs <= 20) {
+        var inner = Math.ceil(totalTechs * 0.4);
+        rings = [inner, totalTechs - inner];
         } else if (totalTechs <= 34) {
-            var r1 = Math.ceil(totalTechs * 0.33);
-            var r2 = Math.ceil(totalTechs * 0.33);
-            rings = [r1, r2, totalTechs - r1 - r2];
+        var r1 = Math.ceil(totalTechs * 0.33);
+        var r2 = Math.ceil(totalTechs * 0.33);
+        rings = [r1, r2, totalTechs - r1 - r2];
         } else {
             // 35+ 节点：四环分布，扩大分布范围，容纳更多节点而不拥挤
             var q1 = Math.ceil(totalTechs * 0.25);
@@ -3026,51 +3026,51 @@ window.renderCityTechGraph = async function(cityName, jobName, keepMode, viewMod
             var q3 = Math.ceil(totalTechs * 0.25);
             rings = [q1, q2, q3, totalTechs - q1 - q2 - q3];
         }
-        var ringRadii = [];
-        if (rings.length === 1) {
-            ringRadii = [maxRadius * 0.55];
-        } else if (rings.length === 2) {
-            ringRadii = [maxRadius * 0.42, maxRadius * 0.78];
+    var ringRadii = [];
+    if (rings.length === 1) {
+        ringRadii = [maxRadius * 0.55];
+    } else if (rings.length === 2) {
+        ringRadii = [maxRadius * 0.42, maxRadius * 0.78];
         } else if (rings.length === 3) {
-            ringRadii = [maxRadius * 0.3, maxRadius * 0.58, maxRadius * 0.82];
+        ringRadii = [maxRadius * 0.3, maxRadius * 0.58, maxRadius * 0.82];
         } else {
             ringRadii = [maxRadius * 0.22, maxRadius * 0.44, maxRadius * 0.66, maxRadius * 0.9];
-        }
-        var idx = 0;
-        for (var ringIdx = 0; ringIdx < rings.length; ringIdx++) {
-            var countInRing = rings[ringIdx];
-            if (countInRing <= 0) continue;
-            var ringRadius = ringRadii[ringIdx];
+    }
+    var idx = 0;
+    for (var ringIdx = 0; ringIdx < rings.length; ringIdx++) {
+        var countInRing = rings[ringIdx];
+        if (countInRing <= 0) continue;
+        var ringRadius = ringRadii[ringIdx];
             var angleOffset = (ringIdx % 2 === 1) ? Math.PI / countInRing : 0;
-            for (var i = 0; i < countInRing && idx < totalTechs; i++) {
-                var tech = allTechNodes[idx];
-                var angle = angleOffset + (2 * Math.PI * i) / countInRing;
-                tech.calcX = centerX + ringRadius * Math.cos(angle);
-                tech.calcY = centerY + ringRadius * Math.sin(angle);
-                idx++;
-            }
+        for (var i = 0; i < countInRing && idx < totalTechs; i++) {
+            var tech = allTechNodes[idx];
+            var angle = angleOffset + (2 * Math.PI * i) / countInRing;
+            tech.calcX = centerX + ringRadius * Math.cos(angle);
+            tech.calcY = centerY + ringRadius * Math.sin(angle);
+            idx++;
         }
+    }
         // 重叠消除
-        for (var iter = 0; iter < 8; iter++) {
-            for (var i = 0; i < totalTechs; i++) {
-                for (var j = i + 1; j < totalTechs; j++) {
+    for (var iter = 0; iter < 8; iter++) {
+        for (var i = 0; i < totalTechs; i++) {
+            for (var j = i + 1; j < totalTechs; j++) {
                     var a = allTechNodes[i], b = allTechNodes[j];
                     var dx = b.calcX - a.calcX, dy = b.calcY - a.calcY;
-                    var dist = Math.sqrt(dx * dx + dy * dy);
-                    var minD = (a.size + b.size) * 0.48;
-                    if (dist < minD && dist > 0.001) {
-                        var force = (minD - dist) / dist * 0.4;
+                var dist = Math.sqrt(dx * dx + dy * dy);
+                var minD = (a.size + b.size) * 0.48;
+                if (dist < minD && dist > 0.001) {
+                    var force = (minD - dist) / dist * 0.4;
                         a.calcX -= dx * force; a.calcY -= dy * force;
                         b.calcX += dx * force; b.calcY += dy * force;
                     }
                 }
             }
-            for (var i = 0; i < totalTechs; i++) {
-                var t = allTechNodes[i];
+        for (var i = 0; i < totalTechs; i++) {
+            var t = allTechNodes[i];
                 var ddx = t.calcX - centerX, ddy = t.calcY - centerY;
-                var currR = Math.sqrt(ddx * ddx + ddy * ddy);
+            var currR = Math.sqrt(ddx * ddx + ddy * ddy);
                 if (currR < 0.01) { t.calcX = centerX + 1; t.calcY = centerY + 1; currR = 1; }
-                var targetR = Math.max(minRadius, Math.min(maxRadius * 1.05, currR));
+            var targetR = Math.max(minRadius, Math.min(maxRadius * 1.05, currR));
                 t.calcX = centerX + (ddx / currR) * (currR * 0.7 + targetR * 0.3);
                 t.calcY = centerY + (ddy / currR) * (currR * 0.7 + targetR * 0.3);
             }
@@ -3204,7 +3204,7 @@ window.renderCityTechGraph = async function(cityName, jobName, keepMode, viewMod
                 x: g.boxX + g.boxW / 2,
                 y: g.boxY + g.boxH / 2,
                 size: [g.boxW, g.boxH],
-                style: {
+        style: {
                     fill: 'rgba(8,16,28,.42)',
                     stroke: 'rgba(212,175,55,.38)',
                     lineWidth: 1.4,
@@ -3236,8 +3236,8 @@ window.renderCityTechGraph = async function(cityName, jobName, keepMode, viewMod
             catName: g.catName,
             style: catStyle,
             baseStyle: catStyle,
-            labelCfg: {
-                position: 'center',
+        labelCfg: {
+            position: 'center',
                 style: { fill: '#5C4935', fontSize: isCatCard ? 17 : 12, fontWeight: 700, fontFamily: 'var(--font-sans),sans-serif', textShadowColor: 'rgba(255,255,255,0)', textShadowBlur: 0 }
             }
         });
