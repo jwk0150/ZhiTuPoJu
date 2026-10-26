@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
@@ -6,94 +6,175 @@
   <title>执图破局 · 可视化大厅</title>
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <link rel="stylesheet" href="../css/tokens.css" />
-  <link rel="stylesheet" href="../css/shell.css?v=vh8" />
+  <link rel="stylesheet" href="../css/shell.css?v=vh20" />
   <link rel="stylesheet" href="../css/components.css" />
   <link rel="stylesheet" href="../css/news-light-overrides.css" />
-  <link rel="stylesheet" href="../css/viz-hall.css?v=vh8" />
-  <script src="../js/vendor/echarts.min.js"></script>
+  <link rel="stylesheet" href="../css/viz-hall.css?v=vh42" />
 </head>
 <body class="standalone-view" data-page="vizHall">
   <div id="app-shell"></div>
   <main class="page-main vh-root" id="page-main">
-    <div class="vh-ambient" aria-hidden="true">
-      <span class="vh-veil"></span>
-      <span class="vh-grain"></span>
-      <span class="vh-orb vh-orb-a"></span>
-      <span class="vh-orb vh-orb-b"></span>
-    </div>
 
-    <header class="vh-head">
-      <div class="vh-head-copy">
-        <h1 class="vh-brand">可视化大厅</h1>
-        <p class="vh-sub">岗位 · 能力 · 匹配</p>
+    <!-- 标题区：压到两行，首屏直接进图 -->
+    <header class="vh-hero">
+      <div class="vh-hero-main">
+        <p class="vh-kicker">JOB MARKET · VISUAL HALL</p>
+        <h1 class="vh-title">可视化大厅</h1>
+        <p class="vh-lede">岗位、城市与薪资放进同一套坐标里对照。所有图表实时读取库内招聘数据，口径与人才地图、洞察页一致。</p>
       </div>
-      <div class="vh-kpi">
-        <div class="vh-kpi-item">
-          <b data-byte="ingest">0</b>
-          <span>岗位语料</span>
-        </div>
-        <div class="vh-kpi-item">
-          <b data-byte="graph">0</b>
-          <span>能力关联</span>
-        </div>
-        <div class="vh-kpi-item">
-          <b data-byte="match">0</b>
-          <span>诊断次数</span>
-        </div>
-      </div>
+      <dl class="vh-hero-meta" id="vh-hero-meta">
+        <div><dt>岗位语料</dt><dd id="vh-meta-total">—</dd></div>
+        <div><dt>覆盖省份</dt><dd id="vh-meta-prov">—</dd></div>
+        <div><dt>在招企业</dt><dd id="vh-meta-company">—</dd></div>
+        <div><dt>数据快照</dt><dd id="vh-meta-date">—</dd></div>
+      </dl>
     </header>
 
-    <div class="vh-byte-rail" aria-hidden="true">
-      <div class="vh-byte-track" id="vh-byte-track"></div>
-    </div>
+    <!-- 主视觉：省份岗位星图 + 洞察 -->
+    <section class="vh-showcase">
+      <article class="vh-stage" data-panel="star" tabindex="0" role="button" aria-label="打开解析：省份岗位星图">
+        <header class="vh-panel-bar">
+          <div class="vh-panel-title">
+            <p class="vh-panel-eyebrow">MARKET CONSTELLATION · 01</p>
+            <h2>省份岗位星图</h2>
+          </div>
+          <div class="vh-panel-side">
+            <span class="vh-stat" id="vh-star-stat">—</span>
+            <span class="vh-zoom" aria-hidden="true">解析</span>
+          </div>
+        </header>
+        <div class="vh-chart vh-chart--star is-loading" id="vh-chart-star"></div>
+        <footer class="vh-panel-foot" id="vh-star-foot">角度＝按岗位数顺时针排列 · 花瓣长度＝岗位数 · 颜色＝平均月薪</footer>
+      </article>
 
-    <section class="vh-grid" id="vh-grid" aria-label="可视化看板">
-      <article class="vh-panel" data-panel="city" tabindex="0" role="button" aria-label="放大城市热度">
-        <header class="vh-panel-bar">
-          <h2>城市热度</h2>
-          <span class="vh-zoom" aria-hidden="true">放大</span>
+      <aside class="vh-insight" aria-label="岗位洞察">
+        <header class="vh-insight-head">
+          <p class="vh-panel-eyebrow">MARKET INSIGHT · 02</p>
+          <h2>今日洞察</h2>
         </header>
-        <div class="vh-chart" id="vh-chart-city"></div>
-      </article>
-      <article class="vh-panel" data-panel="skill" tabindex="0" role="button" aria-label="放大能力结构">
-        <header class="vh-panel-bar">
-          <h2>能力结构</h2>
-          <span class="vh-zoom" aria-hidden="true">放大</span>
-        </header>
-        <div class="vh-chart" id="vh-chart-skill"></div>
-      </article>
-      <article class="vh-panel" data-panel="match" tabindex="0" role="button" aria-label="放大匹配得分">
-        <header class="vh-panel-bar">
-          <h2>匹配得分</h2>
-          <span class="vh-zoom" aria-hidden="true">放大</span>
-        </header>
-        <div class="vh-chart" id="vh-chart-match"></div>
-      </article>
-      <article class="vh-panel" data-panel="role" tabindex="0" role="button" aria-label="放大职类占比">
-        <header class="vh-panel-bar">
-          <h2>职类占比</h2>
-          <span class="vh-zoom" aria-hidden="true">放大</span>
-        </header>
-        <div class="vh-chart" id="vh-chart-role"></div>
-      </article>
-      <article class="vh-panel" data-panel="salary" tabindex="0" role="button" aria-label="放大薪资区间">
-        <header class="vh-panel-bar">
-          <h2>薪资区间</h2>
-          <span class="vh-zoom" aria-hidden="true">放大</span>
-        </header>
-        <div class="vh-chart" id="vh-chart-salary"></div>
-      </article>
-      <article class="vh-panel" data-panel="supply" tabindex="0" role="button" aria-label="放大供需对比">
-        <header class="vh-panel-bar">
-          <h2>供需对比</h2>
-          <span class="vh-zoom" aria-hidden="true">放大</span>
-        </header>
-        <div class="vh-chart" id="vh-chart-supply"></div>
-      </article>
+
+        <section class="vh-insight-block">
+          <h3>市场判断 <span id="vh-insight-headline">读取中…</span></h3>
+          <ul class="vh-insights" id="vh-insights"></ul>
+        </section>
+
+        <section class="vh-insight-block">
+          <h3>新兴岗位 <span>成长潜力 TOP 3</span></h3>
+          <ol class="vh-emerging" id="vh-emerging-list"></ol>
+        </section>
+
+        <section class="vh-insight-block">
+          <h3>高频技能 <span>新兴岗位交叉</span></h3>
+          <p class="vh-chips" id="vh-skill-chips"></p>
+        </section>
+      </aside>
     </section>
 
-    <footer class="vh-foot">
-      <span>执图破局</span>
+    <!-- 分析切片 -->
+    <section class="vh-analysis">
+      <header class="vh-section-head">
+        <p class="vh-kicker">ANALYSIS · 03</p>
+        <h2>市场分析切片</h2>
+        <span class="vh-badge" id="vh-analysis-source">库内数据</span>
+      </header>
+      <div class="vh-grid">
+        <article class="vh-panel vh-panel--city" data-panel="city" tabindex="0" role="button" aria-label="打开解析：城市岗位需求">
+          <header class="vh-panel-bar">
+            <div class="vh-panel-title">
+              <p class="vh-panel-eyebrow">DEMAND BY CITY</p>
+              <h2>城市岗位需求</h2>
+            </div>
+            <div class="vh-panel-side">
+              <span class="vh-stat" id="vh-city-stat">—</span>
+              <span class="vh-zoom" aria-hidden="true">解析</span>
+            </div>
+          </header>
+          <div class="vh-chart is-loading" id="vh-chart-city"></div>
+          <p class="vh-panel-foot">口径：城市＋区县，按岗位数取前 10</p>
+        </article>
+
+        <article class="vh-panel vh-panel--prov" data-panel="prov" tabindex="0" role="button" aria-label="打开解析：省份岗位占比">
+          <header class="vh-panel-bar">
+            <div class="vh-panel-title">
+              <p class="vh-panel-eyebrow">SHARE BY PROVINCE</p>
+              <h2>省份岗位占比</h2>
+            </div>
+            <div class="vh-panel-side">
+              <span class="vh-stat" id="vh-prov-stat">—</span>
+              <span class="vh-zoom" aria-hidden="true">解析</span>
+            </div>
+          </header>
+          <div class="vh-chart is-loading" id="vh-chart-prov"></div>
+          <p class="vh-panel-foot" id="vh-prov-foot">口径：按省份汇总，前 6 省单列，其余合并</p>
+        </article>
+
+        <article class="vh-panel vh-panel--salary" data-panel="salary" tabindex="0" role="button" aria-label="打开解析：薪资区间分布">
+          <header class="vh-panel-bar">
+            <div class="vh-panel-title">
+              <p class="vh-panel-eyebrow">SALARY BANDS</p>
+              <h2>薪资区间分布</h2>
+            </div>
+            <div class="vh-panel-side">
+              <span class="vh-stat" id="vh-salary-stat">—</span>
+              <span class="vh-zoom" aria-hidden="true">解析</span>
+            </div>
+          </header>
+          <div class="vh-chart is-loading" id="vh-chart-salary"></div>
+          <p class="vh-panel-foot">口径：按起止薪资区间分箱，红色为样本最多的区间</p>
+        </article>
+
+        <article class="vh-panel vh-panel--pay" data-panel="pay" tabindex="0" role="button" aria-label="打开解析：省份平均月薪">
+          <header class="vh-panel-bar">
+            <div class="vh-panel-title">
+              <p class="vh-panel-eyebrow">AVG PAY BY PROVINCE</p>
+              <h2>省份平均月薪</h2>
+            </div>
+            <div class="vh-panel-side">
+              <span class="vh-stat" id="vh-pay-stat">—</span>
+              <span class="vh-zoom" aria-hidden="true">解析</span>
+            </div>
+          </header>
+          <div class="vh-chart is-loading" id="vh-chart-pay"></div>
+          <p class="vh-panel-foot">口径：省份岗位的平均月薪（起止区间均值），取前 10</p>
+        </article>
+
+        <article class="vh-panel vh-panel--demand" data-panel="demand" tabindex="0" role="button" aria-label="打开解析：在库岗位需求">
+          <header class="vh-panel-bar">
+            <div class="vh-panel-title">
+              <p class="vh-panel-eyebrow">TOP TITLES</p>
+              <h2>在库岗位需求</h2>
+            </div>
+            <div class="vh-panel-side">
+              <span class="vh-stat" id="vh-demand-stat">—</span>
+              <span class="vh-zoom" aria-hidden="true">解析</span>
+            </div>
+          </header>
+          <div class="vh-chart is-loading" id="vh-chart-demand"></div>
+          <p class="vh-panel-foot">口径：库内岗位名去重后计数，取前 5</p>
+        </article>
+
+        <article class="vh-panel vh-panel--future" data-panel="future" tabindex="0" role="button" aria-label="打开解析：新兴岗位成长潜力">
+          <header class="vh-panel-bar">
+            <div class="vh-panel-title">
+              <p class="vh-panel-eyebrow">EMERGING ROLES</p>
+              <h2>新兴岗位成长潜力</h2>
+            </div>
+            <div class="vh-panel-side">
+              <span class="vh-stat" id="vh-future-stat">—</span>
+              <span class="vh-zoom" aria-hidden="true">解析</span>
+            </div>
+          </header>
+          <div class="vh-chart is-loading" id="vh-chart-future"></div>
+          <p class="vh-panel-foot">口径：成长潜力为 0–100 评分，红点为前三</p>
+        </article>
+      </div>
+    </section>
+
+    <footer class="vh-foot" id="vh-foot">
+      <span class="vh-foot-brand">执图破局</span>
+      <div class="vh-sources" id="vh-sources">
+        <span class="vh-sources-label">数据来源</span>
+      </div>
       <a href="map.html">数字人才地图</a>
     </footer>
   </main>
@@ -103,18 +184,22 @@
     <div class="vh-lightbox-card" role="dialog" aria-modal="true" aria-labelledby="vh-lightbox-title">
       <header class="vh-lightbox-head">
         <h2 id="vh-lightbox-title">图表</h2>
+        <span class="vh-zoom" id="vh-lightbox-note" aria-hidden="true">库内数据</span>
         <button type="button" class="vh-lightbox-close" data-vh-close aria-label="关闭">×</button>
       </header>
-      <div class="vh-lightbox-chart" id="vh-lightbox-chart"></div>
+      <div class="vh-lightbox-body">
+        <div class="vh-lightbox-chart" id="vh-lightbox-chart"></div>
+        <aside class="vh-lb-rail" id="vh-lightbox-rail" aria-label="图表解析"></aside>
+      </div>
     </div>
   </div>
 
   <script src="../js/api.js"></script>
   <script src="../js/runtime-core.js"></script>
   <script src="../js/shell.js"></script>
-  <script src="../js/pages/viz-hall.js?v=vh8"></script>
+  <script src="../js/pages/viz-hall.js?v=vh42"></script>
   <script>
-    window.Shell && window.Shell.mount({ pageId: 'vizHall', title: '可视化大厅', subtitle: '实时看板' });
+    window.Shell && window.Shell.mount({ pageId: 'vizHall', title: '可视化大厅', subtitle: '岗位市场星图' });
     window.initVizHall && window.initVizHall();
   </script>
 </body>
